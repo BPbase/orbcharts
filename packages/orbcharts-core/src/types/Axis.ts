@@ -1,0 +1,1 @@
+export type AxisPosition = 'top' | 'bottom' | 'left' | 'right'
