@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   app: {
-    baseURL: process.env.NODE_ENV === 'production' ? '/obcharts/' : '/',
+    baseURL: process.env.NODE_ENV === 'production' ? '/orbcharts/' : '/',
     buildAssetsDir: '/static/'
   }
 })
