@@ -1,9 +1,10 @@
 import type { ComputedDatumSeries, EventSeries, EventName, ColorType } from '@orbcharts/core'
-import {
+import type {
   BubblesPluginParams,
   PiePluginParams,
   PieEventTextsPluginParams,
-  PieLabelsPluginParams } from './types'
+  PieLabelsPluginParams,
+  SeriesLegendParams } from './types'
 
 export const DEFAULT_BUBBLES_PLUGIN_PARAMS: BubblesPluginParams = {
   force: {
@@ -79,4 +80,15 @@ export const DEFAULT_PIE_LABELS_PARAMS: PieLabelsPluginParams = {
   // fontSize: 12,
   labelColorType: 'series',
   labelFn: d => String(d.value),
+}
+
+export const DEFAULT_SERIES_LEGEND_PARAMS: SeriesLegendParams = {
+  position: 'bottom',
+  justify: 'center',
+  offset: [0, 0],
+  gap: 10,
+  seriesLabels: [],
+  // rectWidth: 14,
+  rectRadius: 0,
+  highlightEvent: false
 }
