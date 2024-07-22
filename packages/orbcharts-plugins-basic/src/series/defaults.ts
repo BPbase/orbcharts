@@ -87,7 +87,7 @@ export const DEFAULT_SERIES_LEGEND_PARAMS: SeriesLegendParams = {
   justify: 'center',
   offset: [0, 0],
   gap: 10,
-  seriesLabels: [],
+  // seriesLabels: [],
   // rectWidth: 14,
   rectRadius: 0,
   highlightEvent: false

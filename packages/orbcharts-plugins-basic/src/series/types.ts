@@ -58,7 +58,7 @@ export interface SeriesLegendParams {
   justify: 'start' | 'center' | 'end'
   offset: [number, number]
   gap: number
-  seriesLabels: string[]
+  // seriesLabels: string[]
   // rectWidth: number
   rectRadius: number
   highlightEvent: boolean

@@ -274,24 +274,31 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
   // })
 
 
-  const seriesLabels$: Observable<string[]> = combineLatest({
-    SeriesDataMap: observer.SeriesDataMap$,
-    fullParams: observer.fullParams$
-  }).pipe(
+  // const seriesLabels$: Observable<string[]> = combineLatest({
+  //   SeriesDataMap: observer.SeriesDataMap$,
+  //   fullParams: observer.fullParams$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(data => {
+  //     let seriesLabels = Array.from(data.SeriesDataMap.keys())
+  //     data.fullParams.seriesLabels.forEach((d, i) => {
+  //       seriesLabels[i] = d // params 有設定的話覆蓋掉原本的 seriesLabel
+  //     })
+  //     return seriesLabels
+  //   })
+  // )
+
+  const seriesLabels$: Observable<string[]> = observer.SeriesDataMap$.pipe(
     takeUntil(destroy$),
-    switchMap(async (d) => d),
     map(data => {
-      let seriesLabels = Array.from(data.SeriesDataMap.keys())
-      data.fullParams.seriesLabels.forEach((d, i) => {
-        seriesLabels[i] = d // params 有設定的話覆蓋掉原本的 seriesLabel
-      })
-      return seriesLabels
+      return Array.from(data.keys())
     })
   )
 
   // observer
 
-  const lineMaxWidth$ = combineLatest({
+  const boxMaxWidth$ = combineLatest({
     fullParams: observer.fullParams$,
     layout: observer.layout$
   }).pipe(
@@ -311,63 +318,56 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
   //   })
   // )
 
-  const _legendItems$: Observable<LegendItem[]> = combineLatest({
-    seriesLabels: seriesLabels$,
-    fullParams: observer.fullParams$,
-    fullChartParams: observer.fullChartParams$,
-    lineMaxWidth: lineMaxWidth$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async d => d),
-    map(data => {
-      return data.seriesLabels.map((d, i) => {
-        const textWidth = measureTextWidth(d, data.fullChartParams.styles.textSize)
-
-        return {
-          index: i,
-          text: d,
-          textWidth,
-          x: 0,
-          y: 0,
-          color: string
-          rectWidth: number
-          rectRadius: number
-
-          index: i,
-          lineIndex: -1,
-          text: d,
-          itemWidth: number
-          x: -1,
-          y: -1,
-          color: string
-        }
-      })
-    })
-  )
-
   const legendItems$: Observable<LegendItem[]> = combineLatest({
     seriesLabels: seriesLabels$,
     fullParams: observer.fullParams$,
-    fullChartParams: observer.fullChartParams$
+    fullChartParams: observer.fullChartParams$,
+    boxMaxWidth: boxMaxWidth$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
     map(data => {
-      
       return data.seriesLabels.reduce((prev, current, currentIndex) => {
         const textWidth = measureTextWidth(current, data.fullChartParams.styles.textSize)
+        const color = data.fullChartParams.colors[data.fullChartParams.colorScheme].series
+
         prev.push({
           index: currentIndex,
+          lineIndex: 0,
           text: current,
-          itemWidth,
-          x: number
-          y: number
-          color: string
+          itemWidth: textWidth,
+          x: 0,
+          y: 0,
+          color: '',
         })
         return prev
       }, [])
     })
   )
+
+  // const legendItems$: Observable<LegendItem[]> = combineLatest({
+  //   seriesLabels: seriesLabels$,
+  //   fullParams: observer.fullParams$,
+  //   fullChartParams: observer.fullChartParams$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async d => d),
+  //   map(data => {
+      
+  //     return data.seriesLabels.reduce((prev, current, currentIndex) => {
+  //       const textWidth = measureTextWidth(current, data.fullChartParams.styles.textSize)
+  //       prev.push({
+  //         index: currentIndex,
+  //         text: current,
+  //         itemWidth,
+  //         x: number
+  //         y: number
+  //         color: string
+  //       })
+  //       return prev
+  //     }, [])
+  //   })
+  // )
 
   combineLatest({
     contentSelection: contentSelection$,
@@ -380,7 +380,7 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
   ).subscribe(data => {
     renderSeriesLegend({
       contentSelection: data.contentSelection,
-      seriesLabel: data.seriesLabel,
+      seriesLabel: data.seriesLabels,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
