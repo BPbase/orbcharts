@@ -4,7 +4,7 @@
 
 <script lang="ts" setup>
 import { SeriesChart } from '../../../../packages/orbcharts-core/src'
-import { Pie } from '../../../../packages/orbcharts-plugins-basic/src'
+import { Pie, SeriesLegend } from '../../../../packages/orbcharts-plugins-basic/src'
 // import { SeriesChart } from 'orbcharts'
 // import { Pie } from 'orbcharts'
 
@@ -15,7 +15,9 @@ onMounted(() => {
 
   const pie = new Pie()
 
-  chart.plugins$.next([pie])
+  const seriesLegend = new SeriesLegend()
+
+  chart.plugins$.next([pie, seriesLegend])
 
   chart.data$.next([15,38,25,17,26,72,64,29])
 })

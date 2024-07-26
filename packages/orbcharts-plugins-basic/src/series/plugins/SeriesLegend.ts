@@ -18,7 +18,7 @@ import type { PieDatum } from '../seriesUtils'
 import { DEFAULT_SERIES_LEGEND_PARAMS } from '../defaults'
 import { makePieData } from '../seriesUtils'
 import { makeD3Arc } from '../../utils/d3Utils'
-import { getDatumColor, getClassName } from '../../utils/orbchartsUtils'
+import { getSeriesColor, getClassName } from '../../utils/orbchartsUtils'
 import { measureTextWidth } from '../../utils/commonUtils'
 
 interface RenderDatum {
@@ -31,36 +31,51 @@ interface RenderDatum {
   mouseoverY: number
 }
 
-interface PositionTranslate {
+// 第1層 - 定位的容器（絕對位置）
+interface Position {
   x:number
   y:number
 }
 
+// 第2層 - 圖例列表
+interface LegendList {
+  direction: 'row' | 'column'
+  width: number
+  height: number
+  translateX:number
+  translateY:number
+  list: LegendItem[][]
+}
+
+// 第3層 - 圖例項目
 interface LegendItem {
   index: number
   lineIndex: number
   text: string
   itemWidth: number
-  x: number
-  y: number
+  translateX: number
+  translateY: number
   color: string
   // fontSize: number
   // rectRadius: number
 }
 
 const pluginName = 'SeriesLegend'
-const contentClassName = getClassName(pluginName, 'content')
+const boxClassName = getClassName(pluginName, 'box')
+const legendListClassName = getClassName(pluginName, 'legend-list')
 const itemClassName = getClassName(pluginName, 'item')
 
-function renderSeriesLegend ({ contentSelection, seriesLabel, fullParams, fullChartParams }: {
-  contentSelection: d3.Selection<SVGGElement, any, any, any>
+function renderSeriesLegend ({ lengendListSelection, lengendList, seriesLabel, fullParams, fullChartParams }: {
+  lengendListSelection: d3.Selection<SVGGElement, any, any, any>
+  lengendList: LegendList
   seriesLabel: string[]
   fullParams: SeriesLegendParams
   fullChartParams: ChartParams
 }) {
-  const legendSelection = contentSelection
+  console.log('lengendList', lengendList)
+  const legendSelection = lengendListSelection
     .selectAll<SVGGElement, string>(`g.${itemClassName}`)
-    .data(seriesLabel)
+    .data(lengendList.list.flat())
     .join(
       enter => {
         return enter
@@ -72,11 +87,34 @@ function renderSeriesLegend ({ contentSelection, seriesLabel, fullParams, fullCh
       exit => exit.remove()
     )
     .attr('transform', (d, i) => {
-      fullChartParams.styles.textSize
-      return `translate(${d[0] ? d[0].axisX : 0}, ${0})`
+      return `translate(${d.translateX}, ${d.translateY})`
     })
     .each((d, i, g) => {
-
+      // 方塊
+      d3.select(g[i])
+        .selectAll('rect')
+        .data([d])
+        .join('rect')
+        .attr('width', fullChartParams.styles.textSize)
+        .attr('height', fullChartParams.styles.textSize)
+        .attr('fill', _d => _d.color)
+        .attr('r', fullParams.rectRadius)
+      // 文字
+      d3.select(g[i])
+        .selectAll('text')
+        .data([d])
+        .join(
+          enter => {
+            return enter
+              .append('text')
+          },
+          update => {
+            return update
+              .attr('x', fullChartParams.styles.textSize * 1.5)
+              // .attr('fill', _d => _d.color)
+          },
+          exit => exit.remove()
+        )
     })
 }
 
@@ -141,7 +179,7 @@ function highlight ({ labelSelection, ids, fullChartParams }: {
 // }
 
 
-export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND_PARAMS)(({ selection, observer, subject }) => {
+export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND_PARAMS)(({ selection, rootSelection, observer, subject }) => {
   
   const destroy$ = new Subject()
 
@@ -150,7 +188,35 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
   let renderData: RenderDatum[] = []
   // const boxSelection$: Subject<d3.Selection<SVGRectElement, ComputedDatumSeries, SVGGElement, unknown>> = new Subject()
   
-  const positionTranslate$ = combineLatest({
+  const seriesLabels$: Observable<string[]> = observer.SeriesDataMap$.pipe(
+    takeUntil(destroy$),
+    map(data => {
+      return Array.from(data.keys())
+    })
+  )
+
+  const lineDirection$ = observer.fullParams$.pipe(
+    takeUntil(destroy$),
+    map(data => {
+      return data.position === 'bottom' || data.position === 'top'
+        ? 'row'
+        : 'column'
+    })
+  )
+
+  const lineMaxSize$ = combineLatest({
+    fullParams: observer.fullParams$,
+    layout: observer.layout$
+  }).pipe(
+    takeUntil(destroy$),
+    map(data => {
+      return data.fullParams.position === 'bottom' || data.fullParams.position === 'top'
+        ? data.layout.rootWidth - 2 // 減2是避免完全貼到邊線上
+        : data.layout.rootHeight - 2
+    })
+  )
+
+  const boxPosition$ = combineLatest({
     layout: observer.layout$,
     fullParams: observer.fullParams$,
   }).pipe(
@@ -196,6 +262,7 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
           y = data.layout.rootHeight
         }
       }
+      console.log('data.layout', data.layout, x, y)
       return {
         x,
         y
@@ -203,16 +270,18 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
     })
   )
   
-  const boxSelection$: Observable<d3.Selection<SVGGElement, PositionTranslate, any, any>> = positionTranslate$.pipe(
+  const boxSelection$: Observable<d3.Selection<SVGGElement, Position, any, any>> = boxPosition$.pipe(
     takeUntil(destroy$),
     map(data => {
-      return selection
-        .selectAll<SVGGElement, PositionTranslate>('g')
+      console.log(data)
+      return rootSelection
+        .selectAll<SVGGElement, Position>(`g.${boxClassName}`)
         .data([data])
         .join(
           enter => {
             return enter
               .append('g')
+              .classed(boxClassName, true)
               .attr('transform', d => `translate(${d.x}, ${d.y})`)
           },
           update => {
@@ -225,152 +294,198 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
     })
   )
 
-  const contentSelection$ = combineLatest({
+  const lengendList$: Observable<LegendList> = combineLatest({
+    layout: observer.layout$,
+    fullParams: observer.fullParams$,
+    fullChartParams: observer.fullChartParams$,
+    seriesLabels: seriesLabels$,
+    lineDirection: lineDirection$,
+    lineMaxSize: lineMaxSize$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d),
+    map(data => {
+      const list: LegendItem[][] = data.seriesLabels.reduce((prev: LegendItem[][], current, currentIndex) => {
+        const textWidth = measureTextWidth(current, data.fullChartParams.styles.textSize)
+        const itemWidth = (data.fullChartParams.styles.textSize * 1.5) + textWidth
+        const color = getSeriesColor(currentIndex, data.fullChartParams)
+        const prevItem: LegendItem | null = prev[0] && prev[0][0]
+          ? prev[prev.length - 1][prev[prev.length - 1].length - 1]
+          : null
+
+        const { translateX, translateY, lineIndex } = ((_data, _prevItem) => {
+          let translateX = 0
+          let translateY = 0
+          let lineIndex = 0
+          if (_data.lineDirection === 'column') {
+            translateY = _data.fullParams.gap
+            
+            if (_data.fullParams.position === 'left') {
+              translateX = _data.fullParams.gap
+            } else {
+              translateX = - _data.fullParams.gap
+            }
+          } else {
+            const prevX = _prevItem != null
+              ? _prevItem.translateX
+              : _data.fullParams.gap
+            const prevItemWidth = _prevItem != null
+              ? _prevItem.itemWidth
+              : 0
+            let _translateX = prevX + prevItemWidth + _data.fullParams.gap
+            if (_prevItem && (translateX + itemWidth) > _data.lineMaxSize) {
+              // 換行
+              lineIndex = _prevItem.lineIndex + 1
+              translateX = _data.fullParams.gap
+            } else {
+              lineIndex = _prevItem ? _prevItem.lineIndex : 0
+              translateX = _translateX
+            }
+            
+            translateY = (_data.fullChartParams.styles.textSize + _data.fullParams.gap) * lineIndex
+            if (_data.fullParams.position === 'top') {
+              translateX += _data.fullParams.gap
+            } else {
+              translateX -= _data.fullParams.gap
+            }
+          }
+          
+          return { translateX, translateY, lineIndex }
+        })(data, prevItem)
+
+        if (!prev[lineIndex]) {
+          prev[lineIndex] = []
+        }
+
+        prev[lineIndex].push({
+          index: currentIndex,
+          lineIndex,
+          text: current,
+          itemWidth,
+          translateX,
+          translateY,
+          color,
+        })
+        
+        return prev
+      }, [])
+
+      const { width, height, translateX, translateY } = ((_data, _list) => {
+        let width = 0
+        let height = 0
+        let translateX = 0
+        let translateY = 0
+
+        if (!_list.length || !_list[0].length) {
+          return { width, height, translateX, translateY }
+        }
+
+        const firstLineLastItem = _list[0][_list[0].length - 1]
+        if (_data.lineDirection === 'column') {
+          width = _list.flat().reduce((prev, current) => {
+            // 找出最寬的寬度
+            return current.itemWidth > prev ? current.itemWidth : prev
+          }, 0)
+          height = firstLineLastItem.translateY + _data.fullChartParams.styles.textSize + _data.fullParams.gap
+        } else {
+          width = firstLineLastItem.translateX + firstLineLastItem.itemWidth
+          height = (_data.fullChartParams.styles.textSize * _list.length) + (_data.fullParams.gap * (_list.length - 1))
+        }
+
+        if (_data.fullParams.position === 'left') {
+          if (_data.fullParams.justify === 'start') {
+            translateX = 0
+            translateY = 0
+          } else if (_data.fullParams.justify === 'center') {
+            translateX = 0
+            translateY = - height / 2
+          } else if (_data.fullParams.justify === 'end') {
+            translateX = 0
+            translateY = - height
+          }
+        } else if (_data.fullParams.position === 'right') {
+          if (_data.fullParams.justify === 'start') {
+            translateX = - width
+            translateY = 0
+          } else if (_data.fullParams.justify === 'center') {
+            translateX = - width
+            translateY = - height / 2
+          } else if (_data.fullParams.justify === 'end') {
+            translateX = - width
+            translateY = - height
+          }
+        } else if (_data.fullParams.position === 'top') {
+          if (_data.fullParams.justify === 'start') {
+            translateX = 0
+            translateY = 0
+          } else if (_data.fullParams.justify === 'center') {
+            translateX = - width / 2
+            translateY = 0
+          } else if (_data.fullParams.justify === 'end') {
+            translateX = - width
+            translateY = 0
+          }
+        } else {
+          if (_data.fullParams.justify === 'start') {
+            translateX = 0
+            translateY = - height
+          } else if (_data.fullParams.justify === 'center') {
+            translateX = - width / 2
+            translateY = - height
+          } else if (_data.fullParams.justify === 'end') {
+            translateX = - width
+            translateY = - height
+          }
+        }
+
+        translateX += data.fullParams.offset[0]
+        translateY += data.fullParams.offset[1]
+
+        return { width, height, translateX, translateY }
+      })(data, list)
+
+      return {
+        direction: data.lineDirection,
+        width,
+        height,
+        translateX,
+        translateY,
+        list
+      }
+    })
+  )
+
+  const lengendListSelection$ = combineLatest({
     boxSelection: boxSelection$,
-    fullParams: observer.fullParams$
+    fullParams: observer.fullParams$,
+    lengendList: lengendList$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
     map(data => {
       return data.boxSelection
         .selectAll<SVGGElement, SeriesLegendParams>('g')
-        .data([data.fullParams])
+        .data([data.lengendList])
         .join(
           enter => {
             return enter
               .append('g')
-              .classed(contentClassName, true)
-              .attr('transform', d => `translate(${d.offset[0]}, ${d.offset[1]})`)
+              .classed(legendListClassName, true)
+              .attr('transform', d => `translate(${d.translateX}, ${d.translateY})`)
           },
           update => {
             return update
               .transition()
-              .attr('transform', d => `translate(${d.offset[0]}, ${d.offset[1]})`)
+              .attr('transform', d => `translate(${d.translateX}, ${d.translateY})`)
           },
           exit => exit.remove()
         )
     })
   )
 
-
-
-  // position$.subscribe(data => {
-  //   selection
-  //     .selectAll('g')
-  //     .data([data])
-  //     .join(
-  //       enter => {
-  //         return enter
-  //           .append('g')
-  //           .attr('transform', d => `translate(${d.x}, ${d.y})`)
-  //       },
-  //       update => {
-  //         return update
-  //           .transition()
-  //           .attr('transform', d => `translate(${d.x}, ${d.y})`)
-  //       },
-  //       exit => exit.remove()
-  //     )
-  // })
-
-
-  // const seriesLabels$: Observable<string[]> = combineLatest({
-  //   SeriesDataMap: observer.SeriesDataMap$,
-  //   fullParams: observer.fullParams$
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async (d) => d),
-  //   map(data => {
-  //     let seriesLabels = Array.from(data.SeriesDataMap.keys())
-  //     data.fullParams.seriesLabels.forEach((d, i) => {
-  //       seriesLabels[i] = d // params 有設定的話覆蓋掉原本的 seriesLabel
-  //     })
-  //     return seriesLabels
-  //   })
-  // )
-
-  const seriesLabels$: Observable<string[]> = observer.SeriesDataMap$.pipe(
-    takeUntil(destroy$),
-    map(data => {
-      return Array.from(data.keys())
-    })
-  )
-
-  // observer
-
-  const boxMaxWidth$ = combineLatest({
-    fullParams: observer.fullParams$,
-    layout: observer.layout$
-  }).pipe(
-    takeUntil(destroy$),
-    map(data => {
-      return data.fullParams.position === 'bottom' || data.fullParams.position === 'top'
-        ? data.layout.rootWidth - 2 // 減2是避免完全貼到邊線上
-        : data.layout.rootHeight - 2
-    })
-  )
-
-  // // 每一行的寬度
-  // const totalText$ = seriesLabels$.pipe(
-  //   takeUntil(destroy$),
-  //   map(data => {
-  //     return data.reduce((prev, ))
-  //   })
-  // )
-
-  const legendItems$: Observable<LegendItem[]> = combineLatest({
-    seriesLabels: seriesLabels$,
-    fullParams: observer.fullParams$,
-    fullChartParams: observer.fullChartParams$,
-    boxMaxWidth: boxMaxWidth$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async d => d),
-    map(data => {
-      return data.seriesLabels.reduce((prev, current, currentIndex) => {
-        const textWidth = measureTextWidth(current, data.fullChartParams.styles.textSize)
-        const color = data.fullChartParams.colors[data.fullChartParams.colorScheme].series
-
-        prev.push({
-          index: currentIndex,
-          lineIndex: 0,
-          text: current,
-          itemWidth: textWidth,
-          x: 0,
-          y: 0,
-          color: '',
-        })
-        return prev
-      }, [])
-    })
-  )
-
-  // const legendItems$: Observable<LegendItem[]> = combineLatest({
-  //   seriesLabels: seriesLabels$,
-  //   fullParams: observer.fullParams$,
-  //   fullChartParams: observer.fullChartParams$
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async d => d),
-  //   map(data => {
-      
-  //     return data.seriesLabels.reduce((prev, current, currentIndex) => {
-  //       const textWidth = measureTextWidth(current, data.fullChartParams.styles.textSize)
-  //       prev.push({
-  //         index: currentIndex,
-  //         text: current,
-  //         itemWidth,
-  //         x: number
-  //         y: number
-  //         color: string
-  //       })
-  //       return prev
-  //     }, [])
-  //   })
-  // )
-
   combineLatest({
-    contentSelection: contentSelection$,
+    lengendListSelection: lengendListSelection$,
+    lengendList: lengendList$,
     seriesLabels: seriesLabels$,
     fullParams: observer.fullParams$,
     fullChartParams: observer.fullChartParams$
@@ -379,75 +494,13 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
     switchMap(async d => d),
   ).subscribe(data => {
     renderSeriesLegend({
-      contentSelection: data.contentSelection,
+      lengendListSelection: data.lengendListSelection,
+      lengendList: data.lengendList,
       seriesLabel: data.seriesLabels,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
   })
-
-
-  // combineLatest({
-  //   layout: observer.layout$,
-  //   computedData: observer.computedData$,
-  //   fullParams: observer.fullParams$,
-  //   fullChartParams: observer.fullChartParams$
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
-  //   switchMap(async (d) => d),
-  // ).subscribe(data => {
-
-  //   const shorterSideWith = data.layout.width < data.layout.height ? data.layout.width : data.layout.height
-
-  //   // 弧產生器 (d3.arc())
-  //   const arc = makeD3Arc({
-  //     axisWidth: shorterSideWith,
-  //     innerRadius: 0,
-  //     outerRadius: data.fullParams.outerRadius,
-  //     padAngle: 0,
-  //     cornerRadius: 0
-  //   })
-
-  //   const arcMouseover = makeD3Arc({
-  //     axisWidth: shorterSideWith,
-  //     innerRadius: 0,
-  //     outerRadius: data.fullParams.outerMouseoverRadius, // 外半徑變化
-  //     padAngle: 0,
-  //     cornerRadius: 0
-  //   })
-
-  //   const pieData = makePieData({
-  //     computedDataSeries: data.computedData,
-  //     startAngle: data.fullParams.startAngle,
-  //     endAngle: data.fullParams.endAngle
-  //   })
-
-  //   renderData = makeRenderData(pieData, arc, arcMouseover, data.fullParams.labelCentroid)
-
-  //   const labelSelection = renderLabel(graphicSelection, renderData, data.fullParams, data.fullChartParams)
-
-  //   labelSelection$.next(labelSelection)
-
-  // })
-
-  // // const highlight$ = highlightObservable({ datumList$: computedData$, fullChartParams$, event$: store.event$ })
-  // const highlightSubscription = observer.seriesHighlight$.subscribe()
-  
-  // combineLatest({
-  //   labelSelection: labelSelection$,
-  //   highlight: observer.seriesHighlight$,
-  //   fullChartParams: observer.fullChartParams$,
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async d => d)
-  // ).subscribe(data => {
-  //   highlight({
-  //     labelSelection: data.labelSelection,
-  //     ids: data.highlight,
-  //     fullChartParams: data.fullChartParams,
-  //   })
-  // })
 
   return () => {
     destroy$.next(undefined)
