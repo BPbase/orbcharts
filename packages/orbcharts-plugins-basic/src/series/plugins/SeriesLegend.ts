@@ -49,8 +49,9 @@ interface LegendList {
 
 // 第3層 - 圖例項目
 interface LegendItem {
-  index: number
+  seriesIndex: number
   lineIndex: number
+  itemIndex: number // 行內的item
   text: string
   itemWidth: number
   translateX: number
@@ -107,14 +108,16 @@ function renderSeriesLegend ({ lengendListSelection, lengendList, seriesLabel, f
           enter => {
             return enter
               .append('text')
+              .attr('dominant-baseline', 'hanging')
           },
           update => {
             return update
-              .attr('x', fullChartParams.styles.textSize * 1.5)
-              // .attr('fill', _d => _d.color)
           },
           exit => exit.remove()
         )
+        .attr('x', fullChartParams.styles.textSize * 1.5)
+        .attr('font-size', fullChartParams.styles.textSize)
+        .text(d => d.text)
     })
 }
 
@@ -309,57 +312,65 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
         const textWidth = measureTextWidth(current, data.fullChartParams.styles.textSize)
         const itemWidth = (data.fullChartParams.styles.textSize * 1.5) + textWidth
         const color = getSeriesColor(currentIndex, data.fullChartParams)
-        const prevItem: LegendItem | null = prev[0] && prev[0][0]
+        const lastItem: LegendItem | null = prev[0] && prev[0][0]
           ? prev[prev.length - 1][prev[prev.length - 1].length - 1]
           : null
 
-        const { translateX, translateY, lineIndex } = ((_data, _prevItem) => {
+        const { translateX, translateY, lineIndex, itemIndex } = ((_data, _prev, _lastItem) => {
           let translateX = 0
           let translateY = 0
           let lineIndex = 0
+          let itemIndex = 0
+
           if (_data.lineDirection === 'column') {
-            translateY = _data.fullParams.gap
+            let tempTranslateY = _lastItem
+              ? _lastItem.translateY + _data.fullChartParams.styles.textSize + _data.fullParams.gap
+              : 0
             
-            if (_data.fullParams.position === 'left') {
-              translateX = _data.fullParams.gap
+            if ((tempTranslateY + _data.fullChartParams.styles.textSize) > _data.lineMaxSize) {
+              // 換行
+              lineIndex = _lastItem.lineIndex + 1
+              itemIndex = 0
+              translateY = 0
+              // 前一行最寬寬度
+              const maxItemWidthInLastLine = _prev[_prev.length - 1].reduce((p, c) => {
+                return c.itemWidth > p ? c.itemWidth : p
+              }, 0)
+              translateX = _lastItem.translateX + maxItemWidthInLastLine + _data.fullParams.gap
             } else {
-              translateX = - _data.fullParams.gap
+              lineIndex = _lastItem ? _lastItem.lineIndex : 0
+              itemIndex = _lastItem ? _lastItem.itemIndex + 1 : 0
+              translateY = tempTranslateY
+              translateX = _lastItem ? _lastItem.translateX : 0
             }
           } else {
-            const prevX = _prevItem != null
-              ? _prevItem.translateX
-              : _data.fullParams.gap
-            const prevItemWidth = _prevItem != null
-              ? _prevItem.itemWidth
+            let tempTranslateX = _lastItem
+              ? _lastItem.translateX + _lastItem.itemWidth + _data.fullParams.gap
               : 0
-            let _translateX = prevX + prevItemWidth + _data.fullParams.gap
-            if (_prevItem && (translateX + itemWidth) > _data.lineMaxSize) {
+            if ((tempTranslateX + itemWidth) > _data.lineMaxSize) {
               // 換行
-              lineIndex = _prevItem.lineIndex + 1
-              translateX = _data.fullParams.gap
+              lineIndex = _lastItem.lineIndex + 1
+              itemIndex = 0
+              translateX = 0
             } else {
-              lineIndex = _prevItem ? _prevItem.lineIndex : 0
-              translateX = _translateX
+              lineIndex = _lastItem ? _lastItem.lineIndex : 0
+              itemIndex = _lastItem ? _lastItem.itemIndex + 1 : 0
+              translateX = tempTranslateX
             }
-            
             translateY = (_data.fullChartParams.styles.textSize + _data.fullParams.gap) * lineIndex
-            if (_data.fullParams.position === 'top') {
-              translateX += _data.fullParams.gap
-            } else {
-              translateX -= _data.fullParams.gap
-            }
           }
           
-          return { translateX, translateY, lineIndex }
-        })(data, prevItem)
+          return { translateX, translateY, lineIndex, itemIndex }
+        })(data, prev, lastItem)
 
         if (!prev[lineIndex]) {
           prev[lineIndex] = []
         }
 
         prev[lineIndex].push({
-          index: currentIndex,
+          seriesIndex: currentIndex,
           lineIndex,
+          itemIndex,
           text: current,
           itemWidth,
           translateX,
@@ -370,6 +381,7 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
         return prev
       }, [])
 
+      // 依list計算出來的排序位置來計算整體的偏移位置
       const { width, height, translateX, translateY } = ((_data, _list) => {
         let width = 0
         let height = 0
@@ -382,9 +394,13 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
 
         const firstLineLastItem = _list[0][_list[0].length - 1]
         if (_data.lineDirection === 'column') {
-          width = _list.flat().reduce((prev, current) => {
-            // 找出最寬的寬度
-            return current.itemWidth > prev ? current.itemWidth : prev
+          width = _list.reduce((p, c) => {
+            const maxWidthInLine = c.reduce((_p, _c) => {
+              // 找出最寬的寬度
+              return _c.itemWidth > _p ? _c.itemWidth : _p
+            }, 0)
+            // 每行寬度加總
+            return p + maxWidthInLine
           }, 0)
           height = firstLineLastItem.translateY + _data.fullChartParams.styles.textSize + _data.fullParams.gap
         } else {
@@ -394,52 +410,52 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
 
         if (_data.fullParams.position === 'left') {
           if (_data.fullParams.justify === 'start') {
-            translateX = 0
-            translateY = 0
+            translateX = _data.fullParams.padding
+            translateY = _data.fullParams.padding
           } else if (_data.fullParams.justify === 'center') {
-            translateX = 0
+            translateX = _data.fullParams.padding
             translateY = - height / 2
           } else if (_data.fullParams.justify === 'end') {
-            translateX = 0
-            translateY = - height
+            translateX = _data.fullParams.padding
+            translateY = - height - _data.fullParams.padding
           }
         } else if (_data.fullParams.position === 'right') {
           if (_data.fullParams.justify === 'start') {
-            translateX = - width
-            translateY = 0
+            translateX = - width - _data.fullParams.padding
+            translateY = _data.fullParams.padding
           } else if (_data.fullParams.justify === 'center') {
-            translateX = - width
+            translateX = - width - _data.fullParams.padding
             translateY = - height / 2
           } else if (_data.fullParams.justify === 'end') {
-            translateX = - width
-            translateY = - height
+            translateX = - width - _data.fullParams.padding
+            translateY = - height - _data.fullParams.padding
           }
         } else if (_data.fullParams.position === 'top') {
           if (_data.fullParams.justify === 'start') {
-            translateX = 0
-            translateY = 0
+            translateX = _data.fullParams.padding
+            translateY = _data.fullParams.padding
           } else if (_data.fullParams.justify === 'center') {
             translateX = - width / 2
-            translateY = 0
+            translateY = _data.fullParams.padding
           } else if (_data.fullParams.justify === 'end') {
-            translateX = - width
-            translateY = 0
+            translateX = - width - _data.fullParams.padding
+            translateY = _data.fullParams.padding
           }
         } else {
           if (_data.fullParams.justify === 'start') {
-            translateX = 0
-            translateY = - height
+            translateX = _data.fullParams.padding
+            translateY = - height - _data.fullParams.padding
           } else if (_data.fullParams.justify === 'center') {
             translateX = - width / 2
-            translateY = - height
+            translateY = - height - _data.fullParams.padding
           } else if (_data.fullParams.justify === 'end') {
-            translateX = - width
-            translateY = - height
+            translateX = - width - _data.fullParams.padding
+            translateY = - height - _data.fullParams.padding
           }
         }
 
-        translateX += data.fullParams.offset[0]
-        translateY += data.fullParams.offset[1]
+        translateX += _data.fullParams.offset[0]
+        translateY += _data.fullParams.offset[1]
 
         return { width, height, translateX, translateY }
       })(data, list)

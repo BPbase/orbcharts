@@ -85,6 +85,7 @@ export const DEFAULT_PIE_LABELS_PARAMS: PieLabelsPluginParams = {
 export const DEFAULT_SERIES_LEGEND_PARAMS: SeriesLegendParams = {
   position: 'bottom',
   justify: 'center',
+  padding: 28,
   offset: [0, 0],
   gap: 10,
   // seriesLabels: [],
