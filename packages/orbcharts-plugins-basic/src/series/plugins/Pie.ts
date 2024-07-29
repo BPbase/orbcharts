@@ -508,9 +508,6 @@ export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PLUGIN_PARAMS)(({ 
   //     arcMouseover: data.arcMouseover
   //   })
   // })
-
-  // const highlight$ = highlightObservable({ datumList$: computedData$, fullChartParams$, event$: store.event$ })
-  const highlightSubscription = observer.seriesHighlight$.subscribe()
   
   combineLatest({
     pathSelection: pathSelection$,
@@ -598,6 +595,5 @@ export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PLUGIN_PARAMS)(({ 
 
   return () => {
     destroy$.next(undefined)
-    highlightSubscription.unsubscribe()
   }
 })

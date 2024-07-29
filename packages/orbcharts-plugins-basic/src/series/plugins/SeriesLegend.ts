@@ -3,33 +3,18 @@ import {
   combineLatest,
   map,
   switchMap,
-  first,
   takeUntil,
   Observable,
-  Subject,
-  BehaviorSubject } from 'rxjs'
+  Subject } from 'rxjs'
 import {
   defineSeriesPlugin } from '@orbcharts/core'
 import type {
-  ChartParams,
-  ComputedDatumSeries } from '@orbcharts/core'
+  ChartParams } from '@orbcharts/core'
 import type { SeriesLegendParams } from '../types'
-import type { PieDatum } from '../seriesUtils'
 import { DEFAULT_SERIES_LEGEND_PARAMS } from '../defaults'
-import { makePieData } from '../seriesUtils'
-import { makeD3Arc } from '../../utils/d3Utils'
 import { getSeriesColor, getClassName } from '../../utils/orbchartsUtils'
 import { measureTextWidth } from '../../utils/commonUtils'
 
-interface RenderDatum {
-  pieDatum: PieDatum
-  arcIndex: number
-  arcLabel: string
-  x: number
-  y: number
-  mouseoverX: number
-  mouseoverY: number
-}
 
 // 第1層 - 定位的容器（絕對位置）
 interface Position {
@@ -49,6 +34,8 @@ interface LegendList {
 
 // 第3層 - 圖例項目
 interface LegendItem {
+  id: string // seriesLabel
+  seriesLabel: string
   seriesIndex: number
   lineIndex: number
   itemIndex: number // 行內的item
@@ -66,30 +53,14 @@ const boxClassName = getClassName(pluginName, 'box')
 const legendListClassName = getClassName(pluginName, 'legend-list')
 const itemClassName = getClassName(pluginName, 'item')
 
-function renderSeriesLegend ({ lengendListSelection, lengendList, seriesLabel, fullParams, fullChartParams }: {
-  lengendListSelection: d3.Selection<SVGGElement, any, any, any>
+function renderSeriesLegend ({ itemSelection, lengendList, seriesLabel, fullParams, fullChartParams }: {
+  itemSelection: d3.Selection<SVGGElement, LegendItem, any, any>
   lengendList: LegendList
   seriesLabel: string[]
   fullParams: SeriesLegendParams
   fullChartParams: ChartParams
 }) {
-  console.log('lengendList', lengendList)
-  const legendSelection = lengendListSelection
-    .selectAll<SVGGElement, string>(`g.${itemClassName}`)
-    .data(lengendList.list.flat())
-    .join(
-      enter => {
-        return enter
-          .append('g')
-          .classed(itemClassName, true)
-          .attr('cursor', 'pointer')
-      },
-      update => update,
-      exit => exit.remove()
-    )
-    .attr('transform', (d, i) => {
-      return `translate(${d.translateX}, ${d.translateY})`
-    })
+  itemSelection
     .each((d, i, g) => {
       // 方塊
       d3.select(g[i])
@@ -99,7 +70,7 @@ function renderSeriesLegend ({ lengendListSelection, lengendList, seriesLabel, f
         .attr('width', fullChartParams.styles.textSize)
         .attr('height', fullChartParams.styles.textSize)
         .attr('fill', _d => _d.color)
-        .attr('r', fullParams.rectRadius)
+        .attr('rx', fullParams.rectRadius)
       // 文字
       d3.select(g[i])
         .selectAll('text')
@@ -121,76 +92,11 @@ function renderSeriesLegend ({ lengendListSelection, lengendList, seriesLabel, f
     })
 }
 
-function highlight ({ labelSelection, ids, fullChartParams }: {
-  labelSelection: (d3.Selection<SVGPathElement, RenderDatum, any, any>)
-  ids: string[]
-  fullChartParams: ChartParams
-}) {
-  labelSelection.interrupt('highlight')
-  
-  if (!ids.length) {
-    labelSelection
-      .transition()
-      .duration(200)
-      .attr('transform', (d) => {
-        return 'translate(' + d.x + ',' + d.y + ')'
-      })
-      .style('opacity', 1)
-    return
-  }
-  
-  labelSelection.each((d, i, n) => {
-    const segment = d3.select<SVGPathElement, RenderDatum>(n[i])
-
-    if (ids.includes(d.pieDatum.id)) {
-      segment
-        .style('opacity', 1)
-        .transition()
-        .duration(200)
-        .attr('transform', (d) => {
-          return 'translate(' + d.mouseoverX + ',' + d.mouseoverY + ')'
-        })
-    } else {
-      segment
-        .style('opacity', fullChartParams.styles.unhighlightedOpacity)
-        .transition()
-        .duration(200)
-        .attr('transform', (d) => {
-          return 'translate(' + d.x + ',' + d.y + ')'
-        })
-    }
-  })
-}
-
-
-// function removeHighlight ({ labelSelection }: {
-//   labelSelection: (d3.Selection<SVGPathElement, RenderDatum, any, any> | undefined)
-// }) {
-//   if (!labelSelection) {
-//     return
-//   }
-  
-//   // 取消放大
-//   labelSelection
-//     .transition()
-//     .duration(200)
-//     .attr('transform', (d) => {
-//       return 'translate(' + d.x + ',' + d.y + ')'
-//     })
-//     .style('opacity', 1)
-
-// }
-
 
 export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND_PARAMS)(({ selection, rootSelection, observer, subject }) => {
   
   const destroy$ = new Subject()
 
-  // const boxSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
-  let labelSelection$: Subject<d3.Selection<SVGPathElement, RenderDatum, any, any>> = new Subject()
-  let renderData: RenderDatum[] = []
-  // const boxSelection$: Subject<d3.Selection<SVGRectElement, ComputedDatumSeries, SVGGElement, unknown>> = new Subject()
-  
   const seriesLabels$: Observable<string[]> = observer.SeriesDataMap$.pipe(
     takeUntil(destroy$),
     map(data => {
@@ -265,7 +171,7 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
           y = data.layout.rootHeight
         }
       }
-      console.log('data.layout', data.layout, x, y)
+      
       return {
         x,
         y
@@ -276,7 +182,7 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
   const boxSelection$: Observable<d3.Selection<SVGGElement, Position, any, any>> = boxPosition$.pipe(
     takeUntil(destroy$),
     map(data => {
-      console.log(data)
+
       return rootSelection
         .selectAll<SVGGElement, Position>(`g.${boxClassName}`)
         .data([data])
@@ -368,6 +274,8 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
         }
 
         prev[lineIndex].push({
+          id: current,
+          seriesLabel: current,
           seriesIndex: currentIndex,
           lineIndex,
           itemIndex,
@@ -454,8 +362,8 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
           }
         }
 
-        translateX += _data.fullParams.offset[0]
-        translateY += _data.fullParams.offset[1]
+        // translateX += _data.fullParams.offset[0]
+        // translateY += _data.fullParams.offset[1]
 
         return { width, height, translateX, translateY }
       })(data, list)
@@ -499,8 +407,33 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
     })
   )
 
+  const itemSelection$ = lengendListSelection$.pipe(
+    takeUntil(destroy$),
+    map(lengendListSelection => {
+      const legendListData = lengendListSelection.data()
+      const data = legendListData[0] ? legendListData[0].list.flat() : []
+      
+      return lengendListSelection
+        .selectAll<SVGGElement, string>(`g.${itemClassName}`)
+        .data(data)
+        .join(
+          enter => {
+            return enter
+              .append('g')
+              .classed(itemClassName, true)
+              .attr('cursor', 'default')
+          },
+          update => update,
+          exit => exit.remove()
+        )
+        .attr('transform', (d, i) => {
+          return `translate(${d.translateX}, ${d.translateY})`
+        })
+    })
+  )
+
   combineLatest({
-    lengendListSelection: lengendListSelection$,
+    itemSelection: itemSelection$,
     lengendList: lengendList$,
     seriesLabels: seriesLabels$,
     fullParams: observer.fullParams$,
@@ -510,7 +443,7 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
     switchMap(async d => d),
   ).subscribe(data => {
     renderSeriesLegend({
-      lengendListSelection: data.lengendListSelection,
+      itemSelection: data.itemSelection,
       lengendList: data.lengendList,
       seriesLabel: data.seriesLabels,
       fullParams: data.fullParams,

@@ -54,13 +54,10 @@ export interface PieLabelsPluginParams {
 
 export interface SeriesLegendParams {
   position: 'top' | 'bottom' | 'left' | 'right'
-  // position: 'bottom' | 'right'
   justify: 'start' | 'center' | 'end'
   padding: number
-  offset: [number, number]
+  // offset: [number, number]
   gap: number
-  // seriesLabels: string[]
-  // rectWidth: number
   rectRadius: number
-  highlightEvent: boolean
+  // highlightEvent: boolean
 }

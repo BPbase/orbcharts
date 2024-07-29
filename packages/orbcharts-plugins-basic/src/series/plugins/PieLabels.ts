@@ -263,9 +263,6 @@ export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAM
     labelSelection$.next(labelSelection)
 
   })
-
-  // const highlight$ = highlightObservable({ datumList$: computedData$, fullChartParams$, event$: store.event$ })
-  const highlightSubscription = observer.seriesHighlight$.subscribe()
   
   combineLatest({
     labelSelection: labelSelection$,
@@ -284,6 +281,5 @@ export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAM
 
   return () => {
     destroy$.next(undefined)
-    highlightSubscription.unsubscribe()
   }
 })
