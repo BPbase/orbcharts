@@ -506,8 +506,6 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PLUGIN_PARA
     bubblesSelection$.next(bubblesSelection)
   })
 
-  // const highlight$ = highlightObservable({ datumList$: computedData$, fullChartParams$, event$: store.event$ })
-  const highlightSubscription = observer.seriesHighlight$.subscribe()
   combineLatest({
     bubblesSelection: bubblesSelection$,
     bubblesData: bubblesData$,
@@ -548,6 +546,5 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PLUGIN_PARA
   
   return () => {
     destroy$.next(undefined)
-    highlightSubscription.unsubscribe()
   }
 })

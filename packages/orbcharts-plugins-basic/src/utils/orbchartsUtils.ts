@@ -9,7 +9,7 @@ export function getMinAndMaxValue (data: ComputedDatumBase[]): [number, number] 
   return getMinAndMax(arr)
 }
 
-
+// 取得colorType顏色
 export function getColor (colorType: ColorType, fullChartParams: ChartParams) {
   const colors = fullChartParams.colors[fullChartParams.colorScheme]
   // 對應series資料中第1個顏色
@@ -22,6 +22,15 @@ export function getColor (colorType: ColorType, fullChartParams: ChartParams) {
     : colors.primary
 }
 
+// 取得Series顏色
+export function getSeriesColor (seriesIndex: number, fullChartParams: ChartParams) {
+  const colorIndex = seriesIndex < fullChartParams.colors[fullChartParams.colorScheme].series.length
+    ? seriesIndex
+    : seriesIndex % fullChartParams.colors[fullChartParams.colorScheme].series.length
+  return fullChartParams.colors[fullChartParams.colorScheme].series[colorIndex]
+}
+
+// 取得Datum顏色
 export function getDatumColor ({ datum, colorType, fullChartParams }: { datum: ComputedDatumBase, colorType: ColorType, fullChartParams: ChartParams }) {
   // 對應series資料中的顏色
   if (colorType === 'series') {

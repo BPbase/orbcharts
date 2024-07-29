@@ -103,8 +103,8 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
       .attr('xmls', 'http://www.w3.org/2000/svg')
       .attr('version', '1.1')
       .style('position', 'absolute')
-      .style('width', '100%')
-      .style('height', '100%')
+      // .style('width', '100%')
+      // .style('height', '100%')
       .classed('orbcharts__root', true)
     // 傳入操作的 selection
     const selectionLayout = svgSelection.append('g')
@@ -226,6 +226,11 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
       }),
       shareReplay(1)
     )
+    layout$.subscribe(d => {
+      svgSelection
+        .attr('width', d.rootWidth)
+        .attr('height', d.rootHeight)
+    })
 
     // -- computedData --
     const computedData$: Observable<ComputedDataTypeMap<T>> = combineLatest({

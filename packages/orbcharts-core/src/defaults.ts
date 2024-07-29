@@ -163,7 +163,11 @@ export const DATA_FORMATTER_SERIES_DEFAULT: DataFormatterSeries = {
   //   return dataFormatter.seriesLabels[seriesIndex]
   // },
   colorsPredicate: (datum, rowIndex, columnIndex, { chartParams }) => {
-    return chartParams.colors[chartParams.colorScheme].series[rowIndex]
+    return rowIndex < chartParams.colors[chartParams.colorScheme].series.length
+      ? chartParams.colors[chartParams.colorScheme].series[rowIndex]
+      : chartParams.colors[chartParams.colorScheme].series[
+        rowIndex % chartParams.colors[chartParams.colorScheme].series.length
+      ]
   },
   sort: null,
 }

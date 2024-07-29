@@ -51,3 +51,13 @@ export interface PieLabelsPluginParams {
   labelFn: ((d: ComputedDatumSeries) => string)
   labelColorType: ColorType
 }
+
+export interface SeriesLegendParams {
+  position: 'top' | 'bottom' | 'left' | 'right'
+  justify: 'start' | 'center' | 'end'
+  padding: number
+  // offset: [number, number]
+  gap: number
+  rectRadius: number
+  // highlightEvent: boolean
+}

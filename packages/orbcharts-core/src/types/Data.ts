@@ -6,7 +6,7 @@ import { DataMultiValue, DataMultiValueDatum, DataMultiValueValue } from './Data
 import { DataTree, DataTreeDatum, DataTreeObj } from './DataTree'
 import { DataRelationship, Node, Edge } from './DataRelationship'
 
-// 基本欄位（皆為可選，無填寫則在 formatXX 程式中產生預設值）
+// 基本欄位（皆為可選，無填寫則在計算時產生預設值）
 export interface DatumBase {
   id?: string
   label?: string
