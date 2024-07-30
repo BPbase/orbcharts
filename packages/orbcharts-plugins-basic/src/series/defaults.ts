@@ -6,6 +6,7 @@ import type {
   PieLabelsPluginParams,
   SeriesLegendParams } from './types'
 
+  
 export const DEFAULT_BUBBLES_PLUGIN_PARAMS: BubblesPluginParams = {
   force: {
     strength: 0.03, // 泡泡引力
@@ -87,7 +88,11 @@ export const DEFAULT_SERIES_LEGEND_PARAMS: SeriesLegendParams = {
   justify: 'end',
   padding: 28,
   // offset: [0, 0],
+  backgroundFill: 'none',
+  backgroundStroke: 'none',
   gap: 10,
-  rectRadius: 0,
+  listRectWidth: 14,
+  listRectHeight: 14,
+  listRectRadius: 0,
   // highlightEvent: false
 }

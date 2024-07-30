@@ -7,13 +7,13 @@ import {
   Observable,
   Subject } from 'rxjs'
 import {
-  defineSeriesPlugin } from '@orbcharts/core'
-import { DEFAULT_SERIES_LEGEND_PARAMS } from '../defaults'
+  defineGridPlugin } from '@orbcharts/core'
+import { DEFAULT_GRID_LEGEND_PARAMS } from '../defaults'
 import { createBaseLegend } from '../../base/BaseLegend'
 
-const pluginName = 'SeriesLegend'
+const pluginName = 'GridLegend'
 
-export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND_PARAMS)(({ selection, rootSelection, observer, subject }) => {
+export const GridLegend = defineGridPlugin(pluginName, DEFAULT_GRID_LEGEND_PARAMS)(({ selection, rootSelection, observer, subject }) => {
   
   const destroy$ = new Subject()
 
