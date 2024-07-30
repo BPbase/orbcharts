@@ -57,7 +57,11 @@ export interface SeriesLegendParams {
   justify: 'start' | 'center' | 'end'
   padding: number
   // offset: [number, number]
+  backgroundFill: ColorType
+  backgroundStroke: ColorType
   gap: number
-  rectRadius: number
+  listRectWidth: number
+  listRectHeight: number
+  listRectRadius: number
   // highlightEvent: boolean
 }

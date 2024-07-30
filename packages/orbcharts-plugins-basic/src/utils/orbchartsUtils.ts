@@ -17,9 +17,14 @@ export function getColor (colorType: ColorType, fullChartParams: ChartParams) {
     return colors.series[0]
   }
   // 對應colorType設定的顏色
-  return colors[colorType] != null
-    ? colors[colorType]
-    : colors.primary
+  // return colors[colorType] != null
+  //   ? colors[colorType]
+  //   : colors.primary
+  return colorType == 'none'
+    ? 'none'
+    : colors[colorType] != undefined
+      ? colors[colorType]
+      : colors.primary // 如果比對不到
 }
 
 // 取得Series顏色
@@ -42,9 +47,11 @@ export function getDatumColor ({ datum, colorType, fullChartParams }: { datum: C
     }
   }
   // 對應colorType設定的顏色
-  return fullChartParams.colors[fullChartParams.colorScheme][colorType] != null
-    ? fullChartParams.colors[fullChartParams.colorScheme][colorType]
-    : fullChartParams.colors[fullChartParams.colorScheme].primary
+  return colorType == 'none'
+    ? 'none' 
+    : fullChartParams.colors[fullChartParams.colorScheme][colorType] != undefined
+      ? fullChartParams.colors[fullChartParams.colorScheme][colorType]
+      : fullChartParams.colors[fullChartParams.colorScheme].primary
 }
 
 export function getClassName (pluginName: string, elementName: string, modifier?: string) {
