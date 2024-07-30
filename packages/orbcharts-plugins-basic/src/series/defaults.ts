@@ -6,6 +6,7 @@ import type {
   PieLabelsPluginParams,
   SeriesLegendParams } from './types'
 
+  
 export const DEFAULT_BUBBLES_PLUGIN_PARAMS: BubblesPluginParams = {
   force: {
     strength: 0.03, // 泡泡引力

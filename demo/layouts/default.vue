@@ -5,11 +5,35 @@
         <h1>OrbCharts</h1>
       </div>
       <div class="menu-list">
+        <div>
+          Series
+        </div>
+      </div>
+      <div class="menu-list">
         <NuxtLink to="/series/bubbles/bubbles">
           Bubbles
         </NuxtLink>
         <NuxtLink to="/series/pie/pie">
           Pie
+        </NuxtLink>
+      </div>
+      <div class="menu-list">
+        <div>
+          Grid
+        </div>
+      </div>
+      <div class="menu-list">
+        <NuxtLink to="/grid/bars/bars">
+          Bars
+        </NuxtLink>
+        <NuxtLink to="/grid/barStack/barStack">
+          Bar Stack
+        </NuxtLink>
+        <NuxtLink to="/grid/barsTriangle/barsTriangle">
+          Bars Triangle
+        </NuxtLink>
+        <NuxtLink to="/grid/lines/lines">
+          Lines
         </NuxtLink>
       </div>
     </div>
@@ -36,9 +60,14 @@ body {
     .menu-list {
       display: flex;
       flex-direction: column;
+      div {
+        padding: 0.5rem 0;
+        color: #000000;
+      }
       a {
         padding: 0.5rem 0;
         color: #000000;
+        margin-left: 1rem;
       }
     }
   }

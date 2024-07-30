@@ -8,7 +8,8 @@ import type {
   GroupingAxisParams,
   ValueAxisParams,
   ValueStackAxisParams,
-  ScalingAreaParams } from './types'
+  ScalingAreaParams,
+  GridLegendParams } from './types'
 
 export const DEFAULT_LINES_PLUGIN_PARAMS: LinesPluginParams = {
   lineCurve: 'curveLinear',
@@ -92,4 +93,18 @@ export const DEFAULT_VALUE_STACK_AXIS_PLUGIN_PARAMS: ValueStackAxisParams = DEFA
 
 export const DEFAULT_SCALING_AREA_PLUGIN_PARAMS: ScalingAreaParams = {
 
+}
+
+export const DEFAULT_GRID_LEGEND_PARAMS: GridLegendParams = {
+  position: 'right',
+  justify: 'end',
+  padding: 28,
+  // offset: [0, 0],
+  backgroundFill: 'none',
+  backgroundStroke: 'none',
+  gap: 10,
+  listRectWidth: 14,
+  listRectHeight: 14,
+  listRectRadius: 0,
+  // highlightEvent: false
 }

@@ -47,4 +47,4 @@ export interface ColorScheme {
   background: string
 }
 
-export type ColorType = keyof ColorScheme
+export type ColorType = 'none' | keyof ColorScheme
