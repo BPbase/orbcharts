@@ -5,8 +5,6 @@
 <script lang="ts" setup>
 import { SeriesChart } from '../../../../packages/orbcharts-core/src'
 import { Bubbles } from '../../../../packages/orbcharts-plugins-basic/src'
-// import { SeriesChart } from 'orbcharts'
-// import { Pie } from 'orbcharts'
 
 onMounted(() => {
   const el = document.querySelector('#chart')
