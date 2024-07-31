@@ -18,7 +18,7 @@ export interface ChartParams {
   // [key: string]: any
 }
 
-export type ChartParamsPartial = {
+export type ChartParamsPartial = ChartParams |{
   padding?: Partial<Padding>,
   colors?: {
     light?: Partial<ColorScheme>
