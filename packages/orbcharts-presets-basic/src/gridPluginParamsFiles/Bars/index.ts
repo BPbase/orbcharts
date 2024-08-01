@@ -1,1 +1,2 @@
-export { BARS_ROUND_PLUGIN_PARAMS } from './BARS_ROUND_PLUGIN_PARAMS'
+export { PP_BARS_ROUND } from './PP_BARS_ROUND'
+export { PP_BARS_THIN } from './PP_BARS_THIN'

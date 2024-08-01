@@ -1,8 +1,8 @@
 import type { ChartParamsFile } from '../types'
 
-export const CHART_PARAMS_RIGHT_PADDING: ChartParamsFile = {
-  id: 'CHART_PARAMS_RIGHT_PADDING',
-  description: '右邊留空',
+export const CP_RIGHT_PADDING: ChartParamsFile = {
+  id: 'CP_RIGHT_PADDING',
+  description: '間距右邊留空',
   data: {
     padding: {
       top: 60,

@@ -53,5 +53,6 @@ export interface PresetFile<T extends ChartType> {
     : T extends 'multiValue' ? (keyof typeof multiValuePluginParams)[]
     : T extends 'relationship' ? (keyof typeof relationshipPluginParams)[]
     : T extends 'tree' ? (keyof typeof treePluginParams)[]
-    : undefined
+    : undefined,
+  description: string
 }

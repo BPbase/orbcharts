@@ -38,6 +38,7 @@ const createBasePreset = <T extends ChartType>(chartType: T, presetFile: PresetF
     ? chartParamsFiles[presetFile.chartParamsId].data
     : undefined
   
+  // @ts-ignore
   const dataFormatter: DataFormatterPartialTypeMap<T> | undefined = dataFormatterFilesTypeMap[chartType][presetFile.dataFormatterId]
     // @ts-ignore
     ? dataFormatterFilesTypeMap[chartType][presetFile.chartParamsId].data
