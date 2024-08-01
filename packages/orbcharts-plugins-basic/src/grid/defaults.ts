@@ -5,7 +5,7 @@ import type {
   BarsPluginParams,
   BarStackPluginParams,
   BarsTrianglePluginParams,
-  GroupingAxisParams,
+  GroupAxisParams,
   ValueAxisParams,
   ValueStackAxisParams,
   ScalingAreaParams,
@@ -56,7 +56,7 @@ export const DEFAULT_BARS_TRIANGLE_PLUGIN_PARAMS: BarsTrianglePluginParams = {
   linearGradientOpacity: [1, 0]
 }
 
-export const DEFAULT_GROUPING_AXIS_PLUGIN_PARAMS: GroupingAxisParams = {
+export const DEFAULT_GROUPING_AXIS_PLUGIN_PARAMS: GroupAxisParams = {
   // labelAnchor: 'start',
   labelOffset: [0, 0],
   labelColorType: 'primary',

@@ -15,7 +15,7 @@ import type {
   DataFormatterGrid,
   ChartParams,
   TransformData } from '@orbcharts/core'
-import type { GroupingAxisParams } from '../types'
+import type { GroupAxisParams } from '../types'
 import { DEFAULT_GROUPING_AXIS_PLUGIN_PARAMS } from '../defaults'
 import { parseTickFormatValue } from '../../utils/d3Utils'
 import { getColor, getClassName } from '../../utils/orbchartsUtils'
@@ -32,7 +32,7 @@ const defaultTickSize = 6
 
 function renderPointAxis ({ selection, params, tickTextAlign, axisLabelAlign, gridAxesSize, fullDataFormatter, chartParams, groupScale, contentTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
-  params: GroupingAxisParams
+  params: GroupAxisParams
   tickTextAlign: TextAlign
   axisLabelAlign: TextAlign
   gridAxesSize: { width: number, height: number }
@@ -44,19 +44,19 @@ function renderPointAxis ({ selection, params, tickTextAlign, axisLabelAlign, gr
 }) {
 
   const xAxisSelection = selection
-    .selectAll<SVGGElement, GroupingAxisParams>(`g.${xAxisClassName}`)
+    .selectAll<SVGGElement, GroupAxisParams>(`g.${xAxisClassName}`)
     .data([params])
     .join('g')
     .classed(xAxisClassName, true)
 
   const axisLabelSelection = selection
-    .selectAll<SVGGElement, GroupingAxisParams>(`g.${groupingLabelClassName}`)
+    .selectAll<SVGGElement, GroupAxisParams>(`g.${groupingLabelClassName}`)
     .data([params])
     .join('g')
     .classed(groupingLabelClassName, true)
     .each((d, i, g) => {
       const text = d3.select(g[i])
-        .selectAll<SVGTextElement, GroupingAxisParams>('text')
+        .selectAll<SVGTextElement, GroupAxisParams>('text')
         .data([d])
         .join(
           enter => {

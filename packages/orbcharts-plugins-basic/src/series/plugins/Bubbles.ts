@@ -17,7 +17,7 @@ import type {
   ComputedDatumSeries } from '@orbcharts/core'
 import {
   defineSeriesPlugin } from '@orbcharts/core'
-import type { BubblesPluginParams, ScaleType } from '../types'
+import type { BubblesPluginParams, BubbleScaleType } from '../types'
 import { DEFAULT_BUBBLES_PLUGIN_PARAMS } from '../defaults'
 import { renderCircleText } from '../../utils/d3Graphics'
 
@@ -86,7 +86,7 @@ function createBubblesData ({ data, LastBubbleDataMap, graphicWidth, graphicHeig
   LastBubbleDataMap: Map<string, BubblesDatum>
   graphicWidth: number
   graphicHeight: number
-  scaleType: ScaleType
+  scaleType: BubbleScaleType
   // highlightIds: string[]
 }) {
   const bubbleGroupR = Math.min(...[graphicWidth, graphicHeight]) / 2
@@ -363,7 +363,7 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PLUGIN_PARA
 
   const scaleType$ = observer.fullParams$.pipe(
     takeUntil(destroy$),
-    map(d => d.scaleType),
+    map(d => d.bubbleScaleType),
     distinctUntilChanged()
   )
 

@@ -19,7 +19,7 @@ export const DEFAULT_BUBBLES_PLUGIN_PARAMS: BubblesPluginParams = {
     lineLengthMin: 4
   },
   highlightRIncrease: 0,
-  scaleType: 'area'
+  bubbleScaleType: 'area'
 }
 
 export const DEFAULT_PIE_PLUGIN_PARAMS: PiePluginParams = {

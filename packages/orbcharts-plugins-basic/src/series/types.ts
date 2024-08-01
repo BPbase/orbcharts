@@ -1,7 +1,7 @@
 import type { ComputedDatumSeries, EventSeries, EventName, ColorType } from '@orbcharts/core'
 import type { BaseLegendParams } from '../base/BaseLegend'
 
-export type ScaleType = 'area' | 'radius'
+export type BubbleScaleType = 'area' | 'radius'
 
 export interface BubblesPluginParams {
   force: {
@@ -15,7 +15,7 @@ export interface BubblesPluginParams {
     lineLengthMin: number
   }
   highlightRIncrease: number
-  scaleType: ScaleType
+  bubbleScaleType: BubbleScaleType
 }
 
 export interface PiePluginParams {

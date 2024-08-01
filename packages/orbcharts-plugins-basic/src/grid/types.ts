@@ -56,7 +56,7 @@ export interface BarsTrianglePluginParams {
   linearGradientOpacity: [number, number]
 }
 
-export interface GroupingAxisParams {
+export interface GroupAxisParams {
   // xLabel: string
   // labelAnchor: 'start' | 'end'
   labelOffset: [number, number]

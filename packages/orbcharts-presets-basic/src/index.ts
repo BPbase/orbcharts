@@ -6,7 +6,15 @@ import {
   createRelationshipPreset,
   createTreePreset } from './createPreset'
 
-export const PRESET_ROUND_BARS = createGridPreset({
-  chartParamsId: 'CHART_PARAMS_RIGHT_PADDING',
-  allPluginParamsIds: ['BARS_ROUND_PLUGIN_PARAMS']
+// -- series --
+// Bubbles
+
+// Pie
+
+// -- grid
+// Bars
+export const PRESET_BARS_ROUND = createGridPreset({
+  chartParamsId: 'CHART_PARAMS_BOTTOM_PADDING',
+  allPluginParamsIds: ['BARS_ROUND_PLUGIN_PARAMS'],
+  description: ''
 })
