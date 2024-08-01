@@ -9,7 +9,7 @@ export interface DataFormatterMultiValue
   yAxis: DataFormatterValueAxis
 }
 
-export type DataFormatterMultiValuePartial = Partial<DataFormatterMultiValue> | Partial<{
+export type DataFormatterMultiValuePartial = Partial<DataFormatterMultiValue> & Partial<{
   multiValue: Array<Partial<DataFormatterMultiValueMultiValue>>
 }>
 

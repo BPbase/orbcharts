@@ -17,7 +17,7 @@ import type {
   ComputedDatumGrid,
   ChartParams,
   Layout } from '@orbcharts/core'
-import type { LinesPluginParams } from '../types'
+import type { LinesParams } from '../types'
 import { DEFAULT_LINES_PLUGIN_PARAMS } from '../defaults'
 import { getD3TransitionEase } from '../../utils/d3Utils'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
@@ -71,7 +71,7 @@ function renderLine ({ selection, segmentData, linePath, params }: {
   selection: d3.Selection<SVGGElement, unknown, any, unknown>
   segmentData: ComputedDatumGrid[][]
   linePath: d3.Line<ComputedDatumGrid>
-  params: LinesPluginParams
+  params: LinesParams
 }): d3.Selection<SVGPathElement, ComputedDatumGrid[], any, any> {
   // if (!data[0]) {
   //   return undefined

@@ -9,7 +9,7 @@ export interface DataFormatterMultiGrid
   // visibleGroupRange: [number, number] | null
 }
 
-export type DataFormatterMultiGridPartial = Partial<DataFormatterMultiGrid> | Partial<{
+export type DataFormatterMultiGridPartial = Partial<DataFormatterMultiGrid> & Partial<{
   multiGrid: Array<Partial<DataFormatterMultiGridMultiGrid>>
 }>
 

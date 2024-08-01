@@ -13,7 +13,7 @@ export interface DataFormatterGrid
   colorsPredicate: (datum: DataGridDatum | DataGridValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'grid'>) => string
 }
 
-export type DataFormatterGridPartial = Partial<DataFormatterGrid> | Partial<{
+export type DataFormatterGridPartial = Partial<DataFormatterGrid> & Partial<{
   grid: Partial<DataFormatterGridGrid>
   valueAxis: Partial<DataFormatterValueAxis>
   groupAxis: Partial<DataFormatterGroupAxis>

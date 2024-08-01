@@ -1,22 +1,22 @@
 import type {
-  LinesPluginParams,
-  GroupAreaPluginParams,
-  DotsPluginParams,
-  BarsPluginParams,
-  BarStackPluginParams,
-  BarsTrianglePluginParams,
+  LinesParams,
+  GroupAreaParams,
+  DotsParams,
+  BarsParams,
+  BarStackParams,
+  BarsTriangleParams,
   GroupAxisParams,
   ValueAxisParams,
   ValueStackAxisParams,
   ScalingAreaParams,
   GridLegendParams } from './types'
 
-export const DEFAULT_LINES_PLUGIN_PARAMS: LinesPluginParams = {
+export const DEFAULT_LINES_PLUGIN_PARAMS: LinesParams = {
   lineCurve: 'curveLinear',
   lineWidth: 2
 }
 
-export const DEFAULT_DOTS_PLUGIN_PARAMS: DotsPluginParams = {
+export const DEFAULT_DOTS_PLUGIN_PARAMS: DotsParams = {
   radius: 4,
   fillColorType: 'white',
   strokeColorType: 'series',
@@ -24,7 +24,7 @@ export const DEFAULT_DOTS_PLUGIN_PARAMS: DotsPluginParams = {
   onlyShowHighlighted: false
 }
 
-export const DEFAULT_GROUP_AREA_PLUGIN_PARAMS: GroupAreaPluginParams = {
+export const DEFAULT_GROUP_AREA_PLUGIN_PARAMS: GroupAreaParams = {
   showLine: true,
   showLabel: true,
   lineDashArray: '3, 3',
@@ -35,7 +35,7 @@ export const DEFAULT_GROUP_AREA_PLUGIN_PARAMS: GroupAreaPluginParams = {
   labelPadding: 24,
 }
 
-export const DEFAULT_BARS_PLUGIN_PARAMS: BarsPluginParams = {
+export const DEFAULT_BARS_PLUGIN_PARAMS: BarsParams = {
   // barType: 'rect',
   barWidth: 0,
   barPadding: 1,
@@ -43,13 +43,13 @@ export const DEFAULT_BARS_PLUGIN_PARAMS: BarsPluginParams = {
   barRadius: false,
 }
 
-export const DEFAULT_BAR_STACK_PLUGIN_PARAMS: BarStackPluginParams = {
+export const DEFAULT_BAR_STACK_PLUGIN_PARAMS: BarStackParams = {
   barWidth: 0,
   barGroupPadding: 10,
   barRadius: false,
 }
 
-export const DEFAULT_BARS_TRIANGLE_PLUGIN_PARAMS: BarsTrianglePluginParams = {
+export const DEFAULT_BARS_TRIANGLE_PLUGIN_PARAMS: BarsTriangleParams = {
   barWidth: 0,
   barPadding: 1,
   barGroupPadding: 20,

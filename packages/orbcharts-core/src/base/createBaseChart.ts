@@ -37,7 +37,7 @@ import type {
   ContextSubject,
   ComputedDataTypeMap,
   ContextObserverFn,
-  ChartOptions,
+  ChartOptionsPartial,
   DataTypeMap,
   DataFormatterTypeMap,
   DataFormatterBase,
@@ -46,6 +46,7 @@ import type {
   PluginEntity,
   PluginContext,
   Preset,
+  PresetPartial,
   ContextObserverTypeMap } from '../types'
 // import type { EventTypeMap } from './types/Event'
 import { mergeOptionsWithDefault } from '../utils'
@@ -92,7 +93,7 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
   const chartType: ChartType = (defaultDataFormatter as unknown as DataFormatterBase<any>).type
 
   // 建立chart實例
-  return function createChart (element: HTMLElement | Element, options?: Partial<ChartOptions<T>>): ChartEntity<T> {
+  return function createChart (element: HTMLElement | Element, options?: ChartOptionsPartial<T>): ChartEntity<T> {
     
     // -- selections --
     // svg selection
@@ -123,8 +124,8 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
 
     // options
     const mergedPresetWithDefault: Preset<T> = ((options) => {
-      const _options = options ? options : CHART_OPTIONS_DEFAULT
-      const preset = _options.preset ? _options.preset : {}
+      const _options = options ? options : CHART_OPTIONS_DEFAULT as ChartOptionsPartial<T>
+      const preset = _options.preset ? _options.preset : {} as PresetPartial<T>
       return {
         chartParams: preset.chartParams
           ? mergeOptionsWithDefault(preset.chartParams, CHART_PARAMS_DEFAULT)
@@ -134,7 +135,8 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
           : defaultDataFormatter,
         allPluginParams: preset.allPluginParams
           ? preset.allPluginParams
-          : {}
+          : {},
+        description: preset.description ?? ''
       }
     })(options)
     

@@ -17,7 +17,7 @@ import {
   defineSeriesPlugin } from '@orbcharts/core'
 import type {
   ChartParams } from '@orbcharts/core'
-import type { PiePluginParams } from '../types'
+import type { PieParams } from '../types'
 import type { PieDatum } from '../seriesUtils'
 import { DEFAULT_PIE_PLUGIN_PARAMS } from '../defaults'
 import { makePieData } from '../seriesUtils'
@@ -32,7 +32,7 @@ function makeTweenPieRenderDataFn ({ enter, exit, data, lastData, fullParams }: 
   exit: d3.Selection<SVGPathElement, unknown, any, any>
   data: PieDatum[]
   lastData: PieDatum[]
-  fullParams: PiePluginParams
+  fullParams: PieParams
 }): (t: number) => PieDatum[] {
   // 無更新資料項目則只計算資料變化 (新資料 * t + 舊資料 * (1 - t))
   if (!enter.size() && !exit.size()) {

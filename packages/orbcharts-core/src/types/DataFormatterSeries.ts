@@ -14,7 +14,7 @@ export interface DataFormatterSeries
   // colors: Colors
 }
 
-export type DataFormatterSeriesPartial = Partial<DataFormatterSeries> | Partial<{
+export type DataFormatterSeriesPartial = Partial<DataFormatterSeries> & Partial<{
   // series: Partial<DataFormatterSeriesSeries>
 }>
 

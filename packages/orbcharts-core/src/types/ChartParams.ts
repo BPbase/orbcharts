@@ -1,11 +1,8 @@
 import type { Padding } from './Padding'
 
-
 export interface ChartParams {
   padding: Padding,
-  // colors: string[],
   highlightTarget: HighlightTarget
-  // highlightDefault: HighlightDefault
   highlightDefault: string | null
   colorScheme: 'dark' | 'light'
   colors: {
@@ -18,19 +15,14 @@ export interface ChartParams {
   // [key: string]: any
 }
 
-export type ChartParamsPartial = ChartParams |{
-  padding?: Partial<Padding>,
-  colors?: {
-    light?: Partial<ColorScheme>
-    dark?: Partial<ColorScheme>
-  }
-  styles?: Partial<Styles>
-}
-
-// export interface HighlightDefault {
-//   id: string | null
-//   label: string | null
-// }
+export type ChartParamsPartial = Partial<ChartParams> & Partial<{
+  padding: Partial<Padding>,
+  colors: Partial<{
+    light: Partial<ColorScheme>
+    dark: Partial<ColorScheme>
+  }>
+  styles: Partial<Styles>
+}>
 
 export type HighlightTarget = 'series' | 'group' | 'datum' | 'none'
 

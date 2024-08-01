@@ -7,7 +7,7 @@ export interface DataFormatterRelationship
   // edge: DataFormatterRelationshipEdge
 }
 
-export type DataFormatterRelationshipPartial = Partial<DataFormatterRelationship> | Partial<{
+export type DataFormatterRelationshipPartial = Partial<DataFormatterRelationship> & Partial<{
   // node: Partial<DataFormatterRelationshipNode>
   // edge: Partial<DataFormatterRelationshipEdge>
 }>

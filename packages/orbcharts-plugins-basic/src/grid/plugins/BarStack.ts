@@ -17,7 +17,7 @@ import type {
   ChartParams, 
   DataSeriesDatum,
   Layout } from '@orbcharts/core'
-import type { BarStackPluginParams } from '../types'
+import type { BarStackParams } from '../types'
 import { DEFAULT_BAR_STACK_PLUGIN_PARAMS } from '../defaults'
 import { getD3TransitionEase } from '../../utils/d3Utils'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
@@ -33,7 +33,7 @@ interface RenderBarParams {
   zeroY: number
   groupLabels: string[]
   // barScale: d3.ScalePoint<string>
-  params: BarStackPluginParams
+  params: BarStackParams
   chartParams: ChartParams
   barWidth: number
   transformedBarRadius: [number, number]
@@ -66,7 +66,7 @@ function calcBarWidth ({ axisWidth, groupAmount, barGroupPadding = 0 }: {
 
 }
 
-// function makeBarScale (barWidth: number, seriesLabels: string[], params: BarStackPluginParams) {
+// function makeBarScale (barWidth: number, seriesLabels: string[], params: BarStackParams) {
 //   const barHalfWidth = barWidth! / 2
 //   const barGroupWidth = barWidth * seriesLabels.length + params.barPadding! * seriesLabels.length
 //   return d3.scalePoint()
