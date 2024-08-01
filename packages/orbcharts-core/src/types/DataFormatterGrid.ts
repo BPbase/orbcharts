@@ -4,8 +4,7 @@ import type { DataFormatterBase, DataFormatterBasePartial, DataFormatterValueAxi
 
 export type SeriesType = 'row' | 'column' // default: 'row'
 
-export interface DataFormatterGrid
-  extends DataFormatterBase<'grid'> {
+export interface DataFormatterGrid extends DataFormatterBase<'grid'> {
   grid: DataFormatterGridGrid
   valueAxis: DataFormatterValueAxis
   groupAxis: DataFormatterGroupAxis
@@ -13,11 +12,12 @@ export interface DataFormatterGrid
   colorsPredicate: (datum: DataGridDatum | DataGridValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'grid'>) => string
 }
 
-export type DataFormatterGridPartial = Partial<DataFormatterGrid> & Partial<{
-  grid: Partial<DataFormatterGridGrid>
-  valueAxis: Partial<DataFormatterValueAxis>
-  groupAxis: Partial<DataFormatterGroupAxis>
-}>
+export interface DataFormatterGridPartial extends DataFormatterBasePartial<'grid'> {
+  grid?: Partial<DataFormatterGridGrid>
+  valueAxis?: Partial<DataFormatterValueAxis>
+  groupAxis?: Partial<DataFormatterGroupAxis>
+  colorsPredicate?: (datum: DataGridDatum | DataGridValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'grid'>) => string
+}
 
 // grid欄位
 export interface DataFormatterGridGrid {

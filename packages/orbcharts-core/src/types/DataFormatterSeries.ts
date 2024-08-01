@@ -1,9 +1,8 @@
 import { DataSeriesDatum, DataSeriesValue, DataSeries } from './DataSeries'
-import { DataFormatterBase, DataFormatterContext } from './DataFormatter'
+import { DataFormatterBase, DataFormatterBasePartial, DataFormatterContext } from './DataFormatter'
 // import { ComputedDatumSeries } from './ComputedDataSeries'
 
-export interface DataFormatterSeries
-  extends DataFormatterBase<'series'> {
+export interface DataFormatterSeries extends DataFormatterBase<'series'> {
   // series: DataFormatterSeriesSeries
   unitLabel: string
   seriesLabels: string[]
@@ -14,9 +13,13 @@ export interface DataFormatterSeries
   // colors: Colors
 }
 
-export type DataFormatterSeriesPartial = Partial<DataFormatterSeries> & Partial<{
+export interface DataFormatterSeriesPartial extends DataFormatterBasePartial<'series'> {
   // series: Partial<DataFormatterSeriesSeries>
-}>
+  unitLabel?: string
+  seriesLabels?: string[]
+  colorsPredicate?: (datum: DataSeriesDatum | DataSeriesValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'series'>) => string
+  sort?: ((a: DataSeriesDatum | DataSeriesValue, b: DataSeriesDatum | number) => number) | null
+}
 
 // export interface DataFormatterSeriesSeries {
 //   unitLabel: string

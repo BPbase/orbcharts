@@ -1,16 +1,15 @@
 import { Node, Edge, DataRelationship } from './DataRelationship'
-import { DataFormatterBase } from './DataFormatter'
+import { DataFormatterBase, DataFormatterBasePartial } from './DataFormatter'
 
-export interface DataFormatterRelationship
-  extends DataFormatterBase<'relationship'> {
+export interface DataFormatterRelationship extends DataFormatterBase<'relationship'> {
   // node: DataFormatterRelationshipNode
   // edge: DataFormatterRelationshipEdge
 }
 
-export type DataFormatterRelationshipPartial = Partial<DataFormatterRelationship> & Partial<{
+export interface DataFormatterRelationshipPartial extends DataFormatterBasePartial<'relationship'> {
   // node: Partial<DataFormatterRelationshipNode>
   // edge: Partial<DataFormatterRelationshipEdge>
-}>
+}
 
 // export interface DataFormatterRelationshipNode {
 //   labelFormat: (node: unknown) => string

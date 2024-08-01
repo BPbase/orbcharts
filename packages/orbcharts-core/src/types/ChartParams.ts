@@ -15,7 +15,7 @@ export interface ChartParams {
   // [key: string]: any
 }
 
-export type ChartParamsPartial = Partial<ChartParams> & Partial<{
+export type ChartParamsPartial = Partial<ChartParams | {
   padding: Partial<Padding>,
   colors: Partial<{
     light: Partial<ColorScheme>
@@ -23,6 +23,15 @@ export type ChartParamsPartial = Partial<ChartParams> & Partial<{
   }>
   styles: Partial<Styles>
 }>
+
+function test (): ChartParamsPartial {
+  return {
+    colorScheme: 'dark',
+    padding: {
+      top: 10
+    }
+  }
+}
 
 export type HighlightTarget = 'series' | 'group' | 'datum' | 'none'
 
