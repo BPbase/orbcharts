@@ -16,7 +16,7 @@ import type {
   ChartParams, 
   DataSeriesDatum,
   Layout } from '@orbcharts/core'
-import type { BarsTrianglePluginParams } from '../types'
+import type { BarsTriangleParams } from '../types'
 import { DEFAULT_BARS_TRIANGLE_PLUGIN_PARAMS } from '../defaults'
 import { getD3TransitionEase } from '../../utils/d3Utils'
 import {
@@ -29,7 +29,7 @@ interface RenderBarParams {
   zeroY: number
   groupLabels: string[]
   barScale: d3.ScalePoint<string>
-  params: BarsTrianglePluginParams
+  params: BarsTriangleParams
   chartParams: ChartParams
   barWidth: number
   delayGroup: number
@@ -65,7 +65,7 @@ function calcBarWidth ({ axisWidth, groupAmount, barAmountOfGroup, barPadding = 
   return width > 1 ? width : 1
 }
 
-function makeBarScale (barWidth: number, seriesLabels: string[], params: BarsTrianglePluginParams) {
+function makeBarScale (barWidth: number, seriesLabels: string[], params: BarsTriangleParams) {
   const barHalfWidth = barWidth! / 2
   const barGroupWidth = barWidth * seriesLabels.length + params.barPadding! * seriesLabels.length
   return d3.scalePoint()
@@ -165,7 +165,7 @@ function renderTriangleBars ({ selection, barData, zeroY, groupLabels, barScale,
 function renderLinearGradient ({ defsSelection, barData, params }: {
   defsSelection: d3.Selection<SVGDefsElement, ComputedDatumGrid, any, any>
   barData: BarDatumGrid[][]
-  params: BarsTrianglePluginParams
+  params: BarsTriangleParams
 }) {
   const linearGradientUpdate = defsSelection!
       .selectAll<SVGLinearGradientElement, ComputedDatumGrid>('linearGradient')

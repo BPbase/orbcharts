@@ -10,7 +10,7 @@ import {
   defineSeriesPlugin } from '@orbcharts/core'
 import type {
   ChartParams } from '@orbcharts/core'
-import type { PieLabelsPluginParams } from '../types'
+import type { PieLabelsParams } from '../types'
 import type { PieDatum } from '../seriesUtils'
 import { DEFAULT_PIE_LABELS_PARAMS } from '../defaults'
 import { makePieData } from '../seriesUtils'
@@ -49,7 +49,7 @@ function makeRenderData (pieData: PieDatum[], arc: d3.Arc<any, d3.DefaultArcObje
 }
 
 // 繪製圓餅圖
-function renderLabel (selection: d3.Selection<SVGGElement, undefined, any, any>, data: RenderDatum[], pluginParams: PieLabelsPluginParams, fullChartParams: ChartParams) {
+function renderLabel (selection: d3.Selection<SVGGElement, undefined, any, any>, data: RenderDatum[], pluginParams: PieLabelsParams, fullChartParams: ChartParams) {
   // console.log(data)
   // let update = this.gSelection.selectAll('g').data(pieData)
   let update: d3.Selection<SVGPathElement, RenderDatum, any, any> = selection

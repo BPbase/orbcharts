@@ -17,7 +17,7 @@ import type {
   ComputedDatumSeries } from '@orbcharts/core'
 import {
   defineSeriesPlugin } from '@orbcharts/core'
-import type { BubblesPluginParams, ScaleType } from '../types'
+import type { BubblesParams, BubbleScaleType } from '../types'
 import { DEFAULT_BUBBLES_PLUGIN_PARAMS } from '../defaults'
 import { renderCircleText } from '../../utils/d3Graphics'
 
@@ -30,7 +30,7 @@ interface BubblesDatum extends ComputedDatumSeries {
 
 let force: d3.Simulation<d3.SimulationNodeDatum, undefined> | undefined
 
-function makeForce (bubblesSelection: d3.Selection<SVGGElement, any, any, any>, fullParams: BubblesPluginParams) {
+function makeForce (bubblesSelection: d3.Selection<SVGGElement, any, any, any>, fullParams: BubblesParams) {
   return d3.forceSimulation()
     .velocityDecay(fullParams.force!.velocityDecay!)
     // .alphaDecay(0.2)
@@ -86,7 +86,7 @@ function createBubblesData ({ data, LastBubbleDataMap, graphicWidth, graphicHeig
   LastBubbleDataMap: Map<string, BubblesDatum>
   graphicWidth: number
   graphicHeight: number
-  scaleType: ScaleType
+  scaleType: BubbleScaleType
   // highlightIds: string[]
 }) {
   const bubbleGroupR = Math.min(...[graphicWidth, graphicHeight]) / 2
@@ -140,7 +140,7 @@ function createBubblesData ({ data, LastBubbleDataMap, graphicWidth, graphicHeig
 function renderBubbles ({ graphicSelection, bubblesData, fullParams }: {
   graphicSelection: d3.Selection<SVGGElement, any, any, any>
   bubblesData: BubblesDatum[]
-  fullParams: BubblesPluginParams
+  fullParams: BubblesParams
 }) {
   let update = graphicSelection.selectAll<SVGGElement, BubblesDatum>("g")
     .data(bubblesData, (d) => d.id)
@@ -203,7 +203,7 @@ function renderBubbles ({ graphicSelection, bubblesData, fullParams }: {
 
 function setHighlightData ({ data, highlightRIncrease, highlightIds }: {
   data: BubblesDatum[]
-  // fullParams: BubblesPluginParams
+  // fullParams: BubblesParams
   highlightRIncrease: number
   highlightIds: string[]
 }) {
@@ -254,7 +254,7 @@ function drag (): d3.DragBehavior<Element, unknown, unknown> {
 // }
 
 function groupBubbles ({ fullParams, graphicWidth, graphicHeight }: {
-  fullParams: BubblesPluginParams
+  fullParams: BubblesParams
   graphicWidth: number
   graphicHeight: number
 }) {
@@ -363,7 +363,7 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PLUGIN_PARA
 
   const scaleType$ = observer.fullParams$.pipe(
     takeUntil(destroy$),
-    map(d => d.scaleType),
+    map(d => d.bubbleScaleType),
     distinctUntilChanged()
   )
 

@@ -1,13 +1,13 @@
 import type { ComputedDatumSeries, EventSeries, EventName, ColorType } from '@orbcharts/core'
 import type {
-  BubblesPluginParams,
-  PiePluginParams,
-  PieEventTextsPluginParams,
-  PieLabelsPluginParams,
+  BubblesParams,
+  PieParams,
+  PieEventTextsParams,
+  PieLabelsParams,
   SeriesLegendParams } from './types'
 
   
-export const DEFAULT_BUBBLES_PLUGIN_PARAMS: BubblesPluginParams = {
+export const DEFAULT_BUBBLES_PLUGIN_PARAMS: BubblesParams = {
   force: {
     strength: 0.03, // 泡泡引力
     velocityDecay: 0.2, // 衰減數
@@ -19,10 +19,10 @@ export const DEFAULT_BUBBLES_PLUGIN_PARAMS: BubblesPluginParams = {
     lineLengthMin: 4
   },
   highlightRIncrease: 0,
-  scaleType: 'area'
+  bubbleScaleType: 'area'
 }
 
-export const DEFAULT_PIE_PLUGIN_PARAMS: PiePluginParams = {
+export const DEFAULT_PIE_PLUGIN_PARAMS: PieParams = {
   // padding: {
   //   top: 50,
   //   right: 70,
@@ -44,7 +44,7 @@ export const DEFAULT_PIE_PLUGIN_PARAMS: PiePluginParams = {
   // highlightLabel: null,
 }
 
-export const DEFAULT_PIE_EVENT_TEXTS_PARAMS: PieEventTextsPluginParams = {
+export const DEFAULT_PIE_EVENT_TEXTS_PARAMS: PieEventTextsParams = {
   eventFn: (d: EventSeries, eventName: EventName, t: number) => {
     if (eventName === 'mouseover' || eventName === 'mousemove') {
       return [String(d.datum!.value)]
@@ -68,7 +68,7 @@ export const DEFAULT_PIE_EVENT_TEXTS_PARAMS: PieEventTextsPluginParams = {
   ]
 }
 
-export const DEFAULT_PIE_LABELS_PARAMS: PieLabelsPluginParams = {
+export const DEFAULT_PIE_LABELS_PARAMS: PieLabelsParams = {
   // solidColor: undefined,
   // colors: DEFAULT_COLORS,
   outerRadius: 0.95,

@@ -24,7 +24,7 @@ import { getColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { d3EventObservable } from '../../utils/observables'
 import { gridGroupPositionFnObservable } from '../gridObservables'
 import { createAxisPointScale } from '@orbcharts/core'
-import type { GroupAreaPluginParams } from '../types'
+import type { GroupAreaParams } from '../types'
 
 interface LineDatum {
   id: string
@@ -48,7 +48,7 @@ function createLineData ({ groupLabel, axisX, axisHeight, fullParams }: {
   groupLabel: string
   axisX: number
   axisHeight: number
-  fullParams: GroupAreaPluginParams
+  fullParams: GroupAreaParams
 }): LineDatum[] {
   return fullParams.showLine && groupLabel
     ? [{
@@ -65,7 +65,7 @@ function renderLine ({ selection, pluginName, lineData, fullParams, fullChartPar
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
   lineData: LineDatum[]
-  fullParams: GroupAreaPluginParams
+  fullParams: GroupAreaParams
   fullChartParams: ChartParams
 }) {
   const gClassName = getClassName(pluginName, 'auxline')
@@ -114,7 +114,7 @@ function removeLine (selection: d3.Selection<any, unknown, any, unknown>) {
 function createLabelData ({ groupLabel, axisX, fullParams }: {
   groupLabel: string
   axisX: number
-  fullParams: GroupAreaPluginParams
+  fullParams: GroupAreaParams
 }) {
   return fullParams.showLabel && groupLabel
     ? [{
@@ -129,7 +129,7 @@ function createLabelData ({ groupLabel, axisX, fullParams }: {
 function renderLabel ({ selection, labelData, fullParams, fullChartParams, gridAxesOppositeTransformValue }: {
   selection: d3.Selection<any, unknown, any, unknown>
   labelData: LabelDatum[]
-  fullParams: GroupAreaPluginParams
+  fullParams: GroupAreaParams
   fullChartParams: ChartParams
   gridAxesOppositeTransformValue: string
 }) {

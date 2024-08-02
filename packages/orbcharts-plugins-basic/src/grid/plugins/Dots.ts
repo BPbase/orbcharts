@@ -15,7 +15,7 @@ import type {
   ChartParams,
   ComputedDatumGrid,
   Layout } from '@orbcharts/core'
-import type { DotsPluginParams } from '../types'
+import type { DotsParams } from '../types'
 import { DEFAULT_DOTS_PLUGIN_PARAMS } from '../defaults'
 import { getDatumColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 
@@ -34,7 +34,7 @@ const circleClassName = getClassName(pluginName, 'circle')
 function renderDots ({ selection, data, fullParams, fullChartParams, graphicOppositeScale }: {
   selection: d3.Selection<SVGGElement, any, any, any>
   data: ComputedDatumGrid[]
-  fullParams: DotsPluginParams
+  fullParams: DotsParams
   fullChartParams: ChartParams
   graphicOppositeScale: [number, number]
 }) {

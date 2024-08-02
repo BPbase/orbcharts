@@ -1,9 +1,9 @@
 import type { ComputedDatumSeries, EventSeries, EventName, ColorType } from '@orbcharts/core'
 import type { BaseLegendParams } from '../base/BaseLegend'
 
-export type ScaleType = 'area' | 'radius'
+export type BubbleScaleType = 'area' | 'radius'
 
-export interface BubblesPluginParams {
+export interface BubblesParams {
   force: {
     strength: number; // 泡泡引力
     velocityDecay: number; // 衰減數
@@ -15,10 +15,10 @@ export interface BubblesPluginParams {
     lineLengthMin: number
   }
   highlightRIncrease: number
-  scaleType: ScaleType
+  bubbleScaleType: BubbleScaleType
 }
 
-export interface PiePluginParams {
+export interface PieParams {
   // padding: Padding
   outerRadius: number;
   innerRadius: number;
@@ -32,13 +32,13 @@ export interface PiePluginParams {
   cornerRadius: number
 }
 
-export interface PieEventTextsPluginParams {
+export interface PieEventTextsParams {
   eventFn: (d: EventSeries, eventName: EventName, t: number) => string[]
   textAttrs: Array<{ [key:string]: string | number }>
   textStyles: Array<{ [key:string]: string | number }>
 }
 
-export interface PieLabelsPluginParams {
+export interface PieLabelsParams {
   // solidColor?: string;
   // colors?: string[];
   outerRadius: number

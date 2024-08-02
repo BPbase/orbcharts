@@ -34,13 +34,15 @@ export interface ChartOptionsPartial<T extends ChartType> {
 }
 
 export interface Preset<T extends ChartType> {
-  chartParams:  ChartParams
-  dataFormatter:  DataFormatterTypeMap<T>
-  allPluginParams:  {[key: string]: any}
+  chartParams: ChartParams
+  dataFormatter: DataFormatterTypeMap<T>
+  allPluginParams: {[key: string]: any}
+  description: string
 }
 
 export interface PresetPartial<T extends ChartType> {
-  chartParams?:  ChartParamsPartial
-  dataFormatter?:  DataFormatterPartialTypeMap<T>
-  allPluginParams?:  {[key: string]: any}
+  chartParams?: ChartParamsPartial
+  dataFormatter?: DataFormatterPartialTypeMap<T>
+  allPluginParams?: {[key: string]: any}
+  description?: string
 }

@@ -1,17 +1,21 @@
 import { DataGridDatum, DataGridValue } from './DataGrid'
 import { DataFormatterGridGrid } from './DataFormatterGrid'
-import { DataFormatterBase, DataFormatterValueAxis, DataFormatterGroupAxis, DataFormatterContext } from './DataFormatter'
+import {
+  DataFormatterBase,
+  DataFormatterBasePartial,
+  DataFormatterValueAxis,
+  DataFormatterGroupAxis,
+  DataFormatterContext } from './DataFormatter'
 import { AxisPosition } from './Axis'
 
-export interface DataFormatterMultiGrid
-  extends DataFormatterBase<'multiGrid'> {
+export interface DataFormatterMultiGrid extends DataFormatterBase<'multiGrid'> {
   multiGrid: Array<DataFormatterMultiGridMultiGrid>
   // visibleGroupRange: [number, number] | null
 }
 
-export type DataFormatterMultiGridPartial = Partial<DataFormatterMultiGrid> | Partial<{
-  multiGrid: Array<Partial<DataFormatterMultiGridMultiGrid>>
-}>
+export interface DataFormatterMultiGridPartial extends DataFormatterBasePartial<'multiGrid'> {
+  multiGrid?: Array<Partial<DataFormatterMultiGridMultiGrid>>
+}
 
 // multiGrid欄位
 export interface DataFormatterMultiGridMultiGrid {

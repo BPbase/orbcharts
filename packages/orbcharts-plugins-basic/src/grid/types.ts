@@ -4,7 +4,7 @@ import type { BaseLegendParams } from '../base/BaseLegend'
 // export type LineType = 'line' | 'area' | 'gradientArea'
 // export type BarType = 'rect' | 'triangle'
 
-export interface LinesPluginParams {
+export interface LinesParams {
   // lineType: LineType
   lineCurve: string
   lineWidth: number
@@ -16,7 +16,7 @@ export interface LinesPluginParams {
   // labelPadding: number
 }
 
-export interface DotsPluginParams {
+export interface DotsParams {
   radius: number
   fillColorType: ColorType
   strokeColorType: ColorType
@@ -24,7 +24,7 @@ export interface DotsPluginParams {
   onlyShowHighlighted: boolean
 }
 
-export interface GroupAreaPluginParams {
+export interface GroupAreaParams {
   showLine: boolean
   showLabel: boolean
   lineDashArray: string
@@ -35,7 +35,7 @@ export interface GroupAreaPluginParams {
   labelPadding: number
 }
 
-export interface BarsPluginParams {
+export interface BarsParams {
   // barType: BarType
   barWidth: number
   barPadding: number
@@ -43,20 +43,20 @@ export interface BarsPluginParams {
   barRadius: number | boolean
 }
 
-export interface BarStackPluginParams {
+export interface BarStackParams {
   barWidth: number
   barGroupPadding: number
   barRadius: number | boolean
 }
 
-export interface BarsTrianglePluginParams {
+export interface BarsTriangleParams {
   barWidth: number
   barPadding: number
   barGroupPadding: number // 群組和群組間的間隔
   linearGradientOpacity: [number, number]
 }
 
-export interface GroupingAxisParams {
+export interface GroupAxisParams {
   // xLabel: string
   // labelAnchor: 'start' | 'end'
   labelOffset: [number, number]

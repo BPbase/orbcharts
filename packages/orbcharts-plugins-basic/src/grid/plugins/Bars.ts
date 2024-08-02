@@ -19,7 +19,7 @@ import type {
   EventGrid,
   ChartParams, 
   Layout } from '@orbcharts/core'
-import type { BarsPluginParams } from '../types'
+import type { BarsParams } from '../types'
 import { DEFAULT_BARS_PLUGIN_PARAMS } from '../defaults'
 import { getD3TransitionEase } from '../../utils/d3Utils'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
@@ -30,7 +30,7 @@ interface RenderBarParams {
   zeroY: number
   groupLabels: string[]
   barScale: d3.ScalePoint<string>
-  params: BarsPluginParams
+  params: BarsParams
   chartParams: ChartParams
   barWidth: number
   transformedBarRadius: [number, number]
@@ -64,7 +64,7 @@ function calcBarWidth ({ axisWidth, groupAmount, barAmountOfGroup, barPadding = 
   return width > 1 ? width : 1
 }
 
-function makeBarScale (barWidth: number, seriesLabels: string[], params: BarsPluginParams) {
+function makeBarScale (barWidth: number, seriesLabels: string[], params: BarsParams) {
   const barHalfWidth = barWidth! / 2
   const barGroupWidth = barWidth * seriesLabels.length + params.barPadding! * seriesLabels.length
   return d3.scalePoint()

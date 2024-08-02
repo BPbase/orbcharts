@@ -1,0 +1,43 @@
+{
+  "name": "@orbcharts/presets-basic",
+  "version": "3.0.0-alpha.1",
+  "description": "presets for OrbCharts",
+  "author": "Blue Planet Inc.",
+  "license": "Apache-2.0",
+  "keywords": [
+    "d3",
+    "rxjs",
+    "svg",
+    "visualization",
+    "infographic",
+    "graph",
+    "chart"
+  ],
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "files": [
+    "*"
+  ],
+  "module": "./dist/orbcharts-presets-basic.es.js",
+  "types": "./dist/src/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build --mode release"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.0",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4",
+    "vite": "^5.3.5",
+    "vite-plugin-dts": "^3.7.3"
+  },
+  "dependencies": {
+    "@orbcharts/core": "^3.0.0-alpha.26",
+    "@orbcharts/plugins-basic": "^3.0.0-alpha.30",
+    "d3": "^7.8.5",
+    "rxjs": "^7.8.1"
+  }
+}
