@@ -5,13 +5,13 @@
 <script lang="ts" setup>
 import { GridChart } from '../../../../packages/orbcharts-core/src'
 import { Bars, GridLegend } from '../../../../packages/orbcharts-plugins-basic/src'
-import { PRESET_ROUND_BARS } from '../../../../packages/orbcharts-presets-basic/src'
+import { PRESET_BARS_ROUND } from '../../../../packages/orbcharts-presets-basic/src'
 
 onMounted(() => {
   const el = document.querySelector('#chart')
-console.log(PRESET_ROUND_BARS)
+console.log(PRESET_BARS_ROUND)
   const chart = new GridChart(el!, {
-    preset: PRESET_ROUND_BARS
+    preset: PRESET_BARS_ROUND
   })
 
   const bars = new Bars()

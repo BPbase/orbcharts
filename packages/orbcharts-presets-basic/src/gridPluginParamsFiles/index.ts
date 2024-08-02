@@ -1,1 +1,6 @@
 export * from './Bars'
+export * from './Dots'
+export * from './GridLegend'
+export * from './GroupAxis'
+export * from './Lines'
+// export * from './ValueAxis'

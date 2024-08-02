@@ -34,14 +34,12 @@ const pluginParamsFilesTypeMap = {
 
 const createBasePreset = <T extends ChartType>(chartType: T, presetFile: PresetFile<T>): PresetPartial<T> => {
   const chartParams: ChartParamsPartial | undefined = presetFile.chartParamsId
-    // @ts-ignore
     ? chartParamsFiles[presetFile.chartParamsId].data
     : undefined
-  
   // @ts-ignore
   const dataFormatter: DataFormatterPartialTypeMap<T> | undefined = dataFormatterFilesTypeMap[chartType][presetFile.dataFormatterId]
     // @ts-ignore
-    ? dataFormatterFilesTypeMap[chartType][presetFile.chartParamsId].data
+    ? dataFormatterFilesTypeMap[chartType][presetFile.dataFormatterId].data
     : undefined
 
   const allPluginParams: {[key: string]: any} | undefined = presetFile.allPluginParamsIds
