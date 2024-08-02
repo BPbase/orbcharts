@@ -6,6 +6,7 @@
 import { GridChart } from '../../../../packages/orbcharts-core/src'
 import { Bars, GridLegend } from '../../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_BARS_ROUND } from '../../../../packages/orbcharts-presets-basic/src'
+// import { PRESET_BARS_ROUND } from '@orbcharts/presets-basic'
 
 onMounted(() => {
   const el = document.querySelector('#chart')
