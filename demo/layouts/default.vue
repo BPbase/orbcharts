@@ -4,37 +4,30 @@
       <div class="menu-title">
         <h1>OrbCharts</h1>
       </div>
-      <div class="menu-list">
-        <div>
-          Series
+      <div
+        class="menu-list"
+        v-for="(chartTypeGroup, chartTypeIndex) in demoList"
+        key="chartTypeIndex">
+        <h2>
+          {{ chartTypeGroup.title }}
+        </h2>
+        <div
+          class="menu-list"
+          v-for="(pluginGroup, pluginIndex) in chartTypeGroup.list"
+          :key="pluginIndex">
+          <div>
+            {{ pluginGroup.title }}
+          </div>
+          <div
+            class="menu-list"
+            v-for="(preset, presetIndex) in pluginGroup.list"
+            :key="presetIndex">
+            <NuxtLink
+              :to="`/${preset.chartType}/${preset.pluginName}/${preset.presetName}`">
+              {{ preset.presetName }}
+            </NuxtLink>
+          </div>
         </div>
-      </div>
-      <div class="menu-list">
-        <NuxtLink to="/series/bubbles/bubbles">
-          Bubbles
-        </NuxtLink>
-        <NuxtLink to="/series/pie/pie">
-          Pie
-        </NuxtLink>
-      </div>
-      <div class="menu-list">
-        <div>
-          Grid
-        </div>
-      </div>
-      <div class="menu-list">
-        <NuxtLink to="/grid/bars/bars">
-          Bars
-        </NuxtLink>
-        <NuxtLink to="/grid/barStack/barStack">
-          Bar Stack
-        </NuxtLink>
-        <NuxtLink to="/grid/barsTriangle/barsTriangle">
-          Bars Triangle
-        </NuxtLink>
-        <NuxtLink to="/grid/lines/lines">
-          Lines
-        </NuxtLink>
       </div>
     </div>
     <div class="main">
@@ -43,6 +36,11 @@
   </div>
 </template>
 
+<script setup lang="ts">
+import { demoList } from '@/const/demoList'
+
+</script>
+
 <style>
 body {
   margin: 0;
@@ -50,7 +48,7 @@ body {
 .container {
   display: flex;
   .menu {
-    width: 250px;
+    width: 350px;
     height: 100vh;
     overflow: auto;
     border-right: 1px solid #dddddd;
@@ -61,18 +59,18 @@ body {
       display: flex;
       flex-direction: column;
       div {
-        padding: 0.5rem 0;
+        padding: 0.25rem 0;
         color: #000000;
       }
       a {
-        padding: 0.5rem 0;
+        padding: 0.25rem 0;
         color: #000000;
         margin-left: 1rem;
       }
     }
   }
   .main {
-    width: calc(100vw - 250px);
+    width: calc(100vw - 350px);
     height: 100vh;
   }
 }
