@@ -31,7 +31,7 @@ export const PRESET_PIE_DONUT = createSeriesPreset({
   description: '甜甜圈圖'
 })
 export const PRESET_PIE_HALF_DONUT = createSeriesPreset({
-  // chartParamsId: 'CP_RIGHT_PADDING',
+  chartParamsId: 'CP_TOP_AND_NO_BOTTOM_PADDING',
   allPluginParamsIds: ['PP_PIE_HALF_DONUT', 'PP_PIE_LABELS_HALF_ANGLE', 'PP_SERIES_LEGEND_ROUND'],
   description: '半圓甜甜圈圖'
 })
@@ -39,17 +39,17 @@ export const PRESET_PIE_HALF_DONUT = createSeriesPreset({
 // -- grid --
 // 通用 - PRESET_GRID_[name]
 export const PRESET_GRID_BASIC = createGridPreset({
-  chartParamsId: 'CP_BOTTOM_LONG_PADDING',
+  chartParamsId: 'CP_BOTTOM_PADDING',
   allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
   description: '基本Grid參數'
 })
 export const PRESET_GRID_ROTATE_AXIS_LABEL = createGridPreset({
-  chartParamsId: 'CP_BOTTOM_PADDING',
+  chartParamsId: 'CP_BOTTOM_LONG_PADDING',
   allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
   description: '傾斜標籤'
 })
 export const PRESET_GRID_HORIZONTAL = createGridPreset({
-  chartParamsId: 'CP_BOTTOM_PADDING',
+  chartParamsId: 'CP_BOTTOM_AND_LEFT_PADDING',
   dataFormatterId: 'DF_BOTTOM_VALUE_AXIS',
   allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
   description: '橫向圓角長條圖'
@@ -61,7 +61,7 @@ export const PRESET_BARS_ROUND = createGridPreset({
   description: '圓角長條圖'
 })
 export const PRESET_BARS_HORIZONTAL_AND_ROUND = createGridPreset({
-  chartParamsId: 'CP_BOTTOM_PADDING',
+  chartParamsId: 'CP_BOTTOM_AND_LEFT_PADDING',
   dataFormatterId: 'DF_BOTTOM_VALUE_AXIS',
   allPluginParamsIds: ['PP_BARS_ROUND', 'PP_GRID_LEGEND_BOTTOM'],
   description: '橫向圓角長條圖'
@@ -72,30 +72,40 @@ export const PRESET_BARS_THIN = createGridPreset({
   description: '細長條圖'
 })
 export const PRESET_BARS_HORIZONTAL_AND_THIN = createGridPreset({
-  chartParamsId: 'CP_BOTTOM_PADDING',
+  chartParamsId: 'CP_BOTTOM_AND_LEFT_PADDING',
   dataFormatterId: 'DF_BOTTOM_VALUE_AXIS',
   allPluginParamsIds: ['PP_BARS_ROUND', 'PP_GRID_LEGEND_BOTTOM'],
   description: '橫向圓角長條圖'
 })
-// export const PRESET_BARS_HORIZONTAL_AND_THIN = createGridPreset({
-//   chartParamsId: 'CP_BOTTOM_PADDING',
-//   dataFormatterId: 'DF_BOTTOM_VALUE_AXIS',
-//   allPluginParamsIds: ['PP_BARS_THIN', 'PP_GRID_LEGEND_BOTTOM'],
-//   description: '橫向細長條圖'
-// })
 // Lines - PRESET_LINES_[name]
+export const PRESET_LINES_BASIC = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_PADDING_WITH_SERIES_HIGHLIGHT',
+  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
+  description: '基本Grid參數'
+})
+export const PRESET_LINES_ROTATE_AXIS_LABEL = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_LONG_PADDING_WITH_SERIES_HIGHLIGHT',
+  allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
+  description: '傾斜標籤'
+})
+export const PRESET_LINES_HORIZONTAL = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_AND_LEFT_PADDING_WITH_SERIES_HIGHLIGHT',
+  dataFormatterId: 'DF_BOTTOM_VALUE_AXIS',
+  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
+  description: '橫向圓角長條圖'
+})
 // export const PRESET_LINES_WITH_SOLID_DOTS = createGridPreset({
-//   chartParamsId: 'CP_BOTTOM_PADDING',
+//   chartParamsId: 'CP_BOTTOM_PADDING_WITH_SERIES_HIGHLIGHT',
 //   allPluginParamsIds: ['PP_DOTS_SOLID', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
 //   description: '折線圖及實心圓點'
 // })
 export const PRESET_LINES_CURVE = createGridPreset({
-  chartParamsId: 'CP_BOTTOM_PADDING',
+  chartParamsId: 'CP_BOTTOM_PADDING_WITH_SERIES_HIGHLIGHT',
   allPluginParamsIds: ['PP_LINES_CURVE', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
   description: '弧線折線圖'
 })
 // export const PRESET_LINES_CURVES_WITH_SOLID_DOTS = createGridPreset({
-//   chartParamsId: 'CP_BOTTOM_PADDING',
+//   chartParamsId: 'CP_BOTTOM_PADDING_WITH_SERIES_HIGHLIGHT',
 //   allPluginParamsIds: ['PP_LINES_CURVE', 'PP_DOTS_SOLID', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
 //   description: '弧線折線圖及實心圓點'
 // })

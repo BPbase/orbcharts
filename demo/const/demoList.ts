@@ -169,17 +169,17 @@ export const demoList: DemoChartTypeItem[] = [
           {
             chartType: 'grid',
             pluginName: 'Lines',
-            presetName: 'PRESET_GRID_BASIC'
+            presetName: 'PRESET_LINES_BASIC'
           },
           {
             chartType: 'grid',
             pluginName: 'Lines',
-            presetName: 'PRESET_GRID_ROTATE_AXIS_LABEL'
+            presetName: 'PRESET_LINES_ROTATE_AXIS_LABEL'
           },
           {
             chartType: 'grid',
             pluginName: 'Lines',
-            presetName: 'PRESET_GRID_HORIZONTAL'
+            presetName: 'PRESET_LINES_HORIZONTAL'
           },
           {
             chartType: 'grid',

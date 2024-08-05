@@ -6,7 +6,7 @@ export const CP_RIGHT_PADDING: ChartParamsFile = {
   data: {
     padding: {
       top: 60,
-      right: 180,
+      right: 120,
       bottom: 60,
       left: 60
     },

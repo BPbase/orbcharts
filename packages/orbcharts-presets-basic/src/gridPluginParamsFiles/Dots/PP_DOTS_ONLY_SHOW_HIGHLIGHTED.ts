@@ -7,8 +7,6 @@ export const PP_DOTS_ONLY_SHOW_HIGHLIGHTED: PluginParamsFile<DotsParams> = {
   pluginName: 'Dots',
   description: '顯示highlight圓點',
   data: {
-    radius: 3,
-    fillColorType: 'series',
     onlyShowHighlighted: false
   }
 }
