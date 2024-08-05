@@ -127,7 +127,8 @@ export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
       fullDataFormatter: fullDataFormatter$,
       layout: layout$
     }).pipe(
-      takeUntil(destroy$)
+      takeUntil(destroy$),
+      switchMap(async (d) => d),
     ).subscribe(data => {
       const axesTransformData = calcAxesTransform({
         xAxis: data.fullDataFormatter.groupAxis,
@@ -238,7 +239,8 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
       fullDataFormatter: fullDataFormatter$,
       layout: layout$
     }).pipe(
-      takeUntil(destroy$)
+      takeUntil(destroy$),
+      switchMap(async (d) => d),
     ).subscribe(data => {
       const dataAreaTransformData = calcGridDataAreaTransform ({
         data: data.computedData,
@@ -311,7 +313,6 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
       layout: layout$
     }).pipe(
       takeUntil(destroy$),
-      // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
       switchMap(async (d) => d),
     ).subscribe(data => {
       
