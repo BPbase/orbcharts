@@ -48,7 +48,7 @@ body {
 .container {
   display: flex;
   .menu {
-    width: 350px;
+    width: 380px;
     height: 100vh;
     overflow: auto;
     border-right: 1px solid #dddddd;
@@ -70,7 +70,7 @@ body {
     }
   }
   .main {
-    width: calc(100vw - 350px);
+    width: calc(100vw - 380px);
     height: 100vh;
   }
 }

@@ -11,9 +11,8 @@
     "deploy": "gh-pages --dotfiles -d .output/public"
   },
   "dependencies": {
-    "@orbcharts/presets-basic": "^3.0.0-alpha.1",
     "nuxt": "^3.11.2",
-    "orbcharts": "^3.0.0-alpha.32",
+    "orbcharts": "^3.0.0-alpha.33",
     "rxjs": "npm:@esm-bundle/rxjs@^7.8.1",
     "vue": "^3.4.27",
     "vue-router": "^4.3.2"

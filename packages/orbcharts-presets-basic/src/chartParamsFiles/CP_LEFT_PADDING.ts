@@ -8,7 +8,7 @@ export const CP_LEFT_PADDING: ChartParamsFile = {
       top: 60,
       right: 60,
       bottom: 60,
-      left: 180
+      left: 120
     },
   }
 }
