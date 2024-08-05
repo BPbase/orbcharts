@@ -42,13 +42,13 @@ OrbCharts 適用於一般的前端專案當中（不受限於特定的前端框�
 OrbCharts 支援 npm 安裝，使用以下指令即可將所有 OrbCharts 程式模組安裝至您的專案當中：
 
 ```sh
-npm i bpcharts
+npm i orbcharts
 ```
 
 ### 範例
 
 ```js
-import { useSeriesChart, pie, tooltip } from 'bpcharts'
+import { useSeriesChart, pie, tooltip } from 'orbcharts'
 
 const element = document.querySelector('#pie-chart')
 
@@ -92,7 +92,7 @@ chart.data$.next([
 引入方式：
 
 ```js
-import { SeriesChart } from 'bpcharts'
+import { SeriesChart } from 'orbcharts'
 ```
 
 
@@ -113,7 +113,7 @@ const chart = new SeriesChart(element, options)
 最簡單的範例：
 
 ```js
-import { SeriesChart } from 'bpcharts'
+import { SeriesChart } from 'orbcharts'
 
 const element = document.querySelector('#pie-chart')
 const chart = new SeriesChart(element)
@@ -157,7 +157,7 @@ const chart = new SeriesChart(element)
 > 在前一個章節當中我們介紹過在圖表類別的參數：
 >
 > ```js
-> import { SeriesChart } from 'bpcharts'
+> import { SeriesChart } from 'orbcharts'
 > 
 > const element = document.querySelector('#pie-chart')
 > // 建立圖表物件，第一個參數為`element`，第二個參數為`options`
@@ -184,7 +184,7 @@ Preset 是 OrbCharts 提供的圖表的「預設集」，提供開發者選擇�
 引入方式：
 
 ```js
-import { PRESET_PIE_DONUT } from 'bpcharts'
+import { PRESET_PIE_DONUT } from 'orbcharts'
 ```
 
 
