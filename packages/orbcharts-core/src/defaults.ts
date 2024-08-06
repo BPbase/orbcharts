@@ -2,7 +2,7 @@
 // import { ChartRenderOptions } from './types/Chart'
 import type { ChartType, ChartOptionsPartial } from './types/Chart'
 import type { DataSeries } from './types/DataSeries'
-import type { DataGrid } from './types/DataGrid'
+import type { DataGrid, DataGridDatum } from './types/DataGrid'
 import type { DataMultiGrid } from './types/DataMultiGrid'
 import type { DataMultiValue } from './types/DataMultiValue'
 import type { DataTree } from './types/DataTree'
@@ -197,7 +197,24 @@ export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
 export const DATA_FORMATTER_MULTI_GRID_DEFAULT: DataFormatterMultiGrid = {
   ...DATA_FORMATTER,
   type: 'multiGrid',
-  multiGrid: [], // 預設無資料，由各plugin定義預設值
+  multiGrid: [
+    {
+      ...DATA_FORMATTER_GRID_DEFAULT
+    },
+    {
+      ...DATA_FORMATTER_GRID_DEFAULT,
+      valueAxis: {
+        ...DATA_FORMATTER_VALUE_AXIS,
+        position: 'right'
+      },
+      colorsPredicate: (datum, rowIndex, columnIndex, { chartParams, dataFormatter }) => {
+        const seriesIndex = dataFormatter.grid.seriesType === 'row' ? rowIndex : columnIndex
+        // @Q@ 暫時性的邏輯，之後改寫成接續前一個grid的series index
+        const reverseIndex = chartParams.colors[chartParams.colorScheme].series.length - 1 - seriesIndex
+        return chartParams.colors[chartParams.colorScheme].series[reverseIndex]
+      },
+    }
+  ],
   // visibleGroupRange: null,
 }
 
@@ -205,7 +222,7 @@ export const DATA_FORMATTER_MULTI_VALUE_DEFAULT: DataFormatterMultiValue = {
   ...DATA_FORMATTER,
   type: 'multiValue',
   // labelFormat: (datum: any) => (datum && datum.label) ?? '',
-  multiValue: [], // 預設無資料，由各plugin定義預設值
+  multiValue: [],
   xAxis: { ...DATA_FORMATTER_VALUE_AXIS },
   yAxis: { ...DATA_FORMATTER_VALUE_AXIS },
 }

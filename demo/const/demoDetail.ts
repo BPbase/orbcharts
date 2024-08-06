@@ -3,6 +3,7 @@ import * as pluginsBasic from '../../packages/orbcharts-plugins-basic/src/index'
 import * as presetsBasic from '../../packages/orbcharts-presets-basic/src/index'
 import { seriesData1 } from './data/seriesData1'
 import { gridData1 } from './data/gridData1'
+import { multiGridData1 } from './data/multiGridData1'
 
 type KeyOfOrbChartsCore = keyof typeof core
 type KeyOfOrbChartsPluginsBasic = keyof typeof pluginsBasic
@@ -194,5 +195,15 @@ export const demoDetail: DemoDetail = {
         data: gridData1
       }
     },
+  },
+  multiGrid: {
+    'BarsAndLines': {
+      'PRESET_MULTI_GRID_BASIC': {
+        chart: core.MultiGridChart,
+        plugins: [pluginsBasic.BarsAndLines, pluginsBasic.Tooltip],
+        preset: presetsBasic.PRESET_MULTI_GRID_BASIC,
+        data: multiGridData1
+      }
+    }
   }
 }

@@ -24,7 +24,7 @@ import type {
   DataFormatterContext,
   DataFormatterValueAxis,
   DataFormatterGroupAxis,
-  EventGrid,
+  EventMultiGrid,
   HighlightTarget,
   Layout,
   TransformData } from '../types'
@@ -46,7 +46,7 @@ export const multiGridObservable = ({ fullDataFormatter$, computedData$, layout$
   computedData$: Observable<ComputedDataTypeMap<'multiGrid'>>
   layout$: Observable<Layout>
   fullChartParams$: Observable<ChartParams>
-  event$: Subject<EventGrid>
+  event$: Subject<EventMultiGrid>
 }) => {
   const destroy$ = new Subject()
 
@@ -70,13 +70,12 @@ export const multiGridObservable = ({ fullDataFormatter$, computedData$, layout$
           takeUntil(destroy$),
           shareReplay(1)
         )
-        const gridComputedData$ = of(data.computedData[gridIndex]).pipe(
+        const gridComputedData$ = of(data.computedData[gridIndex] || []).pipe(
           takeUntil(destroy$),
           shareReplay(1)
         )
 
-        // -- Observables --
-
+        // -- 建立Observables --
         const gridAxesTransform$ = gridAxesTransformObservable({
           fullDataFormatter$: gridDataFormatter$,
           layout$: layout$

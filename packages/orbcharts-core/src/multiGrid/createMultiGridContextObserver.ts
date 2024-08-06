@@ -1,21 +1,19 @@
-import { map, shareReplay } from 'rxjs'
+import {
+  shareReplay } from 'rxjs'
 import type { ContextObserverFn } from '../types'
-import {
-  highlightObservable,
-  seriesDataMapObservable,
-  groupDataMapObservable } from '../utils/observables'
-import {
-  gridAxesTransformObservable,
-  gridGraphicTransformObservable,
-  gridAxesOppositeTransformObservable,
-  gridAxesSizeObservable,
-  gridVisibleComputedDataObservable } from '../grid/gridObservables'
+import { multiGridObservable } from './multiGridObservables'
 
 export const createMultiGridContextObserver: ContextObserverFn<'multiGrid'> = ({ subject, observer }) => {
 
-  // const multiGrid$ = 
-
-
+  const multiGrid$ = multiGridObservable({
+    fullDataFormatter$: observer.fullDataFormatter$,
+    computedData$: observer.computedData$,
+    layout$: observer.layout$,
+    fullChartParams$: observer.fullChartParams$,
+    event$: subject.event$
+  }).pipe(
+    shareReplay(1)
+  )
 
   return {
     fullParams$: observer.fullParams$,
@@ -23,5 +21,6 @@ export const createMultiGridContextObserver: ContextObserverFn<'multiGrid'> = ({
     fullDataFormatter$: observer.fullDataFormatter$,
     computedData$: observer.computedData$,
     layout$: observer.layout$,
+    multiGrid$
   }
 }

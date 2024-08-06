@@ -80,18 +80,18 @@ export const PRESET_BARS_HORIZONTAL_AND_THIN = createGridPreset({
 // Lines - PRESET_LINES_[name]
 export const PRESET_LINES_BASIC = createGridPreset({
   chartParamsId: 'CP_BOTTOM_PADDING_WITH_SERIES_HIGHLIGHT',
-  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
+  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
   description: '基本Grid參數'
 })
 export const PRESET_LINES_ROTATE_AXIS_LABEL = createGridPreset({
   chartParamsId: 'CP_BOTTOM_LONG_PADDING_WITH_SERIES_HIGHLIGHT',
-  allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
+  allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
   description: '傾斜標籤'
 })
 export const PRESET_LINES_HORIZONTAL = createGridPreset({
   chartParamsId: 'CP_BOTTOM_AND_LEFT_PADDING_WITH_SERIES_HIGHLIGHT',
   dataFormatterId: 'DF_BOTTOM_VALUE_AXIS',
-  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
+  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
   description: '橫向圓角長條圖'
 })
 // export const PRESET_LINES_WITH_SOLID_DOTS = createGridPreset({
@@ -114,7 +114,16 @@ export const PRESET_LINES_HIGHLIGHT_GROUP_DOTS = createGridPreset({
   allPluginParamsIds: ['PP_DOTS_ONLY_SHOW_HIGHLIGHTED', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
   description: '折線圖及Highlight Group圓點'
 })
+
 // -- multi-grid --
+// 通用 - PRESET_MULTI_GRID_[name]
+export const PRESET_MULTI_GRID_BASIC = createMultiGridPreset({
+  // chartParamsId: 'CP_BOTTOM_PADDING',
+  allPluginParamsIds: [],
+  description: '基本MultiGrid參數'
+})
+// BarsAndLines - PRESET_BARS_AND_LINES_[name]
+
 
 // -- multi-value --
 

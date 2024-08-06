@@ -26,6 +26,14 @@ export interface BaseLegendParams {
   // highlightEvent: boolean
 }
 
+interface BaseLegendContext {
+  rootSelection: d3.Selection<any, unknown, any, unknown>
+  seriesLabels$: Observable<string[]>
+  fullParams$: Observable<BaseLegendParams>
+  layout$: Observable<Layout>
+  fullChartParams$: Observable<ChartParams>
+}
+
 // 第1層 - 定位的容器
 interface RootPosition {
   x:number
@@ -66,18 +74,12 @@ interface LegendItem {
   // listRectRadius: number
 }
 
-export const createBaseLegend: BasePluginFn = (pluginName: string, {
+export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: string, {
   rootSelection,
   seriesLabels$,
   fullParams$,
   layout$,
   fullChartParams$
-}: {
-  rootSelection: d3.Selection<any, unknown, any, unknown>
-  seriesLabels$: Observable<string[]>
-  fullParams$: Observable<BaseLegendParams>
-  layout$: Observable<Layout>
-  fullChartParams$: Observable<ChartParams>
 }) => {
 
   const rootPositionClassName = getClassName(pluginName, 'root-position')

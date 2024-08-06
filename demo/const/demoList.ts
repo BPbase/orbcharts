@@ -195,4 +195,19 @@ export const demoList: DemoChartTypeItem[] = [
       }
     ]
   },
+  {
+    title: 'MultiGrid',
+    list: [
+      {
+        title: 'BarsAndLines',
+        list: [
+          {
+            chartType: 'multiGrid',
+            pluginName: 'BarsAndLines',
+            presetName: 'PRESET_MULTI_GRID_BASIC'
+          },
+        ]
+      }
+    ]
+  }
 ]
