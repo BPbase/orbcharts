@@ -20,9 +20,11 @@ export interface BaseLegendParams {
   backgroundFill: ColorType
   backgroundStroke: ColorType
   gap: number
-  listRectWidth: number
-  listRectHeight: number
-  listRectRadius: number
+  seriesList: Array<{
+    listRectWidth: number
+    listRectHeight: number
+    listRectRadius: number
+  }>
   // highlightEvent: boolean
 }
 
@@ -70,8 +72,21 @@ interface LegendItem {
   translateX: number
   translateY: number
   color: string
-  // fontSize: number
-  // listRectRadius: number
+  listRectWidth: number
+  listRectHeight: number
+  listRectRadius: number
+}
+
+interface ListStyle {
+  listRectWidth: number
+  listRectHeight: number
+  listRectRadius: number
+}
+
+const defaultListStyle: ListStyle = {
+  listRectWidth: 14,
+  listRectHeight: 14,
+  listRectRadius: 0,
 }
 
 export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: string, {
@@ -198,13 +213,21 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
     })
   )
 
+  const defaultListStyle$ = fullParams$.pipe(
+    takeUntil(destroy$),
+    map(data => {
+      return data.seriesList[0] ? data.seriesList[0] : defaultListStyle
+    })
+  )
+
   // 先計算list內每個item
   const lengendItems$: Observable<LegendItem[][]> = combineLatest({
     fullParams: fullParams$,
     fullChartParams: fullChartParams$,
     seriesLabels: seriesLabels$,
     lineDirection: lineDirection$,
-    lineMaxSize: lineMaxSize$
+    lineMaxSize: lineMaxSize$,
+    defaultListStyle: defaultListStyle$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
@@ -268,6 +291,8 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
           prev[lineIndex] = []
         }
 
+        const listStyle = data.fullParams.seriesList[itemIndex] ? data.fullParams.seriesList[itemIndex] : data.defaultListStyle
+
         prev[lineIndex].push({
           id: current,
           seriesLabel: current,
@@ -279,8 +304,11 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
           translateX,
           translateY,
           color,
+          listRectWidth: listStyle.listRectWidth,
+          listRectHeight: listStyle.listRectHeight,
+          listRectRadius: listStyle.listRectRadius
         })
-        console.log('items', prev)
+        
         return prev
       }, [])
     })
@@ -501,8 +529,8 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
         })
         .each((d, i, g) => {
           const rectCenterX = data.fullChartParams.styles.textSize / 2
-          const rectWidth = data.fullParams.listRectWidth
-          const rectHeight = data.fullParams.listRectHeight
+          const transformRectWidth = - d.listRectWidth / 2
+          const transformRectHeight = - d.listRectHeight / 2
           // 方塊
           d3.select(g[i])
             .selectAll('rect')
@@ -510,11 +538,11 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
             .join('rect')
             .attr('x', rectCenterX)
             .attr('y', rectCenterX)
-            .attr('width', rectWidth)
-            .attr('height', rectHeight)
-            .attr('transform', `translate(${- rectWidth / 2}, ${- rectHeight / 2})`)
+            .attr('width', _d => _d.listRectWidth)
+            .attr('height', _d => _d.listRectHeight)
+            .attr('transform', _d => `translate(${transformRectWidth}, ${transformRectHeight})`)
             .attr('fill', _d => _d.color)
-            .attr('rx', data.fullParams.listRectRadius)
+            .attr('rx', _d => _d.listRectRadius)
           // 文字
           d3.select(g[i])
             .selectAll('text')

@@ -18,7 +18,7 @@ import type {
 import {
   defineSeriesPlugin } from '@orbcharts/core'
 import type { BubblesParams, BubbleScaleType } from '../types'
-import { DEFAULT_BUBBLES_PLUGIN_PARAMS } from '../defaults'
+import { DEFAULT_BUBBLES_PARAMS } from '../defaults'
 import { renderCircleText } from '../../utils/d3Graphics'
 
 interface BubblesDatum extends ComputedDatumSeries {
@@ -298,7 +298,7 @@ function highlight ({ bubblesSelection, highlightIds, fullChartParams }: {
   })
 }
 
-export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PLUGIN_PARAMS)(({ selection, name, observer, subject }) => {
+export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ selection, name, observer, subject }) => {
   
   const destroy$ = new Subject()
 

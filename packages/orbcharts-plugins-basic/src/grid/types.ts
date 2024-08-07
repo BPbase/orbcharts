@@ -1,5 +1,5 @@
 import type { ColorType } from '@orbcharts/core'
-import type { BaseLegendParams } from '../base/BaseLegend'
+// import type { BaseLegendParams } from '../base/BaseLegend'
 
 // export type LineType = 'line' | 'area' | 'gradientArea'
 // export type BarType = 'rect' | 'triangle'
@@ -101,4 +101,14 @@ export interface ScalingAreaParams {
 
 }
 
-export interface GridLegendParams extends BaseLegendParams {}
+export interface GridLegendParams {
+  position: 'top' | 'bottom' | 'left' | 'right'
+  justify: 'start' | 'center' | 'end'
+  padding: number
+  backgroundFill: ColorType
+  backgroundStroke: ColorType
+  gap: number
+  listRectWidth: number
+  listRectHeight: number
+  listRectRadius: number
+}

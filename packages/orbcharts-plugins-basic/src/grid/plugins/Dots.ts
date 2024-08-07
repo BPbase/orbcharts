@@ -16,7 +16,7 @@ import type {
   ComputedDatumGrid,
   Layout } from '@orbcharts/core'
 import type { DotsParams } from '../types'
-import { DEFAULT_DOTS_PLUGIN_PARAMS } from '../defaults'
+import { DEFAULT_DOTS_PARAMS } from '../defaults'
 import { getDatumColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 
 type ClipPathDatum = {
@@ -162,7 +162,7 @@ function renderClipPath ({ defsSelection, clipPathData }: {
 
 }
 
-export const Dots = defineGridPlugin(pluginName, DEFAULT_DOTS_PLUGIN_PARAMS)(({ selection, name, subject, observer }) => {
+export const Dots = defineGridPlugin(pluginName, DEFAULT_DOTS_PARAMS)(({ selection, name, subject, observer }) => {
   // const axisGUpdate = selection
   //   .selectAll('g')
   //   .data()

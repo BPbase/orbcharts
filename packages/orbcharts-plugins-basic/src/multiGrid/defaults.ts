@@ -1,4 +1,4 @@
-import type { BarsAndLinesParams } from './types'
+import type { BarsAndLinesParams, MultiGridLegendParams } from './types'
 
 export const DEFAULT_BARS_AND_LINES_PARAMS: BarsAndLinesParams = {
   bars: {
@@ -11,4 +11,23 @@ export const DEFAULT_BARS_AND_LINES_PARAMS: BarsAndLinesParams = {
     lineCurve: 'curveLinear',
     lineWidth: 2
   }
+}
+
+export const DEFAULT_MULTI_GRID_LEGEND_PARAMS: MultiGridLegendParams = {
+  position: 'right',
+  justify: 'end',
+  padding: 28,
+  backgroundFill: 'none',
+  backgroundStroke: 'none',
+  gap: 10,
+  listRectWidth: 14,
+  listRectHeight: 14,
+  listRectRadius: 0,
+  gridList: [
+    {
+      listRectWidth: 14,
+      listRectHeight: 14,
+      listRectRadius: 0,
+    }
+  ]
 }

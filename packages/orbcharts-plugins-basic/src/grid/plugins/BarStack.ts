@@ -2,13 +2,13 @@ import {
   Subject,
   Observable } from 'rxjs'
 import { defineGridPlugin } from '@orbcharts/core'
-import { DEFAULT_BAR_STACK_PLUGIN_PARAMS } from '../defaults'
+import { DEFAULT_BAR_STACK_PARAMS } from '../defaults'
 import { createBaseBarStack } from '../../base/BaseBarStack'
 
 const pluginName = 'BarStack'
 
 
-export const BarStack = defineGridPlugin(pluginName, DEFAULT_BAR_STACK_PLUGIN_PARAMS)(({ selection, name, subject, observer }) => {
+export const BarStack = defineGridPlugin(pluginName, DEFAULT_BAR_STACK_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeBaseBars = createBaseBarStack(pluginName, {

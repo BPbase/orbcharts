@@ -11,12 +11,12 @@ import type {
   ScalingAreaParams,
   GridLegendParams } from './types'
 
-export const DEFAULT_LINES_PLUGIN_PARAMS: LinesParams = {
+export const DEFAULT_LINES_PARAMS: LinesParams = {
   lineCurve: 'curveLinear',
   lineWidth: 2
 }
 
-export const DEFAULT_DOTS_PLUGIN_PARAMS: DotsParams = {
+export const DEFAULT_DOTS_PARAMS: DotsParams = {
   radius: 4,
   fillColorType: 'white',
   strokeColorType: 'series',
@@ -24,7 +24,7 @@ export const DEFAULT_DOTS_PLUGIN_PARAMS: DotsParams = {
   onlyShowHighlighted: false
 }
 
-export const DEFAULT_GROUP_AREA_PLUGIN_PARAMS: GroupAreaParams = {
+export const DEFAULT_GROUP_AREA_PARAMS: GroupAreaParams = {
   showLine: true,
   showLabel: true,
   lineDashArray: '3, 3',
@@ -35,7 +35,7 @@ export const DEFAULT_GROUP_AREA_PLUGIN_PARAMS: GroupAreaParams = {
   labelPadding: 24,
 }
 
-export const DEFAULT_BARS_PLUGIN_PARAMS: BarsParams = {
+export const DEFAULT_BARS_PARAMS: BarsParams = {
   // barType: 'rect',
   barWidth: 0,
   barPadding: 1,
@@ -43,20 +43,20 @@ export const DEFAULT_BARS_PLUGIN_PARAMS: BarsParams = {
   barRadius: false,
 }
 
-export const DEFAULT_BAR_STACK_PLUGIN_PARAMS: BarStackParams = {
+export const DEFAULT_BAR_STACK_PARAMS: BarStackParams = {
   barWidth: 0,
   barGroupPadding: 10,
   barRadius: false,
 }
 
-export const DEFAULT_BARS_TRIANGLE_PLUGIN_PARAMS: BarsTriangleParams = {
+export const DEFAULT_BARS_TRIANGLE_PARAMS: BarsTriangleParams = {
   barWidth: 0,
   barPadding: 1,
   barGroupPadding: 20,
   linearGradientOpacity: [1, 0]
 }
 
-export const DEFAULT_GROUPING_AXIS_PLUGIN_PARAMS: GroupAxisParams = {
+export const DEFAULT_GROUPING_AXIS_PARAMS: GroupAxisParams = {
   // labelAnchor: 'start',
   labelOffset: [0, 0],
   labelColorType: 'primary',
@@ -72,7 +72,7 @@ export const DEFAULT_GROUPING_AXIS_PLUGIN_PARAMS: GroupAxisParams = {
   tickTextColorType: 'primary'
 }
 
-export const DEFAULT_VALUE_AXIS_PLUGIN_PARAMS: ValueAxisParams = {
+export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
   // labelAnchor: 'end',
   labelOffset: [0, 0],
   labelColorType: 'primary',
@@ -89,9 +89,9 @@ export const DEFAULT_VALUE_AXIS_PLUGIN_PARAMS: ValueAxisParams = {
   tickTextColorType: 'primary'
 }
 
-export const DEFAULT_VALUE_STACK_AXIS_PLUGIN_PARAMS: ValueStackAxisParams = DEFAULT_VALUE_AXIS_PLUGIN_PARAMS
+export const DEFAULT_VALUE_STACK_AXIS_PARAMS: ValueStackAxisParams = DEFAULT_VALUE_AXIS_PARAMS
 
-export const DEFAULT_SCALING_AREA_PLUGIN_PARAMS: ScalingAreaParams = {
+export const DEFAULT_SCALING_AREA_PARAMS: ScalingAreaParams = {
 
 }
 

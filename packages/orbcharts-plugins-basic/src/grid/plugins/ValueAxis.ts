@@ -16,7 +16,7 @@ import type {
   ChartParams,
   TransformData } from '@orbcharts/core'
 import type { ValueAxisParams } from '../types'
-import { DEFAULT_VALUE_AXIS_PLUGIN_PARAMS } from '../defaults'
+import { DEFAULT_VALUE_AXIS_PARAMS } from '../defaults'
 import { parseTickFormatValue } from '../../utils/d3Utils'
 import { getColor, getMinAndMaxValue, getClassName, getUniID } from '../../utils/orbchartsUtils'
 
@@ -123,7 +123,7 @@ function renderLinearAxis ({ selection, fullParams, tickTextAlign, axisLabelAlig
 }
 
 
-export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PLUGIN_PARAMS)(({ selection, name, observer, subject }) => {
+export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)(({ selection, name, observer, subject }) => {
   
   const destroy$ = new Subject()
 

@@ -1,5 +1,5 @@
 import type { ComputedDatumSeries, EventSeries, EventName, ColorType } from '@orbcharts/core'
-import type { BaseLegendParams } from '../base/BaseLegend'
+// import type { BaseLegendParams } from '../base/BaseLegend'
 
 export type BubbleScaleType = 'area' | 'radius'
 
@@ -53,4 +53,14 @@ export interface PieLabelsParams {
   labelColorType: ColorType
 }
 
-export interface SeriesLegendParams extends BaseLegendParams {}
+export interface SeriesLegendParams {
+  position: 'top' | 'bottom' | 'left' | 'right'
+  justify: 'start' | 'center' | 'end'
+  padding: number
+  backgroundFill: ColorType
+  backgroundStroke: ColorType
+  gap: number
+  listRectWidth: number
+  listRectHeight: number
+  listRectRadius: number
+}

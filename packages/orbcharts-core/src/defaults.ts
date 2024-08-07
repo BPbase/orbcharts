@@ -201,15 +201,11 @@ export const DATA_FORMATTER_MULTI_GRID_DEFAULT: DataFormatterMultiGrid = {
     {
       ...DATA_FORMATTER_GRID_DEFAULT
     },
+    // @Q@ 暫時性的邏輯，之後colorsPredicate移除掉後，這邊也要移除（但colors使用的seriesIndex要接續前一組grid）
     {
       ...DATA_FORMATTER_GRID_DEFAULT,
-      valueAxis: {
-        ...DATA_FORMATTER_VALUE_AXIS,
-        position: 'right'
-      },
-      colorsPredicate: (datum, rowIndex, columnIndex, { chartParams, dataFormatter }) => {
+      colorsPredicate: (datum, rowIndex, columnIndex, { data, chartParams, dataFormatter }) => {
         const seriesIndex = dataFormatter.grid.seriesType === 'row' ? rowIndex : columnIndex
-        // @Q@ 暫時性的邏輯，之後改寫成接續前一個grid的series index
         const reverseIndex = chartParams.colors[chartParams.colorScheme].series.length - 1 - seriesIndex
         return chartParams.colors[chartParams.colorScheme].series[reverseIndex]
       },

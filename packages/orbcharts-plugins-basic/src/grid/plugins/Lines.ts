@@ -2,12 +2,12 @@ import {
   Subject } from 'rxjs'
 import {
   defineGridPlugin } from '@orbcharts/core'
-import { DEFAULT_LINES_PLUGIN_PARAMS } from '../defaults'
+import { DEFAULT_LINES_PARAMS } from '../defaults'
 import { createBaseLines } from '../../base/BaseLines'
 
 const pluginName = 'Lines'
 
-export const Lines = defineGridPlugin(pluginName, DEFAULT_LINES_PLUGIN_PARAMS)(({ selection, name, observer, subject }) => {
+export const Lines = defineGridPlugin(pluginName, DEFAULT_LINES_PARAMS)(({ selection, name, observer, subject }) => {
 
   const destroy$ = new Subject()
 
