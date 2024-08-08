@@ -17,7 +17,7 @@ import {
 import type {
   TransformData,
   ChartParams } from '@orbcharts/core'
-import { DEFAULT_GROUP_AREA_PLUGIN_PARAMS } from '../defaults'
+import { DEFAULT_GROUP_AREA_PARAMS } from '../defaults'
 import { parseTickFormatValue } from '../../utils/d3Utils'
 import { measureTextWidth } from '../../utils/commonUtils'
 import { getColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
@@ -208,7 +208,7 @@ function removeLabel (selection: d3.Selection<any, unknown, any, unknown>) {
   gUpdate.exit().remove()
 }
 
-export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PLUGIN_PARAMS)(({ selection, rootSelection, name, subject, observer }) => {
+export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(({ selection, rootSelection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const rootRectSelection: d3.Selection<SVGRectElement, any, any, any> = rootSelection

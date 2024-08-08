@@ -19,7 +19,7 @@ import type {
   ChartParams } from '@orbcharts/core'
 import type { PieParams } from '../types'
 import type { PieDatum } from '../seriesUtils'
-import { DEFAULT_PIE_PLUGIN_PARAMS } from '../defaults'
+import { DEFAULT_PIE_PARAMS } from '../defaults'
 import { makePieData } from '../seriesUtils'
 import { getD3TransitionEase, makeD3Arc } from '../../utils/d3Utils'
 import { getClassName } from '../../utils/orbchartsUtils'
@@ -163,7 +163,7 @@ function highlight ({ pathSelection, ids, fullChartParams, arc, arcMouseover }: 
 }
 
 
-export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PLUGIN_PARAMS)(({ selection, name, observer, subject }) => {
+export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PARAMS)(({ selection, name, observer, subject }) => {
   
   const destroy$ = new Subject()
 

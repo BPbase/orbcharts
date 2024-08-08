@@ -2,12 +2,12 @@ import {
   Subject,
   Observable } from 'rxjs'
 import { defineGridPlugin } from '@orbcharts/core'
-import { DEFAULT_BARS_TRIANGLE_PLUGIN_PARAMS } from '../defaults'
+import { DEFAULT_BARS_TRIANGLE_PARAMS } from '../defaults'
 import { createBaseBarsTriangle } from '../../base/BaseBarsTriangle'
 
 const pluginName = 'BarsTriangle'
 
-export const BarsTriangle = defineGridPlugin(pluginName, DEFAULT_BARS_TRIANGLE_PLUGIN_PARAMS)(({ selection, name, subject, observer }) => {
+export const BarsTriangle = defineGridPlugin(pluginName, DEFAULT_BARS_TRIANGLE_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeBaseBars = createBaseBarsTriangle(pluginName, {

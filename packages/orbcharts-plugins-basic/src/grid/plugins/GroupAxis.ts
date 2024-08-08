@@ -16,7 +16,7 @@ import type {
   ChartParams,
   TransformData } from '@orbcharts/core'
 import type { GroupAxisParams } from '../types'
-import { DEFAULT_GROUPING_AXIS_PLUGIN_PARAMS } from '../defaults'
+import { DEFAULT_GROUPING_AXIS_PARAMS } from '../defaults'
 import { parseTickFormatValue } from '../../utils/d3Utils'
 import { getColor, getClassName } from '../../utils/orbchartsUtils'
 
@@ -126,7 +126,7 @@ function renderPointAxis ({ selection, params, tickTextAlign, axisLabelAlign, gr
 }
 
 
-export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PLUGIN_PARAMS)(({ selection, name, observer, subject }) => {
+export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARAMS)(({ selection, name, observer, subject }) => {
   
   const destroy$ = new Subject()
 

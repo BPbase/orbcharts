@@ -53,11 +53,7 @@ export type DataFormatterPartialTypeMap<T extends ChartType> = T extends 'series
 
 // 基本介面
 export interface DataFormatterBase<T extends ChartType> {
-  // colors: Colors
-  // padding: Padding
   type: T
-  visibleFilter: VisibleFilter<T>
-  tooltipContentFormat: TooltipContentFormat<T>
 }
 
 export type DataFormatterBasePartial<T extends ChartType> = Partial<DataFormatterBase<T>>

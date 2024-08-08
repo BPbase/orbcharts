@@ -7,7 +7,7 @@ import type {
   SeriesLegendParams } from './types'
 
   
-export const DEFAULT_BUBBLES_PLUGIN_PARAMS: BubblesParams = {
+export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
   force: {
     strength: 0.03, // 泡泡引力
     velocityDecay: 0.2, // 衰減數
@@ -22,7 +22,7 @@ export const DEFAULT_BUBBLES_PLUGIN_PARAMS: BubblesParams = {
   bubbleScaleType: 'area'
 }
 
-export const DEFAULT_PIE_PLUGIN_PARAMS: PieParams = {
+export const DEFAULT_PIE_PARAMS: PieParams = {
   // padding: {
   //   top: 50,
   //   right: 70,

@@ -1,7 +1,8 @@
 import { DataMultiValueDatum, DataMultiValue } from './DataMultiValue'
-import { DataFormatterBase, DataFormatterBasePartial, DataFormatterValueAxis } from './DataFormatter'
+import { DataFormatterBase, DataFormatterBasePartial, DataFormatterValueAxis, VisibleFilter } from './DataFormatter'
 
 export interface DataFormatterMultiValue extends DataFormatterBase<'multiValue'> {
+  visibleFilter: VisibleFilter<'multiValue'>
   // labelFormat: (datum: unknown) => string
   multiValue: Array<DataFormatterMultiValueMultiValue>
   xAxis: DataFormatterValueAxis

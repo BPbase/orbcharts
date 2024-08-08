@@ -17,6 +17,8 @@ import * as relationshipPluginParams from './relationshipPluginParamsFiles'
 import * as treeDataFormatters from './treeDataFormatterFiles'
 import * as treePluginParams from './treePluginParamsFiles'
 
+type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>
+
 export interface ChartParamsFile {
   id: string
   description: string
@@ -35,7 +37,7 @@ export interface PluginParamsFile<PluginParams> {
   chartType: ChartType
   pluginName: string
   description: string
-  data: Partial<PluginParams>
+  data: DeepPartial<PluginParams>
 }
 
 export interface PresetFile<T extends ChartType> {

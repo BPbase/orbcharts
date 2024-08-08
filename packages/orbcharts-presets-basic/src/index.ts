@@ -118,8 +118,8 @@ export const PRESET_LINES_HIGHLIGHT_GROUP_DOTS = createGridPreset({
 // -- multi-grid --
 // 通用 - PRESET_MULTI_GRID_[name]
 export const PRESET_MULTI_GRID_BASIC = createMultiGridPreset({
-  // chartParamsId: 'CP_BOTTOM_PADDING',
-  allPluginParamsIds: [],
+  chartParamsId: 'CP_BOTTOM_PADDING',
+  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_RECT_AND_LINE_LIST'],
   description: '基本MultiGrid參數'
 })
 // BarsAndLines - PRESET_BARS_AND_LINES_[name]

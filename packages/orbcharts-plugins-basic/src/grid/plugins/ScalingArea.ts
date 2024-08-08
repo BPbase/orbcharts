@@ -11,14 +11,14 @@ import {
   Subject } from 'rxjs'
 import {
   defineGridPlugin } from '@orbcharts/core'
-import { DEFAULT_SCALING_AREA_PLUGIN_PARAMS } from '../defaults'
+import { DEFAULT_SCALING_AREA_PARAMS } from '../defaults'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { createAxisPointScale, createAxisLinearScale } from '@orbcharts/core'
 
 const pluginName = 'ScalingArea'
 const rectClassName = getClassName(pluginName, 'rect')
 
-export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PLUGIN_PARAMS)(({ selection, rootSelection, name, observer, subject }) => {
+export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PARAMS)(({ selection, rootSelection, name, observer, subject }) => {
 
   const destroy$ = new Subject()
 

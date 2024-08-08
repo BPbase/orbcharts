@@ -40,6 +40,7 @@ import type {
   ChartOptionsPartial,
   DataTypeMap,
   DataFormatterTypeMap,
+  DataFormatterPartialTypeMap,
   DataFormatterBase,
   DataFormatterContext,
   Layout,
@@ -141,14 +142,23 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
     })(options)
     
     
-    // console.log('mergedOptions', mergedOptions)
 
     const sharedData$ = chartSubject.data$.pipe(shareReplay(1))
     const shareAndMergedDataFormatter$ = chartSubject.dataFormatter$
       .pipe(
         takeUntil(destroy$),
         startWith({}),
-        map((d) => mergeOptionsWithDefault(d, mergedPresetWithDefault.dataFormatter)),
+        map((dataFormatter) => {
+          const mergedData = mergeOptionsWithDefault(dataFormatter, mergedPresetWithDefault.dataFormatter)
+
+          if (chartType === 'multiGrid' && (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).multiGrid != null) {
+            // multiGrid欄位為陣列，需要各別來merge預設值
+            (mergedData as DataFormatterTypeMap<'multiGrid'>).multiGrid = (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).multiGrid.map(d => {
+              return mergeOptionsWithDefault(d, (mergedPresetWithDefault.dataFormatter as DataFormatterTypeMap<'multiGrid'>).multiGrid[0])
+            })
+          }
+          return mergedData
+        }),
         shareReplay(1)
       )
     const shareAndMergedChartParams$ = chartSubject.chartParams$

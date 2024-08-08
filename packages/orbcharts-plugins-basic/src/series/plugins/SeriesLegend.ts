@@ -24,10 +24,28 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
     })
   )
 
+  // 全部列點矩型使用相同樣式參數
+  const fullParams$ = observer.fullParams$.pipe(
+    takeUntil(destroy$),
+    map(d => {
+      const seriesList = [
+        {
+          listRectWidth: d.listRectWidth,
+          listRectHeight: d.listRectHeight,
+          listRectRadius: d.listRectRadius,
+        }
+      ]
+      return {
+        ...d,
+        seriesList
+      }
+    })
+  )
+
   const unsubscribeBaseLegend = createBaseLegend(pluginName, {
     rootSelection,
     seriesLabels$,
-    fullParams$: observer.fullParams$,
+    fullParams$,
     layout$: observer.layout$,
     fullChartParams$: observer.fullChartParams$
   })

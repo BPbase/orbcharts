@@ -32,7 +32,8 @@ export const computeRelationshipData: ComputedDataFn<'relationship'> = (context)
         id: node.id,
         index: i,
         label: node.label ?? '',
-        tooltipContent: node.tooltipContent ? node.tooltipContent : dataFormatter.tooltipContentFormat(node, 0, i, context), // 0代表node
+        description: node.description ?? '',
+        // tooltipContent: node.tooltipContent ? node.tooltipContent : dataFormatter.tooltipContentFormat(node, 0, i, context), // 0代表node
         data: node.data ?? {},
         value: node.value ?? 0,
         startNodes: [], // 後面再取得資料
@@ -51,7 +52,8 @@ export const computeRelationshipData: ComputedDataFn<'relationship'> = (context)
         id: edge.id,
         index: i,
         label: edge.label ?? '',
-        tooltipContent: edge.tooltipContent ? edge.tooltipContent : dataFormatter.tooltipContentFormat(edge, 1, i, context), // 1代表edge
+        description: edge.description ?? '',
+        // tooltipContent: edge.tooltipContent ? edge.tooltipContent : dataFormatter.tooltipContentFormat(edge, 1, i, context), // 1代表edge
         data: edge.data ?? {},
         value: edge.value ?? 0,
         startNode: NodesMap.get(edge.start),

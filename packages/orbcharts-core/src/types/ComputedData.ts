@@ -18,7 +18,7 @@ export interface ComputedDatumBase {
   label: string
   value: number | null
   visible: boolean
-  tooltipContent: string
+  description: string
   data: any // 使用者注入的資料
 }
 

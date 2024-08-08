@@ -19,7 +19,7 @@ export type DemoDetail = Partial<{
 
 export interface DemoDetailItem<T extends core.ChartType> {
   chart: ChartConstructor<T>
-  plugins: core.PluginConstructor<any, any, any>[]
+  plugins: core.PluginConstructor<T, any, any>[]
   preset: core.PresetPartial<T>
   data: core.DataTypeMap<T>
 }
@@ -200,7 +200,7 @@ export const demoDetail: DemoDetail = {
     'BarsAndLines': {
       'PRESET_MULTI_GRID_BASIC': {
         chart: core.MultiGridChart,
-        plugins: [pluginsBasic.BarsAndLines, pluginsBasic.Tooltip],
+        plugins: [pluginsBasic.BarsAndLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_MULTI_GRID_BASIC,
         data: multiGridData1
       }

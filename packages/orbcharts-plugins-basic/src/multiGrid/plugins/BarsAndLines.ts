@@ -7,6 +7,7 @@ import {
   Observable } from 'rxjs'
 import {
   defineMultiGridPlugin } from '@orbcharts/core'
+import { DATA_FORMATTER_MULTI_GRID_DEFAULT } from '@orbcharts/core/src/defaults'
 // import { defineMultiGridPlugin } from '../../../../orbcharts-core/src'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { DEFAULT_BARS_AND_LINES_PARAMS } from '../defaults'
@@ -40,23 +41,38 @@ export const BarsAndLines = defineMultiGridPlugin(pluginName, DEFAULT_BARS_AND_L
   // })
 
   const barsComputedData$ = observer.computedData$.pipe(
+    takeUntil(destroy$),
     map((computedData) => computedData[0] || [])
   )
 
   const linesComputedData$ = observer.computedData$.pipe(
+    takeUntil(destroy$),
     map((computedData) => computedData[1] || [])
   )
 
   const barsFullParams$ = observer.fullParams$.pipe(
+    takeUntil(destroy$),
     map((fullParams) => fullParams.bars)
   )
 
   const linesFullParams$ = observer.fullParams$.pipe(
+    takeUntil(destroy$),
     map((fullParams) => fullParams.lines)
   )
 
-  const linesFullDataFormatter$ = observer.fullDataFormatter$.pipe(
-    map((fullDataFormatter) => fullDataFormatter.multiGrid[1])
+  const defaultFullDataFormatter$ = observer.fullDataFormatter$.pipe(
+    takeUntil(destroy$),
+    map((fullDataFormatter) => fullDataFormatter.multiGrid[0] || DATA_FORMATTER_MULTI_GRID_DEFAULT.multiGrid[0])
+  )
+
+  const linesFullDataFormatter$ = combineLatest({
+    fullDataFormatter: observer.fullDataFormatter$,
+    defaultFullDataFormatter: defaultFullDataFormatter$,
+  }).pipe(
+    takeUntil(destroy$),
+    map((data) => {
+      return data.fullDataFormatter.multiGrid[1] ?? data.defaultFullDataFormatter
+    })
   )
 
   observer.multiGrid$.subscribe((multiGrid) => {

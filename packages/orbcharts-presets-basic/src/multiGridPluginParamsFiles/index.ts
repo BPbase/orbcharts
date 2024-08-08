@@ -1,1 +1,1 @@
-export const temp = {}
+export * from './MultiGridLegend'

@@ -1,10 +1,17 @@
 import * as d3 from 'd3'
+import type { ChartType } from '../types/Chart'
+import type { ChartParams } from '../types/ChartParams'
 import type { DatumBase, DatumValue } from '../types/Data'
 import type { DataSeries, DataSeriesDatum, DataSeriesValue } from '../types/DataSeries'
 import type { DataGrid, DataGridDatum, DataGridValue } from '../types/DataGrid'
 import type { DataMultiGrid } from '../types/DataMultiGrid'
 import type { DataMultiValue, DataMultiValueDatum, DataMultiValueValue } from '../types/DataMultiValue'
 import type { SeriesType, DataFormatterGrid } from '../types/DataFormatterGrid'
+import type { ComputedDatumSeriesValue } from '../types/ComputedData'
+import type { ComputedDatumSeries } from '../types/ComputedDataSeries'
+import type { ComputedDatumGrid, ComputedDataGrid } from '../types/ComputedDataGrid'
+import type { ComputedDataMultiGrid } from '../types/ComputedDataMultiGrid'
+// import type { ComputedDatumMultiGrid } from '../types/ComputedDataMultiGrid'
 import { isObject } from './commonUtils'
 
 export function formatValueToLabel (value: any, valueFormatter: string | ((text: d3.NumberValue) => string)) {
@@ -14,30 +21,44 @@ export function formatValueToLabel (value: any, valueFormatter: string | ((text:
   return d3.format(valueFormatter as string)!(value)
 }
 
-export function createDefaultDatumId (type: string, levelOneIndex: number, levelTwoIndex: number) {
-  return `${type}_${levelOneIndex}_${levelTwoIndex}`
+export function createDefaultDatumId (chartTypeOrPrefix: string, levelOneIndex: number, levelTwoIndex: number, levelThreeIndex?: number) {
+  let text = `${chartTypeOrPrefix}_${levelOneIndex}_${levelTwoIndex}`
+  if (levelThreeIndex != null) {
+    text += `_${levelThreeIndex}`
+  }
+  return text
 }
 
-export function createDefaultSeriesLabel (type: string, seriesIndex: number) {
-  return `${type}_series${seriesIndex}`
+export function createDefaultSeriesLabel (chartTypeOrPrefix: string, seriesIndex: number) {
+  return `${chartTypeOrPrefix}_series${seriesIndex}`
 }
 
-export function createDefaultGroupLabel (type: string, groupIndex: number) {
-  return `${type}_group${groupIndex}`
+export function createDefaultGroupLabel (chartTypeOrPrefix: string, groupIndex: number) {
+  return `${chartTypeOrPrefix}_group${groupIndex}`
 }
 
-export function createGridSeriesLabels (transposedDataGrid: DataGridDatum[][], dataFormatter: DataFormatterGrid) {
+export function createGridSeriesLabels ({ transposedDataGrid, dataFormatter, chartType = 'grid', gridIndex = 0 }: {
+  transposedDataGrid: DataGridDatum[][],
+  dataFormatter: DataFormatterGrid
+  chartType?: ChartType
+  gridIndex?: number
+}) {
   const labels = dataFormatter.grid.seriesType === 'row'
     ? dataFormatter.grid.rowLabels
     : dataFormatter.grid.columnLabels
   return transposedDataGrid.map((_, rowIndex) => {
     return labels[rowIndex] != null
       ? labels[rowIndex]
-      : createDefaultSeriesLabel('grid', rowIndex)
+      : createDefaultSeriesLabel(`${chartType}_grid${gridIndex}`, rowIndex)
   })
 }
 
-export function createGridGroupLabels (transposedDataGrid: DataGridDatum[][], dataFormatter: DataFormatterGrid) {
+export function createGridGroupLabels ({ transposedDataGrid, dataFormatter, chartType = 'grid', gridIndex = 0 }: {
+  transposedDataGrid: DataGridDatum[][],
+  dataFormatter: DataFormatterGrid
+  chartType?: ChartType
+  gridIndex?: number
+}) {
   if (transposedDataGrid[0] == null) {
     return []
   }
@@ -47,7 +68,7 @@ export function createGridGroupLabels (transposedDataGrid: DataGridDatum[][], da
   return transposedDataGrid[0].map((_, columnLabels) => {
     return labels[columnLabels] != null
       ? labels[columnLabels]
-      : createDefaultGroupLabel('grid', columnLabels)
+      : createDefaultGroupLabel(`${chartType}_grid${gridIndex}`, columnLabels)
   })
 }
 
@@ -148,3 +169,35 @@ export function transposeData<T> (seriesType: SeriesType, data: T[][]): T[][] {
 
   return transposedArray
 }
+
+
+export function seriesColorPredicate (seriesIndex: number, chartParams: ChartParams) {
+  return seriesIndex < chartParams.colors[chartParams.colorScheme].series.length
+    ? chartParams.colors[chartParams.colorScheme].series[seriesIndex]
+    : chartParams.colors[chartParams.colorScheme].series[
+      seriesIndex % chartParams.colors[chartParams.colorScheme].series.length
+    ]
+}
+
+// // multiGrid datum color
+// export function multiGridColorPredicate ({ seriesIndex, groupIndex, data, chartParams }: {
+//   seriesIndex: number
+//   groupIndex: number
+//   data: ComputedDataMultiGrid
+//   chartParams: ChartParams
+// }) {
+//   // 累加前面的grid的seriesIndex
+//   const accSeriesIndex = data.reduce((prev, current) => {
+//     if (current[0] && current[0][0] && groupIndex > current[0][0].gridIndex) {
+//       return prev + current[0].length
+//     } else if (current[0] && current[0][0] && groupIndex == current[0][0].gridIndex) {
+//       return prev + seriesIndex
+//     } else {
+//       return prev
+//     }
+//   }, 0)
+
+//   return seriesColorPredicate(accSeriesIndex, chartParams)
+// }
+
+
