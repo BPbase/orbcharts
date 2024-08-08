@@ -1,7 +1,7 @@
 import type { DataSeries, DataSeriesDatum } from '../types/DataSeries'
 import type { ComputedDataFn } from '../types/ComputedData'
 import type { ComputedDataSeries, ComputedDatumSeries } from '../types/ComputedDataSeries'
-import { formatValueToLabel, createDefaultDatumId, createDefaultSeriesLabel } from '../utils/orbchartsUtils'
+import { formatValueToLabel, createDefaultDatumId, createDefaultSeriesLabel, seriesColorPredicate } from '../utils/orbchartsUtils'
 
 interface SortValue {
   rowIndex: number
@@ -84,15 +84,13 @@ export const computeSeriesData: ComputedDataFn<'series'> = (context) => {
     // if (dataFormatter.sort) {
     //   SortedIndexMap = createSortedIndexMap(data, dataFormatter.sort)
     // }
-    
-    // const seriesColors = chartParams.colors[chartParams.colorScheme].series
 
     const createComputedDatumSeries = (detailData: number | DataSeriesDatum, rowIndex: number, columnIndex: number, currentIndex: number, sortedIndex: number): ComputedDatumSeries => {
       const defaultId = createDefaultDatumId(dataFormatter.type, rowIndex, columnIndex)
       // const seriesLabel = dataFormatter.mapSeries(detailData, rowIndex, columnIndex, context)
       const seriesLabel = dataFormatter.seriesLabels[rowIndex] || createDefaultSeriesLabel('series', rowIndex)
-      // const color = seriesColors[rowIndex]
-      const color = dataFormatter.colorsPredicate(detailData, rowIndex, columnIndex, context)
+      // const color = dataFormatter.colorsPredicate(detailData, rowIndex, columnIndex, context)
+      const color = seriesColorPredicate(rowIndex, chartParams)
       const visible = dataFormatter.visibleFilter(detailData, rowIndex, columnIndex, context)
       if (typeof detailData === 'number') {
         return {
@@ -100,7 +98,8 @@ export const computeSeriesData: ComputedDataFn<'series'> = (context) => {
           index: currentIndex,
           sortedIndex,
           label: defaultId,
-          tooltipContent: dataFormatter.tooltipContentFormat(detailData, rowIndex, columnIndex, context),
+          description: '',
+          // tooltipContent: dataFormatter.tooltipContentFormat(detailData, rowIndex, columnIndex, context),
           data: {},
           value: detailData,
           // valueLabel: formatValueToLabel(detailData, dataFormatter.valueFormat),
@@ -115,7 +114,8 @@ export const computeSeriesData: ComputedDataFn<'series'> = (context) => {
           index: currentIndex,
           sortedIndex,
           label: detailData.label ? detailData.label : defaultId,
-          tooltipContent: detailData.tooltipContent ? detailData.tooltipContent : dataFormatter.tooltipContentFormat(detailData, rowIndex, columnIndex, context),
+          description: detailData.description,
+          // tooltipContent: detailData.tooltipContent ? detailData.tooltipContent : dataFormatter.tooltipContentFormat(detailData, rowIndex, columnIndex, context),
           data: detailData.data ?? {},
           value: detailData.value,
           // valueLabel: formatValueToLabel(detailData.value, dataFormatter.valueFormat),
@@ -126,7 +126,6 @@ export const computeSeriesData: ComputedDataFn<'series'> = (context) => {
         }
       }
     }
-
     
     data.forEach((mainData, rowIndex) => {
       if (Array.isArray(mainData)) {

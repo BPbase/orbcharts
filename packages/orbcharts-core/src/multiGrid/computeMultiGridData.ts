@@ -1,7 +1,10 @@
+import type { DataGrid } from '../types/DataGrid'
 import type { ComputedDataFn } from '../types/ComputedData'
-import type { DataFormatterGrid } from '../types/DataFormatterGrid'
+import type { DataFormatterMultiGrid } from '../types/DataFormatterMultiGrid'
 import type { ComputedDataGrid } from '../types/ComputedDataGrid'
-import { computeGridData } from '../grid/computeGridData'
+import { computeBaseGridData } from '../grid/computeGridData'
+import { DATA_FORMATTER_MULTI_GRID_DEFAULT } from '../defaults'
+import { seriesColorPredicate } from '../utils/orbchartsUtils'
 
 export const computeMultiGridData: ComputedDataFn<'multiGrid'> = ({ data = [], dataFormatter, chartParams, layout }) => {
   if (!data.length) {
@@ -11,34 +14,41 @@ export const computeMultiGridData: ComputedDataFn<'multiGrid'> = ({ data = [], d
   let multiGridData: ComputedDataGrid[] = []
 
   try {
-    multiGridData = data.map((d, i) => {
-      const dataFormatterGrid: DataFormatterGrid = {
-        ...dataFormatter.multiGrid[i],
-        type: `multiGrid_${i}` as any, // 非規範的名稱，用作 datum id 前綴
-        // colors: dataFormatter.colors,
-        colorsPredicate: dataFormatter.multiGrid[i].colorsPredicate,
-        visibleFilter: dataFormatter.visibleFilter as any, // 用any避開function參數型別不同
-        // padding: dataFormatter.padding,
-        tooltipContentFormat: dataFormatter.tooltipContentFormat as any, // 用any避開function參數型別不同
-      }
-      // const layoutGrid: ComputedLayoutBase = {
-      //   width: layout.width,
-      //   height: layout.height,
-      //   top: layout.top,
-      //   right: layout.right,
-      //   bottom: layout.bottom,
-      //   left: layout.left,
-      //   rootWidth: layout.rootWidth,
-      //   rootHeight: layout.rootHeight,
-      //   // content: layout.content[i]
+    const defaultDataFormatterGrid = Object.assign({}, DATA_FORMATTER_MULTI_GRID_DEFAULT.multiGrid[0])
+
+    // 計算每個grid的資料
+    multiGridData = data.map((gridData, gridIndex) => {
+      const currentDataFormatterGrid = dataFormatter.multiGrid[gridIndex] || defaultDataFormatterGrid
+      // const dataFormatterGrid: DataFormatterGrid = {
+      //   ...currentDataFormatterGrid,
+      //   type: `multiGrid` as any,
+      //   visibleFilter: dataFormatter.visibleFilter as any,
       // }
-      return computeGridData({
-        data: d,
-        dataFormatter: dataFormatterGrid,
-        chartParams,
-        layout
+      return computeBaseGridData(
+        {
+          data: gridData,
+          dataFormatter: currentDataFormatterGrid,
+          chartParams,
+          layout
+        },
+        'multiGrid',
+        gridIndex
+      )
+    })
+
+    // 修正多個grid的欄位資料
+    let accSeriesIndex = -1
+    multiGridData = multiGridData.map((gridData, i) => {
+      return gridData.map((series, j) => {
+        accSeriesIndex ++
+        return series.map(d => {
+          d.accSeriesIndex = accSeriesIndex
+          d.color = seriesColorPredicate(accSeriesIndex, chartParams)
+          return d
+        })
       })
     })
+
   } catch (e) {
     // console.error(e)
     throw Error(e)

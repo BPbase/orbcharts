@@ -6,14 +6,19 @@ import type { DataFormatterGrid } from '../types/DataFormatterGrid'
 import type { ComputedDataGrid, ComputedDatumGrid } from '../types/ComputedDataGrid'
 import { formatValueToLabel, createDefaultDatumId, createDefaultSeriesLabel, createDefaultGroupLabel } from '../utils/orbchartsUtils'
 import { createAxisLinearScale, createAxisPointScale } from '../utils/d3Utils'
-import { getMinAndMaxValue, transposeData, createGridSeriesLabels, createGridGroupLabels } from '../utils/orbchartsUtils'
+import { getMinAndMaxValue, transposeData, createGridSeriesLabels, createGridGroupLabels, seriesColorPredicate } from '../utils/orbchartsUtils'
 
 interface DataGridDatumTemp extends DataGridDatum {
-  _color: string // 暫放的顏色資料
+  // _color: string // 暫放的顏色資料
   _visible: boolean // 暫放的visible
 }
 
 export const computeGridData: ComputedDataFn<'grid'> = (context) => {
+  return computeBaseGridData(context, 'grid', 0)
+}
+
+// 共用的計算grid資料 - 只有multiGrid計算時才會有gridIndex參數
+export const computeBaseGridData = (context: DataFormatterContext<'grid'>, chartType: 'grid' | 'multiGrid', gridIndex = 0) => {
   const { data = [], dataFormatter, chartParams, layout } = context
   if (!data.length) {
     return []
@@ -43,36 +48,36 @@ export const computeGridData: ComputedDataFn<'grid'> = (context) => {
     const dataGrid: DataGridDatumTemp[][] = fullData.map((d, i) => {
       return d.map((_d, _i) => {
 
-        const _color = dataFormatter.colorsPredicate(_d, i, _i, context)
+        // const _color = dataFormatter.colorsPredicate(_d, i, _i, context)
         const _visible = dataFormatter.visibleFilter(_d, i, _i, context)
 
         const datum: DataGridDatumTemp = _d == null
           ? {
             id: '',
             label: '',
-            tooltipContent: '',
+            // tooltipContent: '',
             data: {},
             value: null,
-            _color,
+            // _color,
             _visible
           }
           : typeof _d === 'number'
             ? {
               id: '',
               label: '',
-              tooltipContent: '',
+              // tooltipContent: '',
               data: {},
               value: _d,
-              _color,
+              // _color,
               _visible
             }
             : {
               id: _d.id ?? '',
               label: _d.label ?? '',
-              tooltipContent: _d.tooltipContent ?? '',
+              // tooltipContent: _d.tooltipContent ?? '',
               data: _d.data ?? {},
               value: _d.value,
-              _color,
+              // _color,
               _visible
             }
         
@@ -98,14 +103,14 @@ export const computeGridData: ComputedDataFn<'grid'> = (context) => {
 
     // const seriesColors = chartParams.colors[chartParams.colorScheme].series
 
-    const groupScaleDomain = [
-      dataFormatter.groupAxis.scaleDomain[0] === 'auto'
-        ? 0
-        : dataFormatter.groupAxis.scaleDomain[0],
-      dataFormatter.groupAxis.scaleDomain[1] === 'auto'
-        ? groupEndIndex
-        : dataFormatter.groupAxis.scaleDomain[1]
-    ]
+    // const groupScaleDomain = [
+    //   dataFormatter.groupAxis.scaleDomain[0] === 'auto'
+    //     ? 0
+    //     : dataFormatter.groupAxis.scaleDomain[0],
+    //   dataFormatter.groupAxis.scaleDomain[1] === 'auto'
+    //     ? groupEndIndex
+    //     : dataFormatter.groupAxis.scaleDomain[1]
+    // ]
     
 
     // -- 依groupScale算visible --
@@ -134,8 +139,8 @@ export const computeGridData: ComputedDataFn<'grid'> = (context) => {
       ? layout.height
       : layout.width
 
-    const seriesLabels = createGridSeriesLabels(transposedDataGrid, dataFormatter)
-    const groupLabels = createGridGroupLabels(transposedDataGrid, dataFormatter)
+    const seriesLabels = createGridSeriesLabels({ transposedDataGrid, dataFormatter, chartType, gridIndex })
+    const groupLabels = createGridGroupLabels({ transposedDataGrid, dataFormatter, chartType, gridIndex })
 
     const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
       maxValue,
@@ -151,7 +156,7 @@ export const computeGridData: ComputedDataFn<'grid'> = (context) => {
     computedDataGrid = transposedDataGrid.map((seriesData, seriesIndex) => {
       return seriesData.map((groupDatum, groupIndex) => {
         
-        const defaultId = createDefaultDatumId(dataFormatter.type, seriesIndex, groupIndex)
+        const defaultId = createDefaultDatumId(chartType, gridIndex, seriesIndex, groupIndex)
         // const visible = visibleFilter(groupDatum, seriesIndex, groupIndex, context)
         const groupLabel = groupLabels[groupIndex]
         const axisY = valueScale(groupDatum.value ?? 0)
@@ -160,16 +165,19 @@ export const computeGridData: ComputedDataFn<'grid'> = (context) => {
           id: groupDatum.id ? groupDatum.id : defaultId,
           index: _index,
           label: groupDatum.label ? groupDatum.label : defaultId,
-          tooltipContent: groupDatum.tooltipContent ? groupDatum.tooltipContent : dataFormatter.tooltipContentFormat(groupDatum, seriesIndex, groupIndex, context),
+          description: groupDatum.description ?? '',
+          // tooltipContent: groupDatum.tooltipContent ? groupDatum.tooltipContent : dataFormatter.tooltipContentFormat(groupDatum, seriesIndex, groupIndex, context),
           data: groupDatum.data,
           value: groupDatum.value,
           // valueLabel: formatValueToLabel(groupDatum.value, dataFormatter.valueFormat),
+          gridIndex,
+          accSeriesIndex: seriesIndex, // 預設為seriesIndex
           seriesIndex,
           seriesLabel: seriesLabels[seriesIndex],
           groupIndex,
           groupLabel,
-          // color: seriesColors[seriesIndex],
-          color: groupDatum._color,
+          // color: groupDatum._color,
+          color: seriesColorPredicate(seriesIndex, chartParams),
           axisX: groupScale(groupIndex),
           axisY,
           axisYFromZero: axisY - zeroY,

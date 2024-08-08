@@ -104,24 +104,10 @@ export const DATA_RELATIONA_DEFAULTL: DataRelationship = {
 // -- Data Formatter --
 
 // 基本欄位
-export const DATA_FORMATTER: DataFormatterBase<ChartType> = {
-  // ...GLOBAL_DEFAULT,
-  type: ('' as any), // 後面需複蓋掉否則會有問題
-  visibleFilter: (datum, rowIndex, columnIndex, context) => true,
-  tooltipContentFormat: (datum, rowIndex, columnIndex, context) => {
-    if (typeof datum === 'object') {
-      if (datum.tooltipContent) {
-        return datum.tooltipContent
-      } else if (datum.value) {
-        return String(datum.value)
-      }
-    } else if (typeof datum === 'number') {
-      return String(datum)
-    } else {
-      return ''
-    }
-  }
-}
+// export const DATA_FORMATTER: DataFormatterBase<ChartType> = {
+//   // ...GLOBAL_DEFAULT,
+//   type: ('' as any), // 後面需複蓋掉否則會有問題
+// }
 // 有value
 // export const DATA_FORMATTER_WITH_VALUE: DataFormatterValue = {
 //   valueFormat: ',.0f'
@@ -151,9 +137,9 @@ export const DATA_FORMATTER_GROUP_AXIS: DataFormatterGroupAxis = {
 }
 
 export const DATA_FORMATTER_SERIES_DEFAULT: DataFormatterSeries = {
-  ...DATA_FORMATTER,
   // ...DATA_FORMATTER_WITH_VALUE,
   type: 'series',
+  visibleFilter: (datum, rowIndex, columnIndex, context) => true,
   unitLabel: '',
   seriesLabels: [],
   // mapSeries: (datum, rowIndex, columnIndex, { data, dataFormatter }) => {
@@ -162,20 +148,20 @@ export const DATA_FORMATTER_SERIES_DEFAULT: DataFormatterSeries = {
   //     : rowIndex
   //   return dataFormatter.seriesLabels[seriesIndex]
   // },
-  colorsPredicate: (datum, rowIndex, columnIndex, { chartParams }) => {
-    return rowIndex < chartParams.colors[chartParams.colorScheme].series.length
-      ? chartParams.colors[chartParams.colorScheme].series[rowIndex]
-      : chartParams.colors[chartParams.colorScheme].series[
-        rowIndex % chartParams.colors[chartParams.colorScheme].series.length
-      ]
-  },
+  // colorsPredicate: (datum, rowIndex, columnIndex, { chartParams }) => {
+  //   return rowIndex < chartParams.colors[chartParams.colorScheme].series.length
+  //     ? chartParams.colors[chartParams.colorScheme].series[rowIndex]
+  //     : chartParams.colors[chartParams.colorScheme].series[
+  //       rowIndex % chartParams.colors[chartParams.colorScheme].series.length
+  //     ]
+  // },
   sort: null,
 }
 
 export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
-  ...DATA_FORMATTER,
   // ...DATA_FORMATTER_WITH_VALUE,
   type: 'grid',
+  visibleFilter: (datum, rowIndex, columnIndex, context) => true,
   grid: {
     // rowUnitLabel: '',
     rowLabels: [],
@@ -188,35 +174,35 @@ export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
   valueAxis: { ...DATA_FORMATTER_VALUE_AXIS },
   groupAxis: { ...DATA_FORMATTER_GROUP_AXIS, },
   // visibleGroupRange: null,
-  colorsPredicate: (datum, rowIndex, columnIndex, { chartParams, dataFormatter }) => {
-    const seriesIndex = dataFormatter.grid.seriesType === 'row' ? rowIndex : columnIndex
-    return chartParams.colors[chartParams.colorScheme].series[seriesIndex]
-  },
+  // colorsPredicate: (datum, rowIndex, columnIndex, { chartParams, dataFormatter }) => {
+  //   const seriesIndex = dataFormatter.grid.seriesType === 'row' ? rowIndex : columnIndex
+  //   return chartParams.colors[chartParams.colorScheme].series[seriesIndex]
+  // },
 }
 
 export const DATA_FORMATTER_MULTI_GRID_DEFAULT: DataFormatterMultiGrid = {
-  ...DATA_FORMATTER,
   type: 'multiGrid',
+  visibleFilter: (datum, rowIndex, columnIndex, context) => true,
   multiGrid: [
     {
       ...DATA_FORMATTER_GRID_DEFAULT
     },
-    // @Q@ 暫時性的邏輯，之後colorsPredicate移除掉後，這邊也要移除（但colors使用的seriesIndex要接續前一組grid）
-    {
-      ...DATA_FORMATTER_GRID_DEFAULT,
-      colorsPredicate: (datum, rowIndex, columnIndex, { data, chartParams, dataFormatter }) => {
-        const seriesIndex = dataFormatter.grid.seriesType === 'row' ? rowIndex : columnIndex
-        const reverseIndex = chartParams.colors[chartParams.colorScheme].series.length - 1 - seriesIndex
-        return chartParams.colors[chartParams.colorScheme].series[reverseIndex]
-      },
-    }
+    // // @Q@ 暫時性的邏輯，之後colorsPredicate移除掉後，這邊也要移除（但colors使用的seriesIndex要接續前一組grid）
+    // {
+    //   ...DATA_FORMATTER_GRID_DEFAULT,
+    //   colorsPredicate: (datum, rowIndex, columnIndex, { data, chartParams, dataFormatter }) => {
+    //     const seriesIndex = dataFormatter.grid.seriesType === 'row' ? rowIndex : columnIndex
+    //     const reverseIndex = chartParams.colors[chartParams.colorScheme].series.length - 1 - seriesIndex
+    //     return chartParams.colors[chartParams.colorScheme].series[reverseIndex]
+    //   },
+    // }
   ],
   // visibleGroupRange: null,
 }
 
 export const DATA_FORMATTER_MULTI_VALUE_DEFAULT: DataFormatterMultiValue = {
-  ...DATA_FORMATTER,
   type: 'multiValue',
+  visibleFilter: (datum, rowIndex, columnIndex, context) => true,
   // labelFormat: (datum: any) => (datum && datum.label) ?? '',
   multiValue: [],
   xAxis: { ...DATA_FORMATTER_VALUE_AXIS },
@@ -224,14 +210,14 @@ export const DATA_FORMATTER_MULTI_VALUE_DEFAULT: DataFormatterMultiValue = {
 }
 
 export const DATA_FORMATTER_TREE_DEFAULT: DataFormatterTree = {
-  ...DATA_FORMATTER,
   type: 'tree',
+  visibleFilter: (datum, rowIndex, columnIndex, context) => true,
   // labelFormat: (datum: any) => (datum && datum.label) ?? '',
 }
 
 export const DATA_FORMATTER_RELATIONAL_DEFAULT: DataFormatterRelationship = {
-  ...DATA_FORMATTER,
   type: 'relationship',
+  visibleFilter: (datum, rowIndex, columnIndex, context) => true,
   // node: {
   //   // labelFormat: (node: any) => (node && node.label) ?? '',
   //   descriptionFormat: (node: any) => (node && node.label) ?? ''

@@ -21,14 +21,16 @@ export const computeMultiValueData: ComputedDataFn<'multiValue'> = (context) => 
           ? {
             id: '',
             label: '',
-            tooltipContent: '',
+            description: '',
+            // tooltipContent: '',
             data: {},
             value: _d
           }
           : {
             id: _d.id ?? '',
             label: _d.label ?? '',
-            tooltipContent: _d.tooltipContent ?? '',
+            description: _d.description ?? '',
+            // tooltipContent: _d.tooltipContent ?? '',
             data: _d.data ?? {},
             value: _d.value
           }
@@ -108,7 +110,8 @@ export const computeMultiValueData: ComputedDataFn<'multiValue'> = (context) => 
           id: _d.id ? _d.id : defaultId,
           index: currentIndex,
           label: _d.label ? _d.label : defaultId,
-          tooltipContent: _d.tooltipContent ? _d.tooltipContent : dataFormatter.tooltipContentFormat(_d, i, _i, context),
+          description: _d.description ?? '',
+          // tooltipContent: _d.tooltipContent ? _d.tooltipContent : dataFormatter.tooltipContentFormat(_d, i, _i, context),
           data: _d.data,
           value: _d.value,
           // valueLabel: formatValueToLabel(_d.value, dataFormatter.multiValue[_i].valueFormat),

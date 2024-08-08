@@ -1,7 +1,8 @@
 import { Node, Edge, DataRelationship } from './DataRelationship'
-import { DataFormatterBase, DataFormatterBasePartial } from './DataFormatter'
+import { DataFormatterBase, DataFormatterBasePartial, VisibleFilter } from './DataFormatter'
 
 export interface DataFormatterRelationship extends DataFormatterBase<'relationship'> {
+  visibleFilter: VisibleFilter<'relationship'>
   // node: DataFormatterRelationshipNode
   // edge: DataFormatterRelationshipEdge
 }

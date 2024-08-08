@@ -1,22 +1,23 @@
 import type { DataGridDatum, DataGridValue } from './DataGrid'
-import type { DataFormatterBase, DataFormatterBasePartial, DataFormatterValueAxis, DataFormatterGroupAxis, DataFormatterContext } from './DataFormatter'
+import type { DataFormatterBase, DataFormatterBasePartial, DataFormatterValueAxis, DataFormatterGroupAxis, VisibleFilter } from './DataFormatter'
 // import type { AxisPosition } from './Axis'
 
 export type SeriesType = 'row' | 'column' // default: 'row'
 
 export interface DataFormatterGrid extends DataFormatterBase<'grid'> {
+  visibleFilter: VisibleFilter<'grid'>
   grid: DataFormatterGridGrid
   valueAxis: DataFormatterValueAxis
   groupAxis: DataFormatterGroupAxis
   // visibleGroupRange: [number, number] | null
-  colorsPredicate: (datum: DataGridDatum | DataGridValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'grid'>) => string
+  // colorsPredicate: (datum: DataGridDatum | DataGridValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'grid'>) => string
 }
 
 export interface DataFormatterGridPartial extends DataFormatterBasePartial<'grid'> {
   grid?: Partial<DataFormatterGridGrid>
   valueAxis?: Partial<DataFormatterValueAxis>
   groupAxis?: Partial<DataFormatterGroupAxis>
-  colorsPredicate?: (datum: DataGridDatum | DataGridValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'grid'>) => string
+  // colorsPredicate?: (datum: DataGridDatum | DataGridValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'grid'>) => string
 }
 
 // grid欄位

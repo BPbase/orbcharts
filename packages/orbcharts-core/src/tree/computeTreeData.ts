@@ -10,8 +10,9 @@ export const computeTreeData: ComputedDataFn<'tree'> = (context) => {
     id: '',
     index: 0,
     label: '',
+    description: '',
     visible: true,
-    tooltipContent: '',
+    // tooltipContent: '',
     data: {},
     value: 0,
     level: 0,
@@ -53,7 +54,7 @@ export const computeTreeData: ComputedDataFn<'tree'> = (context) => {
           id: root.id,
           label: root.label,
           data: root.data,
-          tooltipContent: root.tooltipContent,
+          // tooltipContent: root.tooltipContent,
           value: root.value,
           children: (ChildrenMap.get(root.id) ?? []).map(d => {
             // 遞迴
@@ -83,8 +84,9 @@ export const computeTreeData: ComputedDataFn<'tree'> = (context) => {
         level,
         seq,
         label: branchRoot.label ?? '',
+        description: branchRoot.description ?? '',
         data: branchRoot.data ?? {},
-        tooltipContent: branchRoot.tooltipContent ? branchRoot.tooltipContent : dataFormatter.tooltipContentFormat(branchRoot, level, seq, context),
+        // tooltipContent: branchRoot.tooltipContent ? branchRoot.tooltipContent : dataFormatter.tooltipContentFormat(branchRoot, level, seq, context),
         value: branchRoot.value,
         visible,
         children: (branchRoot.children ?? []).map((d, i) => {

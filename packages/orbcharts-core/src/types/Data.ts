@@ -10,7 +10,7 @@ import { DataRelationship, Node, Edge } from './DataRelationship'
 export interface DatumBase {
   id?: string
   label?: string
-  tooltipContent?: string
+  description?: string
   data?: any // 使用者注入的資料
 }
 
