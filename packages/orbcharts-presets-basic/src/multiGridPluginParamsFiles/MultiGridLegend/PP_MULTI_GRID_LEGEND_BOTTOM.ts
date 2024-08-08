@@ -3,8 +3,8 @@ import type { GridLegendParams } from '@orbcharts/plugins-basic'
 
 export const PP_GRID_LEGEND_BOTTOM: PluginParamsFile<GridLegendParams> = {
   id: 'PP_GRID_LEGEND_BOTTOM',
-  chartType: 'grid',
-  pluginName: 'GridLegend',
+  chartType: 'multiGrid',
+  pluginName: 'MultiGridLegend',
   description: '底部圖例',
   data: {
     position: 'bottom',

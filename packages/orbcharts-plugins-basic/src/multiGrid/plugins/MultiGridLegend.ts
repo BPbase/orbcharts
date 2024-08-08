@@ -7,7 +7,7 @@ import {
   Observable,
   Subject } from 'rxjs'
 import {
-  defineMultiGridPlugin } from '@orbcharts/core'
+  defineMultiGridPlugin, mergeOptionsWithDefault } from '@orbcharts/core'
 import { DEFAULT_MULTI_GRID_LEGEND_PARAMS } from '../defaults'
 import { createBaseLegend } from '../../base/BaseLegend'
 import type { BaseLegendParams } from '../../base/BaseLegend'
@@ -45,13 +45,11 @@ export const MultiGridLegend = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_G
       return data.computedData
         .map((gridData, gridIndex) => {
           // 這個grid全部series要套用的圖例列點樣式
-          const gridListStyle = data.fullParams.gridList[gridIndex]
-            ? data.fullParams.gridList[gridIndex]
-            : {
-              listRectWidth: data.fullParams.listRectWidth,
-              listRectHeight: data.fullParams.listRectHeight,
-              listRectRadius: data.fullParams.listRectRadius,
-            }
+          const gridListStyle = mergeOptionsWithDefault(data.fullParams.gridList[gridIndex] ?? {}, {
+            listRectWidth: data.fullParams.listRectWidth,
+            listRectHeight: data.fullParams.listRectHeight,
+            listRectRadius: data.fullParams.listRectRadius,
+          })
           // series
           return gridData.map(d => gridListStyle)
         })
@@ -65,13 +63,19 @@ export const MultiGridLegend = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_G
     seriesList: seriesList$
   }).pipe(
     takeUntil(destroy$),
+    switchMap(async d => d),
     map(d => {
+      console.log('fullParams', d)
       return {
         ...d.fullParams,
         seriesList: d.seriesList
       }
     })
   )
+
+  fullParams$.subscribe(d => {
+    console.log('subscription')
+  })
 
   const unsubscribeBaseLegend = createBaseLegend(pluginName, {
     rootSelection,
