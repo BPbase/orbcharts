@@ -18,7 +18,7 @@ export const MultiGridLegend = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_G
   
   const destroy$ = new Subject()
 
-  const seriesLabels$ = observer.multiGrid$.pipe(
+  const seriesLabels$ = observer.multiGridEachDetail$.pipe(
     takeUntil(destroy$),
     map(multiGrid => {
       const seriesLabelsObservableArr = multiGrid.map((grid, gridIndex) => {
@@ -35,7 +35,7 @@ export const MultiGridLegend = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_G
 
   const seriesList$ = combineLatest({
     fullParams: observer.fullParams$,
-    multiGrid: observer.multiGrid$,
+    multiGrid: observer.multiGridEachDetail$,
     computedData: observer.computedData$,
   }).pipe(
     takeUntil(destroy$),

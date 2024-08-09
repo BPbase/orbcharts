@@ -21,8 +21,45 @@ const linesClassName = getClassName(pluginName, 'lines')
 export const BarsAndLines = defineMultiGridPlugin(pluginName, DEFAULT_BARS_AND_LINES_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
-  const barsSelection = selection.append('g').attr('class', barsClassName)
-  const linesSelection = selection.append('g').attr('class', linesClassName)
+  // const barsSelection = selection.append('g').attr('class', barsClassName)
+  // const linesSelection = selection.append('g').attr('class', linesClassName)
+
+  const barsSelection$ = observer.multiGridContainer$.pipe(
+    takeUntil(destroy$),
+    map(multiGridContainer => {
+      // console.log('multiGridContainer', multiGridContainer)
+      const barsSelection = selection
+        .selectAll(`g.${barsClassName}`)
+        .data(multiGridContainer[0] ? [multiGridContainer[0]] : [])
+        .join('g')
+        .attr('class', barsClassName)
+      barsSelection
+        .transition()
+        .attr('transform', d => `translate(${d.translate[0]}, ${d.translate[1]}) scale(${d.scale[0]}, ${d.scale[1]})`)
+      return barsSelection
+    })
+  )
+  const linesSelection$ = observer.multiGridContainer$.pipe(
+    takeUntil(destroy$),
+    map(multiGridContainer => {
+      const linesSelection = selection
+        .selectAll(`g.${linesClassName}`)
+        .data(multiGridContainer[1] ? [multiGridContainer[1]] : [])
+        .join('g')
+        .attr('class', linesClassName)
+      linesSelection
+        .transition()
+        .attr('transform', d => `translate(${d.translate[0]}, ${d.translate[1]}) scale(${d.scale[0]}, ${d.scale[1]})`)
+      return linesSelection
+    })
+  )
+
+  // observer.fullDataFormatter$.subscribe(d => {
+  //   console.log('fullDataFormatter$', d)
+  // })
+  // observer.multiGridContainer$.subscribe(d => {
+  //   console.log('multiGridContainer$', d)
+  // })
 
   let unsubscribeBaseBars = () => {}
   let unsubscribeBaseLines = () => {}
@@ -75,40 +112,47 @@ export const BarsAndLines = defineMultiGridPlugin(pluginName, DEFAULT_BARS_AND_L
     })
   )
 
-  observer.multiGrid$.subscribe((multiGrid) => {
+  combineLatest({
+    multiGridEachDetail: observer.multiGridEachDetail$,
+    barsSelection: barsSelection$,
+    linesSelection: linesSelection$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d)
+  ).subscribe(data => {
     // bars
-    if (multiGrid[0]) {
+    if (data.multiGridEachDetail[0]) {
       unsubscribeBaseBars = createBaseBars(pluginName, {
-        selection: barsSelection,
+        selection: data.barsSelection,
         computedData$: barsComputedData$,
-        visibleComputedData$: multiGrid[0].visibleComputedData$,
-        SeriesDataMap$: multiGrid[0].SeriesDataMap$,
-        GroupDataMap$: multiGrid[0].GroupDataMap$,
+        visibleComputedData$: data.multiGridEachDetail[0].visibleComputedData$,
+        SeriesDataMap$: data.multiGridEachDetail[0].SeriesDataMap$,
+        GroupDataMap$: data.multiGridEachDetail[0].GroupDataMap$,
         fullParams$: barsFullParams$,
         fullChartParams$: observer.fullChartParams$,
-        gridAxesTransform$: multiGrid[0].gridAxesTransform$,
-        gridGraphicTransform$: multiGrid[0].gridGraphicTransform$,
-        gridAxesSize$: multiGrid[0].gridAxesSize$,
-        gridHighlight$: multiGrid[0].gridHighlight$,
+        gridAxesTransform$: data.multiGridEachDetail[0].gridAxesTransform$,
+        gridGraphicTransform$: data.multiGridEachDetail[0].gridGraphicTransform$,
+        gridAxesSize$: data.multiGridEachDetail[0].gridAxesSize$,
+        gridHighlight$: data.multiGridEachDetail[0].gridHighlight$,
         event$: subject.event$ as Subject<any>,
       })
     } else {
       unsubscribeBaseBars()
     }
     // lines
-    if (multiGrid[1]) {
+    if (data.multiGridEachDetail[1]) {
       unsubscribeBaseLines = createBaseLines(pluginName, {
-        selection: linesSelection,
+        selection: data.linesSelection,
         computedData$: linesComputedData$,
-        SeriesDataMap$: multiGrid[1].SeriesDataMap$,
-        GroupDataMap$: multiGrid[1].GroupDataMap$,
+        SeriesDataMap$: data.multiGridEachDetail[1].SeriesDataMap$,
+        GroupDataMap$: data.multiGridEachDetail[1].GroupDataMap$,
         fullParams$: linesFullParams$,
         fullDataFormatter$: linesFullDataFormatter$,
         fullChartParams$: observer.fullChartParams$,
-        gridAxesTransform$: multiGrid[1].gridAxesTransform$,
-        gridGraphicTransform$: multiGrid[1].gridGraphicTransform$,
-        gridAxesSize$: multiGrid[1].gridAxesSize$,
-        gridHighlight$: multiGrid[1].gridHighlight$,
+        gridAxesTransform$: data.multiGridEachDetail[1].gridAxesTransform$,
+        gridGraphicTransform$: data.multiGridEachDetail[1].gridGraphicTransform$,
+        gridAxesSize$: data.multiGridEachDetail[1].gridAxesSize$,
+        gridHighlight$: data.multiGridEachDetail[1].gridHighlight$,
         event$: subject.event$ as Subject<any>,
       })
     } else {
