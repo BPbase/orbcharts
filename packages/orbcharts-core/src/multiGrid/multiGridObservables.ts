@@ -24,6 +24,7 @@ import type {
   DataFormatterContext,
   DataFormatterValueAxis,
   DataFormatterGroupAxis,
+  DataFormatterMultiGridContainer,
   EventMultiGrid,
   HighlightTarget,
   Layout,
@@ -40,8 +41,9 @@ import {
   gridAxesOppositeTransformObservable,
   gridAxesSizeObservable,
   gridVisibleComputedDataObservable } from '../grid/gridObservables'
+import { DATA_FORMATTER_MULTI_GRID_MULTI_GRID_DEFAULT } from '../defaults'
 
-export const multiGridObservable = ({ fullDataFormatter$, computedData$, layout$, fullChartParams$, event$ }: {
+export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData$, layout$, fullChartParams$, event$ }: {
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiGrid'>>
   computedData$: Observable<ComputedDataTypeMap<'multiGrid'>>
   layout$: Observable<Layout>
@@ -151,4 +153,60 @@ export const multiGridObservable = ({ fullDataFormatter$, computedData$, layout$
       })
     })
   )
+}
+
+
+
+// 每一個grid的container位置
+export const multiGridContainerObservable = ({ computedData$, fullDataFormatter$, fullChartParams$, layout$ }: {
+  computedData$: Observable<ComputedDataTypeMap<'multiGrid'>>
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'multiGrid'>>
+  fullChartParams$: Observable<ChartParams>
+  layout$: Observable<Layout>
+}) => {
+  function calcBox (layout: Layout, container: DataFormatterMultiGridContainer, rowIndex: number, columnIndex: number) {
+    const { gap, rowAmount, columnAmount } = container
+    const width = (layout.width - (gap * (columnAmount - 1))) / columnAmount
+    const height = (layout.height - (gap * (rowAmount - 1))) / rowAmount
+    const x = columnIndex * width + (columnIndex * gap)
+    const y = rowIndex * height + (rowIndex * gap)
+    const translate: [number, number] = [x, y]
+    const scale: [number, number] = [width / layout.width, height / layout.height]
+
+    return {
+      translate,
+      scale
+    }
+  }
+
+  const multiGridContainer$ = combineLatest({
+    computedData: computedData$,
+    fullDataFormatter: fullDataFormatter$,
+    fullChartParams: fullChartParams$,
+    layout: layout$,
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+
+      const defaultGrid = data.fullDataFormatter.multiGrid[0] ?? DATA_FORMATTER_MULTI_GRID_MULTI_GRID_DEFAULT
+      
+      const boxArr = data.computedData.map((gridData, gridIndex) => {
+        const grid = data.fullDataFormatter.multiGrid[gridIndex] ?? defaultGrid
+        const columnIndex = grid.slotIndex % data.fullDataFormatter.container.columnAmount
+        const rowIndex = Math.floor(grid.slotIndex / data.fullDataFormatter.container.columnAmount)
+        const {  translate, scale } = calcBox(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
+
+        return {
+          slotIndex: grid.slotIndex,
+          rowIndex,
+          columnIndex,
+          translate,
+          scale,
+        }
+      })
+      return boxArr
+    }),
+  )
+
+  return multiGridContainer$
 }

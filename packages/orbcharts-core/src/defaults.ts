@@ -10,7 +10,7 @@ import type { DataRelationship } from './types/DataRelationship'
 import type { DataFormatterBase, DataFormatterValueAxis, DataFormatterGroupAxis } from './types/DataFormatter'
 import type { DataFormatterSeries } from './types/DataFormatterSeries'
 import type { DataFormatterGrid } from './types/DataFormatterGrid'
-import type { DataFormatterMultiGrid } from './types/DataFormatterMultiGrid'
+import type { DataFormatterMultiGrid, DataFormatterMultiGridMultiGrid } from './types/DataFormatterMultiGrid'
 import type { DataFormatterMultiValue } from './types/DataFormatterMultiValue'
 import type { DataFormatterTree } from './types/DataFormatterTree'
 import type { DataFormatterRelationship } from './types/DataFormatterRelationship'
@@ -180,24 +180,25 @@ export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
   // },
 }
 
+export const DATA_FORMATTER_MULTI_GRID_MULTI_GRID_DEFAULT: DataFormatterMultiGridMultiGrid = {
+  ...DATA_FORMATTER_GRID_DEFAULT,
+  slotIndex: 0,
+}
+
 export const DATA_FORMATTER_MULTI_GRID_DEFAULT: DataFormatterMultiGrid = {
   type: 'multiGrid',
   visibleFilter: (datum, rowIndex, columnIndex, context) => true,
   multiGrid: [
     {
-      ...DATA_FORMATTER_GRID_DEFAULT
+      ...DATA_FORMATTER_MULTI_GRID_MULTI_GRID_DEFAULT
     },
-    // // @Q@ 暫時性的邏輯，之後colorsPredicate移除掉後，這邊也要移除（但colors使用的seriesIndex要接續前一組grid）
-    // {
-    //   ...DATA_FORMATTER_GRID_DEFAULT,
-    //   colorsPredicate: (datum, rowIndex, columnIndex, { data, chartParams, dataFormatter }) => {
-    //     const seriesIndex = dataFormatter.grid.seriesType === 'row' ? rowIndex : columnIndex
-    //     const reverseIndex = chartParams.colors[chartParams.colorScheme].series.length - 1 - seriesIndex
-    //     return chartParams.colors[chartParams.colorScheme].series[reverseIndex]
-    //   },
-    // }
   ],
   // visibleGroupRange: null,
+  container: {
+    gap: 120,
+    rowAmount: 1,
+    columnAmount: 1
+  }
 }
 
 export const DATA_FORMATTER_MULTI_VALUE_DEFAULT: DataFormatterMultiValue = {

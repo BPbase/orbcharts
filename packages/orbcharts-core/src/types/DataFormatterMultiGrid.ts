@@ -10,12 +10,25 @@ import type { AxisPosition } from './Axis'
 
 export interface DataFormatterMultiGrid extends DataFormatterBase<'multiGrid'> {
   visibleFilter: VisibleFilter<'multiGrid'>
-  multiGrid: Array<DataFormatterGrid>
+  multiGrid: Array<DataFormatterMultiGridMultiGrid>
   // visibleGroupRange: [number, number] | null
+  container: DataFormatterMultiGridContainer
 }
 
 export interface DataFormatterMultiGridPartial extends DataFormatterBasePartial<'multiGrid'> {
-  multiGrid?: Array<Partial<DataFormatterGrid>>
+  multiGrid?: Array<Partial<DataFormatterMultiGridMultiGrid>>
+}
+
+// 比grid還多出來的額外參數
+export interface DataFormatterMultiGridMultiGrid extends DataFormatterGrid {
+  slotIndex: number
+}
+
+// container
+export interface DataFormatterMultiGridContainer {
+  gap: number
+  rowAmount: number
+  columnAmount: number
 }
 
 // multiGrid欄位
