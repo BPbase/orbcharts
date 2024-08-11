@@ -11,6 +11,7 @@ import type { BasePluginFn } from './types'
 import type {
   ComputedDatumGrid,
   ComputedDataGrid,
+  ContainerPosition,
   EventGrid,
   ChartParams, 
   Layout,
@@ -41,6 +42,7 @@ interface BaseBarsContext {
     height: number;
   }>
   gridHighlight$: Observable<string[]>
+  gridContainer$: Observable<ContainerPosition[]>
   event$: Subject<EventGrid>
 }
 
@@ -239,6 +241,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
   gridGraphicTransform$,
   gridAxesSize$,
   gridHighlight$,
+  gridContainer$,
   event$
 }) => {
 

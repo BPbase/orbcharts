@@ -23,6 +23,7 @@ export const Bars = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)(({ selecti
     gridGraphicTransform$: observer.gridGraphicTransform$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
+    gridContainer$: observer.gridContainer$,
     event$: subject.event$,
   })
 

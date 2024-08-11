@@ -121,6 +121,21 @@ export const demoList: DemoChartTypeItem[] = [
             pluginName: 'Bars',
             presetName: 'PRESET_BARS_HORIZONTAL_AND_THIN'
           },
+          {
+            chartType: 'grid',
+            pluginName: 'Bars',
+            presetName: 'PRESET_GRID_2_SERIES_SLOT'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'Bars',
+            presetName: 'PRESET_GRID_3_SERIES_SLOT'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'Bars',
+            presetName: 'PRESET_GRID_4_SERIES_SLOT'
+          },
         ]
       },
       {
@@ -141,6 +156,21 @@ export const demoList: DemoChartTypeItem[] = [
             pluginName: 'BarStack',
             presetName: 'PRESET_GRID_HORIZONTAL'
           },
+          {
+            chartType: 'grid',
+            pluginName: 'BarStack',
+            presetName: 'PRESET_GRID_2_SERIES_SLOT'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'BarStack',
+            presetName: 'PRESET_GRID_3_SERIES_SLOT'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'BarStack',
+            presetName: 'PRESET_GRID_4_SERIES_SLOT'
+          },
         ]
       },
       {
@@ -160,6 +190,21 @@ export const demoList: DemoChartTypeItem[] = [
             chartType: 'grid',
             pluginName: 'BarsTriangle',
             presetName: 'PRESET_GRID_HORIZONTAL'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'BarsTriangle',
+            presetName: 'PRESET_GRID_2_SERIES_SLOT'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'BarsTriangle',
+            presetName: 'PRESET_GRID_3_SERIES_SLOT'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'BarsTriangle',
+            presetName: 'PRESET_GRID_4_SERIES_SLOT'
           },
         ]
       },
@@ -190,6 +235,21 @@ export const demoList: DemoChartTypeItem[] = [
             chartType: 'grid',
             pluginName: 'Lines',
             presetName: 'PRESET_LINES_HIGHLIGHT_GROUP_DOTS'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'Lines',
+            presetName: 'PRESET_GRID_2_SERIES_SLOT'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'Lines',
+            presetName: 'PRESET_GRID_3_SERIES_SLOT'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'Lines',
+            presetName: 'PRESET_GRID_4_SERIES_SLOT'
           },
         ]
       }
