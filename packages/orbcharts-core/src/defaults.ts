@@ -9,8 +9,8 @@ import type { DataTree } from './types/DataTree'
 import type { DataRelationship } from './types/DataRelationship'
 import type { DataFormatterBase, DataFormatterValueAxis, DataFormatterGroupAxis } from './types/DataFormatter'
 import type { DataFormatterSeries } from './types/DataFormatterSeries'
-import type { DataFormatterGrid } from './types/DataFormatterGrid'
-import type { DataFormatterMultiGrid, DataFormatterMultiGridMultiGrid } from './types/DataFormatterMultiGrid'
+import type { DataFormatterGrid, DataFormatterGridGrid } from './types/DataFormatterGrid'
+import type { DataFormatterMultiGrid, DataFormatterMultiGridGrid } from './types/DataFormatterMultiGrid'
 import type { DataFormatterMultiValue } from './types/DataFormatterMultiValue'
 import type { DataFormatterTree } from './types/DataFormatterTree'
 import type { DataFormatterRelationship } from './types/DataFormatterRelationship'
@@ -158,21 +158,30 @@ export const DATA_FORMATTER_SERIES_DEFAULT: DataFormatterSeries = {
   sort: null,
 }
 
-export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
-  // ...DATA_FORMATTER_WITH_VALUE,
-  type: 'grid',
+export const DATA_FORMATTER_GRID_GRID_DEFAULT: DataFormatterGridGrid = {
   visibleFilter: (datum, rowIndex, columnIndex, context) => true,
-  grid: {
-    // rowUnitLabel: '',
+  gridData: {
+    seriesType: 'row',
     rowLabels: [],
-    // rowLabelFormat: label => label,
-    // columnUnitLabel: '',
     columnLabels: [],
-    // columnLabelFormat: label => label,
-    seriesType: 'row'
   },
   valueAxis: { ...DATA_FORMATTER_VALUE_AXIS },
   groupAxis: { ...DATA_FORMATTER_GROUP_AXIS, },
+  slotIndex: 0,
+  seriesSlotIndexes: null
+}
+
+export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
+  // ...DATA_FORMATTER_WITH_VALUE,
+  type: 'grid',
+  grid: {
+    ...DATA_FORMATTER_GRID_GRID_DEFAULT
+  },
+  container: {
+    gap: 120,
+    rowAmount: 1,
+    columnAmount: 1
+  }
   // visibleGroupRange: null,
   // colorsPredicate: (datum, rowIndex, columnIndex, { chartParams, dataFormatter }) => {
   //   const seriesIndex = dataFormatter.grid.seriesType === 'row' ? rowIndex : columnIndex
@@ -180,20 +189,24 @@ export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
   // },
 }
 
-export const DATA_FORMATTER_MULTI_GRID_MULTI_GRID_DEFAULT: DataFormatterMultiGridMultiGrid = {
-  ...DATA_FORMATTER_GRID_DEFAULT,
-  slotIndex: 0,
+// export const DATA_FORMATTER_MULTI_GRID_MULTI_GRID_DEFAULT: DataFormatterMultiGridMultiGrid = {
+//   ...DATA_FORMATTER_GRID_DEFAULT,
+//   slotIndex: 0,
+//   seriesSlotIndexes: null
+// }
+
+export const DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT: DataFormatterMultiGridGrid = {
+  ...DATA_FORMATTER_GRID_GRID_DEFAULT
 }
 
 export const DATA_FORMATTER_MULTI_GRID_DEFAULT: DataFormatterMultiGrid = {
   type: 'multiGrid',
   visibleFilter: (datum, rowIndex, columnIndex, context) => true,
-  multiGrid: [
+  gridList: [
     {
-      ...DATA_FORMATTER_MULTI_GRID_MULTI_GRID_DEFAULT
+      ...DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT
     },
   ],
-  // visibleGroupRange: null,
   container: {
     gap: 120,
     rowAmount: 1,

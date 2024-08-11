@@ -1,5 +1,5 @@
 import type { VisibleFilter } from './DataFormatter'
-import type { DataFormatterGrid } from './DataFormatterGrid'
+import type { DataFormatterGridGrid, DataFormatterGridGridPartial, DataFormatterGridContainer } from './DataFormatterGrid'
 import type {
   DataFormatterBase,
   DataFormatterBasePartial,
@@ -10,30 +10,32 @@ import type { AxisPosition } from './Axis'
 
 export interface DataFormatterMultiGrid extends DataFormatterBase<'multiGrid'> {
   visibleFilter: VisibleFilter<'multiGrid'>
-  multiGrid: Array<DataFormatterMultiGridMultiGrid>
-  // visibleGroupRange: [number, number] | null
+  gridList: Array<DataFormatterGridGrid>
   container: DataFormatterMultiGridContainer
 }
 
 export interface DataFormatterMultiGridPartial extends DataFormatterBasePartial<'multiGrid'> {
-  multiGrid?: Array<Partial<DataFormatterMultiGridMultiGrid>>
+  visibleFilter?: VisibleFilter<'multiGrid'>
+  gridList?: Array<DataFormatterGridGridPartial>
+  container?: Partial<DataFormatterMultiGridContainer>
 }
 
-// 比grid還多出來的額外參數
-export interface DataFormatterMultiGridMultiGrid extends DataFormatterGrid {
-  slotIndex: number
+export interface DataFormatterMultiGridGrid extends DataFormatterGridGrid {
+
+}
+
+export interface DataFormatterMultiGridGridPartial extends DataFormatterGridGridPartial {
+
 }
 
 // container
-export interface DataFormatterMultiGridContainer {
-  gap: number
-  rowAmount: number
-  columnAmount: number
+export interface DataFormatterMultiGridContainer extends DataFormatterGridContainer {
+
 }
 
 // multiGrid欄位
 // export interface DataFormatterMultiGridMultiGrid {
-//   grid: DataFormatterGridGrid
+//   grid: DataFormatterGridGridData
 //   valueAxis: DataFormatterValueAxis // default: 'left'
 //   groupAxis: DataFormatterGroupAxis // default: 'bottom'
 //   colorsPredicate: (datum: DataGridDatum | DataGridValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'grid'>) => string

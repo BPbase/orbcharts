@@ -5,31 +5,46 @@ import type { DataFormatterBase, DataFormatterBasePartial, DataFormatterValueAxi
 export type SeriesType = 'row' | 'column' // default: 'row'
 
 export interface DataFormatterGrid extends DataFormatterBase<'grid'> {
-  visibleFilter: VisibleFilter<'grid'>
   grid: DataFormatterGridGrid
-  valueAxis: DataFormatterValueAxis
-  groupAxis: DataFormatterGroupAxis
+  container: DataFormatterGridContainer
   // visibleGroupRange: [number, number] | null
   // colorsPredicate: (datum: DataGridDatum | DataGridValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'grid'>) => string
 }
 
 export interface DataFormatterGridPartial extends DataFormatterBasePartial<'grid'> {
-  grid?: Partial<DataFormatterGridGrid>
+  grid?: DataFormatterGridGridPartial
+  container?: Partial<DataFormatterGridContainer>
+}
+
+export interface DataFormatterGridGrid {
+  visibleFilter: VisibleFilter<'grid'>
+  gridData: DataFormatterGridGridData
+  valueAxis: DataFormatterValueAxis
+  groupAxis: DataFormatterGroupAxis
+  slotIndex: number | null
+  seriesSlotIndexes: number[] | null
+}
+
+export interface DataFormatterGridGridPartial {
+  visibleFilter?: VisibleFilter<'grid'>
+  gridData?: Partial<DataFormatterGridGridData>
   valueAxis?: Partial<DataFormatterValueAxis>
   groupAxis?: Partial<DataFormatterGroupAxis>
-  // colorsPredicate?: (datum: DataGridDatum | DataGridValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'grid'>) => string
+  slotIndex?: number | null
+  seriesSlotIndexes?: number[] | null
+}
+
+export interface DataFormatterGridContainer {
+  gap: number
+  rowAmount: number
+  columnAmount: number
 }
 
 // grid欄位
-export interface DataFormatterGridGrid {
-  // labelFormat: (datum: DataGridDatum) => string
-  // rowUnitLabel: string
-  rowLabels: string[]
-  // rowLabelFormat: string | ((text: any) => string)
-  // columnUnitLabel: string
-  columnLabels: string[]
-  // columnLabelFormat: string | ((text: any) => string)
+export interface DataFormatterGridGridData {
   seriesType: SeriesType
+  rowLabels: string[]
+  columnLabels: string[]
 }
 
 // const test: DataFormatterGridPartial = {

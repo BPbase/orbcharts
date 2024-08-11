@@ -9,7 +9,8 @@ import {
   gridGraphicTransformObservable,
   gridAxesOppositeTransformObservable,
   gridAxesSizeObservable,
-  gridVisibleComputedDataObservable } from './gridObservables'
+  gridVisibleComputedDataObservable,
+  gridContainerObservable } from './gridObservables'
 
 export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, observer }) => {
   
@@ -73,6 +74,13 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     shareReplay(1)
   )
 
+  const gridContainer$ = gridContainerObservable({
+    computedData$: observer.computedData$,
+    fullDataFormatter$: observer.fullDataFormatter$,
+    fullChartParams$: observer.fullChartParams$,
+    layout$: observer.layout$,
+  })
+
   return {
     fullParams$: observer.fullParams$,
     fullChartParams$: observer.fullChartParams$,
@@ -86,6 +94,7 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     gridHighlight$,
     SeriesDataMap$,
     GroupDataMap$,
-    visibleComputedData$
+    visibleComputedData$,
+    gridContainer$
   }
 }

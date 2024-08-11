@@ -12,5 +12,13 @@ export interface ContextObserverGrid<PluginParams> extends ContextObserverBase<'
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   visibleComputedData$: Observable<ComputedDataGrid>
+  gridContainer$: Observable<ContainerPosition[]>
 }
 
+export interface ContainerPosition {
+  slotIndex: number
+  rowIndex: number
+  columnIndex: number
+  translate: [number, number]
+  scale: [number, number]
+}

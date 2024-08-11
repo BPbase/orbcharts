@@ -1,9 +1,9 @@
 import type { DataGrid } from '../types/DataGrid'
 import type { ComputedDataFn } from '../types/ComputedData'
-import type { DataFormatterMultiGrid } from '../types/DataFormatterMultiGrid'
-import type { ComputedDataGrid } from '../types/ComputedDataGrid'
+import type { DataFormatterGrid } from '../types/DataFormatterGrid'
+import type { ComputedDataMultiGrid } from '../types/ComputedDataMultiGrid'
 import { computeBaseGridData } from '../grid/computeGridData'
-import { DATA_FORMATTER_MULTI_GRID_DEFAULT } from '../defaults'
+import { DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT } from '../defaults'
 import { seriesColorPredicate } from '../utils/orbchartsUtils'
 
 export const computeMultiGridData: ComputedDataFn<'multiGrid'> = ({ data = [], dataFormatter, chartParams, layout }) => {
@@ -11,23 +11,27 @@ export const computeMultiGridData: ComputedDataFn<'multiGrid'> = ({ data = [], d
     return []
   }
 
-  let multiGridData: ComputedDataGrid[] = []
+  let multiGridData: ComputedDataMultiGrid = []
 
   try {
-    const defaultDataFormatterGrid = Object.assign({}, DATA_FORMATTER_MULTI_GRID_DEFAULT.multiGrid[0])
+    const defaultGrid = dataFormatter.gridList[0] || DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT
 
     // 計算每個grid的資料
     multiGridData = data.map((gridData, gridIndex) => {
-      const currentDataFormatterGrid = dataFormatter.multiGrid[gridIndex] || defaultDataFormatterGrid
-      // const dataFormatterGrid: DataFormatterGrid = {
-      //   ...currentDataFormatterGrid,
-      //   type: `multiGrid` as any,
-      //   visibleFilter: dataFormatter.visibleFilter as any,
-      // }
+      const currentDataFormatterGrid = dataFormatter.gridList[gridIndex] || defaultGrid
+
       return computeBaseGridData(
         {
           data: gridData,
-          dataFormatter: currentDataFormatterGrid,
+          dataFormatter: {
+            type: 'grid',
+            grid: {
+              ...currentDataFormatterGrid
+            },
+            container: {
+              ...dataFormatter.container
+            }
+          },
           chartParams,
           layout
         },
