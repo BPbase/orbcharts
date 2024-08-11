@@ -64,7 +64,7 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
 
   combineLatest({
     initGroupAxis: observer.fullDataFormatter$.pipe(
-      map(d => d.groupAxis),
+      map(d => d.grid.groupAxis),
       // 只用第一次資料來計算scale才不會造成每次變動都受到影響
       first()
     ),
@@ -87,7 +87,7 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
       ? groupMax + data.initGroupAxis.scalePadding
       : data.initGroupAxis.scaleDomain[1] as number + data.initGroupAxis.scalePadding
 
-    const scaleRange: [number, number] = data.fullDataFormatter.valueAxis.position === 'left' || data.fullDataFormatter.valueAxis.position === 'top'
+    const scaleRange: [number, number] = data.fullDataFormatter.grid.valueAxis.position === 'left' || data.fullDataFormatter.grid.valueAxis.position === 'top'
       ? [0, 1]
       : [1, 0]
 
@@ -113,7 +113,7 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
           const n = Math.round(d)
           return Math.min(groupMax, Math.max(groupMin, n));
         }
-        const zoomedDomain = data.fullDataFormatter.groupAxis.position === 'bottom' || data.fullDataFormatter.groupAxis.position === 'top'
+        const zoomedDomain = data.fullDataFormatter.grid.groupAxis.position === 'bottom' || data.fullDataFormatter.grid.groupAxis.position === 'top'
           ? t.rescaleX(shadowScale)
             .domain()
             .map(mapGroupindex)
@@ -148,9 +148,12 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
         // console.log('zoomedDomain', zoomedDomain)
         subject.dataFormatter$.next({
           ...data.fullDataFormatter,
-          groupAxis: {
-            ...data.fullDataFormatter.groupAxis,
-            scaleDomain: zoomedDomain
+          grid: {
+            ...data.fullDataFormatter.grid,
+            groupAxis: {
+              ...data.fullDataFormatter.grid.groupAxis,
+              scaleDomain: zoomedDomain
+            }
           }
         })
       })

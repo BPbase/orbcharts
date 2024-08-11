@@ -50,9 +50,27 @@ export const PRESET_GRID_ROTATE_AXIS_LABEL = createGridPreset({
 })
 export const PRESET_GRID_HORIZONTAL = createGridPreset({
   chartParamsId: 'CP_BOTTOM_AND_LEFT_PADDING',
-  dataFormatterId: 'DF_BOTTOM_VALUE_AXIS',
+  dataFormatterId: 'DF_GRID_BOTTOM_VALUE_AXIS',
   allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
-  description: '橫向圓角長條圖'
+  description: '橫向圖'
+})
+export const PRESET_GRID_2_SERIES_SLOT = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_PADDING',
+  dataFormatterId: 'DF_GRID_2_SERIES_SLOT',
+  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
+  description: '2組Series圖表'
+})
+export const PRESET_GRID_3_SERIES_SLOT = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_PADDING',
+  dataFormatterId: 'DF_GRID_3_SERIES_SLOT',
+  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
+  description: '3組Series圖表'
+})
+export const PRESET_GRID_4_SERIES_SLOT = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_PADDING',
+  dataFormatterId: 'DF_GRID_4_SERIES_SLOT',
+  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
+  description: '4組Series圖表'
 })
 // Bars - PRESET_BARS_[name]
 export const PRESET_BARS_ROUND = createGridPreset({
@@ -62,7 +80,7 @@ export const PRESET_BARS_ROUND = createGridPreset({
 })
 export const PRESET_BARS_HORIZONTAL_AND_ROUND = createGridPreset({
   chartParamsId: 'CP_BOTTOM_AND_LEFT_PADDING',
-  dataFormatterId: 'DF_BOTTOM_VALUE_AXIS',
+  dataFormatterId: 'DF_GRID_BOTTOM_VALUE_AXIS',
   allPluginParamsIds: ['PP_BARS_ROUND', 'PP_GRID_LEGEND_BOTTOM'],
   description: '橫向圓角長條圖'
 })
@@ -73,7 +91,7 @@ export const PRESET_BARS_THIN = createGridPreset({
 })
 export const PRESET_BARS_HORIZONTAL_AND_THIN = createGridPreset({
   chartParamsId: 'CP_BOTTOM_AND_LEFT_PADDING',
-  dataFormatterId: 'DF_BOTTOM_VALUE_AXIS',
+  dataFormatterId: 'DF_GRID_BOTTOM_VALUE_AXIS',
   allPluginParamsIds: ['PP_BARS_ROUND', 'PP_GRID_LEGEND_BOTTOM'],
   description: '橫向圓角長條圖'
 })
@@ -90,7 +108,7 @@ export const PRESET_LINES_ROTATE_AXIS_LABEL = createGridPreset({
 })
 export const PRESET_LINES_HORIZONTAL = createGridPreset({
   chartParamsId: 'CP_BOTTOM_AND_LEFT_PADDING_WITH_SERIES_HIGHLIGHT',
-  dataFormatterId: 'DF_BOTTOM_VALUE_AXIS',
+  dataFormatterId: 'DF_GRID_BOTTOM_VALUE_AXIS',
   allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
   description: '橫向圓角長條圖'
 })
@@ -121,6 +139,24 @@ export const PRESET_MULTI_GRID_BASIC = createMultiGridPreset({
   chartParamsId: 'CP_BOTTOM_PADDING',
   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_RECT_AND_LINE_LIST'],
   description: '基本MultiGrid參數'
+})
+export const PRESET_MULTI_GRID_2_GRID_SLOT = createMultiGridPreset({
+  chartParamsId: 'CP_BOTTOM_PADDING',
+  dataFormatterId: 'DF_MULTI_GRID_2_GRID_SLOT',
+  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM'],
+  description: '2組Grid圖表'
+})
+export const PRESET_MULTI_GRID_3_GRID_SLOT = createMultiGridPreset({
+  chartParamsId: 'CP_BOTTOM_PADDING',
+  dataFormatterId: 'DF_MULTI_GRID_3_GRID_SLOT',
+  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM'],
+  description: '3組Grid圖表'
+})
+export const PRESET_MULTI_GRID_4_GRID_SLOT = createMultiGridPreset({
+  chartParamsId: 'CP_BOTTOM_PADDING',
+  dataFormatterId: 'DF_MULTI_GRID_4_GRID_SLOT',
+  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM'],
+  description: '4組Grid圖表'
 })
 // BarsAndLines - PRESET_BARS_AND_LINES_[name]
 

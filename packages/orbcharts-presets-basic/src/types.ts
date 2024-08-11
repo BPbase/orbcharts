@@ -2,7 +2,8 @@ import type {
   ChartParamsPartial,
   DataFormatterPartialTypeMap,
   ChartType,
-  Preset } from '@orbcharts/core'
+  Preset } from '../../orbcharts-core/src/index'
+  // import * as core from '../../packages/orbcharts-core/src/index'
 import * as chartParams from './chartParamsFiles'
 import * as seriesDataFormatters from './seriesDataFormatterFiles'
 import * as seriesPluginParams from './seriesPluginParamsFiles'

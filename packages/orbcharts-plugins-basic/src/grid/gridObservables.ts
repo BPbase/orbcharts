@@ -33,18 +33,18 @@ export function gridGroupPositionFnObservable ({ fullDataFormatter$, gridAxesSiz
     ).subscribe(data => {
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      const groupScaleDomainMin = data.dataFormatter.groupAxis.scaleDomain[0] === 'auto'
-        ? groupMin - data.dataFormatter.groupAxis.scalePadding
-        : data.dataFormatter.groupAxis.scaleDomain[0] as number - data.dataFormatter.groupAxis.scalePadding
-      const groupScaleDomainMax = data.dataFormatter.groupAxis.scaleDomain[1] === 'auto'
-        ? groupMax + data.dataFormatter.groupAxis.scalePadding
-        : data.dataFormatter.groupAxis.scaleDomain[1] as number + data.dataFormatter.groupAxis.scalePadding
+      const groupScaleDomainMin = data.dataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+        ? groupMin - data.dataFormatter.grid.groupAxis.scalePadding
+        : data.dataFormatter.grid.groupAxis.scaleDomain[0] as number - data.dataFormatter.grid.groupAxis.scalePadding
+      const groupScaleDomainMax = data.dataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
+        ? groupMax + data.dataFormatter.grid.groupAxis.scalePadding
+        : data.dataFormatter.grid.groupAxis.scaleDomain[1] as number + data.dataFormatter.grid.groupAxis.scalePadding
       
       // const groupingAmount = data.computedData[0]
       //   ? data.computedData[0].length
       //   : 0
 
-      let _labels = data.dataFormatter.grid.seriesType === 'row'
+      let _labels = data.dataFormatter.grid.gridData.seriesType === 'row'
         ? (data.computedData[0] ?? []).map(d => d.groupLabel)
         : data.computedData.map(d => d[0].groupLabel)
 
@@ -75,8 +75,8 @@ export function gridGroupPositionFnObservable ({ fullDataFormatter$, gridAxesSiz
       switchMap(async (d) => d),
     ).subscribe(data => {
       
-      const reverse = data.dataFormatter.valueAxis.position === 'right'
-        || data.dataFormatter.valueAxis.position === 'bottom'
+      const reverse = data.dataFormatter.grid.valueAxis.position === 'right'
+        || data.dataFormatter.grid.valueAxis.position === 'bottom'
           ? true : false
 
       // 比例尺座標對應非連續資料索引
@@ -88,8 +88,8 @@ export function gridGroupPositionFnObservable ({ fullDataFormatter$, gridAxesSiz
 
       // 依比例尺位置計算座標
       const axisValuePredicate = (event: any) => {
-        return data.dataFormatter.groupAxis.position === 'bottom'
-          || data.dataFormatter.groupAxis.position === 'top'
+        return data.dataFormatter.grid.groupAxis.position === 'bottom'
+          || data.dataFormatter.grid.groupAxis.position === 'top'
             ? event.offsetX - data.fullChartParams.padding.left
             : event.offsetY - data.fullChartParams.padding.top
       }

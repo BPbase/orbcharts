@@ -72,7 +72,7 @@ function renderLinearAxis ({ selection, fullParams, tickTextAlign, axisLabelAlig
         .style('font-size', `${fullChartParams.styles.textSize}px`)
         .style('fill', getColor(fullParams.labelColorType, fullChartParams))
         .style('transform', contentTransform)
-        .text(d => fullDataFormatter.valueAxis.label)
+        .text(d => fullDataFormatter.grid.valueAxis.label)
     })
     .attr('transform', d => `translate(${- d.tickPadding + fullParams.labelOffset[0]}, ${gridAxesSize.height + d.tickPadding + fullParams.labelOffset[1]})`)
 
@@ -219,12 +219,12 @@ export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)
     ).subscribe(data => {
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] === 'auto'
-        ? groupMin - data.fullDataFormatter.groupAxis.scalePadding
-        : data.fullDataFormatter.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.groupAxis.scalePadding
-      const groupScaleDomainMax = data.fullDataFormatter.groupAxis.scaleDomain[1] === 'auto'
-        ? groupMax + data.fullDataFormatter.groupAxis.scalePadding
-        : data.fullDataFormatter.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.groupAxis.scalePadding
+      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+        ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+        : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
+        ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
+        : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
         
       const filteredData = data.computedData.map((d, i) => {
         return d.filter((_d, _i) => {
@@ -253,8 +253,8 @@ export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)
         maxValue: data.minAndMax[1],
         minValue: data.minAndMax[0],
         axisWidth: data.gridAxesSize.height,
-        scaleDomain: data.fullDataFormatter.valueAxis.scaleDomain,
-        scaleRange: data.fullDataFormatter.valueAxis.scaleRange
+        scaleDomain: data.fullDataFormatter.grid.valueAxis.scaleDomain,
+        scaleRange: data.fullDataFormatter.grid.valueAxis.scaleRange
       })
 
       subscriber.next(valueScale)
@@ -267,16 +267,16 @@ export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)
       let textAnchor: 'start' | 'middle' | 'end' = 'start'
       let dominantBaseline: 'auto' | 'middle' | 'hanging' = 'hanging'
 
-      if (d.valueAxis.position === 'left') {
+      if (d.grid.valueAxis.position === 'left') {
         textAnchor = 'end'
         dominantBaseline = 'middle'
-      } else if (d.valueAxis.position === 'right') {
+      } else if (d.grid.valueAxis.position === 'right') {
         textAnchor = 'start'
         dominantBaseline = 'middle'
-      } else if (d.valueAxis.position === 'bottom') {
+      } else if (d.grid.valueAxis.position === 'bottom') {
         textAnchor = 'middle'
         dominantBaseline = 'hanging'
-      } else if (d.valueAxis.position === 'top') {
+      } else if (d.grid.valueAxis.position === 'top') {
         textAnchor = 'middle'
         dominantBaseline = 'auto'
       }
@@ -293,22 +293,22 @@ export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)
       let textAnchor: 'start' | 'middle' | 'end' = 'start'
       let dominantBaseline: 'auto' | 'middle' | 'hanging' = 'hanging'
 
-      if (d.groupAxis.position === 'bottom') {
+      if (d.grid.groupAxis.position === 'bottom') {
         dominantBaseline = 'auto'
-      } else if (d.groupAxis.position === 'top') {
+      } else if (d.grid.groupAxis.position === 'top') {
         dominantBaseline = 'hanging'
-      } else if (d.groupAxis.position === 'left') {
+      } else if (d.grid.groupAxis.position === 'left') {
         textAnchor = 'start'
-      } else if (d.groupAxis.position === 'right') {
+      } else if (d.grid.groupAxis.position === 'right') {
         textAnchor = 'end'
       }
-      if (d.valueAxis.position === 'left') {
+      if (d.grid.valueAxis.position === 'left') {
         textAnchor = 'end'
-      } else if (d.valueAxis.position === 'right') {
+      } else if (d.grid.valueAxis.position === 'right') {
         textAnchor = 'start'
-      } else if (d.valueAxis.position === 'bottom') {
+      } else if (d.grid.valueAxis.position === 'bottom') {
         dominantBaseline = 'hanging'
-      } else if (d.valueAxis.position === 'top') {
+      } else if (d.grid.valueAxis.position === 'top') {
         dominantBaseline = 'auto'
       }
       return {

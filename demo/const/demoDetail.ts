@@ -3,7 +3,11 @@ import * as pluginsBasic from '../../packages/orbcharts-plugins-basic/src/index'
 import * as presetsBasic from '../../packages/orbcharts-presets-basic/src/index'
 import { seriesData1 } from './data/seriesData1'
 import { gridData1 } from './data/gridData1'
+import { gridData2 } from './data/gridData2'
+import { gridData3 } from './data/gridData3'
 import { multiGridData1 } from './data/multiGridData1'
+import { multiGridData2 } from './data/multiGridData2'
+import { multiGridData3 } from './data/multiGridData3'
 
 type KeyOfOrbChartsCore = keyof typeof core
 type KeyOfOrbChartsPluginsBasic = keyof typeof pluginsBasic
@@ -98,6 +102,24 @@ export const demoDetail: DemoDetail = {
         preset: presetsBasic.PRESET_GRID_HORIZONTAL,
         data: gridData1
       },
+      'PRESET_GRID_2_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.Bars, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_2_SERIES_SLOT,
+        data: gridData1
+      },
+      'PRESET_GRID_3_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.Bars, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_3_SERIES_SLOT,
+        data: gridData2
+      },
+      'PRESET_GRID_4_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.Bars, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_4_SERIES_SLOT,
+        data: gridData3
+      },
       'PRESET_BARS_ROUND': {
         chart: core.GridChart,
         plugins: [pluginsBasic.Bars, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
@@ -142,6 +164,24 @@ export const demoDetail: DemoDetail = {
         preset: presetsBasic.PRESET_GRID_HORIZONTAL,
         data: gridData1
       },
+      'PRESET_GRID_2_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.BarStack, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_2_SERIES_SLOT,
+        data: gridData1
+      },
+      'PRESET_GRID_3_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.BarStack, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_3_SERIES_SLOT,
+        data: gridData2
+      },
+      'PRESET_GRID_4_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.BarStack, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_4_SERIES_SLOT,
+        data: gridData3
+      },
     },
     'BarsTriangle': {
       'PRESET_GRID_BASIC': {
@@ -162,6 +202,24 @@ export const demoDetail: DemoDetail = {
         preset: presetsBasic.PRESET_GRID_HORIZONTAL,
         data: gridData1
       },
+      'PRESET_GRID_2_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.BarsTriangle, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_2_SERIES_SLOT,
+        data: gridData1
+      },
+      'PRESET_GRID_3_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.BarsTriangle, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_3_SERIES_SLOT,
+        data: gridData2
+      },
+      'PRESET_GRID_4_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.BarsTriangle, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_4_SERIES_SLOT,
+        data: gridData3
+      },
     },
     'Lines': {
       'PRESET_LINES_BASIC': {
@@ -181,6 +239,24 @@ export const demoDetail: DemoDetail = {
         plugins: [pluginsBasic.Lines, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_LINES_HORIZONTAL,
         data: gridData1
+      },
+      'PRESET_GRID_2_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.Lines, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_2_SERIES_SLOT,
+        data: gridData1
+      },
+      'PRESET_GRID_3_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.Lines, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_3_SERIES_SLOT,
+        data: gridData2
+      },
+      'PRESET_GRID_4_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.Lines, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_4_SERIES_SLOT,
+        data: gridData3
       },
       'PRESET_LINES_CURVE': {
         chart: core.GridChart,

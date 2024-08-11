@@ -324,18 +324,18 @@ export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)
     ).subscribe(data => {
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] === 'auto'
-        ? groupMin - data.fullDataFormatter.groupAxis.scalePadding
-        : data.fullDataFormatter.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.groupAxis.scalePadding
-      const groupScaleDomainMax = data.fullDataFormatter.groupAxis.scaleDomain[1] === 'auto'
-        ? groupMax + data.fullDataFormatter.groupAxis.scalePadding
-        : data.fullDataFormatter.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.groupAxis.scalePadding
+      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+        ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+        : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
+        ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
+        : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
       
       const groupingLength = data.computedData[0]
         ? data.computedData[0].length
         : 0
 
-      let _labels = data.fullDataFormatter.grid.seriesType === 'row'
+      let _labels = data.fullDataFormatter.grid.gridData.seriesType === 'row'
         // ? data.fullDataFormatter.grid.columnLabels
         // : data.fullDataFormatter.grid.rowLabels
         ? (data.computedData[0] ?? []).map(d => d.groupLabel)
@@ -352,7 +352,7 @@ export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)
         })
 
       
-      const padding = data.fullDataFormatter.groupAxis.scalePadding
+      const padding = data.fullDataFormatter.grid.groupAxis.scalePadding
       
       const groupScale = createAxisPointScale({
         axisLabels,

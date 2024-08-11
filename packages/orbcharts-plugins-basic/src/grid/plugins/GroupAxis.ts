@@ -72,7 +72,7 @@ function renderPointAxis ({ selection, params, tickTextAlign, axisLabelAlign, gr
         .style('font-size', `${chartParams.styles.textSize}px`)
         .style('fill', getColor(params.labelColorType, chartParams))
         .style('transform', contentTransform)
-        .text(d => fullDataFormatter.groupAxis.label)
+        .text(d => fullDataFormatter.grid.groupAxis.label)
     })
     .attr('transform', d => `translate(${gridAxesSize.width + d.tickPadding + params.labelOffset[0]}, ${- d.tickPadding - defaultTickSize - params.labelOffset[1]})`)
 
@@ -230,18 +230,18 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
     ).subscribe(data => {
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] === 'auto'
-        ? groupMin - data.fullDataFormatter.groupAxis.scalePadding
-        : data.fullDataFormatter.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.groupAxis.scalePadding
-      const groupScaleDomainMax = data.fullDataFormatter.groupAxis.scaleDomain[1] === 'auto'
-        ? groupMax + data.fullDataFormatter.groupAxis.scalePadding
-        : data.fullDataFormatter.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.groupAxis.scalePadding
+      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+        ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+        : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
+        ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
+        : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
       
       const groupingLength = data.computedData[0]
         ? data.computedData[0].length
         : 0
 
-      let _labels = data.fullDataFormatter.grid.seriesType === 'row'
+      let _labels = data.fullDataFormatter.grid.gridData.seriesType === 'row'
         // ? data.fullDataFormatter.grid.columnLabels
         // : data.fullDataFormatter.grid.rowLabels
         ? (data.computedData[0] ?? []).map(d => d.groupLabel)
@@ -258,7 +258,7 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
         })
 
       
-      const padding = data.fullDataFormatter.groupAxis.scalePadding
+      const padding = data.fullDataFormatter.grid.groupAxis.scalePadding
       
       const groupScale = createAxisPointScale({
         axisLabels,
@@ -276,16 +276,16 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
       let textAnchor: 'start' | 'middle' | 'end' = 'middle'
       let dominantBaseline: 'auto' | 'middle' | 'hanging' = 'hanging'
 
-      if (d.groupAxis.position === 'bottom') {
+      if (d.grid.groupAxis.position === 'bottom') {
         textAnchor = 'middle'
         dominantBaseline = 'hanging'
-      } else if (d.groupAxis.position === 'top') {
+      } else if (d.grid.groupAxis.position === 'top') {
         textAnchor = 'middle'
         dominantBaseline = 'auto'
-      } else if (d.groupAxis.position === 'left') {
+      } else if (d.grid.groupAxis.position === 'left') {
         textAnchor = 'end'
         dominantBaseline = 'middle'
-      } else if (d.groupAxis.position === 'right') {
+      } else if (d.grid.groupAxis.position === 'right') {
         textAnchor = 'start'
         dominantBaseline = 'middle'
       }
@@ -302,22 +302,22 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
       let textAnchor: 'start' | 'middle' | 'end' = 'start'
       let dominantBaseline: 'auto' | 'middle' | 'hanging' = 'hanging'
 
-      if (d.groupAxis.position === 'bottom') {
+      if (d.grid.groupAxis.position === 'bottom') {
         dominantBaseline = 'hanging'
-      } else if (d.groupAxis.position === 'top') {
+      } else if (d.grid.groupAxis.position === 'top') {
         dominantBaseline = 'auto'
-      } else if (d.groupAxis.position === 'left') {
+      } else if (d.grid.groupAxis.position === 'left') {
         textAnchor = 'end'
-      } else if (d.groupAxis.position === 'right') {
+      } else if (d.grid.groupAxis.position === 'right') {
         textAnchor = 'start'
       }
-      if (d.valueAxis.position === 'left') {
+      if (d.grid.valueAxis.position === 'left') {
         textAnchor = 'start'
-      } else if (d.valueAxis.position === 'right') {
+      } else if (d.grid.valueAxis.position === 'right') {
         textAnchor = 'end'
-      } else if (d.valueAxis.position === 'bottom') {
+      } else if (d.grid.valueAxis.position === 'bottom') {
         dominantBaseline = 'auto'
-      } else if (d.valueAxis.position === 'top') {
+      } else if (d.grid.valueAxis.position === 'top') {
         dominantBaseline = 'hanging'
       }
       return {
@@ -342,7 +342,7 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
     // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
     switchMap(async (d) => d),
   ).subscribe(data => {
-// console.log('data.fullDataFormatter.groupAxis', data.fullDataFormatter.groupAxis)
+// console.log('data.fullDataFormatter.grid.groupAxis', data.fullDataFormatter.grid.groupAxis)
     renderPointAxis({
       selection: axisSelection,
       params: data.params,

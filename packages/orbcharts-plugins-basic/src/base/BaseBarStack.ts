@@ -475,12 +475,12 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
     map(data => {
       const groupMin = 0
       const groupMax = data.transposedVisibleData.length - 1
-      const groupScaleDomainMin = data.dataFormatter.groupAxis.scaleDomain[0] === 'auto'
-        ? groupMin - data.dataFormatter.groupAxis.scalePadding
-        : data.dataFormatter.groupAxis.scaleDomain[0] as number - data.dataFormatter.groupAxis.scalePadding
-      const groupScaleDomainMax = data.dataFormatter.groupAxis.scaleDomain[1] === 'auto'
-        ? groupMax + data.dataFormatter.groupAxis.scalePadding
-        : data.dataFormatter.groupAxis.scaleDomain[1] as number + data.dataFormatter.groupAxis.scalePadding
+      const groupScaleDomainMin = data.dataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+        ? groupMin - data.dataFormatter.grid.groupAxis.scalePadding
+        : data.dataFormatter.grid.groupAxis.scaleDomain[0] as number - data.dataFormatter.grid.groupAxis.scalePadding
+      const groupScaleDomainMax = data.dataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
+        ? groupMax + data.dataFormatter.grid.groupAxis.scalePadding
+        : data.dataFormatter.grid.groupAxis.scaleDomain[1] as number + data.dataFormatter.grid.groupAxis.scalePadding
         
       const filteredData = data.transposedVisibleData
         .map(d => {
