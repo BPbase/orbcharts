@@ -116,116 +116,84 @@ function calctransitionItem (barGroupAmount: number, totalDuration: number) {
   return totalDuration * (1 - groupDelayProportionOfDuration) // delay後剩餘的時間
 }
 
+
 function renderRectBars ({ graphicGSelection, computedData, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesPositionSeprate }: RenderBarParams) {
   
   const barHalfWidth = barWidth! / 2
 
-  // console.log('enter', graphicGSelection.enter())
-  // console.log('exit', graphicGSelection.exit())
-
   graphicGSelection
     .each((d, seriesIndex, g) => {
+      console.log(d, seriesIndex, g)
       d3.select(g[seriesIndex])
-        .selectAll<SVGGElement, any>(`g.${barClassName}`)
-        .data(computedData[seriesIndex], d => seriesIndex)
-        .join('g')
+        .selectAll<SVGGElement, ComputedDatumGrid>(`rect.${rectClassName}`)
+        .data(computedData[seriesIndex])
+        .join(
+          enter => {
+            return enter
+              .append('rect')
+              .classed(rectClassName, true)
+              .attr('cursor', 'pointer')
+              .attr('height', d => 0)
+          },
+          update => update,
+          exit => exit.remove()
+        )
         .classed(barClassName, true)
-        .attr('transform', (d, i) => `translate(${d ? d.axisX : 0}, ${0})`)
-        .each((datum, i, g) => {
-          d3.select(g[i])
-            .selectAll<SVGRectElement, ComputedDatumGrid>(`rect.${rectClassName}`)
-            .data([datum], d => d.id)
-            .join(
-              enter => {
-                return enter
-                  .append('rect')
-                  .classed(rectClassName, true)
-                  .attr('height', d => 0)
-              },
-              update => update,
-              exit => exit.remove()
-            )
-            .attr('cursor', 'pointer')
-            .attr('fill', d => d.color)
-            .attr('y', d => d.axisY < zeroYArr[seriesIndex] ? d.axisY : zeroYArr[seriesIndex])
-            .attr('x', d => isSeriesPositionSeprate ? 0 : barScale(d.seriesLabel)!)
-            .attr('width', barWidth!)
-            .attr('transform', `translate(${-barHalfWidth}, 0)`)
-            // .attr('rx', params.barRadius == true ? barHalfWidth
-            //   : params.barRadius == false ? 0
-            //   : typeof params.barRadius == 'number' ? params.barRadius
-            //   : 0)
-            .attr('rx', transformedBarRadius[0])
-            .attr('ry', transformedBarRadius[1])
-            .transition()
-            .duration(transitionItem)
-            .ease(getD3TransitionEase(chartParams.transitionEase))
-            .delay((d, i) => d.groupIndex * delayGroup)
-            .attr('height', d => Math.abs(d.axisYFromZero))
-        })
-        // -- rect --
-        // .selectAll<SVGGElement, any>(`rect.${rectClassName}`)
-        // .data(computedData[seriesIndex])
-        // .join(
-        //   enter => {
-        //     return enter
-        //       .append('rect')
-        //       .classed(rectClassName, true)
-        //       .attr('cursor', 'pointer')
-        //       .attr('height', d => 0)
-        //   },
-        //   update => update,
-        //   exit => exit.remove()
-        // )
-
-        
-    })
+        .attr('transform', (d, i) => `translate(${(d ? d.axisX : 0) - barHalfWidth}, ${0})`)
+        .attr('fill', d => d.color)
+        .attr('y', d => d.axisY < zeroYArr[seriesIndex] ? d.axisY : zeroYArr[seriesIndex])
+        .attr('x', d => isSeriesPositionSeprate ? 0 : barScale(d.seriesLabel)!)
+        .attr('width', barWidth!)
+        .attr('rx', transformedBarRadius[0])
+        .attr('ry', transformedBarRadius[1])
+        .transition()
+        .duration(transitionItem)
+        .ease(getD3TransitionEase(chartParams.transitionEase))
+        .delay((d, i) => d.groupIndex * delayGroup)
+        .attr('height', d => Math.abs(d.axisYFromZero))
+      })
 
 
-  // const barGroup = graphicGSelection
-  //   .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${barGroupClassName}`)
-  //   .data(data, (d, i) => groupLabels[i])
-  //   .join(
-  //     enter => {
-  //       return enter
-  //         .append('g')
-  //         .classed(barGroupClassName, true)
-  //         .attr('cursor', 'pointer')
-  //     },
-  //     update => update,
-  //     exit => exit.remove()
-  //   )
-  //   .attr('transform', (d, i) => `translate(${d[0] ? d[0].axisX : 0}, ${0})`)
-  //   .each((d, i, g) => {
-  //     const bars = d3.select(g[i])
-  //       .selectAll<SVGRectElement, ComputedDatumGrid>('rect')
-  //       .data(d, d => d.id)
-  //       .join(
-  //         enter => {
-  //           return enter
-  //             .append('rect')
-  //             .classed(rectClassName, true)
-  //             .attr('height', d => 0)
-  //         },
-  //         update => update,
-  //         exit => exit.remove()
-  //       )
-  //       .attr('fill', d => d.color)
-  //       .attr('y', d => d.axisY < zeroY ? d.axisY : zeroY)
-  //       .attr('x', d => barScale(d.seriesLabel)!)
-  //       .attr('width', barWidth!)
-  //       .attr('transform', `translate(${-barHalfWidth}, 0)`)
-  //       // .attr('rx', params.barRadius == true ? barHalfWidth
-  //       //   : params.barRadius == false ? 0
-  //       //   : typeof params.barRadius == 'number' ? params.barRadius
-  //       //   : 0)
-  //       .attr('rx', transformedBarRadius[0])
-  //       .attr('ry', transformedBarRadius[1])
-  //       .transition()
-  //       .duration(transitionItem)
-  //       .ease(getD3TransitionEase(chartParams.transitionEase))
-  //       .delay((d, i) => d.groupIndex * delayGroup)
-  //       .attr('height', d => Math.abs(d.axisYFromZero))
+  // graphicGSelection
+  //   .each((d, seriesIndex, g) => {
+  //     d3.select(g[seriesIndex])
+  //       .selectAll<SVGGElement, ComputedDatumGrid>(`g.${barClassName}`)
+  //       .data(computedData[seriesIndex], d => d.seriesIndex)
+  //       .join('g')
+  //       .classed(barClassName, true)
+  //       .attr('transform', (d, i) => `translate(${d ? d.axisX : 0}, ${0})`)
+  //       .each((datum, i, g) => {
+  //         d3.select(g[i])
+  //           .selectAll<SVGRectElement, ComputedDatumGrid>(`rect.${rectClassName}`)
+  //           .data([computedData[seriesIndex][i]], d => d.id)
+  //           .join(
+  //             enter => {
+  //               return enter
+  //                 .append('rect')
+  //                 .classed(rectClassName, true)
+  //                 .attr('height', d => 0)
+  //             },
+  //             update => update,
+  //             exit => exit.remove()
+  //           )
+  //           .attr('cursor', 'pointer')
+  //           .attr('fill', d => d.color)
+  //           .attr('y', d => d.axisY < zeroYArr[seriesIndex] ? d.axisY : zeroYArr[seriesIndex])
+  //           .attr('x', d => isSeriesPositionSeprate ? 0 : barScale(d.seriesLabel)!)
+  //           .attr('width', barWidth!)
+  //           .attr('transform', `translate(${-barHalfWidth}, 0)`)
+  //           // .attr('rx', params.barRadius == true ? barHalfWidth
+  //           //   : params.barRadius == false ? 0
+  //           //   : typeof params.barRadius == 'number' ? params.barRadius
+  //           //   : 0)
+  //           .attr('rx', transformedBarRadius[0])
+  //           .attr('ry', transformedBarRadius[1])
+  //           .transition()
+  //           .duration(transitionItem)
+  //           .ease(getD3TransitionEase(chartParams.transitionEase))
+  //           .delay((d, i) => d.groupIndex * delayGroup)
+  //           .attr('height', d => Math.abs(d.axisYFromZero))
+  //       })
   //   })
 
   const graphicBarSelection: d3.Selection<SVGRectElement, ComputedDatumGrid, SVGGElement, unknown> = graphicGSelection.selectAll(`rect.${rectClassName}`)
@@ -315,47 +283,74 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
 }) => {
 
   const seriesDestroy$ = new Subject()
-  const destroy$ = new Subject() 
+  const destroy$ = new Subject()
+
+  const clipPathID = getUniID(pluginName, 'clipPath-box')
   
-  const seriesSelection$ = combineLatest({
-    computedData: computedData$,
+  const seriesSelection$ = computedData$.pipe(
+    takeUntil(seriesDestroy$),
+    distinctUntilChanged((a, b) => {
+      // 只有當series的數量改變時，才重新計算
+      return a.length === b.length
+    }),
+    map((computedData, i) => {
+      return selection
+        .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${seriesClassName}`)
+        .data(computedData, d => d[0] ? d[0].seriesIndex : i)
+        // .join('g')
+        .join(
+          enter => {
+            return enter
+              .append('g')
+              .classed(seriesClassName, true)
+              .each((d, i, g) => {
+                const axesSelection = d3.select(g[i])
+                  .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${axesClassName}`)
+                  .data([i])
+                  .join(
+                    enter => {
+                      return enter
+                        .append('g')
+                        .classed(axesClassName, true)
+                        .attr('clip-path', `url(#${clipPathID})`)
+                        .each((d, i, g) => {
+                          const defsSelection = d3.select(g[i])
+                            .selectAll<SVGDefsElement, any>('defs')
+                            .data([i])
+                            .join('defs')
+            
+                          const graphicGSelection = d3.select(g[i])
+                            .selectAll<SVGGElement, any>('g')
+                            .data([i])
+                            .join('g')
+                            .classed(graphicClassName, true)
+                        })
+                    },
+                    update => update,
+                    exit => exit.remove()
+                  )
+              })
+          },
+          update => update,
+          exit => exit.remove()
+        )
+    })
+  )
+
+  combineLatest({
+    seriesSelection: seriesSelection$,
     gridContainer: gridContainer$
   }).pipe(
     takeUntil(seriesDestroy$),
-    map((data, i) => {
-      return selection
-        .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${seriesClassName}`)
-        .data(data.computedData, _ => i)
-        .join('g')
-        .classed(seriesClassName, true)
-        .attr('transform', (d, i) => {
-          const translate = data.gridContainer[i].translate
-          const scale = data.gridContainer[i].scale
-          return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
-        })
-        .each((d, i, g) => {
-          const axesSelection = d3.select(g[i])
-            .selectAll<SVGGElement, any>(`g.${axesClassName}`)
-            .data([i], _ => i)
-            .join('g')
-            .classed(axesClassName, true)
-            .attr('clip-path', `url(#${clipPathID})`)
-            .each((d, i, g) => {
-              const defsSelection = d3.select(g[i])
-                .selectAll<SVGDefsElement, any>('defs')
-                .data([i], _ => i)
-                .join('defs')
+  ).subscribe(data => {
+    data.seriesSelection
+      .attr('transform', (d, i) => {
+        const translate = data.gridContainer[i].translate
+        const scale = data.gridContainer[i].scale
+        return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+      })
+  })
 
-              const graphicGSelection = d3.select(g[i])
-                .selectAll<SVGGElement, any>('g')
-                .data([i], _ => i)
-                .join('g')
-                .classed(graphicClassName, true)
-            })
-
-        })
-    })
-  )
 
   const axesSelection$ = combineLatest({
     seriesSelection: seriesSelection$,
@@ -370,8 +365,8 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
   )
   const defsSelection$ = axesSelection$.pipe(
     takeUntil(destroy$),
-    map(seriesSelection => {
-      return seriesSelection.select<SVGDefsElement>('defs')
+    map(axesSelection => {
+      return axesSelection.select<SVGDefsElement>('defs')
     })
   )
   const graphicGSelection$ = combineLatest({
@@ -390,7 +385,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     })
   )
 
-  const clipPathID = getUniID(pluginName, 'clipPath-box')
+  
 
   // combineLatest({
   //   axesSelection: axesSelection$,
