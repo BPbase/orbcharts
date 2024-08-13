@@ -3,6 +3,7 @@ import {
   combineLatest,
   switchMap,
   distinctUntilChanged,
+  of,
   first,
   map,
   takeUntil,
@@ -12,6 +13,7 @@ import {
   defineGridPlugin } from '@orbcharts/core'
 import { createAxisPointScale } from '@orbcharts/core'
 import type {
+  ComputedDatumGrid,
   DataFormatterGrid,
   ChartParams,
   TransformData } from '@orbcharts/core'
@@ -26,6 +28,8 @@ interface TextAlign {
 }
 
 const pluginName = 'GroupAxis'
+const containerClassName = getClassName(pluginName, 'container')
+const xAxisGClassName = getClassName(pluginName, 'xAxisG')
 const xAxisClassName = getClassName(pluginName, 'xAxis')
 const groupingLabelClassName = getClassName(pluginName, 'groupingLabel')
 const defaultTickSize = 6
@@ -42,7 +46,7 @@ function renderPointAxis ({ selection, params, tickTextAlign, axisLabelAlign, gr
   contentTransform: string
   // tickTextFormatter: string | ((label: any) => string)
 }) {
-
+console.log('contentTransform', contentTransform)
   const xAxisSelection = selection
     .selectAll<SVGGElement, GroupAxisParams>(`g.${xAxisClassName}`)
     .data([params])
@@ -134,23 +138,66 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
   //   .selectAll('g')
   //   .data()
 
-  const axisSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
+  // const axisSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
   // let graphicSelection: d3.Selection<SVGGElement, any, any, any> | undefined
   // let pathSelection: d3.Selection<SVGPathElement, ComputedDatumGrid[], any, any> | undefined
   // .style('transform', 'translate(0px, 0px) scale(1)')
 
-  observer.gridAxesTransform$
-    .pipe(
-      takeUntil(destroy$),
-      map(d => d.value),
-      distinctUntilChanged()
-    ).subscribe(d => {
-      axisSelection
-        .style('transform', d)
-        .attr('opacity', 0)
-        .transition()
-        .attr('opacity', 1)
+  const containerSelection$ = observer.computedData$.pipe(
+    takeUntil(destroy$),
+    distinctUntilChanged((a, b) => {
+      // 只有當series的數量改變時，才重新計算
+      return a.length === b.length
+    }),
+    map((computedData, i) => {
+      return selection
+        .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${containerClassName}`)
+        .data(computedData, d => d[0] ? d[0].seriesIndex : i)
+        .join('g')
+        .classed(containerClassName, true)
     })
+  )
+
+  const axisSelection$ = containerSelection$.pipe(
+    takeUntil(destroy$),
+    map((containerSelection, i) => {
+      return containerSelection
+        .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${xAxisGClassName}`)
+        .data([xAxisGClassName])
+        .join('g')
+        .classed(xAxisGClassName, true)
+    })
+  )
+
+  combineLatest({
+    containerSelection: containerSelection$,
+    gridContainer: observer.gridContainer$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d)
+  ).subscribe(data => {
+    data.containerSelection
+      .attr('transform', (d, i) => {
+        const translate = data.gridContainer[i].translate
+        const scale = data.gridContainer[i].scale
+        return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+      })
+  })
+
+  combineLatest({
+    axisSelection: axisSelection$,
+    gridAxesTransform: observer.gridAxesTransform$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d)
+  ).subscribe(data => {
+    data.axisSelection
+      .style('transform', data.gridAxesTransform.value)
+      // .attr('opacity', 0)
+      // .transition()
+      // .attr('opacity', 1)
+      
+  })
 
 
   // const gridAxesSize$ = gridAxisSizeObservable({
@@ -209,12 +256,15 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
   // )
   const contentTransform$ = combineLatest({
     fullParams: observer.fullParams$,
-    gridAxesOppositeTransform: observer.gridAxesOppositeTransform$
+    gridAxesOppositeTransform: observer.gridAxesOppositeTransform$,
+    gridContainer: observer.gridContainer$
   }).pipe(
     takeUntil(destroy$),
-    switchMap(async data => {
+    switchMap(async (d) => d),
+    map(data => {
+      const scale = [1 / data.gridContainer[0].scale[0], 1 / data.gridContainer[0].scale[1]]
       const rotate = data.gridAxesOppositeTransform.rotate + data.fullParams.tickTextRotate
-      return `translate(${data.gridAxesOppositeTransform.translate[0]}px, ${data.gridAxesOppositeTransform.translate[1]}px) rotate(${rotate}deg) rotateX(${data.gridAxesOppositeTransform.rotateX}deg) rotateY(${data.gridAxesOppositeTransform.rotateY}deg)`
+      return `translate(${data.gridAxesOppositeTransform.translate[0]}px, ${data.gridAxesOppositeTransform.translate[1]}px) rotate(${rotate}deg) rotateX(${data.gridAxesOppositeTransform.rotateX}deg) rotateY(${data.gridAxesOppositeTransform.rotateY}deg) scale(${scale[0]}, ${scale[1]})`
     }),
     distinctUntilChanged()
   )
@@ -328,6 +378,7 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
   )
 
   combineLatest({
+    axisSelection: axisSelection$,
     params: observer.fullParams$,
     tickTextAlign: tickTextAlign$,
     axisLabelAlign: axisLabelAlign$,
@@ -344,7 +395,7 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
   ).subscribe(data => {
 // console.log('data.fullDataFormatter.grid.groupAxis', data.fullDataFormatter.grid.groupAxis)
     renderPointAxis({
-      selection: axisSelection,
+      selection: data.axisSelection,
       params: data.params,
       tickTextAlign: data.tickTextAlign,
       axisLabelAlign: data.axisLabelAlign,
