@@ -24,6 +24,7 @@ export const Bars = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)(({ selecti
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
     gridContainer$: observer.gridContainer$,
+    isSeriesPositionSeprate$: observer.isSeriesPositionSeprate$,
     event$: subject.event$,
   })
 

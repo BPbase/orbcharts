@@ -12,6 +12,7 @@ export interface ContextObserverGrid<PluginParams> extends ContextObserverBase<'
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   visibleComputedData$: Observable<ComputedDataGrid>
+  isSeriesPositionSeprate$: Observable<boolean>
   gridContainer$: Observable<ContainerPosition[]>
 }
 

@@ -360,6 +360,22 @@ export const gridVisibleComputedDataObservable = ({ computedData$ }: { computedD
   )
 }
 
+export const isSeriesPositionSeprateObservable = ({ computedData$, fullDataFormatter$ }: {
+  computedData$: Observable<ComputedDataTypeMap<'grid'>>
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
+}) => {
+  return combineLatest({
+    computedData: computedData$,
+    fullDataFormatter: fullDataFormatter$
+  }).pipe(
+    map(data => {
+      return data.fullDataFormatter.grid.seriesSlotIndexes && data.fullDataFormatter.grid.seriesSlotIndexes.length === data.computedData.length
+        ? true
+        : false
+    })
+  )
+}
+
 // 所有container位置（對應series）
 export const gridContainerObservable = ({ computedData$, fullDataFormatter$, fullChartParams$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'grid'>>
@@ -405,7 +421,7 @@ export const gridContainerObservable = ({ computedData$, fullDataFormatter$, ful
         return data.computedData.map((seriesData, seriesIndex) => {
           const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
           return {
-            slotIndex: grid.seriesSlotIndexes[seriesIndex],
+            slotIndex: grid.slotIndex,
             rowIndex,
             columnIndex,
             translate,

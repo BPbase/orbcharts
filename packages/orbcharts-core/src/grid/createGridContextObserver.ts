@@ -10,6 +10,7 @@ import {
   gridAxesOppositeTransformObservable,
   gridAxesSizeObservable,
   gridVisibleComputedDataObservable,
+  isSeriesPositionSeprateObservable,
   gridContainerObservable } from './gridObservables'
 
 export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, observer }) => {
@@ -74,6 +75,13 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     shareReplay(1)
   )
 
+  const isSeriesPositionSeprate$ = isSeriesPositionSeprateObservable({
+    computedData$: observer.computedData$,
+    fullDataFormatter$: observer.fullDataFormatter$
+  }).pipe(
+    shareReplay(1)
+  )
+
   const gridContainer$ = gridContainerObservable({
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$,
@@ -95,6 +103,7 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     SeriesDataMap$,
     GroupDataMap$,
     visibleComputedData$,
+    isSeriesPositionSeprate$,
     gridContainer$
   }
 }
