@@ -138,6 +138,12 @@ function renderTriangleBars ({ graphicGSelection, barData, zeroYArr, groupLabels
               .append('path')
               .classed(pathClassName, true)
               .style('vector-effect', 'non-scaling-stroke')
+              .attr('d', (d) => {
+                const x = -barHalfWidth
+                const y1 = zeroYArr[seriesIndex]
+                const y2 = zeroYArr[seriesIndex]
+                return `M${x},${y1} L${x + (barWidth! / 2)},${y2} ${x + barWidth!},${y1}`
+              })
             return enterSelection
           },
           update => update,
@@ -153,12 +159,6 @@ function renderTriangleBars ({ graphicGSelection, barData, zeroYArr, groupLabels
         .style('fill', d => `url(#${d.linearGradientId})`)
         .attr('stroke', d => d.color)
         .attr('transform', d => `translate(${(d ? d.axisX : 0)}, ${0})`)
-        .attr('d', (d) => {
-          const x = -barHalfWidth
-          const y1 = zeroYArr[seriesIndex]
-          const y2 = zeroYArr[seriesIndex]
-          return `M${x},${y1} L${x + (barWidth! / 2)},${y2} ${x + barWidth!},${y1}`
-        })
         .transition()
         .duration(transitionItem)
         .ease(getD3TransitionEase(chartParams.transitionEase))
