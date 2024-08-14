@@ -13,6 +13,7 @@ export const BarsTriangle = defineGridPlugin(pluginName, DEFAULT_BARS_TRIANGLE_P
   const unsubscribeBaseBars = createBaseBarsTriangle(pluginName, {
     selection,
     computedData$: observer.computedData$,
+    visibleComputedData$: observer.visibleComputedData$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,
@@ -21,6 +22,8 @@ export const BarsTriangle = defineGridPlugin(pluginName, DEFAULT_BARS_TRIANGLE_P
     gridGraphicTransform$: observer.gridGraphicTransform$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
+    gridContainer$: observer.gridContainer$,
+    isSeriesPositionSeprate$: observer.isSeriesPositionSeprate$,
     event$: subject.event$,
   })
 

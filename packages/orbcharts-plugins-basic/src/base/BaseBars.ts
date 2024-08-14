@@ -292,7 +292,6 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
       return selection
         .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${seriesClassName}`)
         .data(computedData, d => d[0] ? d[0].seriesIndex : i)
-        // .join('g')
         .join(
           enter => {
             return enter

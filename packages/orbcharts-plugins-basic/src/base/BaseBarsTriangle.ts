@@ -12,7 +12,8 @@ import type {
   ComputedDatumGrid,
   ComputedDataGrid,
   EventGrid,
-  ChartParams, 
+  ChartParams,
+  ContainerPosition,
   Layout,
   TransformData } from '@orbcharts/core'
 import { getD3TransitionEase } from '../utils/d3Utils'
@@ -28,6 +29,7 @@ export interface BaseBarsTriangleParams {
 interface BaseBarsContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
+  visibleComputedData$: Observable<ComputedDatumGrid[][]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullParams$: Observable<BaseBarsTriangleParams>
@@ -39,14 +41,16 @@ interface BaseBarsContext {
     height: number;
   }>
   gridHighlight$: Observable<string[]>
+  gridContainer$: Observable<ContainerPosition[]>
+  isSeriesPositionSeprate$: Observable<boolean>
   event$: Subject<EventGrid>
 }
 
 
 interface RenderBarParams {
-  selection: d3.Selection<SVGGElement, unknown, any, any>
+  graphicGSelection: d3.Selection<SVGGElement, unknown, any, any>
   barData: BarDatumGrid[][]
-  zeroY: number
+  zeroYArr: number[]
   groupLabels: string[]
   barScale: d3.ScalePoint<string>
   params: BaseBarsTriangleParams
@@ -54,6 +58,7 @@ interface RenderBarParams {
   barWidth: number
   delayGroup: number
   transitionItem: number
+  isSeriesPositionSeprate: boolean
 }
 
 interface BarDatumGrid extends ComputedDatumGrid {
@@ -69,8 +74,11 @@ type ClipPathDatum = {
 }
 
 const pluginName = 'BaseBarsTriangle'
-const gClassName = getClassName(pluginName, 'g')
-const gContentClassName = getClassName(pluginName, 'g-content')
+const seriesClassName = getClassName(pluginName, 'series')
+const axesClassName = getClassName(pluginName, 'axes')
+const graphicClassName = getClassName(pluginName, 'graphic')
+const pathGClassName = getClassName(pluginName, 'pathG')
+const pathClassName = getClassName(pluginName, 'path')
 // group的delay在動畫中的佔比（剩餘部份的時間為圖形本身的動畫時間，因為delay時間和最後一個group的動畫時間加總為1）
 const groupDelayProportionOfDuration = 0.3
 
@@ -81,7 +89,8 @@ function calcBarWidth ({ axisWidth, groupAmount, barAmountOfGroup, barPadding = 
   barPadding: number
   barGroupPadding: number
 }) {
-  const width = (axisWidth / groupAmount - barGroupPadding) / barAmountOfGroup - barPadding
+  const eachGroupWidth = axisWidth / (groupAmount - 1)
+  const width = (eachGroupWidth - barGroupPadding) / barAmountOfGroup - barPadding
   return width > 1 ? width : 1
 }
 
@@ -109,102 +118,99 @@ function calctransitionItem (barGroupAmount: number, totalDuration: number) {
   return totalDuration * (1 - groupDelayProportionOfDuration) // delay後剩餘的時間
 }
 
-function renderTriangleBars ({ selection, barData, zeroY, groupLabels, barScale, params, chartParams, barWidth, delayGroup, transitionItem }: RenderBarParams) {
-  // console.log({ selection, data, zeroY, seriesLabels, barScale, params, chartParams, barWidth, delayGroup })
-  // if (barWidth <= 0) {
-  //   return
-  // }
-  const update = selection!
-    .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${gClassName}`)
-    .data(barData, (d, i) => groupLabels[i])
-  const enter = update.enter()
-    .append('g')
-    .classed(gClassName, true)
-    .attr('cursor', 'pointer')
-  update.exit().remove()
-  const graphicGroupSelection = update.merge(enter)
-  enter
-    .attr('transform', (d, i) => `translate(${d[0] ? d[0].axisX : 0}, ${0})`)
-  update
-    // .transition()
-    // .duration(200)
-    .attr('transform', (d, i) => `translate(${d[0] ? d[0].axisX : 0}, ${0})`)
-
+function renderTriangleBars ({ graphicGSelection, barData, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, delayGroup, transitionItem, isSeriesPositionSeprate }: RenderBarParams) {
+  
   const barHalfWidth = barWidth! / 2
 
-  graphicGroupSelection
-    .each((d, i, g) => {
-      const pathUpdate = d3.select(g[i])
-        .selectAll<SVGGElement, ComputedDatumGrid>('g')
-        .data(d, _d => _d.id)
-      const pathEnter = pathUpdate
-        .enter()
-        .append('g')
-        .classed(gContentClassName, true)
-      pathEnter
-        .append('path')
-        // .attr('transform', `translate(${-barHalfWidth}, 0)`)
-        // .attr('x', d => itemScale(d.itemLabel)!)
-        // .attr('y', d => 0)
-        .style('vector-effect', 'non-scaling-stroke')
-        .attr('height', d => 0)
-        .attr('d', (d) => {
-          const x = barScale(d.seriesLabel)!
-          const y1 = zeroY
-          const y2 = y1
-          return `M${x - (barWidth! / 2)},${y1} L${x},${y2} ${x + (barWidth! / 2)},${y1}`
-        })
-      pathUpdate.merge(pathEnter)
-        .select('path')
+  graphicGSelection
+    .each((d, seriesIndex, g) => {
+      // g
+      const gSelection = d3.select(g[seriesIndex])
+        .selectAll<SVGGElement, ComputedDatumGrid>(`g.${pathGClassName}`)
+        .data(barData[seriesIndex])
+        .join(
+          enter => {
+            const enterSelection = enter
+              .append('g')
+              .classed(pathGClassName, true)
+              .attr('cursor', 'pointer')
+            enterSelection
+              .append('path')
+              .classed(pathClassName, true)
+              .style('vector-effect', 'non-scaling-stroke')
+            return enterSelection
+          },
+          update => update,
+          exit => exit.remove()
+        )
+        .attr('transform', d => `translate(${isSeriesPositionSeprate ? 0 : barScale(d.seriesLabel)!}, 0)`)
+
+      // path
+      gSelection.select(`path.${pathClassName}`)
+        .attr('height', d => Math.abs(d.axisYFromZero))
+        .attr('y', d => d.axisY < zeroYArr[seriesIndex] ? d.axisY : zeroYArr[seriesIndex])
+        .attr('x', d => isSeriesPositionSeprate ? 0 : barScale(d.seriesLabel)!)
         .style('fill', d => `url(#${d.linearGradientId})`)
         .attr('stroke', d => d.color)
-        .attr('transform', `translate(${-barHalfWidth}, 0)`)
+        .attr('transform', d => `translate(${(d ? d.axisX : 0)}, ${0})`)
+        .attr('d', (d) => {
+          const x = -barHalfWidth
+          const y1 = zeroYArr[seriesIndex]
+          const y2 = zeroYArr[seriesIndex]
+          return `M${x},${y1} L${x + (barWidth! / 2)},${y2} ${x + barWidth!},${y1}`
+        })
         .transition()
         .duration(transitionItem)
         .ease(getD3TransitionEase(chartParams.transitionEase))
         .delay((d, i) => d.groupIndex * delayGroup)
-        .attr('transform', `translate(${-barHalfWidth}, 0)`)
+        // .attr('transform', `translate(${-barHalfWidth}, 0)`)
         // .attr('x', d => itemScale(d.itemLabel)!)
         // .attr('y', d => -d.y)
-        .attr('height', d => Math.abs(d.axisYFromZero))
         .attr('d', (d) => {
-          const x = barScale(d.seriesLabel)!
-          const y1 = zeroY
+          const x = -barHalfWidth
+          const y1 = zeroYArr[seriesIndex]
           const y2 = d.axisY
           return `M${x},${y1} L${x + (barWidth! / 2)},${y2} ${x + barWidth!},${y1}`
         })
-        // .on('end', () => initHighlight())
-      pathUpdate.exit().remove()
-    })
+      })
 
-  const graphicBarSelection: d3.Selection<SVGPathElement, ComputedDatumGrid, any, any> = graphicGroupSelection.selectAll(`g.${gContentClassName}`)
+  const graphicBarSelection: d3.Selection<SVGPathElement, ComputedDatumGrid, any, any> = graphicGSelection.selectAll(`path.${pathClassName}`)
 
   return graphicBarSelection
 }
 
 function renderLinearGradient ({ defsSelection, barData, params }: {
-  defsSelection: d3.Selection<SVGDefsElement, ComputedDatumGrid, any, any>
+  defsSelection: d3.Selection<SVGDefsElement, any, any, any>
   barData: BarDatumGrid[][]
   params: BaseBarsTriangleParams
 }) {
-  const linearGradientUpdate = defsSelection!
-      .selectAll<SVGLinearGradientElement, ComputedDatumGrid>('linearGradient')
-      .data(barData[0] ?? [], d => d.seriesLabel)
-    const linearGradientEnter = linearGradientUpdate
-      .enter()
-      .append('linearGradient')
-      .attr('x1', '0%')
-      .attr('x2', '0%')
-      .attr('y1', '100%')
-      .attr('y2', '0%')
-      .attr('spreadMethod', 'pad')
-    linearGradientUpdate.merge(linearGradientEnter)
-      .attr('id', (d, i) => d.linearGradientId)
-      .html((d, i) => `
-        <stop offset="0%"   stop-color="${d.color}" stop-opacity="${params.linearGradientOpacity[0]}"/>
-        <stop offset="100%" stop-color="${d.color}" stop-opacity="${params.linearGradientOpacity[1]}"/>
-      `)
-    linearGradientUpdate.exit().remove()
+  defsSelection!
+    .selectAll<SVGLinearGradientElement, ComputedDatumGrid>('linearGradient')
+    .data(barData ?? [])
+    .join(
+      enter => {
+        return enter
+          .append('linearGradient')
+          .attr('x1', '0%')
+          .attr('x2', '0%')
+          .attr('y1', '100%')
+          .attr('y2', '0%')
+          .attr('spreadMethod', 'pad')
+      },
+      update => update,
+      exit => exit.remove()
+    )
+    .attr('id', (d, i) => {
+      return d[0] ? d[0].linearGradientId : ''
+    })
+    .html((d, i) => {
+      const color = d[0] ? d[0].color : ''
+      return `
+        <stop offset="0%"   stop-color="${color}" stop-opacity="${params.linearGradientOpacity[0]}"/>
+        <stop offset="100%" stop-color="${color}" stop-opacity="${params.linearGradientOpacity[1]}"/>
+      `
+    })
+
 }
 
 
@@ -212,27 +218,35 @@ function renderClipPath ({ defsSelection, clipPathData }: {
   defsSelection: d3.Selection<SVGDefsElement, any, any, any>
   clipPathData: ClipPathDatum[]
 }) {
-  const update = defsSelection
+  const clipPath = defsSelection
     .selectAll<SVGClipPathElement, Layout>('clipPath')
     .data(clipPathData)
-  const enter = update.enter()
-    .append('clipPath')
-  const cutRect = update.merge(enter)
+    .join(
+      enter => {
+        return enter
+          .append('clipPath')
+      },
+      update => update,
+      exit => exit.remove()
+    )
     .attr('id', d => d.id)
-  update.exit().remove()
-
-  update.merge(enter).each((d, i, g) => {
-    const updateRect = d3.select(g[i])
-      .selectAll<SVGRectElement, typeof d>('rect')
-      .data([d])
-    const enterRect = updateRect.enter().append('rect')
-    updateRect.merge(enterRect)
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('width', _d => _d.width)
-      .attr('height', _d => _d.height)
-    updateRect.exit().remove()
-  })
+    .each((d, i, g) => {
+      const rect = d3.select(g[i])
+        .selectAll<SVGRectElement, typeof d>('rect')
+        .data([d])
+        .join(
+          enter => {
+            return enter
+              .append('rect')
+          },
+          update => update,
+          exit => exit.remove()
+        )
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('width', _d => _d.width)
+        .attr('height', _d => _d.height)
+    })
 }
 
 function highlight ({ selection, ids, fullChartParams }: {
@@ -270,6 +284,7 @@ function highlight ({ selection, ids, fullChartParams }: {
 export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName: string, {
   selection,
   computedData$,
+  visibleComputedData$,
   SeriesDataMap$,
   GroupDataMap$,
   fullParams$,
@@ -278,86 +293,181 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
   gridGraphicTransform$,
   gridAxesSize$,
   gridHighlight$,
+  gridContainer$,
+  isSeriesPositionSeprate$,
   event$
 }) => {
   const destroy$ = new Subject()
 
   const clipPathID = getUniID(pluginName, 'clipPath-box')
 
-  const axisSelection: d3.Selection<SVGGElement, any, any, any> = selection
-    .append('g')
-    .attr('clip-path', `url(#${clipPathID})`)
-  const defsSelection: d3.Selection<SVGDefsElement, ComputedDatumGrid, any, any> = axisSelection.append('defs')
-  const graphicGSelection: d3.Selection<SVGGElement, any, any, any> = axisSelection.append('g')
-  let graphicSelection: d3.Selection<SVGGElement, any, any, any> | undefined
-  const pathSelection$: Subject<d3.Selection<SVGPathElement, ComputedDatumGrid, any, any>> = new Subject()
-  // .style('transform', 'translate(0px, 0px) scale(1)')
-
-  gridAxesTransform$
-    .pipe(
-      takeUntil(destroy$),
-      map(d => d.value),
-      distinctUntilChanged()
-    ).subscribe(d => {
-      axisSelection
-        .style('transform', d)
+  const seriesSelection$ = computedData$.pipe(
+    takeUntil(destroy$),
+    distinctUntilChanged((a, b) => {
+      // 只有當series的數量改變時，才重新計算
+      return a.length === b.length
+    }),
+    map((computedData, i) => {
+      return selection
+        .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${seriesClassName}`)
+        .data(computedData, d => d[0] ? d[0].seriesIndex : i)
+        .join(
+          enter => {
+            return enter
+              .append('g')
+              .classed(seriesClassName, true)
+              .each((d, i, g) => {
+                const axesSelection = d3.select(g[i])
+                  .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${axesClassName}`)
+                  .data([i])
+                  .join(
+                    enter => {
+                      return enter
+                        .append('g')
+                        .classed(axesClassName, true)
+                        .attr('clip-path', `url(#${clipPathID})`)
+                        .each((d, i, g) => {
+                          const defsSelection = d3.select(g[i])
+                            .selectAll<SVGDefsElement, any>('defs')
+                            .data([i])
+                            .join('defs')
+            
+                          const graphicGSelection = d3.select(g[i])
+                            .selectAll<SVGGElement, any>('g')
+                            .data([i])
+                            .join('g')
+                            .classed(graphicClassName, true)
+                        })
+                    },
+                    update => update,
+                    exit => exit.remove()
+                  )
+              })
+          },
+          update => update,
+          exit => exit.remove()
+        )
     })
+  )
 
-  gridGraphicTransform$
-    .pipe(
-      takeUntil(destroy$),
-      switchMap(async d => d.value),
-      distinctUntilChanged()
-    ).subscribe(d => {
+  combineLatest({
+    seriesSelection: seriesSelection$,
+    gridContainer: gridContainer$                                                                                                                                                                                       
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d)
+  ).subscribe(data => {
+    data.seriesSelection
+      .attr('transform', (d, i) => {
+        const translate = data.gridContainer[i].translate
+        const scale = data.gridContainer[i].scale
+        return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+      })
+  })
+
+
+  const axesSelection$ = combineLatest({
+    seriesSelection: seriesSelection$,
+    gridAxesTransform: gridAxesTransform$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d),
+    map(data => {
+      return data.seriesSelection
+        .select<SVGGElement>(`g.${axesClassName}`)
+        .style('transform', data.gridAxesTransform.value)
+    })
+  )
+  const defsSelection$ = axesSelection$.pipe(
+    takeUntil(destroy$),
+    map(axesSelection => {
+      return axesSelection.select<SVGDefsElement>('defs')
+    })
+  )
+  const graphicGSelection$ = combineLatest({
+    axesSelection: axesSelection$,
+    gridGraphicTransform: gridGraphicTransform$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d),
+    map(data => {
+      const graphicGSelection = data.axesSelection
+        .select<SVGGElement>(`g.${graphicClassName}`)
       graphicGSelection
         .transition()
         .duration(50)
-        .style('transform', d)
+        .style('transform', data.gridGraphicTransform.value)
+      return graphicGSelection
     })
+  )
 
-  // const axisSize$ = gridAxisSizeObservable({
-  //   dataFormatter$,
-  //   layout$
-  // })
-
-  const zeroY$ = computedData$.pipe(
-    map(d => d[0] && d[0][0]
-      ? d[0][0].axisY - d[0][0].axisYFromZero
-      : 0),
+  const zeroYArr$ = visibleComputedData$.pipe(
+    // map(d => d[0] && d[0][0]
+    //   ? d[0][0].axisY - d[0][0].axisYFromZero
+    //   : 0),
+    map(data => {
+      return data.map(d => {
+        return d[0] ? d[0].axisY - d[0].axisYFromZero : 0
+      })
+    }),
     distinctUntilChanged()
   )
 
-  const barWidth$ = new Observable<number>(subscriber => {
-    combineLatest({
-      computedData: computedData$,
-      params: fullParams$,
-      axisSize: gridAxesSize$
-    }).pipe(
-      switchMap(async d => d)
-    ).subscribe(data => {
-      const barWidth = calcBarWidth({
-        axisWidth: data.axisSize.width,
-        groupAmount: data.computedData[0] ? data.computedData[0].length : 0,
-        barAmountOfGroup: data.computedData.length,
-        barPadding: data.params.barPadding,
-        barGroupPadding: data.params.barGroupPadding
-      })
-      subscriber.next(barWidth)
-    })
+  const barWidth$ = combineLatest({
+    computedData: computedData$,
+    visibleComputedData: visibleComputedData$,
+    params: fullParams$,
+    gridAxesSize: gridAxesSize$,
+    isSeriesPositionSeprate: isSeriesPositionSeprate$
   }).pipe(
     takeUntil(destroy$),
-    distinctUntilChanged()
+    switchMap(async d => d),
+    map(data => {
+      if (data.params.barWidth) {
+        return data.params.barWidth
+      } else if (data.isSeriesPositionSeprate) {
+        return calcBarWidth({
+          axisWidth: data.gridAxesSize.width,
+          groupAmount: data.computedData[0] ? data.computedData[0].length : 0,
+          barAmountOfGroup: 1,
+          barPadding: data.params.barPadding,
+          barGroupPadding: data.params.barGroupPadding
+        })
+      } else {
+        return calcBarWidth({
+          axisWidth: data.gridAxesSize.width,
+          groupAmount: data.computedData[0] ? data.computedData[0].length : 0,
+          barAmountOfGroup: data.visibleComputedData.length,
+          barPadding: data.params.barPadding,
+          barGroupPadding: data.params.barGroupPadding
+        })
+      }
+    })
   )
-
-  const seriesLabels$ = computedData$.pipe(
-    takeUntil(destroy$),
-    map(data => data.map((d, i) => d[0] ? d[0].seriesLabel : String(i)))
-  )
-
-  const groupLabels$ = computedData$.pipe(
+  
+  const seriesLabels$ = visibleComputedData$.pipe(
     takeUntil(destroy$),
     map(data => {
-      return data[0] ? data[0].map(d => d.groupLabel) : []
+      const SeriesLabelSet: Set<string> = new Set()
+      data.forEach(d => {
+        d.forEach(_d => {
+          SeriesLabelSet.add(_d.seriesLabel)
+        })
+      })
+      return Array.from(SeriesLabelSet)
+    })
+  )
+
+  const groupLabels$ = visibleComputedData$.pipe(
+    takeUntil(destroy$),
+    map(data => {
+      const GroupLabelSet: Set<string> = new Set()
+      data.forEach(d => {
+        d.forEach(_d => {
+          GroupLabelSet.add(_d.groupLabel)
+        })
+      })
+      return Array.from(GroupLabelSet)
     })
   )
 
@@ -411,67 +521,26 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
     distinctUntilChanged()
   )
 
-  const transposedData$ = computedData$.pipe(
+  // 
+
+  combineLatest({
+    defsSelection: defsSelection$,
+    gridAxesSize: gridAxesSize$,
+  }).pipe(
     takeUntil(destroy$),
-    map(data => {
-      // 取得原始陣列的維度
-      const rows = data.length;
-      const cols = data.reduce((prev, current) => {
-        return Math.max(prev, current.length)
-      }, 0)
-
-      // 初始化轉換後的陣列
-      const transposedArray: typeof data = new Array(cols).fill(null).map(() => new Array(rows).fill(null))
-
-      // 遍歷原始陣列，進行轉換
-      for (let i = 0; i < rows; i++) {
-          for (let j = 0; j < cols; j++) {
-              transposedArray[j][i] = data[i][j]
-          }
-      }
-
-      return transposedArray
-    })
-  )
-
-  const barData$ = transposedData$.pipe(
-    takeUntil(destroy$),
-    map(data => {
-      const linearGradientIds = data.length
-        ? data[0].map(d => getUniID(pluginName, `lineargradient-${d.seriesLabel}`))
-        : []
-      return data.map(d => {
-        return d.map((_d, _i) => {
-          return <BarDatumGrid>{
-            linearGradientId: linearGradientIds[_i],
-            ..._d
-          }
-        })
-      })
-    })
-  )
-
-  gridAxesSize$.pipe(
-    takeUntil(destroy$)
+    switchMap(async d => d)
   ).subscribe(data => {
     const clipPathData = [{
       id: clipPathID,
-      width: data.width,
-      height: data.height
+      width: data.gridAxesSize.width,
+      height: data.gridAxesSize.height
     }]
     renderClipPath({
-      defsSelection,
+      defsSelection: data.defsSelection,
       clipPathData
     })
   })
 
-  // const SeriesDataMap$ = computedData$.pipe(
-  //   map(d => makeGridSeriesDataMap(d))
-  // )
-
-  // const GroupDataMap$ = computedData$.pipe(
-  //   map(d => makeGridGroupDataMap(d))
-  // )
 
   const highlightTarget$ = fullChartParams$.pipe(
     takeUntil(destroy$),
@@ -479,10 +548,39 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
     distinctUntilChanged()
   )
 
+  const barSelection$ = new Subject<d3.Selection<SVGPathElement, ComputedDatumGrid, SVGGElement, unknown>>()
+
+  const linearGradientIds$ = seriesLabels$.pipe(
+    takeUntil(destroy$),
+    map(d => d.map((d, i) => {
+      return getUniID(pluginName, `lineargradient-${d}`)
+    }))
+  )
+
+  const barData$ = combineLatest({
+    linearGradientIds: linearGradientIds$,
+    computedData: computedData$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d),
+    map(data => {
+      return data.computedData.map((series, seriesIndex) => {
+        return series.map((_d, _i) => {
+          return <BarDatumGrid>{
+            linearGradientId: data.linearGradientIds[seriesIndex],
+            ..._d
+          }
+        })
+      })
+    })
+  )
+
   combineLatest({
-    barData: barData$,
+    graphicGSelection: graphicGSelection$,
+    defsSelection: defsSelection$,
     computedData: computedData$,
-    zeroY: zeroY$,
+    barData: barData$,
+    zeroYArr: zeroYArr$,
     groupLabels: groupLabels$,
     barScale: barScale$,
     params: fullParams$,
@@ -492,34 +590,36 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
     delayGroup: delayGroup$,
     transitionItem: transitionItem$,
     SeriesDataMap: SeriesDataMap$,
-    GroupDataMap: GroupDataMap$
+    GroupDataMap: GroupDataMap$,
+    isSeriesPositionSeprate: isSeriesPositionSeprate$
   }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
     switchMap(async (d) => d),
   ).subscribe(data => {
-    const pathSelection = renderTriangleBars({
-      selection: graphicGSelection,
+
+    const barSelection = renderTriangleBars({
+      graphicGSelection: data.graphicGSelection,
       barData: data.barData,
-      zeroY: data.zeroY,
+      zeroYArr: data.zeroYArr,
       groupLabels: data.groupLabels,
       barScale: data.barScale,
       params: data.params,
       chartParams: data.chartParams,
       barWidth: data.barWidth,
       delayGroup: data.delayGroup,
-      transitionItem: data.transitionItem
+      transitionItem: data.transitionItem,
+      isSeriesPositionSeprate: data.isSeriesPositionSeprate
     })
     renderLinearGradient({
-      defsSelection,
+      defsSelection: data.defsSelection,
       barData: data.barData,
       params: data.params
     })
 
-    pathSelection!
+    barSelection!
       .on('mouseover', (event, datum) => {
         event.stopPropagation()
-
+  
         event$.next({
           type: 'grid',
           eventName: 'mouseover',
@@ -594,18 +694,12 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
         })
       })
 
-    pathSelection$.next(pathSelection)
+    barSelection$.next(barSelection!)
   })
 
-  // const datumList$ = computedData$.pipe(
-  //   takeUntil(destroy$),
-  //   map(d => d.flat())
-  // )
-  // const highlight$ = highlightObservable({ datumList$, fullChartParams$, event$: event$ })
-  const highlightSubscription = gridHighlight$.subscribe()
   
   combineLatest({
-    pathSelection: pathSelection$,
+    barSelection: barSelection$,
     highlight: gridHighlight$,
     fullChartParams: fullChartParams$
   }).pipe(
@@ -613,7 +707,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
     switchMap(async d => d)
   ).subscribe(data => {
     highlight({
-      selection: data.pathSelection,
+      selection: data.barSelection,
       ids: data.highlight,
       fullChartParams: data.fullChartParams
     })
@@ -621,6 +715,5 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
 
   return () => {
     destroy$.next(undefined)
-    highlightSubscription.unsubscribe()
   }
 }
