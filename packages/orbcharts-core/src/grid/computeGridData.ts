@@ -145,31 +145,34 @@ export const computeBaseGridData = (context: DataFormatterContext<'grid'>, chart
         ? layout.height
         : layout.width
 
-      // 每一個series的 [minValue, maxValue]
-      const minAndMaxValueArr = (() => {
-        // 有設定series定位，各別series計算各自的最大最小值
-        if (dataFormatter.grid.seriesSlotIndexes
-          && dataFormatter.grid.seriesSlotIndexes.length === transposedDataGrid.length
-        ) {
-          return transposedDataGrid
-            .map(series => {
-              const visibleData = series.filter(d => d._visible != false)
-              return getMinAndMaxValue(visibleData)
-            })
-        } else {
-          // 沒有設定series定位，全部資料一起計算最大值最小值
-          const visibleData = transposedDataGrid.flat().filter(d => d._visible != false)
-          const [minValue, maxValue] = getMinAndMaxValue(visibleData)
-          return transposedDataGrid
-            .map(series => {
-              return [minValue, maxValue]
-            })
-        }
-      })()
+      // // 每一個series的 [minValue, maxValue]
+      // const minAndMaxValueArr = (() => {
+      //   // 有設定series定位，各別series計算各自的最大最小值
+      //   if (dataFormatter.grid.seriesSlotIndexes
+      //     && dataFormatter.grid.seriesSlotIndexes.length === transposedDataGrid.length
+      //   ) {
+      //     return transposedDataGrid
+      //       .map(series => {
+      //         const visibleData = series.filter(d => d._visible != false)
+      //         return getMinAndMaxValue(visibleData)
+      //       })
+      //   } else {
+      //     // 沒有設定series定位，全部資料一起計算最大值最小值
+      //     const visibleData = transposedDataGrid.flat().filter(d => d._visible != false)
+      //     const [minValue, maxValue] = getMinAndMaxValue(visibleData)
+      //     return transposedDataGrid
+      //       .map(series => {
+      //         return [minValue, maxValue]
+      //       })
+      //   }
+      // })()
+
+      const visibleData = transposedDataGrid.flat().filter(d => d._visible != false)
+      const [minValue, maxValue] = getMinAndMaxValue(visibleData)
       
       return transposedDataGrid.map((seriesData, seriesIndex) => {
-        const minValue = minAndMaxValueArr[seriesIndex][0]
-        const maxValue = minAndMaxValueArr[seriesIndex][1]
+        // const minValue = minAndMaxValueArr[seriesIndex][0]
+        // const maxValue = minAndMaxValueArr[seriesIndex][1]
         const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
           maxValue,
           minValue,

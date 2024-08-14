@@ -14,6 +14,7 @@ import { createAxisLinearScale } from '@orbcharts/core'
 import type {
   DataFormatterGrid,
   ChartParams,
+  ComputedDatumGrid,
   TransformData } from '@orbcharts/core'
 import type { ValueAxisParams } from '../types'
 import { DEFAULT_VALUE_AXIS_PARAMS } from '../defaults'
@@ -26,7 +27,9 @@ interface TextAlign {
 }
 
 const pluginName = 'ValueAxis'
-const gClassName = getClassName(pluginName, 'g')
+const containerClassName = getClassName(pluginName, 'container')
+const yAxisGClassName = getClassName(pluginName, 'yAxisG')
+const yAxisClassName = getClassName(pluginName, 'yAxis')
 const textClassName = getClassName(pluginName, 'text')
 const defaultTickSize = 6
 
@@ -44,10 +47,10 @@ function renderLinearAxis ({ selection, fullParams, tickTextAlign, axisLabelAlig
 }) {
 
   const yAxisSelection = selection
-    .selectAll<SVGGElement, ValueAxisParams>(`g.${gClassName}`)
+    .selectAll<SVGGElement, ValueAxisParams>(`g.${yAxisClassName}`)
     .data([fullParams])
     .join('g')
-    .classed(gClassName, true)
+    .classed(yAxisClassName, true)
 
   const axisLabelSelection = selection
     .selectAll<SVGGElement, ValueAxisParams>(`g.${textClassName}`)
@@ -127,27 +130,73 @@ export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)
   
   const destroy$ = new Subject()
 
-  // const axisGUpdate = selection
-  //   .selectAll('g')
-  //   .data()
-
-  const axisSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
-  // let graphicSelection: d3.Selection<SVGGElement, any, any, any> | undefined
-  // let pathSelection: d3.Selection<SVGPathElement, ComputedDatumGrid[], any, any> | undefined
-  // .style('transform', 'translate(0px, 0px) scale(1)')
-
-  observer.gridAxesTransform$
-    .pipe(
-      takeUntil(destroy$),
-      map(d => d.value),
-      distinctUntilChanged()
-    ).subscribe(d => {
-      axisSelection
-        .style('transform', d)
-        .attr('opacity', 0)
-        .transition()
-        .attr('opacity', 1)
+  const containerSelection$ = combineLatest({
+    computedData: observer.computedData$.pipe(
+      distinctUntilChanged((a, b) => {
+        // 只有當series的數量改變時，才重新計算
+        return a.length === b.length
+      }),
+    ),
+    isSeriesPositionSeprate: observer.isSeriesPositionSeprate$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      return data.isSeriesPositionSeprate
+        // series分開的時候顯示各別axis
+        ? data.computedData
+        // series合併的時候只顯示第一個axis
+        : ([data.computedData[0]] ?? [])
+    }),
+    map((computedData, i) => {
+      return selection
+        .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${containerClassName}`)
+        .data(computedData, d => d[0] ? d[0].seriesIndex : i)
+        .join('g')
+        .classed(containerClassName, true)
     })
+  )
+
+  const axisSelection$ = containerSelection$.pipe(
+    takeUntil(destroy$),
+    map((containerSelection, i) => {
+      return containerSelection
+        .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${yAxisGClassName}`)
+        .data([yAxisGClassName])
+        .join('g')
+        .classed(yAxisGClassName, true)
+    })
+  )
+
+  combineLatest({
+    containerSelection: containerSelection$,
+    gridContainer: observer.gridContainer$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d)
+  ).subscribe(data => {
+    data.containerSelection
+      .attr('transform', (d, i) => {
+        const translate = data.gridContainer[i].translate
+        const scale = data.gridContainer[i].scale
+        return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+      })
+  })
+
+  combineLatest({
+    axisSelection: axisSelection$,
+    gridAxesTransform: observer.gridAxesTransform$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d)
+  ).subscribe(data => {
+    data.axisSelection
+      .style('transform', data.gridAxesTransform.value)
+      // .attr('opacity', 0)
+      // .transition()
+      // .attr('opacity', 1)
+      
+  })
 
   // const gridAxesSize$ = gridAxisSizeObservable({
   //   fullDataFormatter$,
@@ -197,12 +246,15 @@ export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)
   // )
   const contentTransform$ = combineLatest({
     fullParams: observer.fullParams$,
-    gridAxesOppositeTransform: observer.gridAxesOppositeTransform$
+    gridAxesOppositeTransform: observer.gridAxesOppositeTransform$,
+    gridContainer: observer.gridContainer$
   }).pipe(
     takeUntil(destroy$),
-    switchMap(async data => {
+    switchMap(async (d) => d),
+    map(data => {
+      const scale = [1 / data.gridContainer[0].scale[0], 1 / data.gridContainer[0].scale[1]]
       const rotate = data.gridAxesOppositeTransform.rotate + data.fullParams.tickTextRotate
-      return `translate(${data.gridAxesOppositeTransform.translate[0]}px, ${data.gridAxesOppositeTransform.translate[1]}px) rotate(${rotate}deg) rotateX(${data.gridAxesOppositeTransform.rotateX}deg) rotateY(${data.gridAxesOppositeTransform.rotateY}deg)`
+      return `translate(${data.gridAxesOppositeTransform.translate[0]}px, ${data.gridAxesOppositeTransform.translate[1]}px) rotate(${rotate}deg) rotateX(${data.gridAxesOppositeTransform.rotateX}deg) rotateY(${data.gridAxesOppositeTransform.rotateY}deg) scale(${scale[0]}, ${scale[1]})`
     }),
     distinctUntilChanged()
   )
@@ -320,6 +372,7 @@ export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)
   
 
   combineLatest({
+    axisSelection: axisSelection$,
     fullParams: observer.fullParams$,
     tickTextAlign: tickTextAlign$,
     axisLabelAlign: axisLabelAlign$,
@@ -332,12 +385,11 @@ export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)
     minAndMax: minAndMax$
   }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
     switchMap(async (d) => d),
   ).subscribe(data => {
 
     renderLinearAxis({
-      selection: axisSelection,
+      selection: data.axisSelection,
       fullParams: data.fullParams,
       tickTextAlign: data.tickTextAlign,
       axisLabelAlign: data.axisLabelAlign,

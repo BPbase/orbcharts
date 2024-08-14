@@ -42,10 +42,10 @@ export interface ChartConstructor<T extends core.ChartType> {
 export const demoDetail: DemoDetail = {
   series: {
     'Bubbles': {
-      'PRESET_SERIES_BASIC': {
+      'PRESET_BUBBLES_BASIC': {
         chart: core.SeriesChart,
         plugins: [pluginsBasic.Bubbles, pluginsBasic.SeriesLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_SERIES_BASIC,
+        preset: presetsBasic.PRESET_BUBBLES_BASIC,
         data: seriesData1
       },
       'PRESET_BUBBLES_SCALING_BY_RADIUS': {
@@ -56,10 +56,10 @@ export const demoDetail: DemoDetail = {
       },
     },
     'Pie': {
-      'PRESET_SERIES_BASIC': {
+      'PRESET_PIE_BASIC': {
         chart: core.SeriesChart,
         plugins: [pluginsBasic.Pie, pluginsBasic.PieLabels, pluginsBasic.SeriesLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_SERIES_BASIC,
+        preset: presetsBasic.PRESET_PIE_BASIC,
         data: seriesData1
       },
       'PRESET_PIE_WITH_INNER_LABELS': {

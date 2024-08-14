@@ -14,12 +14,22 @@ export const PRESET_SERIES_BASIC = createSeriesPreset({
   description: '基本Series參數'
 })
 // Bubbles - PRESET_BUBBLES_[name]
+export const PRESET_BUBBLES_BASIC = createSeriesPreset({
+  // chartParamsId: 'CP_RIGHT_PADDING',
+  allPluginParamsIds: ['PP_SERIES_LEGEND_ROUND'],
+  description: '基本泡泡圖'
+})
 export const PRESET_BUBBLES_SCALING_BY_RADIUS = createSeriesPreset({
   // chartParamsId: 'CP_RIGHT_PADDING',
   allPluginParamsIds: ['PP_BUBBLES_SCALING_BY_RADIUS', 'PP_SERIES_LEGEND_ROUND'],
   description: '以半徑尺寸為比例的泡泡圖'
 })
 // Pie - PRESET_PIE_[name]
+export const PRESET_PIE_BASIC = createSeriesPreset({
+  // chartParamsId: 'CP_RIGHT_PADDING',
+  allPluginParamsIds: ['PP_SERIES_LEGEND_ROUND'],
+  description: '基本圓餅圖'
+})
 export const PRESET_PIE_WITH_INNER_LABELS = createSeriesPreset({
   // chartParamsId: 'CP_RIGHT_PADDING',
   allPluginParamsIds: ['PP_PIE_LABELS_INNER', 'PP_SERIES_LEGEND_ROUND'],
@@ -55,21 +65,21 @@ export const PRESET_GRID_HORIZONTAL = createGridPreset({
   description: '橫向圖'
 })
 export const PRESET_GRID_2_SERIES_SLOT = createGridPreset({
-  chartParamsId: 'CP_BOTTOM_PADDING',
+  chartParamsId:  'CP_BOTTOM_LONG_PADDING',
   dataFormatterId: 'DF_GRID_2_SERIES_SLOT',
-  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
+  allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
   description: '2組Series圖表'
 })
 export const PRESET_GRID_3_SERIES_SLOT = createGridPreset({
-  chartParamsId: 'CP_BOTTOM_PADDING',
+  chartParamsId: 'CP_BOTTOM_LONG_PADDING',
   dataFormatterId: 'DF_GRID_3_SERIES_SLOT',
-  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
+  allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM', 'PP_GROUP_AXIS_ROTATE_LABEL'],
   description: '3組Series圖表'
 })
 export const PRESET_GRID_4_SERIES_SLOT = createGridPreset({
-  chartParamsId: 'CP_BOTTOM_PADDING',
+  chartParamsId:  'CP_BOTTOM_LONG_PADDING',
   dataFormatterId: 'DF_GRID_4_SERIES_SLOT',
-  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
+  allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
   description: '4組Series圖表'
 })
 // Bars - PRESET_BARS_[name]

@@ -46,7 +46,7 @@ function renderPointAxis ({ selection, params, tickTextAlign, axisLabelAlign, gr
   contentTransform: string
   // tickTextFormatter: string | ((label: any) => string)
 }) {
-console.log('contentTransform', contentTransform)
+
   const xAxisSelection = selection
     .selectAll<SVGGElement, GroupAxisParams>(`g.${xAxisClassName}`)
     .data([params])
@@ -111,6 +111,20 @@ console.log('contentTransform', contentTransform)
     .style('shape-rendering', 'crispEdges')
 
   // const xText = xAxisEl.selectAll('text')
+  // xAxisSelection.each((d, i, g) => {
+  //   d3.select(g[i])
+  //     .selectAll('text')
+  //     .data([d])
+  //     .join('text')
+  //     .style('font-family', 'sans-serif')
+  //     .style('font-size', `${chartParams.styles.textSize}px`)
+  //     // .style('font-weight', 'bold')
+  //     .style('color', getColor(params.tickTextColorType, chartParams))
+  //     .attr('text-anchor', tickTextAlign.textAnchor)
+  //     .attr('dominant-baseline', tickTextAlign.dominantBaseline)
+  //     .attr('transform-origin', `0 -${params.tickPadding + defaultTickSize}`)
+  //     .style('transform', contentTransform)
+  // })
   const xText = xAxisSelection.selectAll('text')
     .style('font-family', 'sans-serif')
     .style('font-size', `${chartParams.styles.textSize}px`)
@@ -120,11 +134,7 @@ console.log('contentTransform', contentTransform)
     .attr('dominant-baseline', tickTextAlign.dominantBaseline)
     .attr('transform-origin', `0 -${params.tickPadding + defaultTickSize}`)
     .style('transform', contentTransform)
-  // if (params.textRotate === true) {
-  //   xText.attr('transform', 'translate(0,0) rotate(-45)')
-  // } else if (typeof params.textRotate === 'number') {
-    // xText.attr('transform', `translate(0,0) rotate(${params.tickTextRotate})`)
-  // }
+    
     
   return xAxisSelection
 }
@@ -134,20 +144,23 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
   
   const destroy$ = new Subject()
 
-  // const axisGUpdate = selection
-  //   .selectAll('g')
-  //   .data()
-
-  // const axisSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
-  // let graphicSelection: d3.Selection<SVGGElement, any, any, any> | undefined
-  // let pathSelection: d3.Selection<SVGPathElement, ComputedDatumGrid[], any, any> | undefined
-  // .style('transform', 'translate(0px, 0px) scale(1)')
-
-  const containerSelection$ = observer.computedData$.pipe(
+  const containerSelection$ = combineLatest({
+    computedData: observer.computedData$.pipe(
+      distinctUntilChanged((a, b) => {
+        // 只有當series的數量改變時，才重新計算
+        return a.length === b.length
+      }),
+    ),
+    isSeriesPositionSeprate: observer.isSeriesPositionSeprate$
+  }).pipe(
     takeUntil(destroy$),
-    distinctUntilChanged((a, b) => {
-      // 只有當series的數量改變時，才重新計算
-      return a.length === b.length
+    switchMap(async (d) => d),
+    map(data => {
+      return data.isSeriesPositionSeprate
+        // series分開的時候顯示各別axis
+        ? data.computedData
+        // series合併的時候只顯示第一個axis
+        : ([data.computedData[0]] ?? [])
     }),
     map((computedData, i) => {
       return selection
@@ -264,7 +277,7 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
     map(data => {
       const scale = [1 / data.gridContainer[0].scale[0], 1 / data.gridContainer[0].scale[1]]
       const rotate = data.gridAxesOppositeTransform.rotate + data.fullParams.tickTextRotate
-      return `translate(${data.gridAxesOppositeTransform.translate[0]}px, ${data.gridAxesOppositeTransform.translate[1]}px) rotate(${rotate}deg) rotateX(${data.gridAxesOppositeTransform.rotateX}deg) rotateY(${data.gridAxesOppositeTransform.rotateY}deg) scale(${scale[0]}, ${scale[1]})`
+      return `translate(${data.gridAxesOppositeTransform.translate[0]}px, ${data.gridAxesOppositeTransform.translate[1]}px) scale(${scale[0]}, ${scale[1]}) rotate(${rotate}deg) rotateX(${data.gridAxesOppositeTransform.rotateX}deg) rotateY(${data.gridAxesOppositeTransform.rotateY}deg)`
     }),
     distinctUntilChanged()
   )
@@ -320,22 +333,30 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
     })
   })
 
-  const tickTextAlign$: Observable<TextAlign> = observer.fullDataFormatter$.pipe(
+  const tickTextAlign$: Observable<TextAlign> = combineLatest({
+    fullDataFormatter: observer.fullDataFormatter$,
+    fullParams: observer.fullParams$
+  }).pipe(
     takeUntil(destroy$),
-    map(d => {
+    switchMap(async (d) => d),
+    map(data => {
       let textAnchor: 'start' | 'middle' | 'end' = 'middle'
       let dominantBaseline: 'auto' | 'middle' | 'hanging' = 'hanging'
 
-      if (d.grid.groupAxis.position === 'bottom') {
-        textAnchor = 'middle'
+      if (data.fullDataFormatter.grid.groupAxis.position === 'bottom') {
+        textAnchor = data.fullParams.tickTextRotate
+          ? 'end'
+          : 'middle'
         dominantBaseline = 'hanging'
-      } else if (d.grid.groupAxis.position === 'top') {
-        textAnchor = 'middle'
+      } else if (data.fullDataFormatter.grid.groupAxis.position === 'top') {
+        textAnchor = data.fullParams.tickTextRotate
+          ? 'end'
+          : 'middle'
         dominantBaseline = 'auto'
-      } else if (d.grid.groupAxis.position === 'left') {
+      } else if (data.fullDataFormatter.grid.groupAxis.position === 'left') {
         textAnchor = 'end'
         dominantBaseline = 'middle'
-      } else if (d.grid.groupAxis.position === 'right') {
+      } else if (data.fullDataFormatter.grid.groupAxis.position === 'right') {
         textAnchor = 'start'
         dominantBaseline = 'middle'
       }
@@ -390,10 +411,9 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
     // tickTextFormatter: tickTextFormatter$
   }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
     switchMap(async (d) => d),
   ).subscribe(data => {
-// console.log('data.fullDataFormatter.grid.groupAxis', data.fullDataFormatter.grid.groupAxis)
+
     renderPointAxis({
       selection: data.axisSelection,
       params: data.params,
