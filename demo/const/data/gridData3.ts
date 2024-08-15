@@ -23,7 +23,7 @@ export const gridData3 = [
   [
     50,
     60,
-    45,
+    445,
     80,
     110
   ]

@@ -24,6 +24,8 @@ export const BarStack = defineGridPlugin(pluginName, DEFAULT_BAR_STACK_PARAMS)((
     gridGraphicTransform$: observer.gridGraphicTransform$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
+    gridContainer$: observer.gridContainer$,
+    isSeriesPositionSeprate$: observer.isSeriesPositionSeprate$,
     event$: subject.event$,
   })
 

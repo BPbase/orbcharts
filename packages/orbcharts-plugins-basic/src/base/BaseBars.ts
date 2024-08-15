@@ -116,28 +116,8 @@ function calctransitionItem (barGroupAmount: number, totalDuration: number) {
 // let _data: ComputedDatumGrid[][] = []
 
 function renderRectBars ({ graphicGSelection, computedData, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesPositionSeprate }: RenderBarParams) {
-  // if (_data.length) {
-  //   console.log('return')
-  //   return 
-  // }
+  
   const barHalfWidth = barWidth! / 2
-  
-  // computedData.forEach((seriesData, seriesIndex) => {
-  //   if (!_data[seriesIndex]) {
-  //     _data[seriesIndex] = []
-  //   }
-  //   seriesData.forEach((d, i) => {
-  //     if (!_data[seriesIndex][i]) {
-  //       _data[seriesIndex][i] = {} as any
-  //     }
-  //     Object.keys(d).forEach((key: keyof typeof d) => {
-  //       _data[seriesIndex][i][key]! = d[key]
-  //     })
-  //   })
-  // })
-  // console.log(computedData)
-  // console.log(_data)
-  
 
   graphicGSelection
     .each((seriesData, seriesIndex, g) => {
@@ -405,9 +385,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
   )
 
   const zeroYArr$ = visibleComputedData$.pipe(
-    // map(d => d[0] && d[0][0]
-    //   ? d[0][0].axisY - d[0][0].axisYFromZero
-    //   : 0),
+    takeUntil(destroy$),
     map(data => {
       return data.map(d => {
         return d[0] ? d[0].axisY - d[0].axisYFromZero : 0
@@ -445,7 +423,8 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
           barGroupPadding: data.params.barGroupPadding
         })
       }
-    })
+    }),
+    distinctUntilChanged()
   )
 
   // 圓角的值 [rx, ry]
@@ -499,20 +478,18 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     })
   )
 
-  const barScale$: Observable<d3.ScalePoint<string>> = new Observable(subscriber => {
-    combineLatest({
-      seriesLabels: seriesLabels$,
-      barWidth: barWidth$,
-      params: fullParams$,
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async d => d)
-    ).subscribe(data => {
-      const barScale = makeBarScale(data.barWidth, data.seriesLabels, data.params)
-      subscriber.next(barScale)
+  const barScale$ = combineLatest({
+    seriesLabels: seriesLabels$,
+    barWidth: barWidth$,
+    params: fullParams$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d),
+    map(data => {
+      return makeBarScale(data.barWidth, data.seriesLabels, data.params)
     })
-  })
-
+  )
+  
   const transitionDuration$ = fullChartParams$.pipe(
     takeUntil(destroy$),
     map(d => d.transitionDuration),
@@ -548,8 +525,6 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     takeUntil(destroy$),
     distinctUntilChanged()
   )
-
-  // 
 
   combineLatest({
     defsSelection: defsSelection$,
