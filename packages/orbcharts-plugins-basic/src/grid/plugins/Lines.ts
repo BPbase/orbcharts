@@ -23,6 +23,7 @@ export const Lines = defineGridPlugin(pluginName, DEFAULT_LINES_PARAMS)(({ selec
     gridGraphicTransform$: observer.gridGraphicTransform$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
+    gridContainer$: observer.gridContainer$,
     event$: subject.event$,
   })
 

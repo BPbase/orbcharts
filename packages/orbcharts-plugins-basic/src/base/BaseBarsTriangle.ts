@@ -358,6 +358,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
     switchMap(async d => d)
   ).subscribe(data => {
     data.seriesSelection
+      .transition()
       .attr('transform', (d, i) => {
         const translate = data.gridContainer[i].translate
         const scale = data.gridContainer[i].scale

@@ -181,6 +181,9 @@ export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)
         const scale = data.gridContainer[i].scale
         return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
       })
+      // .attr('opacity', 0)
+      // .transition()
+      // .attr('opacity', 1)
   })
 
   combineLatest({

@@ -195,6 +195,9 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
         const scale = data.gridContainer[i].scale
         return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
       })
+      // .attr('opacity', 0)
+      // .transition()
+      // .attr('opacity', 1)
   })
 
   combineLatest({

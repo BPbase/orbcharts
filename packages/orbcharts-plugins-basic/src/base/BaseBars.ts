@@ -113,19 +113,40 @@ function calctransitionItem (barGroupAmount: number, totalDuration: number) {
   }
   return totalDuration * (1 - groupDelayProportionOfDuration) // delay後剩餘的時間
 }
-
+// let _data: ComputedDatumGrid[][] = []
 
 function renderRectBars ({ graphicGSelection, computedData, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesPositionSeprate }: RenderBarParams) {
-  
+  // if (_data.length) {
+  //   console.log('return')
+  //   return 
+  // }
   const barHalfWidth = barWidth! / 2
+  
+  // computedData.forEach((seriesData, seriesIndex) => {
+  //   if (!_data[seriesIndex]) {
+  //     _data[seriesIndex] = []
+  //   }
+  //   seriesData.forEach((d, i) => {
+  //     if (!_data[seriesIndex][i]) {
+  //       _data[seriesIndex][i] = {} as any
+  //     }
+  //     Object.keys(d).forEach((key: keyof typeof d) => {
+  //       _data[seriesIndex][i][key]! = d[key]
+  //     })
+  //   })
+  // })
+  // console.log(computedData)
+  // console.log(_data)
+  
 
   graphicGSelection
-    .each((d, seriesIndex, g) => {
+    .each((seriesData, seriesIndex, g) => {
       d3.select(g[seriesIndex])
         .selectAll<SVGGElement, ComputedDatumGrid>(`rect.${rectClassName}`)
-        .data(computedData[seriesIndex])
+        .data(computedData[seriesIndex], d => d.id)
         .join(
           enter => {
+            // console.log('enter')
             return enter
               .append('rect')
               .classed(rectClassName, true)
@@ -147,7 +168,7 @@ function renderRectBars ({ graphicGSelection, computedData, zeroYArr, groupLabel
         .ease(getD3TransitionEase(chartParams.transitionEase))
         .delay((d, i) => d.groupIndex * delayGroup)
         .attr('height', d => Math.abs(d.axisYFromZero))
-      })
+    })
 
 
   // graphicGSelection
@@ -339,6 +360,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     switchMap(async d => d)
   ).subscribe(data => {
     data.seriesSelection
+      .transition()
       .attr('transform', (d, i) => {
         const translate = data.gridContainer[i].translate
         const scale = data.gridContainer[i].scale
