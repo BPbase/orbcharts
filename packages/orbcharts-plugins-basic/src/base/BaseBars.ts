@@ -432,24 +432,44 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     gridGraphicTransform: gridGraphicTransform$,
     barWidth: barWidth$,
     params: fullParams$,
-    gridContainer: gridContainer$
+    gridContainer: gridContainer$,
+    gridAxesTransform: gridAxesTransform$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async data => data),
     map(data => {
-      console.log('data.gridGraphicTransform.scale', data.gridGraphicTransform.scale)
-      console.log('data.gridContainer[0].scale', data.gridContainer[0].scale)
       const barHalfWidth = data.barWidth! / 2
       const radius = data.params.barRadius === true ? barHalfWidth
         : data.params.barRadius === false ? 0
         : typeof data.params.barRadius == 'number' ? data.params.barRadius
         : 0
-      const transformedRx = radius == 0
-        ? 0
-        : radius / data.gridGraphicTransform.scale[0] / data.gridContainer[0].scale[0] // 反向外層scale的變型
-      const transformedRy = radius == 0
-        ? 0
-        : radius / data.gridGraphicTransform.scale[1] / data.gridContainer[0].scale[1]
+      let transformedRx = 0
+      let transformedRy = 0
+      if (radius == 0) {
+        transformedRx = 0
+        transformedRy = 0
+      } else if (data.gridAxesTransform.rotate == 0) {
+        transformedRx = radius
+          // 抵消外層scale的變型
+          / data.gridGraphicTransform.scale[0] / data.gridContainer[0].scale[0]
+        transformedRy = radius
+          // 抵消外層scale的變型
+          / data.gridGraphicTransform.scale[1] / data.gridContainer[0].scale[1]
+      } else if (data.gridAxesTransform.rotate != 0) {
+        transformedRx = radius
+          // 抵消外層scale的變型，由於有90度的旋轉，所以外層 (container) x和y的scale要互換
+          / data.gridGraphicTransform.scale[0] / data.gridContainer[0].scale[1]
+        transformedRy = radius
+          // 抵消外層scale的變型，由於有90度的旋轉，所以外層 (container) x和y的scale要互換
+          / data.gridGraphicTransform.scale[1] / data.gridContainer[0].scale[0]
+      }
+      // 如果計算出來的x圓角值大於寬度一半則進行修正
+      if (transformedRx > barHalfWidth) {
+        const rScale = barHalfWidth / transformedRx
+        transformedRx = transformedRx * rScale
+        transformedRy = transformedRy * rScale
+      }
+
       return [transformedRx, transformedRy]
     })
   )
