@@ -160,7 +160,7 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
         // series分開的時候顯示各別axis
         ? data.computedData
         // series合併的時候只顯示第一個axis
-        : ([data.computedData[0]] ?? [])
+        : [data.computedData[0]]
     }),
     map((computedData, i) => {
       return selection

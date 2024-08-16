@@ -149,10 +149,10 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
         map((dataFormatter) => {
           const mergedData = mergeOptionsWithDefault(dataFormatter, mergedPresetWithDefault.dataFormatter)
 
-          if (chartType === 'multiGrid' && (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).multiGrid != null) {
+          if (chartType === 'multiGrid' && (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList != null) {
             // multiGrid欄位為陣列，需要各別來merge預設值
-            (mergedData as DataFormatterTypeMap<'multiGrid'>).multiGrid = (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).multiGrid.map(d => {
-              return mergeOptionsWithDefault(d, (mergedPresetWithDefault.dataFormatter as DataFormatterTypeMap<'multiGrid'>).multiGrid[0])
+            (mergedData as DataFormatterTypeMap<'multiGrid'>).gridList = (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList.map(d => {
+              return mergeOptionsWithDefault(d, (mergedPresetWithDefault.dataFormatter as DataFormatterTypeMap<'multiGrid'>).gridList[0])
             })
           }
           return mergedData

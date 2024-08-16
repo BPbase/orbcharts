@@ -65,17 +65,12 @@ export const MultiGridLegend = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_G
     takeUntil(destroy$),
     switchMap(async d => d),
     map(d => {
-      console.log('fullParams', d)
       return {
         ...d.fullParams,
         seriesList: d.seriesList
       }
     })
   )
-
-  fullParams$.subscribe(d => {
-    console.log('subscription')
-  })
 
   const unsubscribeBaseLegend = createBaseLegend(pluginName, {
     rootSelection,

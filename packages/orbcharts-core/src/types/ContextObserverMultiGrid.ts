@@ -18,5 +18,7 @@ export interface MultiGridObservableAll {
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   visibleComputedData$: Observable<ComputedDataGrid>
+  isSeriesPositionSeprate$: Observable<boolean>
+  gridContainer$: Observable<ContainerPosition[]>
 }
 

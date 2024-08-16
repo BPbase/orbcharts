@@ -431,11 +431,14 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
   const transformedBarRadius$: Observable<[number, number]> = combineLatest({
     gridGraphicTransform: gridGraphicTransform$,
     barWidth: barWidth$,
-    params: fullParams$
+    params: fullParams$,
+    gridContainer: gridContainer$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async data => data),
     map(data => {
+      console.log('data.gridGraphicTransform.scale', data.gridGraphicTransform.scale)
+      console.log('data.gridContainer[0].scale', data.gridContainer[0].scale)
       const barHalfWidth = data.barWidth! / 2
       const radius = data.params.barRadius === true ? barHalfWidth
         : data.params.barRadius === false ? 0
@@ -443,10 +446,10 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
         : 0
       const transformedRx = radius == 0
         ? 0
-        : radius / data.gridGraphicTransform.scale[0] // 反向外層scale的變型
+        : radius / data.gridGraphicTransform.scale[0] / data.gridContainer[0].scale[0] // 反向外層scale的變型
       const transformedRy = radius == 0
         ? 0
-        : radius / data.gridGraphicTransform.scale[1]
+        : radius / data.gridGraphicTransform.scale[1] / data.gridContainer[0].scale[1]
       return [transformedRx, transformedRy]
     })
   )

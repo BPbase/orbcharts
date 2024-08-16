@@ -168,7 +168,8 @@ export const PRESET_MULTI_GRID_4_GRID_SLOT = createMultiGridPreset({
   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM'],
   description: '4組Grid圖表'
 })
-// BarsAndLines - PRESET_BARS_AND_LINES_[name]
+// MultiGridBars, MultiGridLines - PRESET_BARS_AND_LINES_[name]
+
 
 
 // -- multi-value --

@@ -20,7 +20,8 @@ interface DemoChartTypeItem {
 }
 
 interface DemoPluginItem {
-  title: KeyOfOrbChartsPluginsBasic
+  // title: KeyOfOrbChartsPluginsBasic
+  title: string
   list: DemoPresetItem[]
 }
 
@@ -259,11 +260,11 @@ export const demoList: DemoChartTypeItem[] = [
     title: 'MultiGrid',
     list: [
       {
-        title: 'BarsAndLines',
+        title: 'MultiGridBars',
         list: [
           {
             chartType: 'multiGrid',
-            pluginName: 'BarsAndLines',
+            pluginName: 'MultiGridBars',
             presetName: 'PRESET_MULTI_GRID_BASIC'
           },
         ]

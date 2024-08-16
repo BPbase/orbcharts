@@ -3,46 +3,17 @@
 </template>
 
 <script setup lang="ts">
-import * as core from '../../../packages/orbcharts-core/src'
-import * as pluginsBasic from '../../../packages/orbcharts-plugins-basic/src'
-import * as presetsBasic from '../../../packages/orbcharts-presets-basic/src/index'
-// import type { ChartType } from '../../../../packages/orbcharts-core/src'
-import { demoDetail } from '@/const/demoDetail'
-import type { DemoDetailItem } from '@/const/demoDetail'
-
-interface PageParams {
-  chartType: core.ChartType
-  pluginName: keyof typeof pluginsBasic
-  presetName: keyof typeof presetsBasic
-}
-
-// const route = useRoute()
-const pageParams: PageParams = {
-  chartType: 'grid',
-  pluginName: 'Bars',
-  presetName: 'PRESET_GRID_BASIC'
-}
-
-const detail: DemoDetailItem<any> | null = demoDetail[pageParams.chartType]
-  && demoDetail[pageParams.chartType]![pageParams.pluginName]
-  && demoDetail[pageParams.chartType]![pageParams.pluginName]![pageParams.presetName]
-    ? demoDetail[pageParams.chartType]![pageParams.pluginName]![pageParams.presetName]!
-    : null
-
+import { GridChart } from '../../../packages/orbcharts-core/src'
+import { GroupAxis, ValueAxis, Bars, GroupArea, ScalingArea, Tooltip, GridLegend } from '../../../packages/orbcharts-plugins-basic/src'
+import { PRESET_GRID_4_SERIES_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
+import { gridData3 } from '../../const/data/gridData3'
 
 onMounted(() => {
-  if (!detail) {
-    return
-  }
 
   const el = document.querySelector('#chart')
 
-  const plugins = detail.plugins.map((plugin) => {
-    return new plugin()
-  })
-// console.log('detail.preset', detail.preset)
-  const chart = new detail.chart(el!, {
-    preset: detail.preset
+  const chart = new GridChart(el!, {
+    preset: PRESET_GRID_4_SERIES_SLOT
   })
 
   // chart!.dataFormatter$.next({
@@ -62,7 +33,7 @@ onMounted(() => {
 
   let i = 0
   setInterval(() => {
-    if (i % 2 == 0) {
+    if (i % 2 == 1) {
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 2,
@@ -72,9 +43,10 @@ onMounted(() => {
           seriesSlotIndexes: [0, 1, 2, 3]
         }
       })
-    } else if (i % 2 == 1) {
+    } else if (i % 2 == 0) {
       chart!.dataFormatter$.next({
         container: {
+          rowAmount: 1,
           columnAmount: 1
         },
         grid: {
@@ -135,9 +107,9 @@ onMounted(() => {
   //   },
   // })
 
-  chart!.plugins$.next(plugins)
+  chart!.plugins$.next([ new GroupAxis(), new ValueAxis(), new Bars(), new GroupArea(), new ScalingArea(), new Tooltip(), new GridLegend() ])
 
-  chart!.data$.next(detail.data as any)
+  chart!.data$.next(gridData3)
 
   // chart!.dataFormatter$.next({
   //   valueAxis: {
