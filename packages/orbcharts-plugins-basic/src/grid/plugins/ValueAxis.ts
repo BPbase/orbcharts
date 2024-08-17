@@ -19,7 +19,7 @@ export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,  
     gridAxesTransform$: observer.gridAxesTransform$,
-    gridAxesOppositeTransform$: observer.gridAxesOppositeTransform$,
+    gridAxesReverseTransform$: observer.gridAxesReverseTransform$,
     gridAxesSize$: observer.gridAxesSize$,
     gridContainer$: observer.gridContainer$,
     isSeriesPositionSeprate$: observer.isSeriesPositionSeprate$,

@@ -126,12 +126,12 @@ function createLabelData ({ groupLabel, axisX, fullParams }: {
     : []
 }
 
-function renderLabel ({ selection, labelData, fullParams, fullChartParams, gridAxesOppositeTransformValue }: {
+function renderLabel ({ selection, labelData, fullParams, fullChartParams, gridAxesReverseTransformValue }: {
   selection: d3.Selection<any, unknown, any, unknown>
   labelData: LabelDatum[]
   fullParams: GroupAreaParams
   fullChartParams: ChartParams
-  gridAxesOppositeTransformValue: string
+  gridAxesReverseTransformValue: string
 }) {
   const rectHeight = fullChartParams.styles.textSize + 4
 
@@ -176,7 +176,7 @@ function renderLabel ({ selection, labelData, fullParams, fullChartParams, gridA
       // .style('pointer-events', 'none')
     const rect = rectUpdate.merge(rectEnter)
       .attr('width', d => `${rectWidth}px`)
-      .style('transform', gridAxesOppositeTransformValue)
+      .style('transform', gridAxesReverseTransformValue)
     rectUpdate.exit().remove()
 
     const textUpdate = d3.select(n[i])
@@ -190,7 +190,7 @@ function renderLabel ({ selection, labelData, fullParams, fullChartParams, gridA
       // .style('pointer-events', 'none')
     const text = textUpdate.merge(textEnter)
       .text(d => d.text)
-      .style('transform', gridAxesOppositeTransformValue)
+      .style('transform', gridAxesReverseTransformValue)
       .attr('fill', d => getColor(fullParams.labelTextColorType, fullChartParams))
       .attr('font-size', fullChartParams.styles.textSize)
       .attr('x', rectX + 6)
@@ -283,7 +283,7 @@ export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)
   //     subscriber.next(transformData.value)
   //   })
   // })
-  // const oppositeTransform$: Observable<TransformData> = observer.gridAxesTransform$.pipe(
+  // const reverseTransform$: Observable<TransformData> = observer.gridAxesTransform$.pipe(
   //   takeUntil(destroy$),
   //   map(d => {
   //     const translate: [number, number] = [d.translate[0] * -1, d.translate[1] * -1]
@@ -303,12 +303,12 @@ export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)
   // )
   // const contentTransform$ = combineLatest({
   //   fullParams: observer.fullParams$,
-  //   oppositeTransform: oppositeTransform$
+  //   reverseTransform: reverseTransform$
   // }).pipe(
   //   takeUntil(destroy$),
   //   switchMap(async data => {
   //     const translate = [0, 0]
-  //     return `translate(${translate[0]}px, ${translate[1]}px) rotate(${data.oppositeTransform.rotate}deg) rotateX(${data.oppositeTransform.rotateX}deg) rotateY(${data.oppositeTransform.rotateY}deg)`
+  //     return `translate(${translate[0]}px, ${translate[1]}px) rotate(${data.reverseTransform.rotate}deg) rotateX(${data.reverseTransform.rotateX}deg) rotateY(${data.reverseTransform.rotateY}deg)`
   //   }),
   //   distinctUntilChanged()
   // )
@@ -496,7 +496,7 @@ export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)
     fullParams: observer.fullParams$,
     fullChartParams: observer.fullChartParams$,
     highlightTarget: highlightTarget$,
-    gridAxesOppositeTransform: observer.gridAxesOppositeTransform$,
+    gridAxesReverseTransform: observer.gridAxesReverseTransform$,
     GroupDataMap: observer.GroupDataMap$,
     gridGroupPositionFn: gridGroupPositionFn$,
   }).pipe(
@@ -535,7 +535,7 @@ export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)
       labelData,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams,
-      gridAxesOppositeTransformValue: data.gridAxesOppositeTransform.value
+      gridAxesReverseTransformValue: data.gridAxesReverseTransform.value
     })
 
     // label的事件

@@ -18,6 +18,7 @@ import type {
   TransformData } from '@orbcharts/core'
 import { getD3TransitionEase } from '../utils/d3Utils'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
+import { gridSelectionsObservable } from '../grid/gridObservables'
 
 export interface BaseBarsTriangleParams {
   barWidth: number
@@ -30,6 +31,7 @@ interface BaseBarsContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
+  existedSeriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullParams$: Observable<BaseBarsTriangleParams>
@@ -74,9 +76,6 @@ type ClipPathDatum = {
 }
 
 const pluginName = 'BaseBarsTriangle'
-const seriesClassName = getClassName(pluginName, 'series')
-const axesClassName = getClassName(pluginName, 'axes')
-const graphicClassName = getClassName(pluginName, 'graphic')
 const pathGClassName = getClassName(pluginName, 'pathG')
 const pathClassName = getClassName(pluginName, 'path')
 // group的delay在動畫中的佔比（剩餘部份的時間為圖形本身的動畫時間，因為delay時間和最後一個group的動畫時間加總為1）
@@ -127,7 +126,7 @@ function renderTriangleBars ({ graphicGSelection, barData, zeroYArr, groupLabels
       // g
       const gSelection = d3.select(g[seriesIndex])
         .selectAll<SVGGElement, ComputedDatumGrid>(`g.${pathGClassName}`)
-        .data(barData[seriesIndex])
+        .data(barData[seriesIndex] ?? [])
         .join(
           enter => {
             const enterSelection = enter
@@ -285,6 +284,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
   selection,
   computedData$,
   visibleComputedData$,
+  existedSeriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
   fullParams$,
@@ -301,106 +301,121 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
 
   const clipPathID = getUniID(pluginName, 'clipPath-box')
 
-  const seriesSelection$ = computedData$.pipe(
-    takeUntil(destroy$),
-    distinctUntilChanged((a, b) => {
-      // 只有當series的數量改變時，才重新計算
-      return a.length === b.length
-    }),
-    map((computedData, i) => {
-      return selection
-        .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${seriesClassName}`)
-        .data(computedData, d => d[0] ? d[0].seriesIndex : i)
-        .join(
-          enter => {
-            return enter
-              .append('g')
-              .classed(seriesClassName, true)
-              .each((d, i, g) => {
-                const axesSelection = d3.select(g[i])
-                  .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${axesClassName}`)
-                  .data([i])
-                  .join(
-                    enter => {
-                      return enter
-                        .append('g')
-                        .classed(axesClassName, true)
-                        .attr('clip-path', `url(#${clipPathID})`)
-                        .each((d, i, g) => {
-                          const defsSelection = d3.select(g[i])
-                            .selectAll<SVGDefsElement, any>('defs')
-                            .data([i])
-                            .join('defs')
+  // const seriesSelection$ = computedData$.pipe(
+  //   takeUntil(destroy$),
+  //   distinctUntilChanged((a, b) => {
+  //     // 只有當series的數量改變時，才重新計算
+  //     return a.length === b.length
+  //   }),
+  //   map((computedData, i) => {
+  //     return selection
+  //       .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${seriesClassName}`)
+  //       .data(computedData, d => d[0] ? d[0].seriesIndex : i)
+  //       .join(
+  //         enter => {
+  //           return enter
+  //             .append('g')
+  //             .classed(seriesClassName, true)
+  //             .each((d, i, g) => {
+  //               const axesSelection = d3.select(g[i])
+  //                 .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${axesClassName}`)
+  //                 .data([i])
+  //                 .join(
+  //                   enter => {
+  //                     return enter
+  //                       .append('g')
+  //                       .classed(axesClassName, true)
+  //                       .attr('clip-path', `url(#${clipPathID})`)
+  //                       .each((d, i, g) => {
+  //                         const defsSelection = d3.select(g[i])
+  //                           .selectAll<SVGDefsElement, any>('defs')
+  //                           .data([i])
+  //                           .join('defs')
             
-                          const graphicGSelection = d3.select(g[i])
-                            .selectAll<SVGGElement, any>('g')
-                            .data([i])
-                            .join('g')
-                            .classed(graphicClassName, true)
-                        })
-                    },
-                    update => update,
-                    exit => exit.remove()
-                  )
-              })
-          },
-          update => update,
-          exit => exit.remove()
-        )
-    })
-  )
+  //                         const graphicGSelection = d3.select(g[i])
+  //                           .selectAll<SVGGElement, any>('g')
+  //                           .data([i])
+  //                           .join('g')
+  //                           .classed(graphicClassName, true)
+  //                       })
+  //                   },
+  //                   update => update,
+  //                   exit => exit.remove()
+  //                 )
+  //             })
+  //         },
+  //         update => update,
+  //         exit => exit.remove()
+  //       )
+  //   })
+  // )
 
-  combineLatest({
-    seriesSelection: seriesSelection$,
-    gridContainer: gridContainer$                                                                                                                                                                                       
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async d => d)
-  ).subscribe(data => {
-    data.seriesSelection
-      .transition()
-      .attr('transform', (d, i) => {
-        const translate = data.gridContainer[i].translate
-        const scale = data.gridContainer[i].scale
-        return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
-      })
+  // combineLatest({
+  //   seriesSelection: seriesSelection$,
+  //   gridContainer: gridContainer$                                                                                                                                                                                       
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async d => d)
+  // ).subscribe(data => {
+  //   data.seriesSelection
+  //     .transition()
+  //     .attr('transform', (d, i) => {
+  //       const translate = data.gridContainer[i].translate
+  //       const scale = data.gridContainer[i].scale
+  //       return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+  //     })
+  // })
+
+
+  // const axesSelection$ = combineLatest({
+  //   seriesSelection: seriesSelection$,
+  //   gridAxesTransform: gridAxesTransform$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async d => d),
+  //   map(data => {
+  //     return data.seriesSelection
+  //       .select<SVGGElement>(`g.${axesClassName}`)
+  //       .style('transform', data.gridAxesTransform.value)
+  //   })
+  // )
+  // const defsSelection$ = axesSelection$.pipe(
+  //   takeUntil(destroy$),
+  //   map(axesSelection => {
+  //     return axesSelection.select<SVGDefsElement>('defs')
+  //   })
+  // )
+  // const graphicGSelection$ = combineLatest({
+  //   axesSelection: axesSelection$,
+  //   gridGraphicTransform: gridGraphicTransform$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async d => d),
+  //   map(data => {
+  //     const graphicGSelection = data.axesSelection
+  //       .select<SVGGElement>(`g.${graphicClassName}`)
+  //     graphicGSelection
+  //       .transition()
+  //       .duration(50)
+  //       .style('transform', data.gridGraphicTransform.value)
+  //     return graphicGSelection
+  //   })
+  // )
+
+  const { 
+    seriesSelection$,
+    axesSelection$,
+    defsSelection$,
+    graphicGSelection$
+  } = gridSelectionsObservable({
+    selection,
+    pluginName,
+    clipPathID,
+    existedSeriesLabels$,
+    gridContainer$,
+    gridAxesTransform$,
+    gridGraphicTransform$
   })
-
-
-  const axesSelection$ = combineLatest({
-    seriesSelection: seriesSelection$,
-    gridAxesTransform: gridAxesTransform$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async d => d),
-    map(data => {
-      return data.seriesSelection
-        .select<SVGGElement>(`g.${axesClassName}`)
-        .style('transform', data.gridAxesTransform.value)
-    })
-  )
-  const defsSelection$ = axesSelection$.pipe(
-    takeUntil(destroy$),
-    map(axesSelection => {
-      return axesSelection.select<SVGDefsElement>('defs')
-    })
-  )
-  const graphicGSelection$ = combineLatest({
-    axesSelection: axesSelection$,
-    gridGraphicTransform: gridGraphicTransform$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async d => d),
-    map(data => {
-      const graphicGSelection = data.axesSelection
-        .select<SVGGElement>(`g.${graphicClassName}`)
-      graphicGSelection
-        .transition()
-        .duration(50)
-        .style('transform', data.gridGraphicTransform.value)
-      return graphicGSelection
-    })
-  )
 
   const zeroYArr$ = visibleComputedData$.pipe(
     // map(d => d[0] && d[0][0]

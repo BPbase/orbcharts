@@ -22,6 +22,7 @@ import type {
   DataFormatterGridContainer,
   DataFormatterValueAxis,
   DataFormatterGroupAxis,
+  ContainerPosition,
   HighlightTarget,
   Layout,
   TransformData } from '../types'
@@ -46,7 +47,7 @@ export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
     if (!xAxis || !yAxis) {
       return {
         translate: [0, 0],
-        scale: [0, 0],
+        scale: [1, 1],
         rotate: 0,
         rotateX: 0,
         rotateY: 0,
@@ -111,12 +112,11 @@ export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
         translateY = height
       }
     }
-    
     // selection.style('transform', `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`)
   
     return {
       translate: [translateX, translateY],
-      scale: [0, 0],
+      scale: [1, 1],
       rotate,
       rotateX,
       rotateY,
@@ -146,6 +146,30 @@ export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
       destroy$.next(undefined)
     }
   })
+}
+
+
+export const gridAxesReverseTransformObservable = ({ gridAxesTransform$ }: {
+  gridAxesTransform$: Observable<TransformData>
+}): Observable<TransformData> => {
+  return gridAxesTransform$.pipe(
+    map(d => {
+      // const translate: [number, number] = [d.translate[0] * -1, d.translate[1] * -1]
+      const translate: [number, number] = [0, 0] // 無需逆轉
+      const scale: [number, number] = [1 / d.scale[0], 1 / d.scale[1]]
+      const rotate = d.rotate * -1
+      const rotateX = d.rotateX * -1
+      const rotateY = d.rotateY * -1
+      return {
+        translate,
+        scale,
+        rotate,
+        rotateX,
+        rotateY,
+        value: `translate(${translate[0]}px, ${translate[1]}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
+      }
+    }),
+  )
 }
 
 export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
@@ -261,24 +285,33 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
   })
 }
 
-export const gridAxesOppositeTransformObservable = ({ gridAxesTransform$ }: {
+export const gridGraphicReverseScaleObservable = ({ gridContainer$, gridAxesTransform$, gridGraphicTransform$ }: {
+  gridContainer$: Observable<ContainerPosition[]>
   gridAxesTransform$: Observable<TransformData>
-}): Observable<TransformData> => {
-  return gridAxesTransform$.pipe(
-    map(d => {
-      // const translate: [number, number] = [d.translate[0] * -1, d.translate[1] * -1]
-      const translate: [number, number] = [0, 0] // 無需逆轉
-      const scale: [number, number] = [d.scale[0] * -1, d.scale[1] * -1]
-      const rotate = d.rotate * -1
-      const rotateX = d.rotateX * -1
-      const rotateY = d.rotateY * -1
-      return {
-        translate,
-        scale,
-        rotate,
-        rotateX,
-        rotateY,
-        value: `translate(${translate[0]}px, ${translate[1]}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
+  gridGraphicTransform$: Observable<TransformData>
+}): Observable<[number, number][]> => {
+  return combineLatest({
+    gridContainer: gridContainer$,
+    gridAxesTransform: gridAxesTransform$,
+    gridGraphicTransform: gridGraphicTransform$,
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      if (data.gridAxesTransform.rotate == 0 || data.gridAxesTransform.rotate == 180) {
+        return data.gridContainer.map((series, seriesIndex) => {
+          return [
+            1 / data.gridGraphicTransform.scale[0] / data.gridContainer[seriesIndex].scale[0],
+            1 / data.gridGraphicTransform.scale[1] / data.gridContainer[seriesIndex].scale[1],
+          ]
+        })
+      } else {
+        return data.gridContainer.map((series, seriesIndex) => {
+          // 由於有垂直的旋轉，所以外層 (container) x和y的scale要互換
+          return [
+            1 / data.gridGraphicTransform.scale[0] / data.gridContainer[seriesIndex].scale[1],
+            1 / data.gridGraphicTransform.scale[1] / data.gridContainer[seriesIndex].scale[0],
+          ]
+        })
       }
     }),
   )
@@ -345,6 +378,21 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
 //   return highlightObservable ({ datumList$, fullChartParams$, event$ })
 // }
 
+export const existedSeriesLabelsObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
+  return computedData$.pipe(
+    map(data => {
+      return data
+        .filter(series => series.length)
+        .map(series => {
+          return series[0].seriesLabel
+        })
+    }),
+    distinctUntilChanged((a, b) => {
+      return JSON.stringify(a).length === JSON.stringify(b).length
+    }),
+  )
+}
+
 export const gridVisibleComputedDataObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
   return computedData$.pipe(
     map(data => {
@@ -372,7 +420,8 @@ export const isSeriesPositionSeprateObservable = ({ computedData$, fullDataForma
       return data.fullDataFormatter.grid.seriesSlotIndexes && data.fullDataFormatter.grid.seriesSlotIndexes.length === data.computedData.length
         ? true
         : false
-    })
+    }),
+    distinctUntilChanged()
   )
 }
 

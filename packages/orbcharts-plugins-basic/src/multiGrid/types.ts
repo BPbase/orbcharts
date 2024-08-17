@@ -1,7 +1,8 @@
 import type { BaseBarsParams } from '../base/BaseBars'
 import type { BaseBarStackParams } from '../base/BaseBarStack'
-import type { BaseLinesParams } from '../base/BaseLines'
 import type { BaseBarsTriangleParams } from '../base/BaseBarsTriangle'
+import type { BaseLinesParams } from '../base/BaseLines'
+import type { BaseDotsParams } from '../base/BaseDots'
 import type {
   ChartParams, Layout, ColorType } from '@orbcharts/core'
 
@@ -45,3 +46,6 @@ export interface MultiGridLinesParams extends BaseLinesParams {
   gridIndex: number
 }
 
+export interface MultiGridDotsParams extends BaseDotsParams {
+  gridIndex: number
+}

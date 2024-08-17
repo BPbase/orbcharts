@@ -13,11 +13,12 @@ import type {
   ComputedDataGrid,
   EventGrid,
   ChartParams, 
+  ContainerPosition,
   Layout,
   TransformData,
   ColorType } from '@orbcharts/core'
-import { getD3TransitionEase } from '../utils/d3Utils'
 import { getDatumColor, getClassName, getUniID } from '../utils/orbchartsUtils'
+import { gridSelectionsObservable } from '../grid/gridObservables'
 
 export interface BaseDotsParams {
   radius: number
@@ -31,17 +32,20 @@ interface BaseDotsContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
+  existedSeriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullParams$: Observable<BaseDotsParams>
   fullChartParams$: Observable<ChartParams>
   gridAxesTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>
+  gridGraphicReverseScale$: Observable<[number, number][]>
   gridAxesSize$: Observable<{
     width: number;
     height: number;
   }>
   gridHighlight$: Observable<string[]>
+  gridContainer$: Observable<ContainerPosition[]>
   event$: Subject<EventGrid>
 }
 
@@ -55,15 +59,15 @@ type ClipPathDatum = {
 }
 
 const pluginName = 'Dots'
-const gClassName = getClassName(pluginName, 'g')
+const circleGClassName = getClassName(pluginName, 'circleG')
 const circleClassName = getClassName(pluginName, 'circle')
 
-function renderDots ({ selection, data, fullParams, fullChartParams, graphicOppositeScale }: {
-  selection: d3.Selection<SVGGElement, any, any, any>
-  data: ComputedDatumGrid[]
+function renderDots ({ graphicGSelection, data, fullParams, fullChartParams, graphicReverseScale }: {
+  graphicGSelection: d3.Selection<SVGGElement, any, any, any>
+  data: ComputedDatumGrid[][]
   fullParams: BaseDotsParams
   fullChartParams: ChartParams
-  graphicOppositeScale: [number, number]
+  graphicReverseScale: [number, number][]
 }) {
   const createEnterDuration = (enter: d3.Selection<d3.EnterElement, ComputedDatumGrid, SVGGElement, any>) => {
     const enterSize = enter.size()
@@ -72,59 +76,115 @@ function renderDots ({ selection, data, fullParams, fullChartParams, graphicOppo
   }
   // enterDuration
   let enterDuration = 0
-  
-  const dots = selection
-    .selectAll<SVGGElement, ComputedDatumGrid>('g')
-    .data(data, d => d.id)
-    .join(
-      enter => {
-        // enterDuration
-        enterDuration = createEnterDuration(enter)
 
-        return enter
-          .append('g')
-          .classed(gClassName, true)     
-      },
-      update => update,
-      exit => exit.remove()
-    )
-    .attr('transform', d => `translate(${d.axisX}, ${d.axisY})`)
-    .each((d, i, g) => {
-      const circle = d3.select(g[i])
-        .selectAll('circle')
-        .data([d])
+  graphicGSelection
+    .each((seriesData, seriesIndex, g) => {
+      d3.select(g[seriesIndex])
+        .selectAll<SVGGElement, ComputedDatumGrid>('g')
+        .data(data[seriesIndex], d => d.id)
         .join(
           enter => {
+            // enterDuration
+            enterDuration = createEnterDuration(enter)
+    
             return enter
-              .append('circle')
-              .style('cursor', 'pointer')
-              .style('vector-effect', 'non-scaling-stroke')
-              .classed(circleClassName, true)
-              .attr('opacity', 0)
-              .transition()
-              .delay((_d, _i) => {
-                return i * enterDuration
-              })
-              .attr('opacity', 1)
+              .append('g')
+              .classed(circleGClassName, true)     
           },
-          update => {
-            return update
-              .transition()
-              .duration(50)
-              // .attr('cx', d => d.axisX)
-              // .attr('cy', d => d.axisY)
-              .attr('opacity', 1)
-          },
+          update => update,
           exit => exit.remove()
         )
-        .attr('r', fullParams.radius)
-        .attr('fill', (d, i) => getDatumColor({ datum: d, colorType: fullParams.fillColorType, fullChartParams }))
-        .attr('stroke', (d, i) => getDatumColor({ datum: d, colorType: fullParams.strokeColorType, fullChartParams }))
-        .attr('stroke-width', fullParams.strokeWidth)
-        .attr('transform', `scale(${graphicOppositeScale[0]}, ${graphicOppositeScale[1]})`)
+        .attr('transform', d => `translate(${d.axisX}, ${d.axisY})`)
+        .each((d, i, g) => {
+          const circle = d3.select(g[i])
+            .selectAll('circle')
+            .data([d])
+            .join(
+              enter => {
+                return enter
+                  .append('circle')
+                  .style('cursor', 'pointer')
+                  .style('vector-effect', 'non-scaling-stroke')
+                  .classed(circleClassName, true)
+                  .attr('opacity', 0)
+                  .transition()
+                  .delay((_d, _i) => {
+                    return i * enterDuration
+                  })
+                  .attr('opacity', 1)
+              },
+              update => {
+                return update
+                  .transition()
+                  .duration(50)
+                  // .attr('cx', d => d.axisX)
+                  // .attr('cy', d => d.axisY)
+                  .attr('opacity', 1)
+              },
+              exit => exit.remove()
+            )
+            .attr('r', fullParams.radius)
+            .attr('fill', (d, i) => getDatumColor({ datum: d, colorType: fullParams.fillColorType, fullChartParams }))
+            .attr('stroke', (d, i) => getDatumColor({ datum: d, colorType: fullParams.strokeColorType, fullChartParams }))
+            .attr('stroke-width', fullParams.strokeWidth)
+            .attr('transform', `scale(${graphicReverseScale[seriesIndex][0] ?? 1}, ${graphicReverseScale[seriesIndex][1] ?? 1})`)
+        })
     })
+  
+  // const dots = graphicGSelection
+  //   .selectAll<SVGGElement, ComputedDatumGrid>('g')
+  //   .data(data, d => d.id)
+  //   .join(
+  //     enter => {
+  //       // enterDuration
+  //       enterDuration = createEnterDuration(enter)
 
-  return dots
+  //       return enter
+  //         .append('g')
+  //         .classed(circleGClassName, true)     
+  //     },
+  //     update => update,
+  //     exit => exit.remove()
+  //   )
+  //   .attr('transform', d => `translate(${d.axisX}, ${d.axisY})`)
+  //   .each((d, i, g) => {
+  //     const circle = d3.select(g[i])
+  //       .selectAll('circle')
+  //       .data([d])
+  //       .join(
+  //         enter => {
+  //           return enter
+  //             .append('circle')
+  //             .style('cursor', 'pointer')
+  //             .style('vector-effect', 'non-scaling-stroke')
+  //             .classed(circleClassName, true)
+  //             .attr('opacity', 0)
+  //             .transition()
+  //             .delay((_d, _i) => {
+  //               return i * enterDuration
+  //             })
+  //             .attr('opacity', 1)
+  //         },
+  //         update => {
+  //           return update
+  //             .transition()
+  //             .duration(50)
+  //             // .attr('cx', d => d.axisX)
+  //             // .attr('cy', d => d.axisY)
+  //             .attr('opacity', 1)
+  //         },
+  //         exit => exit.remove()
+  //       )
+  //       .attr('r', fullParams.radius)
+  //       .attr('fill', (d, i) => getDatumColor({ datum: d, colorType: fullParams.fillColorType, fullChartParams }))
+  //       .attr('stroke', (d, i) => getDatumColor({ datum: d, colorType: fullParams.strokeColorType, fullChartParams }))
+  //       .attr('stroke-width', fullParams.strokeWidth)
+  //       .attr('transform', `scale(${graphicReverseScale[0]}, ${graphicReverseScale[1]})`)
+  //   })
+
+  const graphicCircleSelection: d3.Selection<SVGRectElement, ComputedDatumGrid, SVGGElement, unknown>  = graphicGSelection.selectAll(`circle.${circleClassName}`)
+
+  return graphicCircleSelection
 }
 
 
@@ -195,14 +255,17 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
   selection,
   computedData$,
   visibleComputedData$,
+  existedSeriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
   fullParams$,
   fullChartParams$,
   gridAxesTransform$,
   gridGraphicTransform$,
+  gridGraphicReverseScale$,
   gridAxesSize$,
   gridHighlight$,
+  gridContainer$,
   event$
 }) => {
 
@@ -210,83 +273,182 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
 
   const clipPathID = getUniID(pluginName, 'clipPath-box')
 
-  // const rectSelection: d3.Selection<SVGRectElement, any, any, any> = selection
-  //   .append('rect')
-  //   .attr('pointer-events', 'none')
-  const axisSelection: d3.Selection<SVGGElement, any, any, any> = selection
-    .append('g')
-    .attr('clip-path', `url(#${clipPathID})`)
-  const defsSelection: d3.Selection<SVGDefsElement, any, any, any> = axisSelection.append('defs')
-  const dataAreaSelection: d3.Selection<SVGGElement, any, any, any> = axisSelection.append('g')
+  // const axisSelection: d3.Selection<SVGGElement, any, any, any> = selection
+  //   .append('g')
+  //   .attr('clip-path', `url(#${clipPathID})`)
+  // const defsSelection: d3.Selection<SVGDefsElement, any, any, any> = axisSelection.append('defs')
+  // const dataAreaSelection: d3.Selection<SVGGElement, any, any, any> = axisSelection.append('g')
   const graphicSelection$: Subject<d3.Selection<SVGGElement, ComputedDatumGrid, any, any>> = new Subject()
-  // const dotSelection$: Subject<d3.Selection<SVGCircleElement, ComputedDatumGrid, SVGGElement, any>> = new Subject()
 
-  gridAxesTransform$
-    .pipe(
-      takeUntil(destroy$),
-      map(d => d.value),
-      distinctUntilChanged()
-    ).subscribe(d => {
-      axisSelection
-        .style('transform', d)
-    })
+  // gridAxesTransform$
+  //   .pipe(
+  //     takeUntil(destroy$),
+  //     map(d => d.value),
+  //     distinctUntilChanged()
+  //   ).subscribe(d => {
+  //     axisSelection
+  //       .style('transform', d)
+  //   })
 
-  gridGraphicTransform$
-    .pipe(
-      takeUntil(destroy$),
-      switchMap(async d => d.value),
-      distinctUntilChanged()
-    ).subscribe(d => {
-      dataAreaSelection
-        .transition()
-        .duration(50)
-        .style('transform', d)
-    })
+  // gridGraphicTransform$
+  //   .pipe(
+  //     takeUntil(destroy$),
+  //     switchMap(async d => d.value),
+  //     distinctUntilChanged()
+  //   ).subscribe(d => {
+  //     dataAreaSelection
+  //       .transition()
+  //       .duration(50)
+  //       .style('transform', d)
+  //   })
 
-  const graphicOppositeScale$: Observable<[number, number]> = gridGraphicTransform$.pipe(
-    takeUntil(destroy$),
-    map(d => [1 / d.scale[0], 1 / d.scale[1]])
-  )
-
-  // const axisSize$ = gridAxisSizeObservable({
-  //   dataFormatter$,
-  //   layout$
-  // })
+  // const seriesSelection$ = computedData$.pipe(
+  //   takeUntil(destroy$),
+  //   distinctUntilChanged((a, b) => {
+  //     // 只有當series的數量改變時，才重新計算
+  //     return a.length === b.length
+  //   }),
+  //   map((computedData, i) => {
+  //     return selection
+  //       .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${seriesClassName}`)
+  //       .data(computedData, d => d[0] ? d[0].seriesIndex : i)
+  //       .join(
+  //         enter => {
+  //           return enter
+  //             .append('g')
+  //             .classed(seriesClassName, true)
+  //             .each((d, i, g) => {
+  //               const axesSelection = d3.select(g[i])
+  //                 .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${axesClassName}`)
+  //                 .data([i])
+  //                 .join(
+  //                   enter => {
+  //                     return enter
+  //                       .append('g')
+  //                       .classed(axesClassName, true)
+  //                       .attr('clip-path', `url(#${clipPathID})`)
+  //                       .each((d, i, g) => {
+  //                         const defsSelection = d3.select(g[i])
+  //                           .selectAll<SVGDefsElement, any>('defs')
+  //                           .data([i])
+  //                           .join('defs')
+            
+  //                         const graphicGSelection = d3.select(g[i])
+  //                           .selectAll<SVGGElement, any>('g')
+  //                           .data([i])
+  //                           .join('g')
+  //                           .classed(graphicClassName, true)
+  //                       })
+  //                   },
+  //                   update => update,
+  //                   exit => exit.remove()
+  //                 )
+  //             })
+  //         },
+  //         update => update,
+  //         exit => exit.remove()
+  //       )
+  //   })
+  // )
 
   // combineLatest({
-  //   axisSized: axisSize$,
-  //   computedLayout: layout$
+  //   seriesSelection: seriesSelection$,
+  //   gridContainer: gridContainer$                                                                                                                                                                                       
   // }).pipe(
   //   takeUntil(destroy$),
-  //   // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
-  //   switchMap(async (d) => d),
-  // ).subscribe(d => {
-  //   rectSelection
-  //     .style('transform', d.computedLayout.content.axesTransform)
-  //     .attr('opacity', 0)
-  //     .attr('width', d.axisSized.width)
-  //     .attr('height', d.axisSized.height)
-  //     // .transition()
-  //     // .attr('opacity', 1)
-  // })
-  // selection.on('mouseover', (event, datum) => {
-    
-  //   console.log('selection mouseover', event, datum)
+  //   switchMap(async d => d)
+  // ).subscribe(data => {
+  //   data.seriesSelection
+  //     .transition()
+  //     .attr('transform', (d, i) => {
+  //       const translate = data.gridContainer[i].translate
+  //       const scale = data.gridContainer[i].scale
+  //       return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+  //     })
   // })
 
-  const clipPathSubscription = gridAxesSize$.pipe(
+
+  // const axesSelection$ = combineLatest({
+  //   seriesSelection: seriesSelection$,
+  //   gridAxesTransform: gridAxesTransform$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async d => d),
+  //   map(data => {
+  //     return data.seriesSelection
+  //       .select<SVGGElement>(`g.${axesClassName}`)
+  //       .style('transform', data.gridAxesTransform.value)
+  //   })
+  // )
+  // const defsSelection$ = axesSelection$.pipe(
+  //   takeUntil(destroy$),
+  //   map(axesSelection => {
+  //     return axesSelection.select<SVGDefsElement>('defs')
+  //   })
+  // )
+  // const graphicGSelection$ = combineLatest({
+  //   axesSelection: axesSelection$,
+  //   gridGraphicTransform: gridGraphicTransform$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async d => d),
+  //   map(data => {
+  //     const graphicGSelection = data.axesSelection
+  //       .select<SVGGElement>(`g.${graphicClassName}`)
+  //     graphicGSelection
+  //       .transition()
+  //       .duration(50)
+  //       .style('transform', data.gridGraphicTransform.value)
+  //     return graphicGSelection
+  //   })
+  // )
+
+  const { 
+    seriesSelection$,
+    axesSelection$,
+    defsSelection$,
+    graphicGSelection$
+  } = gridSelectionsObservable({
+    selection,
+    pluginName,
+    clipPathID,
+    existedSeriesLabels$,
+    gridContainer$,
+    gridAxesTransform$,
+    gridGraphicTransform$
+  })
+
+  const graphicReverseScale$: Observable<[number, number][]> = combineLatest({
+    // gridGraphicTransform: gridGraphicTransform$,
+    // gridContainer: gridContainer$,
+    // gridAxesTransform: gridAxesTransform$
+    computedData: computedData$,
+    gridGraphicReverseScale: gridGraphicReverseScale$
+  }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
+    switchMap(async data => data),
+    map(data => {
+      return data.computedData.map((series, seriesIndex) => {
+        return data.gridGraphicReverseScale[seriesIndex]
+      })
+    })
+  )
+
+  const clipPathSubscription = combineLatest({
+    defsSelection: defsSelection$,
+    gridAxesSize: gridAxesSize$,
+  }).pipe(
+    takeUntil(destroy$),
     switchMap(async (d) => d),
   ).subscribe(data => {
     // 外層的遮罩
     const clipPathData = [{
       id: clipPathID,
-      width: data.width,
-      height: data.height
+      width: data.gridAxesSize.width,
+      height: data.gridAxesSize.height
     }]
     renderClipPath({
-      defsSelection,
+      defsSelection: data.defsSelection,
       clipPathData,
     })
   })
@@ -323,26 +485,26 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
   )
   
   combineLatest({
+    graphicGSelection: graphicGSelection$,
     computedData: computedData$,
     visibleComputedData: visibleComputedData$,
     SeriesDataMap: SeriesDataMap$,
     GroupDataMap: GroupDataMap$,
-    graphicOppositeScale: graphicOppositeScale$,
+    graphicReverseScale: graphicReverseScale$,
     fullChartParams: fullChartParams$,
     fullParams: fullParams$,
     highlightTarget: highlightTarget$
   }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
     switchMap(async (d) => d),
   ).subscribe(data => {
 
     const graphicSelection = renderDots({
-      selection: dataAreaSelection,
-      data: data.visibleComputedData.flat(),
+      graphicGSelection: data.graphicGSelection,
+      data: data.visibleComputedData,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams,
-      graphicOppositeScale: data.graphicOppositeScale
+      graphicReverseScale: data.graphicReverseScale
     })
 
     graphicSelection

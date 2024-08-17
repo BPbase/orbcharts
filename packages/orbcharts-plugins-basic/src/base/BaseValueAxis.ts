@@ -45,7 +45,7 @@ interface BaseLinesContext {
   fullDataFormatter$: Observable<DataFormatterGrid>
   fullChartParams$: Observable<ChartParams>
   gridAxesTransform$: Observable<TransformData>
-  gridAxesOppositeTransform$: Observable<TransformData>
+  gridAxesReverseTransform$: Observable<TransformData>
   gridAxesSize$: Observable<{
     width: number;
     height: number;
@@ -167,7 +167,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   fullDataFormatter$,
   fullChartParams$,
   gridAxesTransform$,
-  gridAxesOppositeTransform$,
+  gridAxesReverseTransform$,
   gridAxesSize$,
   gridContainer$,
   isSeriesPositionSeprate$,
@@ -274,7 +274,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   //     subscriber.next(value)
   //   })
   // })
-  // const oppositeTransform$: Observable<TransformData> = gridAxesTransform$.pipe(
+  // const reverseTransform$: Observable<TransformData> = gridAxesTransform$.pipe(
   //   takeUntil(destroy$),
   //   map(d => {
   //     const translate: [number, number] = [d.translate[0] * -1, d.translate[1] * -1]
@@ -294,15 +294,15 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   // )
   const contentTransform$ = combineLatest({
     fullParams: fullParams$,
-    gridAxesOppositeTransform: gridAxesOppositeTransform$,
+    gridAxesReverseTransform: gridAxesReverseTransform$,
     gridContainer: gridContainer$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
       const scale = [1 / data.gridContainer[0].scale[0], 1 / data.gridContainer[0].scale[1]]
-      const rotate = data.gridAxesOppositeTransform.rotate + data.fullParams.tickTextRotate
-      return `translate(${data.gridAxesOppositeTransform.translate[0]}px, ${data.gridAxesOppositeTransform.translate[1]}px) rotate(${rotate}deg) rotateX(${data.gridAxesOppositeTransform.rotateX}deg) rotateY(${data.gridAxesOppositeTransform.rotateY}deg) scale(${scale[0]}, ${scale[1]})`
+      const rotate = data.gridAxesReverseTransform.rotate + data.fullParams.tickTextRotate
+      return `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px) rotate(${rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg) scale(${scale[0]}, ${scale[1]})`
     }),
     distinctUntilChanged()
   )

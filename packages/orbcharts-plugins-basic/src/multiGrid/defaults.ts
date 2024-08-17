@@ -4,6 +4,7 @@ import type {
   MultiGridBarStackParams,
   MultiGridBarsTriangleParams,
   MultiGridLinesParams,
+  MultiGridDotsParams
 } from './types'
 
 // export const DEFAULT_BARS_AND_LINES_PARAMS: BarsAndLinesParams = {
@@ -64,5 +65,14 @@ export const DEFAULT_MULTI_GRID_BARS_TRIANGLE_PARAMS: MultiGridBarsTriangleParam
 export const DEFAULT_MULTI_GRID_LINES_PARAMS: MultiGridLinesParams = {
   lineCurve: 'curveLinear',
   lineWidth: 2,
+  gridIndex: 1
+}
+
+export const DEFAULT_MULTI_GRID_DOTS_PARAMS: MultiGridDotsParams = {
+  radius: 4,
+  fillColorType: 'white',
+  strokeColorType: 'series',
+  strokeWidth: 2,
+  onlyShowHighlighted: false,
   gridIndex: 1
 }

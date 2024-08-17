@@ -252,7 +252,7 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
   //     subscriber.next(value)
   //   })
   // })
-  // const oppositeTransform$: Observable<TransformData> = observer.gridAxesTransform$.pipe(
+  // const reverseTransform$: Observable<TransformData> = observer.gridAxesTransform$.pipe(
   //   takeUntil(destroy$),
   //   map(d => {
   //     const translate: [number, number] = [d.translate[0] * -1, d.translate[1] * -1]
@@ -272,15 +272,15 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUPING_AXIS_PARA
   // )
   const contentTransform$ = combineLatest({
     fullParams: observer.fullParams$,
-    gridAxesOppositeTransform: observer.gridAxesOppositeTransform$,
+    gridAxesReverseTransform: observer.gridAxesReverseTransform$,
     gridContainer: observer.gridContainer$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
       const scale = [1 / data.gridContainer[0].scale[0], 1 / data.gridContainer[0].scale[1]]
-      const rotate = data.gridAxesOppositeTransform.rotate + data.fullParams.tickTextRotate
-      return `translate(${data.gridAxesOppositeTransform.translate[0]}px, ${data.gridAxesOppositeTransform.translate[1]}px) scale(${scale[0]}, ${scale[1]}) rotate(${rotate}deg) rotateX(${data.gridAxesOppositeTransform.rotateX}deg) rotateY(${data.gridAxesOppositeTransform.rotateY}deg)`
+      const rotate = data.gridAxesReverseTransform.rotate + data.fullParams.tickTextRotate
+      return `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px) scale(${scale[0]}, ${scale[1]}) rotate(${rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
     }),
     distinctUntilChanged()
   )

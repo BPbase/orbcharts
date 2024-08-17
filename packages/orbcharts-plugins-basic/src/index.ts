@@ -3,7 +3,6 @@
 // export { default as pieEventTexts } from './seriesPlugins/pieEventTexts'
 // export { default as pieLabels } from './seriesPlugins/pieLabels'
 
-console.log('test')
 export * from './grid'
 export * from './multiGrid'
 export * from './noneData'

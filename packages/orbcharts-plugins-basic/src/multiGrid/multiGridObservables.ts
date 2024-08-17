@@ -7,15 +7,20 @@ import {
   distinctUntilChanged,
   shareReplay
 } from 'rxjs'
-import type { ContextObserverMultiGrid, ComputedDataGrid, DataFormatterGrid } from '@orbcharts/core'
+import type { ContextObserverMultiGrid, ComputedDataGrid, DataFormatterGrid, ContextObserverGridDetail } from '@orbcharts/core'
 // import { DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT } from '@orbcharts/core/src/defaults'
 
 interface GridPluginParams {
   gridIndex: number
 }
 
+interface GridPluginObservables extends ContextObserverGridDetail {
+  gridComputedData$: Observable<ComputedDataGrid>
+  gridDataFormatter$: Observable<DataFormatterGrid>
+}
+
 // 對應grid資料的plugin所需Observable（必須有gridIndex）
-export const gridPluginObservables = (observer: ContextObserverMultiGrid<GridPluginParams>) => {
+export const gridPluginObservables = (observer: ContextObserverMultiGrid<GridPluginParams>): GridPluginObservables => {
   const gridIndex$ = observer.fullParams$.pipe(
     map(fullParams => fullParams.gridIndex),
     distinctUntilChanged(),
@@ -61,24 +66,40 @@ export const gridPluginObservables = (observer: ContextObserverMultiGrid<GridPlu
     shareReplay(1)
   )
 
+  const isSeriesPositionSeprate$ = gridDetail$.pipe(
+    switchMap(d => d.isSeriesPositionSeprate$)
+  )
+
+  const gridContainer$ = gridDetail$.pipe(
+    switchMap(d => d.gridContainer$)
+  )
+
   const gridAxesTransform$ = gridDetail$.pipe(
     switchMap(d => d.gridAxesTransform$)
   )
 
+  const gridAxesReverseTransform$ = gridDetail$.pipe(
+    switchMap(d => d.gridAxesReverseTransform$)
+  )
+  
+  const gridAxesSize$ = gridDetail$.pipe(
+    switchMap(d => d.gridAxesSize$)
+  )
+  
   const gridGraphicTransform$ = gridDetail$.pipe(
     switchMap(d => d.gridGraphicTransform$)
   )
 
-  const gridAxesOppositeTransform$ = gridDetail$.pipe(
-    switchMap(d => d.gridAxesOppositeTransform$)
-  )
-
-  const gridAxesSize$ = gridDetail$.pipe(
-    switchMap(d => d.gridAxesSize$)
+  const gridGraphicReverseScale$ = gridDetail$.pipe(
+    switchMap(d => d.gridGraphicReverseScale$)
   )
 
   const gridHighlight$ = gridDetail$.pipe(
     switchMap(d => d.gridHighlight$)
+  )
+
+  const existedSeriesLabels$ = gridDetail$.pipe(
+    switchMap(d => d.existedSeriesLabels$)
   )
 
   const SeriesDataMap$ = gridDetail$.pipe(
@@ -93,22 +114,18 @@ export const gridPluginObservables = (observer: ContextObserverMultiGrid<GridPlu
     switchMap(d => d.visibleComputedData$)
   )
 
-  const isSeriesPositionSeprate$ = gridDetail$.pipe(
-    switchMap(d => d.isSeriesPositionSeprate$)
-  )
-
-  const gridContainer$ = gridDetail$.pipe(
-    switchMap(d => d.gridContainer$)
-  )
+  
 
   return {
     gridComputedData$,
     gridDataFormatter$,
     gridAxesTransform$,
     gridGraphicTransform$,
-    gridAxesOppositeTransform$,
+    gridGraphicReverseScale$,
+    gridAxesReverseTransform$,
     gridAxesSize$,
     gridHighlight$,
+    existedSeriesLabels$,
     SeriesDataMap$,
     GroupDataMap$,
     visibleComputedData$,

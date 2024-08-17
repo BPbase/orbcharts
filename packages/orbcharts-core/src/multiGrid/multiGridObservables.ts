@@ -25,6 +25,7 @@ import type {
   HighlightTarget,
   Layout,
   TransformData } from '../types'
+import type { ContextObserverGridDetail } from '../types'
 import {
   highlightObservable,
   seriesDataMapObservable,
@@ -32,8 +33,10 @@ import {
 import {
   gridAxesTransformObservable,
   gridGraphicTransformObservable,
-  gridAxesOppositeTransformObservable,
+  gridGraphicReverseScaleObservable,
+  gridAxesReverseTransformObservable,
   gridAxesSizeObservable,
+  existedSeriesLabelsObservable,
   gridVisibleComputedDataObservable,
   isSeriesPositionSeprateObservable,
   gridContainerObservable } from '../grid/gridObservables'
@@ -58,8 +61,24 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
     layout$: Observable<Layout>
     fullChartParams$: Observable<ChartParams>
     event$: Subject<EventMultiGrid>
-  }) {
-
+  }): ContextObserverGridDetail {
+    
+    const isSeriesPositionSeprate$ = isSeriesPositionSeprateObservable({
+      computedData$: gridComputedData$,
+      fullDataFormatter$: gridDataFormatter$,
+    }).pipe(
+      shareReplay(1)
+    )
+  
+    const gridContainer$ = gridContainerObservable({
+      computedData$: gridComputedData$,
+      fullDataFormatter$: gridDataFormatter$,
+      fullChartParams$,
+      layout$
+    }).pipe(
+      shareReplay(1)
+    )
+    
     const gridAxesTransform$ = gridAxesTransformObservable({
       fullDataFormatter$: gridDataFormatter$,
       layout$: layout$
@@ -67,6 +86,13 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
       shareReplay(1)
     )
 
+    
+    const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({
+      gridAxesTransform$
+    }).pipe(
+      shareReplay(1)
+    )
+    
     const gridGraphicTransform$ = gridGraphicTransformObservable({
       computedData$: gridComputedData$,
       fullDataFormatter$: gridDataFormatter$,
@@ -75,11 +101,11 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
       shareReplay(1)
     )
 
-    const gridAxesOppositeTransform$ = gridAxesOppositeTransformObservable({
-      gridAxesTransform$
-    }).pipe(
-      shareReplay(1)
-    )
+    const gridGraphicReverseScale$ = gridGraphicReverseScaleObservable({
+      gridContainer$: gridContainer$,
+      gridAxesTransform$: gridAxesTransform$,
+      gridGraphicTransform$: gridGraphicTransform$,
+    })
 
     const gridAxesSize$ = gridAxesSizeObservable({
       fullDataFormatter$: gridDataFormatter$,
@@ -102,6 +128,10 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
       shareReplay(1)
     )
 
+    const existedSeriesLabels$ = existedSeriesLabelsObservable({
+      computedData$: gridComputedData$,
+    })
+
     const SeriesDataMap$ = seriesDataMapObservable({
       datumList$: datumList$
     }).pipe(
@@ -120,33 +150,20 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
       shareReplay(1)
     )
 
-    const isSeriesPositionSeprate$ = isSeriesPositionSeprateObservable({
-      computedData$: gridComputedData$,
-      fullDataFormatter$: gridDataFormatter$,
-    }).pipe(
-      shareReplay(1)
-    )
-
-    const gridContainer$ = gridContainerObservable({
-      computedData$: gridComputedData$,
-      fullDataFormatter$: gridDataFormatter$,
-      fullChartParams$,
-      layout$
-    }).pipe(
-      shareReplay(1)
-    )
 
     return {
+      isSeriesPositionSeprate$,
+      gridContainer$,
       gridAxesTransform$,
+      gridAxesReverseTransform$,
       gridGraphicTransform$,
-      gridAxesOppositeTransform$,
+      gridGraphicReverseScale$,
       gridAxesSize$,
       gridHighlight$,
+      existedSeriesLabels$,
       SeriesDataMap$,
       GroupDataMap$,
       visibleComputedData$,
-      isSeriesPositionSeprate$,
-      gridContainer$
     }
   }
 

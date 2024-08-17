@@ -14,6 +14,7 @@ export const BarsTriangle = defineGridPlugin(pluginName, DEFAULT_BARS_TRIANGLE_P
     selection,
     computedData$: observer.computedData$,
     visibleComputedData$: observer.visibleComputedData$,
+    existedSeriesLabels$: observer.existedSeriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,
