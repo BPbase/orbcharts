@@ -51,6 +51,8 @@ interface BaseBarsContext {
 
 interface RenderBarParams {
   graphicGSelection: d3.Selection<SVGGElement, unknown, any, any>
+  pathGClassName: string
+  pathClassName: string
   barData: BarDatumGrid[][]
   zeroYArr: number[]
   groupLabels: string[]
@@ -75,9 +77,9 @@ type ClipPathDatum = {
   height: number;
 }
 
-const pluginName = 'BaseBarsTriangle'
-const pathGClassName = getClassName(pluginName, 'pathG')
-const pathClassName = getClassName(pluginName, 'path')
+// const pluginName = 'BaseBarsTriangle'
+// const pathGClassName = getClassName(pluginName, 'pathG')
+// const pathClassName = getClassName(pluginName, 'path')
 // group的delay在動畫中的佔比（剩餘部份的時間為圖形本身的動畫時間，因為delay時間和最後一個group的動畫時間加總為1）
 const groupDelayProportionOfDuration = 0.3
 
@@ -117,7 +119,7 @@ function calctransitionItem (barGroupAmount: number, totalDuration: number) {
   return totalDuration * (1 - groupDelayProportionOfDuration) // delay後剩餘的時間
 }
 
-function renderTriangleBars ({ graphicGSelection, barData, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, delayGroup, transitionItem, isSeriesPositionSeprate }: RenderBarParams) {
+function renderTriangleBars ({ graphicGSelection, pathGClassName, pathClassName, barData, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, delayGroup, transitionItem, isSeriesPositionSeprate }: RenderBarParams) {
   
   const barHalfWidth = barWidth! / 2
 
@@ -300,6 +302,8 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
   const destroy$ = new Subject()
 
   const clipPathID = getUniID(pluginName, 'clipPath-box')
+  const pathGClassName = getClassName(pluginName, 'pathG')
+  const pathClassName = getClassName(pluginName, 'path')
 
   // const seriesSelection$ = computedData$.pipe(
   //   takeUntil(destroy$),
@@ -615,6 +619,8 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
 
     const barSelection = renderTriangleBars({
       graphicGSelection: data.graphicGSelection,
+      pathGClassName,
+      pathClassName,
       barData: data.barData,
       zeroYArr: data.zeroYArr,
       groupLabels: data.groupLabels,

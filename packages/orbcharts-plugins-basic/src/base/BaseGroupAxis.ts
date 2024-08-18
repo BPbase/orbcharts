@@ -3,45 +3,48 @@ import {
   combineLatest,
   switchMap,
   distinctUntilChanged,
+  of,
   first,
   map,
   takeUntil,
   Observable,
   Subject } from 'rxjs'
-import { createAxisLinearScale } from '@orbcharts/core'
+import {
+  defineGridPlugin } from '@orbcharts/core'
+import { createAxisPointScale } from '@orbcharts/core'
+import type { ColorType, ComputedDataGrid, ContainerPosition } from '@orbcharts/core'
 import type { BasePluginFn } from './types'
 import type {
-  ComputedDataGrid,
+  ComputedDatumGrid,
   DataFormatterGrid,
   ChartParams,
-  ComputedDatumGrid,
-  ContainerPosition,
-  TransformData,
-  EventGrid,
-  ColorType } from '@orbcharts/core'
+  TransformData } from '@orbcharts/core'
 import { parseTickFormatValue } from '../utils/d3Utils'
-import { getColor, getMinAndMaxValue, getClassName, getUniID } from '../utils/orbchartsUtils'
+import { getColor, getClassName } from '../utils/orbchartsUtils'
 
-export interface BaseValueAxisParams {
+export interface BaseGroupAxisParams {
+  // xLabel: string
+  // labelAnchor: 'start' | 'end'
   labelOffset: [number, number]
   labelColorType: ColorType
   axisLineVisible: boolean
   axisLineColorType: ColorType
-  ticks: number
-  tickFormat: string | ((text: d3.NumberValue) => string)
+  tickFormat: string | ((text: any) => string)
   tickLineVisible: boolean
   tickPadding: number
   tickFullLine: boolean
   tickFullLineDasharray: string
   tickColorType: ColorType
+  // axisLineColor: string
+  // axisLabelColor: string
   tickTextRotate: number
   tickTextColorType: ColorType
 }
 
-interface BaseLinesContext {
+interface BaseGroupAxisContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
-  fullParams$: Observable<BaseValueAxisParams>
+  fullParams$: Observable<BaseGroupAxisParams>
   fullDataFormatter$: Observable<DataFormatterGrid>
   fullChartParams$: Observable<ChartParams>
   gridAxesTransform$: Observable<TransformData>
@@ -59,42 +62,42 @@ interface TextAlign {
   dominantBaseline: "middle" | "auto" | "hanging"
 }
 
-// const pluginName = 'ValueAxis'
+// const pluginName = 'GroupAxis'
 // const containerClassName = getClassName(pluginName, 'container')
-// const yAxisGClassName = getClassName(pluginName, 'yAxisG')
-// const yAxisClassName = getClassName(pluginName, 'yAxis')
-// const textClassName = getClassName(pluginName, 'text')
+// const xAxisGClassName = getClassName(pluginName, 'xAxisG')
+// const xAxisClassName = getClassName(pluginName, 'xAxis')
+// const groupingLabelClassName = getClassName(pluginName, 'groupingLabel')
 const defaultTickSize = 6
 
-function renderLinearAxis ({ selection, yAxisClassName, textClassName, fullParams, tickTextAlign, axisLabelAlign, gridAxesSize, fullDataFormatter, fullChartParams, valueScale, contentTransform, minAndMax }: {
+function renderPointAxis ({ selection, xAxisClassName, groupingLabelClassName, params, tickTextAlign, axisLabelAlign, gridAxesSize, fullDataFormatter, chartParams, groupScale, contentTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
-  yAxisClassName: string
-  textClassName: string
-  fullParams: BaseValueAxisParams
+  xAxisClassName: string
+  groupingLabelClassName: string
+  params: BaseGroupAxisParams
   tickTextAlign: TextAlign
   axisLabelAlign: TextAlign
   gridAxesSize: { width: number, height: number }
   fullDataFormatter: DataFormatterGrid,
-  fullChartParams: ChartParams
-  valueScale: d3.ScaleLinear<number, number>
-  contentTransform: string,
-  minAndMax: [number, number]
+  chartParams: ChartParams
+  groupScale: d3.ScalePoint<string>
+  contentTransform: string
+  // tickTextFormatter: string | ((label: any) => string)
 }) {
 
-  const yAxisSelection = selection
-    .selectAll<SVGGElement, BaseValueAxisParams>(`g.${yAxisClassName}`)
-    .data([fullParams])
+  const xAxisSelection = selection
+    .selectAll<SVGGElement, BaseGroupAxisParams>(`g.${xAxisClassName}`)
+    .data([params])
     .join('g')
-    .classed(yAxisClassName, true)
+    .classed(xAxisClassName, true)
 
   const axisLabelSelection = selection
-    .selectAll<SVGGElement, BaseValueAxisParams>(`g.${textClassName}`)
-    .data([fullParams])
+    .selectAll<SVGGElement, BaseGroupAxisParams>(`g.${groupingLabelClassName}`)
+    .data([params])
     .join('g')
-    .classed(textClassName, true)
+    .classed(groupingLabelClassName, true)
     .each((d, i, g) => {
       const text = d3.select(g[i])
-        .selectAll<SVGTextElement, BaseValueAxisParams>(`text`)
+        .selectAll<SVGTextElement, BaseGroupAxisParams>('text')
         .data([d])
         .join(
           enter => {
@@ -107,62 +110,74 @@ function renderLinearAxis ({ selection, yAxisClassName, textClassName, fullParam
         )
         .attr('text-anchor', axisLabelAlign.textAnchor)
         .attr('dominant-baseline', axisLabelAlign.dominantBaseline)
-        .style('font-size', `${fullChartParams.styles.textSize}px`)
-        .style('fill', getColor(fullParams.labelColorType, fullChartParams))
+        .style('font-size', `${chartParams.styles.textSize}px`)
+        .style('fill', getColor(params.labelColorType, chartParams))
         .style('transform', contentTransform)
-        .text(d => fullDataFormatter.grid.valueAxis.label)
+        .text(d => fullDataFormatter.grid.groupAxis.label)
     })
-    .attr('transform', d => `translate(${- d.tickPadding + fullParams.labelOffset[0]}, ${gridAxesSize.height + d.tickPadding + fullParams.labelOffset[1]})`)
+    .attr('transform', d => `translate(${gridAxesSize.width + d.tickPadding + params.labelOffset[0]}, ${- d.tickPadding - defaultTickSize - params.labelOffset[1]})`)
 
-  const valueLength = minAndMax[1] - minAndMax[0]
-  
-  // 設定Y軸刻度
-  const yAxis = d3.axisLeft(valueScale)
-    .scale(valueScale)
-    .ticks(valueLength > fullParams.ticks
-      ? fullParams.ticks
-      : ((minAndMax[0] === 0 && minAndMax[1] === 0)
-        ? 1
-        : Math.ceil(valueLength))) // 刻度分段數量
-    .tickFormat(d => parseTickFormatValue(d, fullParams.tickFormat))
-    .tickSize(fullParams.tickFullLine == true
-      ? -gridAxesSize.width
+
+  // 設定X軸刻度
+  // const xAxis = d3.axisBottom(groupScale)
+  const xAxis = d3.axisTop(groupScale)
+    .scale(groupScale)
+    .tickSize(params.tickFullLine == true
+      ? -gridAxesSize.height
       : defaultTickSize)
-    .tickPadding(fullParams.tickPadding)
-  
-  const yAxisEl = yAxisSelection
+    .tickSizeOuter(0)
+    .tickFormat(d => parseTickFormatValue(d, params.tickFormat))
+    .tickPadding(params.tickPadding)
+
+  const xAxisEl = xAxisSelection
     .transition()
     .duration(100)
-    .call(yAxis)
-  
-  yAxisEl.selectAll('line')
+    .call(xAxis)      
+    // .attr('text-anchor', () => params.tickTextRotate !== false ? 'end' : 'middle')
+    // .attr('text-anchor', () => 'middle')
+
+  xAxisEl.selectAll('line')
     .style('fill', 'none')
-    .style('stroke', fullParams.tickLineVisible == true ? getColor(fullParams.tickColorType, fullChartParams) : 'none')
-    .style('stroke-dasharray', fullParams.tickFullLineDasharray)
+    .style('stroke', params.tickLineVisible == true ? getColor(params.tickColorType, chartParams) : 'none')
+    .style('stroke-dasharray', params.tickFullLineDasharray)
     .attr('pointer-events', 'none')
-  
-  yAxisEl.selectAll('path')
+
+  xAxisEl.selectAll('path')
     .style('fill', 'none')
-    // .style('stroke', this.fullParams.axisLineColor!)
-    .style('stroke', fullParams.axisLineVisible == true ? getColor(fullParams.axisLineColorType, fullChartParams) : 'none')
+    .style('stroke', params.axisLineVisible == true ? getColor(params.axisLineColorType, chartParams) : 'none')
     .style('shape-rendering', 'crispEdges')
-  
-  // const yText = yAxisEl.selectAll('text')
-  const yText = yAxisSelection.selectAll('text')
+
+  // const xText = xAxisEl.selectAll('text')
+  // xAxisSelection.each((d, i, g) => {
+  //   d3.select(g[i])
+  //     .selectAll('text')
+  //     .data([d])
+  //     .join('text')
+  //     .style('font-family', 'sans-serif')
+  //     .style('font-size', `${chartParams.styles.textSize}px`)
+  //     // .style('font-weight', 'bold')
+  //     .style('color', getColor(params.tickTextColorType, chartParams))
+  //     .attr('text-anchor', tickTextAlign.textAnchor)
+  //     .attr('dominant-baseline', tickTextAlign.dominantBaseline)
+  //     .attr('transform-origin', `0 -${params.tickPadding + defaultTickSize}`)
+  //     .style('transform', contentTransform)
+  // })
+  const xText = xAxisSelection.selectAll('text')
     .style('font-family', 'sans-serif')
-    .style('font-size', `${fullChartParams.styles.textSize}px`)
-    .style('color', getColor(fullParams.tickTextColorType, fullChartParams))
+    .style('font-size', `${chartParams.styles.textSize}px`)
+    // .style('font-weight', 'bold')
+    .style('color', getColor(params.tickTextColorType, chartParams))
     .attr('text-anchor', tickTextAlign.textAnchor)
     .attr('dominant-baseline', tickTextAlign.dominantBaseline)
-    .attr('transform-origin', `-${fullParams.tickPadding + defaultTickSize} 0`)
-  yText.style('transform', contentTransform)
-
-  return yAxisSelection
+    .attr('transform-origin', `0 -${params.tickPadding + defaultTickSize}`)
+    .style('transform', contentTransform)
+    
+    
+  return xAxisSelection
 }
 
 
-
-export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: string, {
+export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginName: string, {
   selection,
   computedData$,
   fullParams$,
@@ -178,9 +193,9 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   const destroy$ = new Subject()
 
   const containerClassName = getClassName(pluginName, 'container')
-  const yAxisGClassName = getClassName(pluginName, 'yAxisG')
-  const yAxisClassName = getClassName(pluginName, 'yAxis')
-  const textClassName = getClassName(pluginName, 'text')
+  const xAxisGClassName = getClassName(pluginName, 'xAxisG')
+  const xAxisClassName = getClassName(pluginName, 'xAxis')
+  const groupingLabelClassName = getClassName(pluginName, 'groupingLabel')
 
   const containerSelection$ = combineLatest({
     computedData: computedData$.pipe(
@@ -213,10 +228,10 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     takeUntil(destroy$),
     map((containerSelection, i) => {
       return containerSelection
-        .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${yAxisGClassName}`)
-        .data([yAxisGClassName])
+        .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${xAxisGClassName}`)
+        .data([xAxisGClassName])
         .join('g')
-        .classed(yAxisGClassName, true)
+        .classed(xAxisGClassName, true)
     })
   )
 
@@ -253,27 +268,36 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       
   })
 
+
   // const gridAxesSize$ = gridAxisSizeObservable({
   //   fullDataFormatter$,
   //   layout$
   // })
 
+    
+  // const tickTextFormatter$ = fullDataFormatter$
+  //   .pipe(
+  //     map(d => {
+  //       return d.grid.seriesType === 'row' ? d.grid.columnLabelFormat : d.grid.rowLabelFormat
+  //     })
+  //   )
+
   // const contentTransform$: Observable<string> = new Observable(subscriber => {
   //   combineLatest({
-  //     fullParams: fullParams$,
-  //     layout: layout$
+  //     params: fullParams$,
+  //     gridAxesTransform: gridAxesTransform$
   //   }).pipe(
   //     takeUntil(destroy$),
   //     // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
   //     switchMap(async (d) => d),
   //   ).subscribe(data => {
 
-  //     const transformData = Object.assign({}, data.layout.content.axesTransformData)
+  //     const transformData = Object.assign({}, data.gridAxesTransform)
 
   //     const value = getAxesTransformValue({
   //       translate: [0, 0],
   //       scale: [transformData.scale[0] * -1, transformData.scale[1] * -1],
-  //       rotate: transformData.rotate * -1 + data.fullParams.tickTextRotate,
+  //       rotate: transformData.rotate * -1 + data.params.tickTextRotate,
   //       rotateX: transformData.rotateX * -1,
   //       rotateY: transformData.rotateY * -1
   //     })
@@ -309,12 +333,12 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     map(data => {
       const scale = [1 / data.gridContainer[0].scale[0], 1 / data.gridContainer[0].scale[1]]
       const rotate = data.gridAxesReverseTransform.rotate + data.fullParams.tickTextRotate
-      return `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px) rotate(${rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg) scale(${scale[0]}, ${scale[1]})`
+      return `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px) scale(${scale[0]}, ${scale[1]}) rotate(${rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
     }),
     distinctUntilChanged()
   )
 
-  const minAndMax$: Observable<[number, number]> = new Observable(subscriber => {
+  const groupScale$: Observable<d3.ScalePoint<string>> = new Observable(subscriber => {
     combineLatest({
       fullDataFormatter: fullDataFormatter$,
       gridAxesSize: gridAxesSize$,
@@ -331,60 +355,66 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
         ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
         : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
-        
-      const filteredData = data.computedData.map((d, i) => {
-        return d.filter((_d, _i) => {
-          return _i >= groupScaleDomainMin && _i <= groupScaleDomainMax
+      
+      const groupingLength = data.computedData[0]
+        ? data.computedData[0].length
+        : 0
+
+      let _labels = data.fullDataFormatter.grid.gridData.seriesType === 'row'
+        // ? data.fullDataFormatter.grid.columnLabels
+        // : data.fullDataFormatter.grid.rowLabels
+        ? (data.computedData[0] ?? []).map(d => d.groupLabel)
+        : data.computedData.map(d => d[0].groupLabel)
+
+      const axisLabels = new Array(groupingLength).fill(0)
+        .map((d, i) => {
+          return _labels[i] != null
+            ? _labels[i]
+            : String(i) // 沒有label則用序列號填充
         })
-      })
-    
-      const filteredMinAndMax = getMinAndMaxValue(filteredData.flat())
+        .filter((d, i) => {
+          return i >= groupScaleDomainMin && i <= groupScaleDomainMax
+        })
 
-      subscriber.next(filteredMinAndMax)
+      
+      const padding = data.fullDataFormatter.grid.groupAxis.scalePadding
+      
+      const groupScale = createAxisPointScale({
+        axisLabels,
+        axisWidth: data.gridAxesSize.width,
+        padding
+      })
+
+      subscriber.next(groupScale)
     })
   })
 
-  const valueScale$: Observable<d3.ScaleLinear<number, number>> = new Observable(subscriber => {
-    combineLatest({
-      fullDataFormatter: fullDataFormatter$,
-      gridAxesSize: gridAxesSize$,
-      minAndMax: minAndMax$
-    }).pipe(
-      takeUntil(destroy$),
-      // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
-      switchMap(async (d) => d),
-    ).subscribe(data => {
-    
-      const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
-        maxValue: data.minAndMax[1],
-        minValue: data.minAndMax[0],
-        axisWidth: data.gridAxesSize.height,
-        scaleDomain: data.fullDataFormatter.grid.valueAxis.scaleDomain,
-        scaleRange: data.fullDataFormatter.grid.valueAxis.scaleRange
-      })
-
-      subscriber.next(valueScale)
-    })
-  })
-
-  const tickTextAlign$: Observable<TextAlign> = fullDataFormatter$.pipe(
+  const tickTextAlign$: Observable<TextAlign> = combineLatest({
+    fullDataFormatter: fullDataFormatter$,
+    fullParams: fullParams$
+  }).pipe(
     takeUntil(destroy$),
-    map(d => {
-      let textAnchor: 'start' | 'middle' | 'end' = 'start'
+    switchMap(async (d) => d),
+    map(data => {
+      let textAnchor: 'start' | 'middle' | 'end' = 'middle'
       let dominantBaseline: 'auto' | 'middle' | 'hanging' = 'hanging'
 
-      if (d.grid.valueAxis.position === 'left') {
+      if (data.fullDataFormatter.grid.groupAxis.position === 'bottom') {
+        textAnchor = data.fullParams.tickTextRotate
+          ? 'end'
+          : 'middle'
+        dominantBaseline = 'hanging'
+      } else if (data.fullDataFormatter.grid.groupAxis.position === 'top') {
+        textAnchor = data.fullParams.tickTextRotate
+          ? 'end'
+          : 'middle'
+        dominantBaseline = 'auto'
+      } else if (data.fullDataFormatter.grid.groupAxis.position === 'left') {
         textAnchor = 'end'
         dominantBaseline = 'middle'
-      } else if (d.grid.valueAxis.position === 'right') {
+      } else if (data.fullDataFormatter.grid.groupAxis.position === 'right') {
         textAnchor = 'start'
         dominantBaseline = 'middle'
-      } else if (d.grid.valueAxis.position === 'bottom') {
-        textAnchor = 'middle'
-        dominantBaseline = 'hanging'
-      } else if (d.grid.valueAxis.position === 'top') {
-        textAnchor = 'middle'
-        dominantBaseline = 'auto'
       }
       return {
         textAnchor,
@@ -400,22 +430,22 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       let dominantBaseline: 'auto' | 'middle' | 'hanging' = 'hanging'
 
       if (d.grid.groupAxis.position === 'bottom') {
-        dominantBaseline = 'auto'
-      } else if (d.grid.groupAxis.position === 'top') {
         dominantBaseline = 'hanging'
+      } else if (d.grid.groupAxis.position === 'top') {
+        dominantBaseline = 'auto'
       } else if (d.grid.groupAxis.position === 'left') {
-        textAnchor = 'start'
-      } else if (d.grid.groupAxis.position === 'right') {
         textAnchor = 'end'
+      } else if (d.grid.groupAxis.position === 'right') {
+        textAnchor = 'start'
       }
       if (d.grid.valueAxis.position === 'left') {
-        textAnchor = 'end'
-      } else if (d.grid.valueAxis.position === 'right') {
         textAnchor = 'start'
+      } else if (d.grid.valueAxis.position === 'right') {
+        textAnchor = 'end'
       } else if (d.grid.valueAxis.position === 'bottom') {
-        dominantBaseline = 'hanging'
-      } else if (d.grid.valueAxis.position === 'top') {
         dominantBaseline = 'auto'
+      } else if (d.grid.valueAxis.position === 'top') {
+        dominantBaseline = 'hanging'
       }
       return {
         textAnchor,
@@ -423,42 +453,40 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       }
     })
   )
-  
 
   combineLatest({
     axisSelection: axisSelection$,
-    fullParams: fullParams$,
+    params: fullParams$,
     tickTextAlign: tickTextAlign$,
     axisLabelAlign: axisLabelAlign$,
-    computedData: computedData$,
     gridAxesSize: gridAxesSize$,
     fullDataFormatter: fullDataFormatter$,
-    fullChartParams: fullChartParams$,
-    valueScale: valueScale$,
+    chartParams: fullChartParams$,
+    groupScale: groupScale$,
     contentTransform: contentTransform$,
-    minAndMax: minAndMax$
+    // tickTextFormatter: tickTextFormatter$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
   ).subscribe(data => {
 
-    renderLinearAxis({
+    renderPointAxis({
       selection: data.axisSelection,
-      yAxisClassName,
-      textClassName,
-      fullParams: data.fullParams,
+      xAxisClassName,
+      groupingLabelClassName,
+      params: data.params,
       tickTextAlign: data.tickTextAlign,
       axisLabelAlign: data.axisLabelAlign,
       gridAxesSize: data.gridAxesSize,
       fullDataFormatter: data.fullDataFormatter,
-      fullChartParams: data.fullChartParams,
-      valueScale: data.valueScale,
+      chartParams: data.chartParams,
+      groupScale: data.groupScale,
       contentTransform: data.contentTransform,
-      minAndMax: data.minAndMax
+      // tickTextFormatter: data.tickTextFormatter
     })
   })
 
   return () => {
     destroy$.next(undefined)
   }
-}
+})

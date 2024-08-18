@@ -4,21 +4,10 @@ import type {
   MultiGridBarStackParams,
   MultiGridBarsTriangleParams,
   MultiGridLinesParams,
-  MultiGridDotsParams
+  MultiGridDotsParams,
+  MultiGridGroupAxis,
+  MultiGridValueAxis
 } from './types'
-
-// export const DEFAULT_BARS_AND_LINES_PARAMS: BarsAndLinesParams = {
-//   bars: {
-//     barWidth: 0,
-//     barPadding: 1,
-//     barGroupPadding: 40,
-//     barRadius: false,
-//   },
-//   lines: {
-//     lineCurve: 'curveLinear',
-//     lineWidth: 2
-//   }
-// }
 
 export const DEFAULT_MULTI_GRID_LEGEND_PARAMS: MultiGridLegendParams = {
   position: 'right',
@@ -39,19 +28,58 @@ export const DEFAULT_MULTI_GRID_LEGEND_PARAMS: MultiGridLegendParams = {
   ]
 }
 
+export const DEFAULT_MULTI_GRID_GROUP_AXIS_PARAMS: MultiGridGroupAxis = {
+  // labelAnchor: 'start',
+  labelOffset: [0, 0],
+  labelColorType: 'primary',
+  axisLineVisible: true,
+  axisLineColorType: 'primary',
+  tickFormat: text => text,
+  tickLineVisible: true,
+  tickPadding: 20,
+  tickFullLine: false,
+  tickFullLineDasharray: 'none',
+  tickColorType: 'secondary',
+  tickTextRotate: 0,
+  tickTextColorType: 'primary',
+  // gridIndex: 0
+  gridIndexes: [0]
+}
+
+export const DEFAULT_MULTI_GRID_VALUE_AXIS_PARAMS: MultiGridValueAxis = {
+  // labelAnchor: 'end',
+  labelOffset: [0, 0],
+  labelColorType: 'primary',
+  axisLineVisible: false,
+  axisLineColorType: 'primary',
+  ticks: 4,
+  tickFormat: ',.0f',
+  tickLineVisible: true,
+  tickPadding: 20,
+  tickFullLine: true,
+  tickFullLineDasharray: 'none',
+  tickColorType: 'secondary',
+  tickTextRotate: 0,
+  tickTextColorType: 'primary',
+  // gridIndex: 0
+  gridIndexes: [0]
+}
+
 export const DEFAULT_MULTI_GRID_BARS_PARAMS: MultiGridBarsParams = {
   barWidth: 0,
   barPadding: 1,
   barGroupPadding: 40,
   barRadius: false,
-  gridIndex: 0
+  // gridIndex: 0
+  gridIndexes: [0]
 }
 
 export const DEFAULT_MULTI_GRID_BAR_STACK_PARAMS: MultiGridBarStackParams = {
   barWidth: 0,
   barGroupPadding: 10,
   barRadius: false,
-  gridIndex: 0
+  // gridIndex: 0
+  gridIndexes: [0]
 }
 
 export const DEFAULT_MULTI_GRID_BARS_TRIANGLE_PARAMS: MultiGridBarsTriangleParams = {
@@ -59,13 +87,15 @@ export const DEFAULT_MULTI_GRID_BARS_TRIANGLE_PARAMS: MultiGridBarsTriangleParam
   barPadding: 1,
   barGroupPadding: 20,
   linearGradientOpacity: [1, 0],
-  gridIndex: 0
+  // gridIndex: 0
+  gridIndexes: [0]
 }
 
 export const DEFAULT_MULTI_GRID_LINES_PARAMS: MultiGridLinesParams = {
   lineCurve: 'curveLinear',
   lineWidth: 2,
-  gridIndex: 1
+  // gridIndex: 0
+  gridIndexes: [1]
 }
 
 export const DEFAULT_MULTI_GRID_DOTS_PARAMS: MultiGridDotsParams = {
@@ -74,5 +104,6 @@ export const DEFAULT_MULTI_GRID_DOTS_PARAMS: MultiGridDotsParams = {
   strokeColorType: 'series',
   strokeWidth: 2,
   onlyShowHighlighted: false,
-  gridIndex: 1
+  // gridIndex: 0
+  gridIndexes: [1]
 }

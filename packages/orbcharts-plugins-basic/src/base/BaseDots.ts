@@ -58,12 +58,14 @@ type ClipPathDatum = {
   height: number;
 }
 
-const pluginName = 'Dots'
-const circleGClassName = getClassName(pluginName, 'circleG')
-const circleClassName = getClassName(pluginName, 'circle')
+// const pluginName = 'Dots'
+// const circleGClassName = getClassName(pluginName, 'circleG')
+// const circleClassName = getClassName(pluginName, 'circle')
 
-function renderDots ({ graphicGSelection, data, fullParams, fullChartParams, graphicReverseScale }: {
+function renderDots ({ graphicGSelection, circleGClassName, circleClassName, data, fullParams, fullChartParams, graphicReverseScale }: {
   graphicGSelection: d3.Selection<SVGGElement, any, any, any>
+  circleGClassName: string
+  circleClassName: string
   data: ComputedDatumGrid[][]
   fullParams: BaseDotsParams
   fullChartParams: ChartParams
@@ -272,6 +274,8 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
   const destroy$ = new Subject()
 
   const clipPathID = getUniID(pluginName, 'clipPath-box')
+  const circleGClassName = getClassName(pluginName, 'circleG')
+  const circleClassName = getClassName(pluginName, 'circle')
 
   // const axisSelection: d3.Selection<SVGGElement, any, any, any> = selection
   //   .append('g')
@@ -501,6 +505,8 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
 
     const graphicSelection = renderDots({
       graphicGSelection: data.graphicGSelection,
+      circleGClassName,
+      circleClassName,
       data: data.visibleComputedData,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams,

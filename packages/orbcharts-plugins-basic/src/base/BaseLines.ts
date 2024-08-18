@@ -64,8 +64,8 @@ type ClipPathDatum = {
   height: number;
 }
 
-const pluginName = 'Lines'
-const pathClassName = getClassName(pluginName, 'path')
+// const pluginName = 'Lines'
+// const pathClassName = getClassName(pluginName, 'path')
 
 
 function createLinePath (lineCurve: string = 'curveLinear'): d3.Line<ComputedDatumGrid> {
@@ -100,8 +100,9 @@ function  makeSegmentData (data: ComputedDatumGrid[]): ComputedDatumGrid[][] {
 }
 
 
-function renderLine ({ selection, segmentData, linePath, params }: {
+function renderLine ({ selection, pathClassName, segmentData, linePath, params }: {
   selection: d3.Selection<SVGGElement, unknown, any, unknown>
+  pathClassName: string
   segmentData: ComputedDatumGrid[][]
   linePath: d3.Line<ComputedDatumGrid>
   params: BaseLinesParams
@@ -241,14 +242,15 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
   const destroy$ = new Subject()
 
   const clipPathID = getUniID(pluginName, 'clipPath-box')
-  const clipPathSeriesID = getUniID(pluginName, 'clipPath')
+  const pathClassName = getClassName(pluginName, 'path')
+  // const clipPathSeriesID = getUniID(pluginName, 'clipPath')
 
   // const axisSelection: d3.Selection<SVGGElement, any, any, any> = selection
   //   .append('g')
   //   .attr('clip-path', `url(#${clipPathID})`)
   // const defsSelection: d3.Selection<SVGDefsElement, any, any, any> = axisSelection.append('defs')
   // const graphicGSelection: d3.Selection<SVGGElement, any, any, any> = axisSelection.append('g')
-  const graphicSelection$: Subject<d3.Selection<SVGGElement, string, any, any>> = new Subject()
+  // const graphicSelection$: Subject<d3.Selection<SVGGElement, string, any, any>> = new Subject()
 
 
   // gridAxesTransform$
@@ -534,6 +536,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
 
       const pathSelection = renderLine({
         selection: d3.select(all[i]),
+        pathClassName,
         linePath: data.linePath,
         segmentData: segmentData,
         params: data.params
@@ -660,7 +663,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
   //   map(d => d.flat())
   // )
   // const highlight$ = highlightObservable({ datumList$, fullChartParams$, event$: store.event$ })
-  const highlightSubscription = gridHighlight$.subscribe()
+  // const highlightSubscription = gridHighlight$.subscribe()
   
   fullChartParams$.pipe(
     takeUntil(destroy$),
@@ -688,6 +691,6 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
 
   return () => {
     destroy$.next(undefined)
-    highlightSubscription.unsubscribe()
+    // highlightSubscription.unsubscribe()
   }
 }

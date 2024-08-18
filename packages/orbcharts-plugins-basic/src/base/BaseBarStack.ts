@@ -59,6 +59,7 @@ interface GraphicDatum extends ComputedDatumGrid {
 
 interface RenderBarParams {
   graphicGSelection: d3.Selection<SVGGElement, unknown, any, any>
+  rectClassName: string
   barData: GraphicDatum[][]
   zeroY: number
   groupLabels: string[]
@@ -80,8 +81,8 @@ type ClipPathDatum = {
   height: number;
 }
 
-const pluginName = 'BarStack'
-const rectClassName = getClassName(pluginName, 'rect')
+// const pluginName = 'BarStack'
+// const rectClassName = getClassName(pluginName, 'rect')
 // group的delay在動畫中的佔比（剩餘部份的時間為圖形本身的動畫時間，因為delay時間和最後一個group的動畫時間加總為1）
 const groupDelayProportionOfDuration = 0.3
 
@@ -120,7 +121,7 @@ function calctransitionItem (barGroupAmount: number, totalDuration: number) {
   return totalDuration * (1 - groupDelayProportionOfDuration) // delay後剩餘的時間
 }
 
-function renderRectBars ({ graphicGSelection, barData, zeroY, groupLabels, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesPositionSeprate }: RenderBarParams) {
+function renderRectBars ({ graphicGSelection, rectClassName, barData, zeroY, groupLabels, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesPositionSeprate }: RenderBarParams) {
   
   const barHalfWidth = barWidth! / 2
 
@@ -306,6 +307,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
   const destroy$ = new Subject()
 
   const clipPathID = getUniID(pluginName, 'clipPath-box')
+  const rectClassName = getClassName(pluginName, 'rect')
 
   // const axisSelection: d3.Selection<SVGGElement, any, any, any> = selection
   //   .append('g')
@@ -752,6 +754,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
   ).subscribe(data => {
     const barSelection = renderRectBars({
       graphicGSelection: data.graphicGSelection,
+      rectClassName,
       barData: data.graphicData,
       zeroY: data.zeroY,
       groupLabels: data.groupLabels,

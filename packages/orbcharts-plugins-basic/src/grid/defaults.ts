@@ -56,7 +56,7 @@ export const DEFAULT_BARS_TRIANGLE_PARAMS: BarsTriangleParams = {
   linearGradientOpacity: [1, 0]
 }
 
-export const DEFAULT_GROUPING_AXIS_PARAMS: GroupAxisParams = {
+export const DEFAULT_GROUP_AXIS_PARAMS: GroupAxisParams = {
   // labelAnchor: 'start',
   labelOffset: [0, 0],
   labelColorType: 'primary',

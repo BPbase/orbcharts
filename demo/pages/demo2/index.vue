@@ -4,7 +4,7 @@
   
   <script setup lang="ts">
   import { MultiGridChart } from '../../../packages/orbcharts-core/src'
-  import { MultiGridBars, MultiGridLines, MultiGridDots, MultiGridLegend, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+  import { MultiGridBars, MultiGridLines, MultiGridDots, MultiGridLegend, MultiGridGroupAxis, MultiGridValueAxis, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
   import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
   import { multiGridData1 } from '../../const/data/multiGridData1'
   
@@ -34,11 +34,21 @@
     const multiGridLines = new MultiGridLines()
     const multiGridDots = new MultiGridDots()
     const multiGridLegend = new MultiGridLegend()
+    const multiGridGroupAxis = new MultiGridGroupAxis()
+    const multiGridValueAxis = new MultiGridValueAxis()
     const tooltip = new Tooltip()
-    chart!.plugins$.next([ multiGridBars, multiGridLines, multiGridDots, multiGridLegend, tooltip])
+    chart!.plugins$.next([ multiGridGroupAxis, multiGridValueAxis, multiGridBars, multiGridLines, multiGridDots, multiGridLegend, tooltip])
 
     chart.chartParams$.next({
       highlightTarget: 'series'
+    })
+
+    multiGridGroupAxis.params$.next({
+      gridIndexes: [0]
+    })
+
+    multiGridValueAxis.params$.next({
+      gridIndexes: [0, 1]
     })
 
     // chart!.dataFormatter$.next({
@@ -142,7 +152,7 @@
     // multiGridLines.params$.next({
     //   lineCurve: 'curveMonotoneX'
     // })
-  
+    const play = true
     let i = 0
     let j = 0
     let iMax = 8
@@ -163,6 +173,13 @@
               slotIndex: 1
             }
           ]
+        })
+        multiGridGroupAxis.params$.next({
+          gridIndexes: [0, 1]
+        })
+
+        multiGridValueAxis.params$.next({
+          gridIndexes: [0, 1]
         })
       } else if (i == 1) {
         chart!.dataFormatter$.next({
@@ -273,6 +290,13 @@
             }
           ]
         })
+        multiGridGroupAxis.params$.next({
+          gridIndexes: [0]
+        })
+
+        multiGridValueAxis.params$.next({
+          gridIndexes: [0]
+        })
       } else if (i == 7)  {
         if (j == 0) {
           multiGridBars.params$.next({
@@ -287,7 +311,9 @@
           multiGridLines.params$.next({
           })
         }
-        j++
+        if (play) {
+          j++
+        }
         if (j > jMax) {
           j = 0
         }
@@ -310,7 +336,9 @@
         
       }
       
-      i++
+      if (play) {
+        i++
+      }
       if (i > iMax) {
         i = 0
       }
