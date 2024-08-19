@@ -34,7 +34,6 @@ export const CHART_OPTIONS_DEFAULT: ChartOptionsPartial<any> = {
 // }
 
 // export const COLORS_DEFAULT = ['#67B7DC', '#6794DC', '#6771DC', '#8067DC', '#A367DC', '#C767DC', '#DC67CE', '#DC67AB', '#DC6788', '#DC6967', '#DC8C67', '#DCAF67']
-// @Q@ 桃園儀表板
 // ['#ff7ab9', '#66dec8', '#84c8ff', '#30ad1b', '#f8c43e', '#fa5640', '#9d79d7', '#ea4f98']
 
 export const PADDING_DEFAULT: Padding = {

@@ -276,7 +276,7 @@ export const demoDetail: DemoDetail = {
     'MultiBars': {
       'PRESET_MULTI_GRID_BASIC': {
         chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBars, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.OverlappingValueAxes, pluginsBasic.MultiBars, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_MULTI_GRID_BASIC,
         data: multiGridData1
       }

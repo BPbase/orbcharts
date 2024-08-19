@@ -3,7 +3,7 @@ import {
   Subject } from 'rxjs'
 import {
   defineMultiGridPlugin } from '@orbcharts/core'
-import { DEFAULT_MULTI_GRID_VALUE_AXIS_PARAMS } from '../defaults'
+import { DEFAULT_MULTI_VALUE_AXIS_PARAMS } from '../defaults'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
 import { multiGridDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
@@ -12,7 +12,7 @@ const pluginName = 'MultiValueAxis'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiValueAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GRID_VALUE_AXIS_PARAMS)(({ selection, name, subject, observer }) => {
+export const MultiValueAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_VALUE_AXIS_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []

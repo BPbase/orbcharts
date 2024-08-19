@@ -3,7 +3,7 @@ import {
   Subject } from 'rxjs'
 import {
   defineMultiGridPlugin } from '@orbcharts/core'
-import { DEFAULT_MULTI_GRID_DOTS_PARAMS } from '../defaults'
+import { DEFAULT_MULTI_DOTS_PARAMS } from '../defaults'
 import { createBaseDots } from '../../base/BaseDots'
 import { multiGridDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
@@ -12,7 +12,7 @@ const pluginName = 'MultiDots'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiDots = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GRID_DOTS_PARAMS)(({ selection, name, subject, observer }) => {
+export const MultiDots = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_DOTS_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []

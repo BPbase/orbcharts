@@ -5,6 +5,17 @@
         <h1>OrbCharts</h1>
       </div>
       <div
+        class="menu-list">
+        <NuxtLink
+          :to="`/demo1`">
+          Demo 1
+        </NuxtLink>
+        <NuxtLink
+          :to="`/demo2`">
+          Demo 2
+        </NuxtLink>
+      </div>
+      <div
         class="menu-list"
         v-for="(chartTypeGroup, chartTypeIndex) in demoList"
         key="chartTypeIndex">

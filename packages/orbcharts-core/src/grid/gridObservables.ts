@@ -105,6 +105,8 @@ export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
         translateX = width
       } else if (yAxis.position === 'top') {
         rotate = -90
+        rotateX = 180
+        rotateY = 180
         translateX = width
       } else {
         // 預設

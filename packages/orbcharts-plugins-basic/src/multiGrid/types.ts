@@ -31,37 +31,36 @@ export interface MultiGridLegendParams {
   }>
 }
 
-export interface MultiGroupAxis extends BaseGroupAxisParams {
-  // gridIndex: number
+export interface MultiGroupAxisParams extends BaseGroupAxisParams {
   gridIndexes: number[]
 }
 
-export interface MultiValueAxis extends BaseValueAxisParams {
-  // gridIndex: number
+export interface MultiValueAxisParams extends BaseValueAxisParams {
   gridIndexes: number[]
 }
 
 export interface MultiBarsParams extends BaseBarsParams {
-  // gridIndex: number
   gridIndexes: number[]
 }
 
 export interface MultiBarStackParams extends BaseBarStackParams {
-  // gridIndex: number
   gridIndexes: number[]
 }
 
 export interface MultiBarsTriangleParams extends BaseBarsTriangleParams {
-  // gridIndex: number
   gridIndexes: number[]
 }
 
 export interface MultiLinesParams extends BaseLinesParams {
-  // gridIndex: number
   gridIndexes: number[]
 }
 
 export interface MultiDotsParams extends BaseDotsParams {
-  // gridIndex: number
   gridIndexes: number[]
+}
+
+export interface OverlappingValueAxesParams {
+  firstAxis: BaseValueAxisParams
+  secondAxis: BaseValueAxisParams
+  gridIndexes: [number, number]
 }

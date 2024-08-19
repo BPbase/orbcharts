@@ -8,6 +8,8 @@ import { GroupAxis, ValueAxis, Bars, GroupAux, ScalingArea, Tooltip, GridLegend 
 import { PRESET_GRID_4_SERIES_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 import { gridData3 } from '../../const/data/gridData3'
 
+let intervalId: any
+
 onMounted(() => {
 
   const el = document.querySelector('#chart')
@@ -32,7 +34,7 @@ onMounted(() => {
   // })
 
   let i = 0
-  setInterval(() => {
+  intervalId = setInterval(() => {
     if (i % 2 == 1) {
       chart!.dataFormatter$.next({
         container: {
@@ -65,7 +67,7 @@ onMounted(() => {
     // }
     
     i++
-  }, 2000)
+  }, 1500)
 
   // chart!.dataFormatter$.next({
   //   container: {
@@ -125,6 +127,10 @@ onMounted(() => {
   //     label: ''
   //   },
   // })
+})
+
+onUnmounted(() => {
+  clearInterval(intervalId)
 })
 
 </script>

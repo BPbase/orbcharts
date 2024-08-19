@@ -302,6 +302,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   // )
   const textTransform$ = combineLatest({
     fullParams: fullParams$,
+    fullDataFormatter: fullDataFormatter$,
     gridAxesReverseTransform: gridAxesReverseTransform$,
     gridContainer: gridContainer$
   }).pipe(
@@ -311,7 +312,12 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       const axisReverseTranslateValue = `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px)`
       const axisReverseRotateValue = `rotate(${data.gridAxesReverseTransform.rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
       const containerScaleReverseScaleValue = `scale(${1 / data.gridContainer[0].scale[0]}, ${1 / data.gridContainer[0].scale[1]})`
-      const textRotateValue = `rotate(${data.fullParams.tickTextRotate}deg)`
+      const tickTextRotateDeg = (data.fullDataFormatter.grid.groupAxis.position === 'left' && data.fullDataFormatter.grid.valueAxis.position === 'top')
+        || (data.fullDataFormatter.grid.groupAxis.position === 'right' && data.fullDataFormatter.grid.valueAxis.position === 'bottom')
+          ? data.fullParams.tickTextRotate + 180 // 修正文字倒轉
+          : data.fullParams.tickTextRotate
+      
+      const textRotateValue = `rotate(${tickTextRotateDeg}deg)`
       
       // 必須按照順序（先抵消外層rotate，再抵消最外層scale，最後再做本身的rotate）
       return `${axisReverseTranslateValue} ${axisReverseRotateValue} ${containerScaleReverseScaleValue} ${textRotateValue}`

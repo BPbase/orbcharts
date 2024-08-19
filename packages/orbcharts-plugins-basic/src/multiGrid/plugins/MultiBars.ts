@@ -3,7 +3,7 @@ import {
   Subject } from 'rxjs'
 import {
   defineMultiGridPlugin } from '@orbcharts/core'
-import { DEFAULT_MULTI_GRID_BARS_PARAMS } from '../defaults'
+import { DEFAULT_MULTI_BARS_PARAMS } from '../defaults'
 import { createBaseBars } from '../../base/BaseBars'
 import { multiGridDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
@@ -12,7 +12,7 @@ const pluginName = 'MultiBars'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiBars = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GRID_BARS_PARAMS)(({ selection, name, subject, observer }) => {
+export const MultiBars = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_BARS_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []

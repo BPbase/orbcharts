@@ -4,7 +4,7 @@ import {
 import {
   defineMultiGridPlugin } from '@orbcharts/core'
 
-import { DEFAULT_MULTI_GRID_LINES_PARAMS } from '../defaults'
+import { DEFAULT_MULTI_LINES_PARAMS } from '../defaults'
 import { createBaseLines } from '../../base/BaseLines'
 import { multiGridDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
@@ -13,7 +13,7 @@ const pluginName = 'MultiLines'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiLines = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GRID_LINES_PARAMS)(({ selection, name, subject, observer }) => {
+export const MultiLines = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_LINES_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
   
   const unsubscribeFnArr: (() => void)[] = []

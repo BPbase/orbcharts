@@ -8,9 +8,15 @@ export const DF_GRID_BOTTOM_VALUE_AXIS: DataFormatterFile<'grid'> = {
     grid: {
       valueAxis: {
         position: 'bottom'
+        // position: 'top'
+        // position: 'left'
+        // position: 'right'
       },
       groupAxis: {
         position: 'left'
+        // position: 'right'
+        // position: 'bottom'
+        // position: 'top'
       },
     }
   }
