@@ -3,18 +3,18 @@ import {
   Subject } from 'rxjs'
 import {
   defineMultiGridPlugin } from '@orbcharts/core'
-import { DEFAULT_MULTI_GRID_GROUP_AXIS_PARAMS } from '../defaults'
-import { createBaseGroupAxis } from '../../base/BaseGroupAxis'
+import { DEFAULT_MULTI_GRID_BARS_PARAMS } from '../defaults'
+import { createBaseBars } from '../../base/BaseBars'
 import { multiGridDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 
-const pluginName = 'MultiGridGroupAxis'
+const pluginName = 'MultiBars'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiGridGroupAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GRID_GROUP_AXIS_PARAMS)(({ selection, name, subject, observer }) => {
+export const MultiBars = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GRID_BARS_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
-  
+
   const unsubscribeFnArr: (() => void)[] = []
 
   const multiGridPlugin$ = multiGridDetailObservables(observer)
@@ -31,17 +31,23 @@ export const MultiGridGroupAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULT
 
         const gridSelection = d3.select(g[i])
 
-        unsubscribeFnArr[i] = createBaseGroupAxis(pluginName, {
+        unsubscribeFnArr[i] = createBaseBars(pluginName, {
           selection: gridSelection,
           computedData$: d.gridComputedData$,
+          visibleComputedData$: d.visibleComputedData$,
+          existedSeriesLabels$: d.existedSeriesLabels$,
+          SeriesDataMap$: d.SeriesDataMap$,
+          GroupDataMap$: d.GroupDataMap$,
           fullParams$: observer.fullParams$,
-          fullDataFormatter$: d.gridDataFormatter$,
-          fullChartParams$: observer.fullChartParams$,  
+          fullChartParams$: observer.fullChartParams$,
           gridAxesTransform$: d.gridAxesTransform$,
-          gridAxesReverseTransform$: d.gridAxesReverseTransform$,
+          gridGraphicTransform$: d.gridGraphicTransform$,
+          gridGraphicReverseScale$: d.gridGraphicReverseScale$,
           gridAxesSize$: d.gridAxesSize$,
+          gridHighlight$: d.gridHighlight$,
           gridContainer$: d.gridContainer$,
           isSeriesPositionSeprate$: d.isSeriesPositionSeprate$,
+          event$: subject.event$ as Subject<any>,
         })
       })
   })

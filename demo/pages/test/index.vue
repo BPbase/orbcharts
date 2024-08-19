@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { MultiGridChart } from '../../../packages/orbcharts-core/src'
-import { MultiGridBars, MultiGridLines, MultiGridDots, MultiGridLegend, MultiGridGroupAxis, MultiGridValueAxis, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { MultiBars, MultiLines, MultiDots, MultiGridLegend, MultiGroupAxis, MultiValueAxis, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 import { multiGridData1 } from '../../const/data/multiGridData1'
 
@@ -30,21 +30,21 @@ onMounted(() => {
   //         }
   //       ]
   //     })
-  const multiGridBars = new MultiGridBars()
+  const multiBars = new MultiBars()
   const multiGridLegend = new MultiGridLegend()
   const tooltip = new Tooltip()
-  chart!.plugins$.next([ multiGridBars, multiGridLegend, tooltip])
+  chart!.plugins$.next([ multiBars, multiGridLegend, tooltip])
 
   chart.chartParams$.next({
     highlightTarget: 'series'
   })
 
-  multiGridBars.params$.next({
+  multiBars.params$.next({
     gridIndexes: [0]
   })
 
   setTimeout(() => {
-    multiGridBars.params$.next({
+    multiBars.params$.next({
       gridIndexes: [0, 1]
     })
     chart!.dataFormatter$.next({
@@ -61,7 +61,7 @@ onMounted(() => {
       ]
     })
     setTimeout(() => {
-      multiGridBars.params$.next({
+      multiBars.params$.next({
         gridIndexes: [0]
       })
       chart!.dataFormatter$.next({
@@ -154,10 +154,10 @@ onMounted(() => {
   
   
 
-  // multiGridBars.params$.next({
+  // multiBars.params$.next({
   //   barRadius: true
   // })
-  // multiGridLines.params$.next({
+  // multiLines.params$.next({
   //   lineCurve: 'curveMonotoneX'
   // })
 

@@ -8,11 +8,11 @@ import { createBaseDots } from '../../base/BaseDots'
 import { multiGridDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 
-const pluginName = 'MultiGridDots'
+const pluginName = 'MultiDots'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiGridDots = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GRID_DOTS_PARAMS)(({ selection, name, subject, observer }) => {
+export const MultiDots = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GRID_DOTS_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []

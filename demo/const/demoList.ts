@@ -260,11 +260,11 @@ export const demoList: DemoChartTypeItem[] = [
     title: 'MultiGrid',
     list: [
       {
-        title: 'MultiGridBars',
+        title: 'MultiBars',
         list: [
           {
             chartType: 'multiGrid',
-            pluginName: 'MultiGridBars',
+            pluginName: 'MultiBars',
             presetName: 'PRESET_MULTI_GRID_BASIC'
           },
         ]

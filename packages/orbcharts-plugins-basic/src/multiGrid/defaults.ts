@@ -1,12 +1,12 @@
 import type {
   MultiGridLegendParams,
-  MultiGridBarsParams,
-  MultiGridBarStackParams,
-  MultiGridBarsTriangleParams,
-  MultiGridLinesParams,
-  MultiGridDotsParams,
-  MultiGridGroupAxis,
-  MultiGridValueAxis
+  MultiBarsParams,
+  MultiBarStackParams,
+  MultiBarsTriangleParams,
+  MultiLinesParams,
+  MultiDotsParams,
+  MultiGroupAxis,
+  MultiValueAxis
 } from './types'
 
 export const DEFAULT_MULTI_GRID_LEGEND_PARAMS: MultiGridLegendParams = {
@@ -28,7 +28,7 @@ export const DEFAULT_MULTI_GRID_LEGEND_PARAMS: MultiGridLegendParams = {
   ]
 }
 
-export const DEFAULT_MULTI_GRID_GROUP_AXIS_PARAMS: MultiGridGroupAxis = {
+export const DEFAULT_MULTI_GRID_GROUP_AXIS_PARAMS: MultiGroupAxis = {
   // labelAnchor: 'start',
   labelOffset: [0, 0],
   labelColorType: 'primary',
@@ -46,7 +46,7 @@ export const DEFAULT_MULTI_GRID_GROUP_AXIS_PARAMS: MultiGridGroupAxis = {
   gridIndexes: [0]
 }
 
-export const DEFAULT_MULTI_GRID_VALUE_AXIS_PARAMS: MultiGridValueAxis = {
+export const DEFAULT_MULTI_GRID_VALUE_AXIS_PARAMS: MultiValueAxis = {
   // labelAnchor: 'end',
   labelOffset: [0, 0],
   labelColorType: 'primary',
@@ -65,7 +65,7 @@ export const DEFAULT_MULTI_GRID_VALUE_AXIS_PARAMS: MultiGridValueAxis = {
   gridIndexes: [0]
 }
 
-export const DEFAULT_MULTI_GRID_BARS_PARAMS: MultiGridBarsParams = {
+export const DEFAULT_MULTI_GRID_BARS_PARAMS: MultiBarsParams = {
   barWidth: 0,
   barPadding: 1,
   barGroupPadding: 40,
@@ -74,7 +74,7 @@ export const DEFAULT_MULTI_GRID_BARS_PARAMS: MultiGridBarsParams = {
   gridIndexes: [0]
 }
 
-export const DEFAULT_MULTI_GRID_BAR_STACK_PARAMS: MultiGridBarStackParams = {
+export const DEFAULT_MULTI_GRID_BAR_STACK_PARAMS: MultiBarStackParams = {
   barWidth: 0,
   barGroupPadding: 10,
   barRadius: false,
@@ -82,7 +82,7 @@ export const DEFAULT_MULTI_GRID_BAR_STACK_PARAMS: MultiGridBarStackParams = {
   gridIndexes: [0]
 }
 
-export const DEFAULT_MULTI_GRID_BARS_TRIANGLE_PARAMS: MultiGridBarsTriangleParams = {
+export const DEFAULT_MULTI_GRID_BARS_TRIANGLE_PARAMS: MultiBarsTriangleParams = {
   barWidth: 0,
   barPadding: 1,
   barGroupPadding: 20,
@@ -91,14 +91,14 @@ export const DEFAULT_MULTI_GRID_BARS_TRIANGLE_PARAMS: MultiGridBarsTriangleParam
   gridIndexes: [0]
 }
 
-export const DEFAULT_MULTI_GRID_LINES_PARAMS: MultiGridLinesParams = {
+export const DEFAULT_MULTI_GRID_LINES_PARAMS: MultiLinesParams = {
   lineCurve: 'curveLinear',
   lineWidth: 2,
   // gridIndex: 0
   gridIndexes: [1]
 }
 
-export const DEFAULT_MULTI_GRID_DOTS_PARAMS: MultiGridDotsParams = {
+export const DEFAULT_MULTI_GRID_DOTS_PARAMS: MultiDotsParams = {
   radius: 4,
   fillColorType: 'white',
   strokeColorType: 'series',

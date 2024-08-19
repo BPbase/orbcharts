@@ -31,37 +31,37 @@ export interface MultiGridLegendParams {
   }>
 }
 
-export interface MultiGridGroupAxis extends BaseGroupAxisParams {
+export interface MultiGroupAxis extends BaseGroupAxisParams {
   // gridIndex: number
   gridIndexes: number[]
 }
 
-export interface MultiGridValueAxis extends BaseValueAxisParams {
+export interface MultiValueAxis extends BaseValueAxisParams {
   // gridIndex: number
   gridIndexes: number[]
 }
 
-export interface MultiGridBarsParams extends BaseBarsParams {
+export interface MultiBarsParams extends BaseBarsParams {
   // gridIndex: number
   gridIndexes: number[]
 }
 
-export interface MultiGridBarStackParams extends BaseBarStackParams {
+export interface MultiBarStackParams extends BaseBarStackParams {
   // gridIndex: number
   gridIndexes: number[]
 }
 
-export interface MultiGridBarsTriangleParams extends BaseBarsTriangleParams {
+export interface MultiBarsTriangleParams extends BaseBarsTriangleParams {
   // gridIndex: number
   gridIndexes: number[]
 }
 
-export interface MultiGridLinesParams extends BaseLinesParams {
+export interface MultiLinesParams extends BaseLinesParams {
   // gridIndex: number
   gridIndexes: number[]
 }
 
-export interface MultiGridDotsParams extends BaseDotsParams {
+export interface MultiDotsParams extends BaseDotsParams {
   // gridIndex: number
   gridIndexes: number[]
 }

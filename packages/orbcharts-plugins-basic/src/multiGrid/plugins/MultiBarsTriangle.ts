@@ -3,18 +3,18 @@ import {
   Subject } from 'rxjs'
 import {
   defineMultiGridPlugin } from '@orbcharts/core'
-import { DEFAULT_MULTI_GRID_BARS_PARAMS } from '../defaults'
-import { createBaseBars } from '../../base/BaseBars'
+import { DEFAULT_MULTI_GRID_BARS_TRIANGLE_PARAMS } from '../defaults'
+import { createBaseBarsTriangle } from '../../base/BaseBarsTriangle'
 import { multiGridDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 
-const pluginName = 'MultiGridBars'
+const pluginName = 'MultiBarsTriangle'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiGridBars = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GRID_BARS_PARAMS)(({ selection, name, subject, observer }) => {
+export const MultiBarsTriangle = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GRID_BARS_TRIANGLE_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
-
+  
   const unsubscribeFnArr: (() => void)[] = []
 
   const multiGridPlugin$ = multiGridDetailObservables(observer)
@@ -31,7 +31,7 @@ export const MultiGridBars = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GRI
 
         const gridSelection = d3.select(g[i])
 
-        unsubscribeFnArr[i] = createBaseBars(pluginName, {
+        unsubscribeFnArr[i] = createBaseBarsTriangle(pluginName, {
           selection: gridSelection,
           computedData$: d.gridComputedData$,
           visibleComputedData$: d.visibleComputedData$,
@@ -42,7 +42,6 @@ export const MultiGridBars = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GRI
           fullChartParams$: observer.fullChartParams$,
           gridAxesTransform$: d.gridAxesTransform$,
           gridGraphicTransform$: d.gridGraphicTransform$,
-          gridGraphicReverseScale$: d.gridGraphicReverseScale$,
           gridAxesSize$: d.gridAxesSize$,
           gridHighlight$: d.gridHighlight$,
           gridContainer$: d.gridContainer$,

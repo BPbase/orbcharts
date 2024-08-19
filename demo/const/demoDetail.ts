@@ -273,10 +273,10 @@ export const demoDetail: DemoDetail = {
     },
   },
   multiGrid: {
-    'MultiGridBars': {
+    'MultiBars': {
       'PRESET_MULTI_GRID_BASIC': {
         chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGridGroupAxis, pluginsBasic.MultiGridValueAxis, pluginsBasic.MultiGridBars, pluginsBasic.MultiGridLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBars, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_MULTI_GRID_BASIC,
         data: multiGridData1
       }

@@ -4,10 +4,12 @@
   
   <script setup lang="ts">
   import { MultiGridChart } from '../../../packages/orbcharts-core/src'
-  import { MultiGridBars, MultiGridLines, MultiGridDots, MultiGridLegend, MultiGridGroupAxis, MultiGridValueAxis, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+  import { MultiBars, MultiLines, MultiDots, MultiGridLegend, MultiGroupAxis, MultiValueAxis, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
   import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
   import { multiGridData1 } from '../../const/data/multiGridData1'
   
+  let intervalId: any
+
   onMounted(() => {
   
     const el = document.querySelector('#chart')
@@ -30,20 +32,20 @@
     //         }
     //       ]
     //     })
-    const multiGridBars = new MultiGridBars()
-    const multiGridLines = new MultiGridLines()
-    const multiGridDots = new MultiGridDots()
+    const multiBars = new MultiBars()
+    const multiLines = new MultiLines()
+    const multiDots = new MultiDots()
     const multiGridLegend = new MultiGridLegend()
-    const multiGridGroupAxis = new MultiGridGroupAxis()
-    const multiGridValueAxis = new MultiGridValueAxis()
+    const multiGroupAxis = new MultiGroupAxis()
+    const multiValueAxis = new MultiValueAxis()
     const tooltip = new Tooltip()
-    chart!.plugins$.next([ multiGridGroupAxis, multiGridValueAxis, multiGridBars, multiGridLines, multiGridDots, multiGridLegend, tooltip])
+    chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
 
     chart.chartParams$.next({
       highlightTarget: 'series'
     })
 
-    multiGridValueAxis.params$.next({
+    multiValueAxis.params$.next({
       gridIndexes: [0, 1]
     })
 
@@ -142,18 +144,18 @@
     
     
 
-    // multiGridBars.params$.next({
+    // multiBars.params$.next({
     //   barRadius: true
     // })
-    // multiGridLines.params$.next({
+    // multiLines.params$.next({
     //   lineCurve: 'curveMonotoneX'
     // })
     const play = true
     let i = 0
     let j = 0
-    let iMax = 8
-    let jMax = 1
-    setInterval(() => {
+    const iMax = 8 // 8
+    const jMax = 1 // 1
+    intervalId = setInterval(() => {
       console.log('i:', i, ',j:', j)
       if (i == 0) {
         chart!.dataFormatter$.next({
@@ -170,12 +172,12 @@
             }
           ]
         })
-        multiGridGroupAxis.params$.next({
+        multiGroupAxis.params$.next({
           gridIndexes: [0, 1],
           tickTextRotate: -30
         })
 
-        multiGridValueAxis.params$.next({
+        multiValueAxis.params$.next({
           gridIndexes: [0, 1]
         })
       } else if (i == 1) {
@@ -270,7 +272,7 @@
             }
           ]
         })
-        multiGridGroupAxis.params$.next({
+        multiGroupAxis.params$.next({
           tickTextRotate: 0
         })
       } else if (i == 6)  {
@@ -301,25 +303,25 @@
             }
           ]
         })
-        multiGridGroupAxis.params$.next({
+        multiGroupAxis.params$.next({
           gridIndexes: [0]
         })
 
-        multiGridValueAxis.params$.next({
+        multiValueAxis.params$.next({
           gridIndexes: [0]
         })
       } else if (i == 7)  {
         if (j == 0) {
-          multiGridBars.params$.next({
+          multiBars.params$.next({
             barRadius: true
           })
-          multiGridLines.params$.next({
+          multiLines.params$.next({
             lineCurve: 'curveMonotoneX'
           })
         } else if (j == 1) {
-          multiGridBars.params$.next({
+          multiBars.params$.next({
           })
-          multiGridLines.params$.next({
+          multiLines.params$.next({
           })
         }
         if (play) {
@@ -360,6 +362,10 @@
     chart!.data$.next(multiGridData1)
   
 
+  })
+
+  onUnmounted(() => {
+    clearInterval(intervalId)
   })
   
   </script>
