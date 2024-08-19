@@ -229,8 +229,9 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   ).subscribe(data => {
     data.containerSelection
       .attr('transform', (d, i) => {
-        const translate = data.gridContainer[i].translate
-        const scale = data.gridContainer[i].scale
+        const gridContainer = data.gridContainer[i] ?? data.gridContainer[0]
+        const translate = gridContainer.translate
+        const scale = gridContainer.scale
         return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
       })
       // .attr('opacity', 0)
@@ -307,8 +308,9 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      const scale = [1 / data.gridContainer[0].scale[0], 1 / data.gridContainer[0].scale[1]]
       const rotate = data.gridAxesReverseTransform.rotate + data.fullParams.tickTextRotate
+      const scale = [1 / data.gridContainer[0].scale[0], 1 / data.gridContainer[0].scale[1]]
+      // scale要放在最後面才不會有變形上的錯誤
       return `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px) rotate(${rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg) scale(${scale[0]}, ${scale[1]})`
     }),
     distinctUntilChanged()
