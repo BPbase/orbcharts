@@ -363,11 +363,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
         ? data.computedData[0].length
         : 0
 
-      let _labels = data.fullDataFormatter.grid.gridData.seriesDirection === 'row'
-        // ? data.fullDataFormatter.grid.columnLabels
-        // : data.fullDataFormatter.grid.rowLabels
-        ? (data.computedData[0] ?? []).map(d => d.groupLabel)
-        : data.computedData.map(d => d[0].groupLabel)
+      let _labels = (data.computedData[0] ?? []).map(d => d.groupLabel)
 
       const axisLabels = new Array(groupingLength).fill(0)
         .map((d, i) => {
