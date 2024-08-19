@@ -1,6 +1,6 @@
 import type {
   LinesParams,
-  GroupAreaParams,
+  GroupAuxParams,
   DotsParams,
   BarsParams,
   BarStackParams,
@@ -24,7 +24,7 @@ export const DEFAULT_DOTS_PARAMS: DotsParams = {
   onlyShowHighlighted: false
 }
 
-export const DEFAULT_GROUP_AREA_PARAMS: GroupAreaParams = {
+export const DEFAULT_GROUP_AREA_PARAMS: GroupAuxParams = {
   showLine: true,
   showLabel: true,
   lineDashArray: '3, 3',

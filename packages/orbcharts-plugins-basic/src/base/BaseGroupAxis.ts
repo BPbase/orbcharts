@@ -67,7 +67,7 @@ interface TextAlign {
 // const groupingLabelClassName = getClassName(pluginName, 'groupingLabel')
 const defaultTickSize = 6
 
-function renderPointAxis ({ selection, xAxisClassName, groupingLabelClassName, params, tickTextAlign, axisLabelAlign, gridAxesSize, fullDataFormatter, chartParams, groupScale, contentTransform }: {
+function renderPointAxis ({ selection, xAxisClassName, groupingLabelClassName, params, tickTextAlign, axisLabelAlign, gridAxesSize, fullDataFormatter, chartParams, groupScale, textTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   xAxisClassName: string
   groupingLabelClassName: string
@@ -78,7 +78,7 @@ function renderPointAxis ({ selection, xAxisClassName, groupingLabelClassName, p
   fullDataFormatter: DataFormatterGrid,
   chartParams: ChartParams
   groupScale: d3.ScalePoint<string>
-  contentTransform: string
+  textTransform: string
   // tickTextFormatter: string | ((label: any) => string)
 }) {
 
@@ -110,7 +110,7 @@ function renderPointAxis ({ selection, xAxisClassName, groupingLabelClassName, p
         .attr('dominant-baseline', axisLabelAlign.dominantBaseline)
         .style('font-size', `${chartParams.styles.textSize}px`)
         .style('fill', getColor(params.labelColorType, chartParams))
-        .style('transform', contentTransform)
+        .style('transform', textTransform)
         .text(d => fullDataFormatter.grid.groupAxis.label)
     })
     .attr('transform', d => `translate(${gridAxesSize.width + d.tickPadding + params.labelOffset[0]}, ${- d.tickPadding - defaultTickSize - params.labelOffset[1]})`)
@@ -158,7 +158,7 @@ function renderPointAxis ({ selection, xAxisClassName, groupingLabelClassName, p
   //     .attr('text-anchor', tickTextAlign.textAnchor)
   //     .attr('dominant-baseline', tickTextAlign.dominantBaseline)
   //     .attr('transform-origin', `0 -${params.tickPadding + defaultTickSize}`)
-  //     .style('transform', contentTransform)
+  //     .style('transform', textTransform)
   // })
   const xText = xAxisSelection.selectAll('text')
     .style('font-family', 'sans-serif')
@@ -168,7 +168,7 @@ function renderPointAxis ({ selection, xAxisClassName, groupingLabelClassName, p
     .attr('text-anchor', tickTextAlign.textAnchor)
     .attr('dominant-baseline', tickTextAlign.dominantBaseline)
     .attr('transform-origin', `0 -${params.tickPadding + defaultTickSize}`)
-    .style('transform', contentTransform)
+    .style('transform', textTransform)
     
     
   return xAxisSelection
@@ -277,11 +277,11 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
   // const tickTextFormatter$ = fullDataFormatter$
   //   .pipe(
   //     map(d => {
-  //       return d.grid.seriesType === 'row' ? d.grid.columnLabelFormat : d.grid.rowLabelFormat
+  //       return d.grid.seriesDirection === 'row' ? d.grid.columnLabelFormat : d.grid.rowLabelFormat
   //     })
   //   )
 
-  // const contentTransform$: Observable<string> = new Observable(subscriber => {
+  // const textTransform$: Observable<string> = new Observable(subscriber => {
   //   combineLatest({
   //     params: fullParams$,
   //     gridAxesTransform: gridAxesTransform$
@@ -322,7 +322,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
   //     }
   //   }),
   // )
-  const contentTransform$ = combineLatest({
+  const textTransform$ = combineLatest({
     fullParams: fullParams$,
     gridAxesReverseTransform: gridAxesReverseTransform$,
     gridContainer: gridContainer$
@@ -330,10 +330,13 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      const rotate = data.gridAxesReverseTransform.rotate + data.fullParams.tickTextRotate
-      const scale = [1 / data.gridContainer[0].scale[0], 1 / data.gridContainer[0].scale[1]]
-      // scale要放在最後面才不會有變形上的錯誤
-      return `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px) rotate(${rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg) scale(${scale[0]}, ${scale[1]})`
+      const axisReverseTranslateValue = `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px)`
+      const axisReverseRotateValue = `rotate(${data.gridAxesReverseTransform.rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
+      const containerScaleReverseScaleValue = `scale(${1 / data.gridContainer[0].scale[0]}, ${1 / data.gridContainer[0].scale[1]})`
+      const textRotateValue = `rotate(${data.fullParams.tickTextRotate}deg)`
+      
+      // 必須按照順序（先抵消外層rotate，再抵消最外層scale，最後再做本身的rotate）
+      return `${axisReverseTranslateValue} ${axisReverseRotateValue} ${containerScaleReverseScaleValue} ${textRotateValue}`
     }),
     distinctUntilChanged()
   )
@@ -360,7 +363,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
         ? data.computedData[0].length
         : 0
 
-      let _labels = data.fullDataFormatter.grid.gridData.seriesType === 'row'
+      let _labels = data.fullDataFormatter.grid.gridData.seriesDirection === 'row'
         // ? data.fullDataFormatter.grid.columnLabels
         // : data.fullDataFormatter.grid.rowLabels
         ? (data.computedData[0] ?? []).map(d => d.groupLabel)
@@ -463,7 +466,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
     fullDataFormatter: fullDataFormatter$,
     chartParams: fullChartParams$,
     groupScale: groupScale$,
-    contentTransform: contentTransform$,
+    textTransform: textTransform$,
     // tickTextFormatter: tickTextFormatter$
   }).pipe(
     takeUntil(destroy$),
@@ -481,7 +484,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
       fullDataFormatter: data.fullDataFormatter,
       chartParams: data.chartParams,
       groupScale: data.groupScale,
-      contentTransform: data.contentTransform,
+      textTransform: data.textTransform,
       // tickTextFormatter: data.tickTextFormatter
     })
   })

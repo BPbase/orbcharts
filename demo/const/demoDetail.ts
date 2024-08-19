@@ -248,7 +248,7 @@ export const demoDetail: DemoDetail = {
       },
       'PRESET_LINES_HIGHLIGHT_GROUP_DOTS': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.Dots, pluginsBasic.GroupArea, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.Dots, pluginsBasic.GroupAux, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_LINES_HIGHLIGHT_GROUP_DOTS,
         data: gridData1
       },

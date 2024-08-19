@@ -24,7 +24,7 @@ import { getColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { d3EventObservable } from '../../utils/observables'
 import { gridGroupPositionFnObservable } from '../gridObservables'
 import { createAxisPointScale } from '@orbcharts/core'
-import type { GroupAreaParams } from '../types'
+import type { GroupAuxParams } from '../types'
 
 interface LineDatum {
   id: string
@@ -41,14 +41,14 @@ interface LabelDatum {
   y: number
 }
 
-const pluginName = 'GroupArea'
+const pluginName = 'GroupAux'
 const labelClassName = getClassName(pluginName, 'label-box')
 
 function createLineData ({ groupLabel, axisX, axisHeight, fullParams }: {
   groupLabel: string
   axisX: number
   axisHeight: number
-  fullParams: GroupAreaParams
+  fullParams: GroupAuxParams
 }): LineDatum[] {
   return fullParams.showLine && groupLabel
     ? [{
@@ -65,7 +65,7 @@ function renderLine ({ selection, pluginName, lineData, fullParams, fullChartPar
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
   lineData: LineDatum[]
-  fullParams: GroupAreaParams
+  fullParams: GroupAuxParams
   fullChartParams: ChartParams
 }) {
   const gClassName = getClassName(pluginName, 'auxline')
@@ -114,7 +114,7 @@ function removeLine (selection: d3.Selection<any, unknown, any, unknown>) {
 function createLabelData ({ groupLabel, axisX, fullParams }: {
   groupLabel: string
   axisX: number
-  fullParams: GroupAreaParams
+  fullParams: GroupAuxParams
 }) {
   return fullParams.showLabel && groupLabel
     ? [{
@@ -129,7 +129,7 @@ function createLabelData ({ groupLabel, axisX, fullParams }: {
 function renderLabel ({ selection, labelData, fullParams, fullChartParams, gridAxesReverseTransformValue }: {
   selection: d3.Selection<any, unknown, any, unknown>
   labelData: LabelDatum[]
-  fullParams: GroupAreaParams
+  fullParams: GroupAuxParams
   fullChartParams: ChartParams
   gridAxesReverseTransformValue: string
 }) {
@@ -208,7 +208,7 @@ function removeLabel (selection: d3.Selection<any, unknown, any, unknown>) {
   gUpdate.exit().remove()
 }
 
-export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(({ selection, rootSelection, name, subject, observer }) => {
+export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(({ selection, rootSelection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const rootRectSelection: d3.Selection<SVGRectElement, any, any, any> = rootSelection
@@ -335,7 +335,7 @@ export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)
         ? data.computedData[0].length
         : 0
 
-      let _labels = data.fullDataFormatter.grid.gridData.seriesType === 'row'
+      let _labels = data.fullDataFormatter.grid.gridData.seriesDirection === 'row'
         // ? data.fullDataFormatter.grid.columnLabels
         // : data.fullDataFormatter.grid.rowLabels
         ? (data.computedData[0] ?? []).map(d => d.groupLabel)

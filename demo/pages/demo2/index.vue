@@ -43,10 +43,6 @@
       highlightTarget: 'series'
     })
 
-    multiGridGroupAxis.params$.next({
-      gridIndexes: [0]
-    })
-
     multiGridValueAxis.params$.next({
       gridIndexes: [0, 1]
     })
@@ -59,7 +55,7 @@
     //   gridList: [
     //     {
     //       gridData: {
-    //         seriesType: 'column'
+    //         seriesDirection: 'column'
     //       },
     //       groupAxis: {
     //         position: 'left'
@@ -82,7 +78,7 @@
     //   gridList: [
     //     {
     //       gridData: {
-    //         // seriesType: 'column'
+    //         // seriesDirection: 'column'
     //       },
     //       seriesSlotIndexes: [0, 1]
     //     },
@@ -101,7 +97,7 @@
     //   //   gridList: [
     //   //     {
     //   //       gridData: {
-    //   //         seriesType: 'column'
+    //   //         seriesDirection: 'column'
     //   //       },
     //   //       seriesSlotIndexes: [0, 1, 2, 3, 4],
     //   //       groupAxis: {
@@ -126,7 +122,7 @@
     //       gridList: [
     //         {
     //           gridData: {
-    //             // seriesType: 'column'
+    //             // seriesDirection: 'column'
     //           },
     //           groupAxis: {
     //             position: 'left'
@@ -175,7 +171,8 @@
           ]
         })
         multiGridGroupAxis.params$.next({
-          gridIndexes: [0, 1]
+          gridIndexes: [0, 1],
+          tickTextRotate: -30
         })
 
         multiGridValueAxis.params$.next({
@@ -217,7 +214,7 @@
           gridList: [
             {
               gridData: {
-                seriesType: 'column'
+                seriesDirection: 'column'
               }
             },
             {
@@ -234,7 +231,7 @@
           gridList: [
             {
               gridData: {
-                seriesType: 'column'
+                seriesDirection: 'column'
               },
               seriesSlotIndexes: [0, 1, 2, 3, 4]
             },
@@ -244,15 +241,21 @@
           ]
         })
       } else if (i == 5)  {
+        chart.chartParams$.next({
+          padding: {
+            left: 120
+          }
+        })
         chart!.dataFormatter$.next({
           container: {
             rowAmount: 2,
-            columnAmount: 3
+            columnAmount: 3,
+            gap: 120
           },
           gridList: [
             {
               gridData: {
-                seriesType: 'column'
+                seriesDirection: 'column'
               },
               seriesSlotIndexes: [0, 1, 2, 3, 4],
               groupAxis: {
@@ -267,7 +270,15 @@
             }
           ]
         })
+        multiGridGroupAxis.params$.next({
+          tickTextRotate: 0
+        })
       } else if (i == 6)  {
+        chart.chartParams$.next({
+          padding: {
+            left: 120
+          }
+        })
         chart!.dataFormatter$.next({
           container: {
             rowAmount: 1,
@@ -276,7 +287,7 @@
           gridList: [
             {
               gridData: {
-                seriesType: 'column'
+                seriesDirection: 'column'
               },
               groupAxis: {
                 position: 'left'

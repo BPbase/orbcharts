@@ -66,7 +66,7 @@ interface TextAlign {
 // const textClassName = getClassName(pluginName, 'text')
 const defaultTickSize = 6
 
-function renderLinearAxis ({ selection, yAxisClassName, textClassName, fullParams, tickTextAlign, axisLabelAlign, gridAxesSize, fullDataFormatter, fullChartParams, valueScale, contentTransform, minAndMax }: {
+function renderLinearAxis ({ selection, yAxisClassName, textClassName, fullParams, tickTextAlign, axisLabelAlign, gridAxesSize, fullDataFormatter, fullChartParams, valueScale, textTransform, minAndMax }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   yAxisClassName: string
   textClassName: string
@@ -77,7 +77,7 @@ function renderLinearAxis ({ selection, yAxisClassName, textClassName, fullParam
   fullDataFormatter: DataFormatterGrid,
   fullChartParams: ChartParams
   valueScale: d3.ScaleLinear<number, number>
-  contentTransform: string,
+  textTransform: string,
   minAndMax: [number, number]
 }) {
 
@@ -109,7 +109,7 @@ function renderLinearAxis ({ selection, yAxisClassName, textClassName, fullParam
         .attr('dominant-baseline', axisLabelAlign.dominantBaseline)
         .style('font-size', `${fullChartParams.styles.textSize}px`)
         .style('fill', getColor(fullParams.labelColorType, fullChartParams))
-        .style('transform', contentTransform)
+        .style('transform', textTransform)
         .text(d => fullDataFormatter.grid.valueAxis.label)
     })
     .attr('transform', d => `translate(${- d.tickPadding + fullParams.labelOffset[0]}, ${gridAxesSize.height + d.tickPadding + fullParams.labelOffset[1]})`)
@@ -155,7 +155,7 @@ function renderLinearAxis ({ selection, yAxisClassName, textClassName, fullParam
     .attr('text-anchor', tickTextAlign.textAnchor)
     .attr('dominant-baseline', tickTextAlign.dominantBaseline)
     .attr('transform-origin', `-${fullParams.tickPadding + defaultTickSize} 0`)
-  yText.style('transform', contentTransform)
+  yText.style('transform', textTransform)
 
   return yAxisSelection
 }
@@ -259,7 +259,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   //   layout$
   // })
 
-  // const contentTransform$: Observable<string> = new Observable(subscriber => {
+  // const textTransform$: Observable<string> = new Observable(subscriber => {
   //   combineLatest({
   //     fullParams: fullParams$,
   //     layout: layout$
@@ -300,7 +300,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   //     }
   //   }),
   // )
-  const contentTransform$ = combineLatest({
+  const textTransform$ = combineLatest({
     fullParams: fullParams$,
     gridAxesReverseTransform: gridAxesReverseTransform$,
     gridContainer: gridContainer$
@@ -308,10 +308,13 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      const rotate = data.gridAxesReverseTransform.rotate + data.fullParams.tickTextRotate
-      const scale = [1 / data.gridContainer[0].scale[0], 1 / data.gridContainer[0].scale[1]]
-      // scale要放在最後面才不會有變形上的錯誤
-      return `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px) rotate(${rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg) scale(${scale[0]}, ${scale[1]})`
+      const axisReverseTranslateValue = `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px)`
+      const axisReverseRotateValue = `rotate(${data.gridAxesReverseTransform.rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
+      const containerScaleReverseScaleValue = `scale(${1 / data.gridContainer[0].scale[0]}, ${1 / data.gridContainer[0].scale[1]})`
+      const textRotateValue = `rotate(${data.fullParams.tickTextRotate}deg)`
+      
+      // 必須按照順序（先抵消外層rotate，再抵消最外層scale，最後再做本身的rotate）
+      return `${axisReverseTranslateValue} ${axisReverseRotateValue} ${containerScaleReverseScaleValue} ${textRotateValue}`
     }),
     distinctUntilChanged()
   )
@@ -437,7 +440,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     fullDataFormatter: fullDataFormatter$,
     fullChartParams: fullChartParams$,
     valueScale: valueScale$,
-    contentTransform: contentTransform$,
+    textTransform: textTransform$,
     minAndMax: minAndMax$
   }).pipe(
     takeUntil(destroy$),
@@ -455,7 +458,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       fullDataFormatter: data.fullDataFormatter,
       fullChartParams: data.fullChartParams,
       valueScale: data.valueScale,
-      contentTransform: data.contentTransform,
+      textTransform: data.textTransform,
       minAndMax: data.minAndMax
     })
   })

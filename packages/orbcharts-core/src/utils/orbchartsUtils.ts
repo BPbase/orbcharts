@@ -6,7 +6,7 @@ import type { DataSeries, DataSeriesDatum, DataSeriesValue } from '../types/Data
 import type { DataGrid, DataGridDatum, DataGridValue } from '../types/DataGrid'
 import type { DataMultiGrid } from '../types/DataMultiGrid'
 import type { DataMultiValue, DataMultiValueDatum, DataMultiValueValue } from '../types/DataMultiValue'
-import type { SeriesType, DataFormatterGrid, DataFormatterGridContainer } from '../types/DataFormatterGrid'
+import type { SeriesDirection, DataFormatterGrid, DataFormatterGridContainer } from '../types/DataFormatterGrid'
 import type { ComputedDatumSeriesValue } from '../types/ComputedData'
 import type { ComputedDatumSeries } from '../types/ComputedDataSeries'
 import type { ComputedDatumGrid, ComputedDataGrid } from '../types/ComputedDataGrid'
@@ -44,7 +44,7 @@ export function createGridSeriesLabels ({ transposedDataGrid, dataFormatter, cha
   chartType?: ChartType
   gridIndex?: number
 }) {
-  const labels = dataFormatter.grid.gridData.seriesType === 'row'
+  const labels = dataFormatter.grid.gridData.seriesDirection === 'row'
     ? dataFormatter.grid.gridData.rowLabels
     : dataFormatter.grid.gridData.columnLabels
   return transposedDataGrid.map((_, rowIndex) => {
@@ -63,7 +63,7 @@ export function createGridGroupLabels ({ transposedDataGrid, dataFormatter, char
   if (transposedDataGrid[0] == null) {
     return []
   }
-  const labels = dataFormatter.grid.gridData.seriesType === 'row'
+  const labels = dataFormatter.grid.gridData.seriesDirection === 'row'
     ? dataFormatter.grid.gridData.columnLabels
     : dataFormatter.grid.gridData.rowLabels
   return transposedDataGrid[0].map((_, columnLabels) => {
@@ -147,9 +147,9 @@ export function getMinAndMaxMultiValue (data: DataMultiValue, valueIndex: number
 
 // }
 
-// 轉置成seriesType為main的陣列格式
-export function transposeData<T> (seriesType: SeriesType, data: T[][]): T[][] {
-  if (seriesType === 'row') {
+// 轉置成seriesDirection為main的陣列格式
+export function transposeData<T> (seriesDirection: SeriesDirection, data: T[][]): T[][] {
+  if (seriesDirection === 'row') {
     return Object.assign([], data)
   }
   // 取得原始陣列的維度

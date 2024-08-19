@@ -90,7 +90,7 @@ onMounted(() => {
   //   gridList: [
   //     {
   //       gridData: {
-  //         // seriesType: 'column'
+  //         // seriesDirection: 'column'
   //       },
   //       seriesSlotIndexes: [0, 1]
   //     },
@@ -109,7 +109,7 @@ onMounted(() => {
   //   //   gridList: [
   //   //     {
   //   //       gridData: {
-  //   //         seriesType: 'column'
+  //   //         seriesDirection: 'column'
   //   //       },
   //   //       seriesSlotIndexes: [0, 1, 2, 3, 4],
   //   //       groupAxis: {
@@ -134,7 +134,7 @@ onMounted(() => {
   //       gridList: [
   //         {
   //           gridData: {
-  //             // seriesType: 'column'
+  //             // seriesDirection: 'column'
   //           },
   //           groupAxis: {
   //             position: 'left'

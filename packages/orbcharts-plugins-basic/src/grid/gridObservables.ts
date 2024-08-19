@@ -12,7 +12,6 @@ import type {
 import { createAxisQuantizeScale } from '@orbcharts/core'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 
-  existedSeriesLabels$: Observable<string[]>
 export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, existedSeriesLabels$, gridContainer$, gridAxesTransform$, gridGraphicTransform$ }: {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
@@ -178,7 +177,7 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
       //   ? data.computedData[0].length
       //   : 0
 
-      let _labels = data.dataFormatter.grid.gridData.seriesType === 'row'
+      let _labels = data.dataFormatter.grid.gridData.seriesDirection === 'row'
         ? (data.computedData[0] ?? []).map(d => d.groupLabel)
         : data.computedData.map(d => d[0].groupLabel)
 

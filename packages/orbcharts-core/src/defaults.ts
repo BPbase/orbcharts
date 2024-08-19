@@ -161,7 +161,7 @@ export const DATA_FORMATTER_SERIES_DEFAULT: DataFormatterSeries = {
 export const DATA_FORMATTER_GRID_GRID_DEFAULT: DataFormatterGridGrid = {
   visibleFilter: (datum, rowIndex, columnIndex, context) => true,
   gridData: {
-    seriesType: 'row',
+    seriesDirection: 'row',
     rowLabels: [],
     columnLabels: [],
   },
@@ -184,7 +184,7 @@ export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
   }
   // visibleGroupRange: null,
   // colorsPredicate: (datum, rowIndex, columnIndex, { chartParams, dataFormatter }) => {
-  //   const seriesIndex = dataFormatter.grid.seriesType === 'row' ? rowIndex : columnIndex
+  //   const seriesIndex = dataFormatter.grid.seriesDirection === 'row' ? rowIndex : columnIndex
   //   return chartParams.colors[chartParams.colorScheme].series[seriesIndex]
   // },
 }

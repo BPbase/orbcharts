@@ -2,7 +2,7 @@ import type { DataGridDatum, DataGridValue } from './DataGrid'
 import type { DataFormatterBase, DataFormatterBasePartial, DataFormatterValueAxis, DataFormatterGroupAxis, VisibleFilter } from './DataFormatter'
 // import type { AxisPosition } from './Axis'
 
-export type SeriesType = 'row' | 'column' // default: 'row'
+export type SeriesDirection = 'row' | 'column' // default: 'row'
 
 export interface DataFormatterGrid extends DataFormatterBase<'grid'> {
   grid: DataFormatterGridGrid
@@ -42,7 +42,7 @@ export interface DataFormatterGridContainer {
 
 // grid欄位
 export interface DataFormatterGridGridData {
-  seriesType: SeriesType
+  seriesDirection: SeriesDirection
   rowLabels: string[]
   columnLabels: string[]
 }

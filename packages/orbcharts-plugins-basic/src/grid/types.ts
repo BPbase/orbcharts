@@ -24,7 +24,7 @@ export interface DotsParams {
   onlyShowHighlighted: boolean
 }
 
-export interface GroupAreaParams {
+export interface GroupAuxParams {
   showLine: boolean
   showLabel: boolean
   lineDashArray: string

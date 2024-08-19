@@ -85,8 +85,8 @@ export const computeBaseGridData = (context: DataFormatterContext<'grid'>, chart
       })
     })
 
-    // 依seriesType轉置資料矩陣
-    const transposedDataGrid = transposeData(dataFormatter.grid.gridData.seriesType, dataGrid)
+    // 依seriesDirection轉置資料矩陣
+    const transposedDataGrid = transposeData(dataFormatter.grid.gridData.seriesDirection, dataGrid)
 
     // -- groupScale --
     const { groupScale } = (() => {
