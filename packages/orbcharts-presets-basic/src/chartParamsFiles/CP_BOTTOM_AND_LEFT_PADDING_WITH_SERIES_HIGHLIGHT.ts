@@ -8,7 +8,7 @@ export const CP_BOTTOM_AND_LEFT_PADDING_WITH_SERIES_HIGHLIGHT: ChartParamsFile =
       top: 60,
       right: 60,
       bottom: 120,
-      left: 120
+      left: 160
     },
     highlightTarget: 'series'
   }

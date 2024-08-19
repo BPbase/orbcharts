@@ -1,0 +1,136 @@
+<template>
+  <div id="chart" style="width:100%;height:100vh"></div>
+</template>
+
+<script setup lang="ts">
+import { GridChart } from '../../../packages/orbcharts-core/src'
+import { GroupAxis, ValueAxis, Bars, GroupAux, ScalingArea, Tooltip, GridLegend } from '../../../packages/orbcharts-plugins-basic/src'
+import { PRESET_GRID_4_SERIES_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
+import { gridData3 } from '../../const/data/gridData3'
+
+let intervalId: any
+
+onMounted(() => {
+
+  const el = document.querySelector('#chart')
+
+  const chart = new GridChart(el!, {
+    preset: PRESET_GRID_4_SERIES_SLOT
+  })
+
+  // chart!.dataFormatter$.next({
+  //   type: '',
+  //   container: {
+  //     columnAmount: 3
+  //   },
+  //   multiGrid: [
+  //     {
+  //       slotIndex: 0
+  //     },
+  //     {
+  //       slotIndex:1
+  //     }
+  //   ]
+  // })
+
+  let i = 0
+  intervalId = setInterval(() => {
+    if (i % 2 == 1) {
+      chart!.dataFormatter$.next({
+        container: {
+          rowAmount: 2,
+          columnAmount: 2
+        },
+        grid: {
+          seriesSlotIndexes: [0, 1, 2, 3]
+        }
+      })
+    } else if (i % 2 == 0) {
+      chart!.dataFormatter$.next({
+        container: {
+          rowAmount: 1,
+          columnAmount: 1
+        },
+        grid: {
+          seriesSlotIndexes: null
+        }
+      })
+    }
+    // else {
+    //   chart!.dataFormatter$.next({
+    //     grid: {
+    //       gridData: {
+    //         seriesDirection: 'column'
+    //       }
+    //     }
+    //   })
+    // }
+    
+    i++
+  }, 1500)
+
+  // chart!.dataFormatter$.next({
+  //   container: {
+  //     columnAmount: 1
+  //   },
+  //   multiGrid: [
+  //     {
+  //       slotIndex: 0
+  //     },
+  //     {
+  //       slotIndex: 0
+  //     }
+  //   ]
+  // })
+
+
+
+  
+  // chart!.chartParams$.next({
+  //   "padding": {
+  //     "top": 80,
+  //     "right": 80,
+  //     "bottom": 80,
+  //     "left": 80
+  //   }
+  // })
+  // chart!.dataFormatter$.next({
+  //   valueAxis: {
+  //     position: 'bottom',
+  //     scaleDomain: [0, 'auto'],
+  //     scaleRange: [0, 0.9],
+  //     label: ''
+  //   },
+  //   groupAxis: {
+  //     position: 'left',
+  //     scaleDomain: [0, 'auto'],
+  //     scalePadding: 0.5,
+  //     label: ''
+  //   },
+  // })
+
+  chart!.plugins$.next([ new GroupAxis(), new ValueAxis(), new Bars(), new GroupAux(), new ScalingArea(), new Tooltip(), new GridLegend() ])
+
+  chart!.data$.next(gridData3)
+
+  // chart!.dataFormatter$.next({
+  //   valueAxis: {
+  //     position: 'bottom',
+  //     scaleDomain: [0, 'auto'],
+  //     scaleRange: [0, 0.9],
+  //     label: ''
+  //   },
+  //   groupAxis: {
+  //     position: 'left',
+  //     scaleDomain: [0, 'auto'],
+  //     scalePadding: 0.5,
+  //     label: ''
+  //   },
+  // })
+})
+
+onUnmounted(() => {
+  clearInterval(intervalId)
+})
+
+</script>

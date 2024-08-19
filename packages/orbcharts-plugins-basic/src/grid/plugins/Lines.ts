@@ -14,6 +14,7 @@ export const Lines = defineGridPlugin(pluginName, DEFAULT_LINES_PARAMS)(({ selec
   const unsubscribeBaseBars = createBaseLines(pluginName, {
     selection,
     computedData$: observer.computedData$,
+    existedSeriesLabels$: observer.existedSeriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,
@@ -23,6 +24,7 @@ export const Lines = defineGridPlugin(pluginName, DEFAULT_LINES_PARAMS)(({ selec
     gridGraphicTransform$: observer.gridGraphicTransform$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
+    gridContainer$: observer.gridContainer$,
     event$: subject.event$,
   })
 

@@ -1,5 +1,10 @@
 import type { BaseBarsParams } from '../base/BaseBars'
+import type { BaseBarStackParams } from '../base/BaseBarStack'
+import type { BaseBarsTriangleParams } from '../base/BaseBarsTriangle'
 import type { BaseLinesParams } from '../base/BaseLines'
+import type { BaseDotsParams } from '../base/BaseDots'
+import type { BaseGroupAxisParams } from '../base/BaseGroupAxis'
+import type { BaseValueAxisParams } from '../base/BaseValueAxis'
 import type {
   ChartParams, Layout, ColorType } from '@orbcharts/core'
 
@@ -24,4 +29,38 @@ export interface MultiGridLegendParams {
     listRectHeight: number
     listRectRadius: number
   }>
+}
+
+export interface MultiGroupAxisParams extends BaseGroupAxisParams {
+  gridIndexes: number[]
+}
+
+export interface MultiValueAxisParams extends BaseValueAxisParams {
+  gridIndexes: number[]
+}
+
+export interface MultiBarsParams extends BaseBarsParams {
+  gridIndexes: number[]
+}
+
+export interface MultiBarStackParams extends BaseBarStackParams {
+  gridIndexes: number[]
+}
+
+export interface MultiBarsTriangleParams extends BaseBarsTriangleParams {
+  gridIndexes: number[]
+}
+
+export interface MultiLinesParams extends BaseLinesParams {
+  gridIndexes: number[]
+}
+
+export interface MultiDotsParams extends BaseDotsParams {
+  gridIndexes: number[]
+}
+
+export interface OverlappingValueAxesParams {
+  firstAxis: BaseValueAxisParams
+  secondAxis: BaseValueAxisParams
+  gridIndexes: [number, number]
 }

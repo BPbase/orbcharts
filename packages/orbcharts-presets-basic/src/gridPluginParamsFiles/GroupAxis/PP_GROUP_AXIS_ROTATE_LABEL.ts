@@ -7,6 +7,7 @@ export const PP_GROUP_AXIS_ROTATE_LABEL: PluginParamsFile<GroupAxisParams> = {
   pluginName: 'GroupAxis',
   description: '群組圖軸標籤文字傾斜',
   data: {
-    tickTextRotate: 40
+    tickPadding: 15,
+    tickTextRotate: -30
   }
 }

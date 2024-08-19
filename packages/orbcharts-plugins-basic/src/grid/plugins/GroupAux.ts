@@ -24,7 +24,7 @@ import { getColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { d3EventObservable } from '../../utils/observables'
 import { gridGroupPositionFnObservable } from '../gridObservables'
 import { createAxisPointScale } from '@orbcharts/core'
-import type { GroupAreaParams } from '../types'
+import type { GroupAuxParams } from '../types'
 
 interface LineDatum {
   id: string
@@ -41,14 +41,14 @@ interface LabelDatum {
   y: number
 }
 
-const pluginName = 'GroupArea'
+const pluginName = 'GroupAux'
 const labelClassName = getClassName(pluginName, 'label-box')
 
 function createLineData ({ groupLabel, axisX, axisHeight, fullParams }: {
   groupLabel: string
   axisX: number
   axisHeight: number
-  fullParams: GroupAreaParams
+  fullParams: GroupAuxParams
 }): LineDatum[] {
   return fullParams.showLine && groupLabel
     ? [{
@@ -65,7 +65,7 @@ function renderLine ({ selection, pluginName, lineData, fullParams, fullChartPar
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
   lineData: LineDatum[]
-  fullParams: GroupAreaParams
+  fullParams: GroupAuxParams
   fullChartParams: ChartParams
 }) {
   const gClassName = getClassName(pluginName, 'auxline')
@@ -114,7 +114,7 @@ function removeLine (selection: d3.Selection<any, unknown, any, unknown>) {
 function createLabelData ({ groupLabel, axisX, fullParams }: {
   groupLabel: string
   axisX: number
-  fullParams: GroupAreaParams
+  fullParams: GroupAuxParams
 }) {
   return fullParams.showLabel && groupLabel
     ? [{
@@ -126,12 +126,12 @@ function createLabelData ({ groupLabel, axisX, fullParams }: {
     : []
 }
 
-function renderLabel ({ selection, labelData, fullParams, fullChartParams, gridAxesOppositeTransformValue }: {
+function renderLabel ({ selection, labelData, fullParams, fullChartParams, gridAxesReverseTransformValue }: {
   selection: d3.Selection<any, unknown, any, unknown>
   labelData: LabelDatum[]
-  fullParams: GroupAreaParams
+  fullParams: GroupAuxParams
   fullChartParams: ChartParams
-  gridAxesOppositeTransformValue: string
+  gridAxesReverseTransformValue: string
 }) {
   const rectHeight = fullChartParams.styles.textSize + 4
 
@@ -176,7 +176,7 @@ function renderLabel ({ selection, labelData, fullParams, fullChartParams, gridA
       // .style('pointer-events', 'none')
     const rect = rectUpdate.merge(rectEnter)
       .attr('width', d => `${rectWidth}px`)
-      .style('transform', gridAxesOppositeTransformValue)
+      .style('transform', gridAxesReverseTransformValue)
     rectUpdate.exit().remove()
 
     const textUpdate = d3.select(n[i])
@@ -190,7 +190,7 @@ function renderLabel ({ selection, labelData, fullParams, fullChartParams, gridA
       // .style('pointer-events', 'none')
     const text = textUpdate.merge(textEnter)
       .text(d => d.text)
-      .style('transform', gridAxesOppositeTransformValue)
+      .style('transform', gridAxesReverseTransformValue)
       .attr('fill', d => getColor(fullParams.labelTextColorType, fullChartParams))
       .attr('font-size', fullChartParams.styles.textSize)
       .attr('x', rectX + 6)
@@ -208,7 +208,7 @@ function removeLabel (selection: d3.Selection<any, unknown, any, unknown>) {
   gUpdate.exit().remove()
 }
 
-export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(({ selection, rootSelection, name, subject, observer }) => {
+export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(({ selection, rootSelection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const rootRectSelection: d3.Selection<SVGRectElement, any, any, any> = rootSelection
@@ -283,7 +283,7 @@ export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)
   //     subscriber.next(transformData.value)
   //   })
   // })
-  // const oppositeTransform$: Observable<TransformData> = observer.gridAxesTransform$.pipe(
+  // const reverseTransform$: Observable<TransformData> = observer.gridAxesTransform$.pipe(
   //   takeUntil(destroy$),
   //   map(d => {
   //     const translate: [number, number] = [d.translate[0] * -1, d.translate[1] * -1]
@@ -303,12 +303,12 @@ export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)
   // )
   // const contentTransform$ = combineLatest({
   //   fullParams: observer.fullParams$,
-  //   oppositeTransform: oppositeTransform$
+  //   reverseTransform: reverseTransform$
   // }).pipe(
   //   takeUntil(destroy$),
   //   switchMap(async data => {
   //     const translate = [0, 0]
-  //     return `translate(${translate[0]}px, ${translate[1]}px) rotate(${data.oppositeTransform.rotate}deg) rotateX(${data.oppositeTransform.rotateX}deg) rotateY(${data.oppositeTransform.rotateY}deg)`
+  //     return `translate(${translate[0]}px, ${translate[1]}px) rotate(${data.reverseTransform.rotate}deg) rotateX(${data.reverseTransform.rotateX}deg) rotateY(${data.reverseTransform.rotateY}deg)`
   //   }),
   //   distinctUntilChanged()
   // )
@@ -324,18 +324,18 @@ export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)
     ).subscribe(data => {
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] === 'auto'
-        ? groupMin - data.fullDataFormatter.groupAxis.scalePadding
-        : data.fullDataFormatter.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.groupAxis.scalePadding
-      const groupScaleDomainMax = data.fullDataFormatter.groupAxis.scaleDomain[1] === 'auto'
-        ? groupMax + data.fullDataFormatter.groupAxis.scalePadding
-        : data.fullDataFormatter.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.groupAxis.scalePadding
+      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+        ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+        : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
+        ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
+        : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
       
       const groupingLength = data.computedData[0]
         ? data.computedData[0].length
         : 0
 
-      let _labels = data.fullDataFormatter.grid.seriesType === 'row'
+      let _labels = data.fullDataFormatter.grid.gridData.seriesDirection === 'row'
         // ? data.fullDataFormatter.grid.columnLabels
         // : data.fullDataFormatter.grid.rowLabels
         ? (data.computedData[0] ?? []).map(d => d.groupLabel)
@@ -352,7 +352,7 @@ export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)
         })
 
       
-      const padding = data.fullDataFormatter.groupAxis.scalePadding
+      const padding = data.fullDataFormatter.grid.groupAxis.scalePadding
       
       const groupScale = createAxisPointScale({
         axisLabels,
@@ -496,7 +496,7 @@ export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)
     fullParams: observer.fullParams$,
     fullChartParams: observer.fullChartParams$,
     highlightTarget: highlightTarget$,
-    gridAxesOppositeTransform: observer.gridAxesOppositeTransform$,
+    gridAxesReverseTransform: observer.gridAxesReverseTransform$,
     GroupDataMap: observer.GroupDataMap$,
     gridGroupPositionFn: gridGroupPositionFn$,
   }).pipe(
@@ -535,7 +535,7 @@ export const GroupArea = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)
       labelData,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams,
-      gridAxesOppositeTransformValue: data.gridAxesOppositeTransform.value
+      gridAxesReverseTransformValue: data.gridAxesReverseTransform.value
     })
 
     // label的事件

@@ -7,7 +7,7 @@ export const CP_BOTTOM_LONG_PADDING_WITH_SERIES_HIGHLIGHT: ChartParamsFile = {
     padding: {
       top: 60,
       right: 60,
-      bottom: 140,
+      bottom: 160,
       left: 60
     },
     highlightTarget: 'series'

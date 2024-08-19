@@ -19,15 +19,18 @@ import type {
   DataTypeMap,
   DataFormatterTypeMap,
   DataFormatterGrid,
-  DataFormatterContext,
+  DataFormatterGridContainer,
   DataFormatterValueAxis,
   DataFormatterGroupAxis,
+  ContainerPosition,
   HighlightTarget,
   Layout,
   TransformData } from '../types'
-import { getMinAndMaxGrid, transposeData } from '../utils/orbchartsUtils'
+import { getMinAndMaxGrid } from '../utils/orbchartsUtils'
 import { createAxisLinearScale, createAxisPointScale, createAxisQuantizeScale } from '../utils/d3Utils'
 import { highlightObservable } from '../utils/observables'
+import { calcGridContainerPosition } from '../utils/orbchartsUtils'
+import { DATA_FORMATTER_GRID_GRID_DEFAULT } from '../defaults'
 
 export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
   fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
@@ -44,7 +47,7 @@ export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
     if (!xAxis || !yAxis) {
       return {
         translate: [0, 0],
-        scale: [0, 0],
+        scale: [1, 1],
         rotate: 0,
         rotateX: 0,
         rotateY: 0,
@@ -102,6 +105,8 @@ export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
         translateX = width
       } else if (yAxis.position === 'top') {
         rotate = -90
+        rotateX = 180
+        rotateY = 180
         translateX = width
       } else {
         // 預設
@@ -109,12 +114,11 @@ export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
         translateY = height
       }
     }
-    
     // selection.style('transform', `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`)
   
     return {
       translate: [translateX, translateY],
-      scale: [0, 0],
+      scale: [1, 1],
       rotate,
       rotateX,
       rotateY,
@@ -131,8 +135,8 @@ export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
       switchMap(async (d) => d),
     ).subscribe(data => {
       const axesTransformData = calcAxesTransform({
-        xAxis: data.fullDataFormatter.groupAxis,
-        yAxis: data.fullDataFormatter.valueAxis,
+        xAxis: data.fullDataFormatter.grid.groupAxis,
+        yAxis: data.fullDataFormatter.grid.valueAxis,
         width: data.layout.width,
         height: data.layout.height
       })
@@ -144,6 +148,30 @@ export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
       destroy$.next(undefined)
     }
   })
+}
+
+
+export const gridAxesReverseTransformObservable = ({ gridAxesTransform$ }: {
+  gridAxesTransform$: Observable<TransformData>
+}): Observable<TransformData> => {
+  return gridAxesTransform$.pipe(
+    map(d => {
+      // const translate: [number, number] = [d.translate[0] * -1, d.translate[1] * -1]
+      const translate: [number, number] = [0, 0] // 無需逆轉
+      const scale: [number, number] = [1 / d.scale[0], 1 / d.scale[1]]
+      const rotate = d.rotate * -1
+      const rotateX = d.rotateX * -1
+      const rotateY = d.rotateY * -1
+      return {
+        translate,
+        scale,
+        rotate,
+        rotateX,
+        rotateY,
+        value: `translate(${translate[0]}px, ${translate[1]}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
+      }
+    }),
+  )
 }
 
 export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
@@ -244,8 +272,8 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
     ).subscribe(data => {
       const dataAreaTransformData = calcGridDataAreaTransform ({
         data: data.computedData,
-        groupAxis: data.fullDataFormatter.groupAxis,
-        valueAxis: data.fullDataFormatter.valueAxis,
+        groupAxis: data.fullDataFormatter.grid.groupAxis,
+        valueAxis: data.fullDataFormatter.grid.valueAxis,
         width: data.layout.width,
         height: data.layout.height
       })
@@ -259,24 +287,33 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
   })
 }
 
-export const gridAxesOppositeTransformObservable = ({ gridAxesTransform$ }: {
+export const gridGraphicReverseScaleObservable = ({ gridContainer$, gridAxesTransform$, gridGraphicTransform$ }: {
+  gridContainer$: Observable<ContainerPosition[]>
   gridAxesTransform$: Observable<TransformData>
-}): Observable<TransformData> => {
-  return gridAxesTransform$.pipe(
-    map(d => {
-      // const translate: [number, number] = [d.translate[0] * -1, d.translate[1] * -1]
-      const translate: [number, number] = [0, 0] // 無需逆轉
-      const scale: [number, number] = [d.scale[0] * -1, d.scale[1] * -1]
-      const rotate = d.rotate * -1
-      const rotateX = d.rotateX * -1
-      const rotateY = d.rotateY * -1
-      return {
-        translate,
-        scale,
-        rotate,
-        rotateX,
-        rotateY,
-        value: `translate(${translate[0]}px, ${translate[1]}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
+  gridGraphicTransform$: Observable<TransformData>
+}): Observable<[number, number][]> => {
+  return combineLatest({
+    gridContainer: gridContainer$,
+    gridAxesTransform: gridAxesTransform$,
+    gridGraphicTransform: gridGraphicTransform$,
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      if (data.gridAxesTransform.rotate == 0 || data.gridAxesTransform.rotate == 180) {
+        return data.gridContainer.map((series, seriesIndex) => {
+          return [
+            1 / data.gridGraphicTransform.scale[0] / data.gridContainer[seriesIndex].scale[0],
+            1 / data.gridGraphicTransform.scale[1] / data.gridContainer[seriesIndex].scale[1],
+          ]
+        })
+      } else {
+        return data.gridContainer.map((series, seriesIndex) => {
+          // 由於有垂直的旋轉，所以外層 (container) x和y的scale要互換
+          return [
+            1 / data.gridGraphicTransform.scale[0] / data.gridContainer[seriesIndex].scale[1],
+            1 / data.gridGraphicTransform.scale[1] / data.gridContainer[seriesIndex].scale[0],
+          ]
+        })
       }
     }),
   )
@@ -317,8 +354,8 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
     ).subscribe(data => {
       
       const axisSize = calcAxesSize({
-        xAxisPosition: data.fullDataFormatter.groupAxis.position,
-        yAxisPosition: data.fullDataFormatter.valueAxis.position,
+        xAxisPosition: data.fullDataFormatter.grid.groupAxis.position,
+        yAxisPosition: data.fullDataFormatter.grid.valueAxis.position,
         width: data.layout.width,
         height: data.layout.height,
       })
@@ -343,6 +380,21 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
 //   return highlightObservable ({ datumList$, fullChartParams$, event$ })
 // }
 
+export const existedSeriesLabelsObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
+  return computedData$.pipe(
+    map(data => {
+      return data
+        .filter(series => series.length)
+        .map(series => {
+          return series[0].seriesLabel
+        })
+    }),
+    distinctUntilChanged((a, b) => {
+      return JSON.stringify(a).length === JSON.stringify(b).length
+    }),
+  )
+}
+
 export const gridVisibleComputedDataObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
   return computedData$.pipe(
     map(data => {
@@ -358,3 +410,78 @@ export const gridVisibleComputedDataObservable = ({ computedData$ }: { computedD
   )
 }
 
+export const isSeriesPositionSeprateObservable = ({ computedData$, fullDataFormatter$ }: {
+  computedData$: Observable<ComputedDataTypeMap<'grid'>>
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
+}) => {
+  return combineLatest({
+    computedData: computedData$,
+    fullDataFormatter: fullDataFormatter$
+  }).pipe(
+    map(data => {
+      return data.fullDataFormatter.grid.seriesSlotIndexes && data.fullDataFormatter.grid.seriesSlotIndexes.length === data.computedData.length
+        ? true
+        : false
+    }),
+    distinctUntilChanged()
+  )
+}
+
+// 所有container位置（對應series）
+export const gridContainerObservable = ({ computedData$, fullDataFormatter$, fullChartParams$, layout$ }: {
+  computedData$: Observable<ComputedDataTypeMap<'grid'>>
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
+  fullChartParams$: Observable<ChartParams>
+  layout$: Observable<Layout>
+}) => {
+
+  const gridContainer$ = combineLatest({
+    computedData: computedData$,
+    fullDataFormatter: fullDataFormatter$,
+    fullChartParams: fullChartParams$,
+    layout: layout$,
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+
+      const grid = data.fullDataFormatter.grid
+      
+      // 有設定series定位
+      const hasSeriesPosition = grid.seriesSlotIndexes && grid.seriesSlotIndexes.length === data.computedData.length
+        ? true
+        : false
+      
+      if (hasSeriesPosition) {
+        // -- 依seriesSlotIndexes計算 --
+        return data.computedData.map((seriesData, seriesIndex) => {
+          const columnIndex = grid.seriesSlotIndexes[seriesIndex] % data.fullDataFormatter.container.columnAmount
+          const rowIndex = Math.floor(grid.seriesSlotIndexes[seriesIndex] / data.fullDataFormatter.container.columnAmount)
+          const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
+          return {
+            slotIndex: grid.seriesSlotIndexes[seriesIndex],
+            rowIndex,
+            columnIndex,
+            translate,
+            scale,
+          }
+        })
+      } else {
+        // -- 依grid的slotIndex計算 --
+        const columnIndex = grid.slotIndex % data.fullDataFormatter.container.columnAmount
+        const rowIndex = Math.floor(grid.slotIndex / data.fullDataFormatter.container.columnAmount)
+        return data.computedData.map((seriesData, seriesIndex) => {
+          const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
+          return {
+            slotIndex: grid.slotIndex,
+            rowIndex,
+            columnIndex,
+            translate,
+            scale,
+          }
+        })
+      }
+    })
+  )
+
+  return gridContainer$
+}

@@ -9,8 +9,8 @@ import type { DataTree } from './types/DataTree'
 import type { DataRelationship } from './types/DataRelationship'
 import type { DataFormatterBase, DataFormatterValueAxis, DataFormatterGroupAxis } from './types/DataFormatter'
 import type { DataFormatterSeries } from './types/DataFormatterSeries'
-import type { DataFormatterGrid } from './types/DataFormatterGrid'
-import type { DataFormatterMultiGrid } from './types/DataFormatterMultiGrid'
+import type { DataFormatterGrid, DataFormatterGridGrid } from './types/DataFormatterGrid'
+import type { DataFormatterMultiGrid, DataFormatterMultiGridGrid } from './types/DataFormatterMultiGrid'
 import type { DataFormatterMultiValue } from './types/DataFormatterMultiValue'
 import type { DataFormatterTree } from './types/DataFormatterTree'
 import type { DataFormatterRelationship } from './types/DataFormatterRelationship'
@@ -34,7 +34,6 @@ export const CHART_OPTIONS_DEFAULT: ChartOptionsPartial<any> = {
 // }
 
 // export const COLORS_DEFAULT = ['#67B7DC', '#6794DC', '#6771DC', '#8067DC', '#A367DC', '#C767DC', '#DC67CE', '#DC67AB', '#DC6788', '#DC6967', '#DC8C67', '#DCAF67']
-// @Q@ 桃園儀表板
 // ['#ff7ab9', '#66dec8', '#84c8ff', '#30ad1b', '#f8c43e', '#fa5640', '#9d79d7', '#ea4f98']
 
 export const PADDING_DEFAULT: Padding = {
@@ -158,46 +157,60 @@ export const DATA_FORMATTER_SERIES_DEFAULT: DataFormatterSeries = {
   sort: null,
 }
 
-export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
-  // ...DATA_FORMATTER_WITH_VALUE,
-  type: 'grid',
+export const DATA_FORMATTER_GRID_GRID_DEFAULT: DataFormatterGridGrid = {
   visibleFilter: (datum, rowIndex, columnIndex, context) => true,
-  grid: {
-    // rowUnitLabel: '',
+  gridData: {
+    seriesDirection: 'row',
     rowLabels: [],
-    // rowLabelFormat: label => label,
-    // columnUnitLabel: '',
     columnLabels: [],
-    // columnLabelFormat: label => label,
-    seriesType: 'row'
   },
   valueAxis: { ...DATA_FORMATTER_VALUE_AXIS },
   groupAxis: { ...DATA_FORMATTER_GROUP_AXIS, },
+  slotIndex: 0,
+  seriesSlotIndexes: null
+}
+
+export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
+  // ...DATA_FORMATTER_WITH_VALUE,
+  type: 'grid',
+  grid: {
+    ...DATA_FORMATTER_GRID_GRID_DEFAULT
+  },
+  container: {
+    gap: 120,
+    rowAmount: 1,
+    columnAmount: 1
+  }
   // visibleGroupRange: null,
   // colorsPredicate: (datum, rowIndex, columnIndex, { chartParams, dataFormatter }) => {
-  //   const seriesIndex = dataFormatter.grid.seriesType === 'row' ? rowIndex : columnIndex
+  //   const seriesIndex = dataFormatter.grid.seriesDirection === 'row' ? rowIndex : columnIndex
   //   return chartParams.colors[chartParams.colorScheme].series[seriesIndex]
   // },
+}
+
+// export const DATA_FORMATTER_MULTI_GRID_MULTI_GRID_DEFAULT: DataFormatterMultiGridMultiGrid = {
+//   ...DATA_FORMATTER_GRID_DEFAULT,
+//   slotIndex: 0,
+//   seriesSlotIndexes: null
+// }
+
+export const DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT: DataFormatterMultiGridGrid = {
+  ...DATA_FORMATTER_GRID_GRID_DEFAULT
 }
 
 export const DATA_FORMATTER_MULTI_GRID_DEFAULT: DataFormatterMultiGrid = {
   type: 'multiGrid',
   visibleFilter: (datum, rowIndex, columnIndex, context) => true,
-  multiGrid: [
+  gridList: [
     {
-      ...DATA_FORMATTER_GRID_DEFAULT
+      ...DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT
     },
-    // // @Q@ 暫時性的邏輯，之後colorsPredicate移除掉後，這邊也要移除（但colors使用的seriesIndex要接續前一組grid）
-    // {
-    //   ...DATA_FORMATTER_GRID_DEFAULT,
-    //   colorsPredicate: (datum, rowIndex, columnIndex, { data, chartParams, dataFormatter }) => {
-    //     const seriesIndex = dataFormatter.grid.seriesType === 'row' ? rowIndex : columnIndex
-    //     const reverseIndex = chartParams.colors[chartParams.colorScheme].series.length - 1 - seriesIndex
-    //     return chartParams.colors[chartParams.colorScheme].series[reverseIndex]
-    //   },
-    // }
   ],
-  // visibleGroupRange: null,
+  container: {
+    gap: 120,
+    rowAmount: 1,
+    columnAmount: 1
+  }
 }
 
 export const DATA_FORMATTER_MULTI_VALUE_DEFAULT: DataFormatterMultiValue = {

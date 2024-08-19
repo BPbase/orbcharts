@@ -15,14 +15,17 @@ export const Dots = defineGridPlugin(pluginName, DEFAULT_DOTS_PARAMS)(({ selecti
     selection,
     computedData$: observer.computedData$,
     visibleComputedData$: observer.visibleComputedData$,
+    existedSeriesLabels$: observer.existedSeriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,
     fullChartParams$: observer.fullChartParams$,
     gridAxesTransform$: observer.gridAxesTransform$,
     gridGraphicTransform$: observer.gridGraphicTransform$,
+    gridGraphicReverseScale$: observer.gridGraphicReverseScale$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
+    gridContainer$: observer.gridContainer$,
     event$: subject.event$,
   })
 

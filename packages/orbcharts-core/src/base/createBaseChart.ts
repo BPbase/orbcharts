@@ -140,8 +140,6 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
         description: preset.description ?? ''
       }
     })(options)
-    
-    
 
     const sharedData$ = chartSubject.data$.pipe(shareReplay(1))
     const shareAndMergedDataFormatter$ = chartSubject.dataFormatter$
@@ -151,10 +149,10 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
         map((dataFormatter) => {
           const mergedData = mergeOptionsWithDefault(dataFormatter, mergedPresetWithDefault.dataFormatter)
 
-          if (chartType === 'multiGrid' && (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).multiGrid != null) {
+          if (chartType === 'multiGrid' && (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList != null) {
             // multiGrid欄位為陣列，需要各別來merge預設值
-            (mergedData as DataFormatterTypeMap<'multiGrid'>).multiGrid = (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).multiGrid.map(d => {
-              return mergeOptionsWithDefault(d, (mergedPresetWithDefault.dataFormatter as DataFormatterTypeMap<'multiGrid'>).multiGrid[0])
+            (mergedData as DataFormatterTypeMap<'multiGrid'>).gridList = (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList.map(d => {
+              return mergeOptionsWithDefault(d, (mergedPresetWithDefault.dataFormatter as DataFormatterTypeMap<'multiGrid'>).gridList[0])
             })
           }
           return mergedData
@@ -165,7 +163,9 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
       .pipe(
         takeUntil(destroy$),
         startWith({}),
-        map((d) => mergeOptionsWithDefault(d, mergedPresetWithDefault.chartParams)),
+        map((d) => {
+          return mergeOptionsWithDefault(d, mergedPresetWithDefault.chartParams)
+        }),
         shareReplay(1)
       )
 
@@ -175,7 +175,9 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
       .pipe(
         takeUntil(destroy$),
         startWith({}),
-        map((d: any) => mergeOptionsWithDefault(d.padding ?? {}, PADDING_DEFAULT))
+        map((d: any) => {
+          return mergeOptionsWithDefault(d.padding ?? {}, PADDING_DEFAULT)
+        })
       )
     mergedPadding$
       .pipe(
@@ -262,13 +264,16 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
               } catch (e) {
                 console.error(e)
                 throw new Error(e)
-              }   
+              }
             }),
             catchError(() => EMPTY)
           )  
       }),
       shareReplay(1)
     )
+
+    // subscribe - computedData組合了所有的chart參數，所以訂閱computedData可以一次訂閱所有的資料流
+    computedData$.subscribe()
     
     // -- plugins --
     const pluginEntityMap: any = {}  // 用於destroy

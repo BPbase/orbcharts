@@ -3,7 +3,11 @@ import * as pluginsBasic from '../../packages/orbcharts-plugins-basic/src/index'
 import * as presetsBasic from '../../packages/orbcharts-presets-basic/src/index'
 import { seriesData1 } from './data/seriesData1'
 import { gridData1 } from './data/gridData1'
+import { gridData2 } from './data/gridData2'
+import { gridData3 } from './data/gridData3'
 import { multiGridData1 } from './data/multiGridData1'
+import { multiGridData2 } from './data/multiGridData2'
+import { multiGridData3 } from './data/multiGridData3'
 
 type KeyOfOrbChartsCore = keyof typeof core
 type KeyOfOrbChartsPluginsBasic = keyof typeof pluginsBasic
@@ -38,10 +42,10 @@ export interface ChartConstructor<T extends core.ChartType> {
 export const demoDetail: DemoDetail = {
   series: {
     'Bubbles': {
-      'PRESET_SERIES_BASIC': {
+      'PRESET_BUBBLES_BASIC': {
         chart: core.SeriesChart,
         plugins: [pluginsBasic.Bubbles, pluginsBasic.SeriesLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_SERIES_BASIC,
+        preset: presetsBasic.PRESET_BUBBLES_BASIC,
         data: seriesData1
       },
       'PRESET_BUBBLES_SCALING_BY_RADIUS': {
@@ -52,10 +56,10 @@ export const demoDetail: DemoDetail = {
       },
     },
     'Pie': {
-      'PRESET_SERIES_BASIC': {
+      'PRESET_PIE_BASIC': {
         chart: core.SeriesChart,
         plugins: [pluginsBasic.Pie, pluginsBasic.PieLabels, pluginsBasic.SeriesLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_SERIES_BASIC,
+        preset: presetsBasic.PRESET_PIE_BASIC,
         data: seriesData1
       },
       'PRESET_PIE_WITH_INNER_LABELS': {
@@ -82,125 +86,197 @@ export const demoDetail: DemoDetail = {
     'Bars': {
       'PRESET_GRID_BASIC': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.Bars, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Bars, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_GRID_BASIC,
         data: gridData1
       },
       'PRESET_GRID_ROTATE_AXIS_LABEL': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.Bars, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Bars, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_GRID_ROTATE_AXIS_LABEL,
         data: gridData1
       },
       'PRESET_GRID_HORIZONTAL': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.Bars, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Bars, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_GRID_HORIZONTAL,
         data: gridData1
       },
       'PRESET_BARS_ROUND': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.Bars, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Bars, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_BARS_ROUND,
         data: gridData1
       },
       'PRESET_BARS_HORIZONTAL_AND_ROUND': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.Bars, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Bars, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_BARS_HORIZONTAL_AND_ROUND,
         data: gridData1
       },
       'PRESET_BARS_THIN': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.Bars, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Bars, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_BARS_THIN,
         data: gridData1
       },
       'PRESET_BARS_HORIZONTAL_AND_THIN': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.Bars, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Bars, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_BARS_HORIZONTAL_AND_THIN,
         data: gridData1
+      },
+      'PRESET_GRID_2_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Bars, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_2_SERIES_SLOT,
+        data: gridData1
+      },
+      'PRESET_GRID_3_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Bars, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_3_SERIES_SLOT,
+        data: gridData2
+      },
+      'PRESET_GRID_4_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Bars, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_4_SERIES_SLOT,
+        data: gridData3
       },
     },
     'BarStack': {
       'PRESET_GRID_BASIC': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.BarStack, pluginsBasic.GroupAxis, pluginsBasic.ValueStackAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueStackAxis, pluginsBasic.BarStack, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_GRID_BASIC,
         data: gridData1
       },
       'PRESET_GRID_ROTATE_AXIS_LABEL': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.BarStack, pluginsBasic.GroupAxis, pluginsBasic.ValueStackAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueStackAxis, pluginsBasic.BarStack, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_GRID_ROTATE_AXIS_LABEL,
         data: gridData1
       },
       'PRESET_GRID_HORIZONTAL': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.BarStack, pluginsBasic.GroupAxis, pluginsBasic.ValueStackAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueStackAxis, pluginsBasic.BarStack, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_GRID_HORIZONTAL,
         data: gridData1
+      },
+      'PRESET_GRID_2_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueStackAxis, pluginsBasic.BarStack, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_2_SERIES_SLOT,
+        data: gridData1
+      },
+      'PRESET_GRID_3_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueStackAxis, pluginsBasic.BarStack, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_3_SERIES_SLOT,
+        data: gridData2
+      },
+      'PRESET_GRID_4_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueStackAxis, pluginsBasic.BarStack, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_4_SERIES_SLOT,
+        data: gridData3
       },
     },
     'BarsTriangle': {
       'PRESET_GRID_BASIC': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.BarsTriangle, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.BarsTriangle, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_GRID_BASIC,
         data: gridData1
       },
       'PRESET_GRID_ROTATE_AXIS_LABEL': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.BarsTriangle, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.BarsTriangle, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_GRID_ROTATE_AXIS_LABEL,
         data: gridData1
       },
       'PRESET_GRID_HORIZONTAL': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.BarsTriangle, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.BarsTriangle, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_GRID_HORIZONTAL,
         data: gridData1
+      },
+      'PRESET_GRID_2_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.BarsTriangle, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_2_SERIES_SLOT,
+        data: gridData1
+      },
+      'PRESET_GRID_3_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.BarsTriangle, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_3_SERIES_SLOT,
+        data: gridData2
+      },
+      'PRESET_GRID_4_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.BarsTriangle, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_4_SERIES_SLOT,
+        data: gridData3
       },
     },
     'Lines': {
       'PRESET_LINES_BASIC': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.Lines, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_LINES_BASIC,
         data: gridData1
       },
       'PRESET_LINES_ROTATE_AXIS_LABEL': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.Lines, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_LINES_ROTATE_AXIS_LABEL,
         data: gridData1
       },
       'PRESET_LINES_HORIZONTAL': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.Lines, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_LINES_HORIZONTAL,
         data: gridData1
       },
       'PRESET_LINES_CURVE': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.Lines, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_LINES_CURVE,
         data: gridData1
       },
       'PRESET_LINES_HIGHLIGHT_GROUP_DOTS': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.Lines, pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Dots, pluginsBasic.GroupArea, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.Dots, pluginsBasic.GroupAux, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_LINES_HIGHLIGHT_GROUP_DOTS,
         data: gridData1
-      }
+      },
+      'PRESET_GRID_2_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_2_SERIES_SLOT,
+        data: gridData1
+      },
+      'PRESET_GRID_3_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_3_SERIES_SLOT,
+        data: gridData2
+      },
+      'PRESET_GRID_4_SERIES_SLOT': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_4_SERIES_SLOT,
+        data: gridData3
+      },
     },
   },
   multiGrid: {
-    'BarsAndLines': {
+    'MultiBars': {
       'PRESET_MULTI_GRID_BASIC': {
         chart: core.MultiGridChart,
-        plugins: [pluginsBasic.BarsAndLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.OverlappingValueAxes, pluginsBasic.MultiBars, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_MULTI_GRID_BASIC,
         data: multiGridData1
       }

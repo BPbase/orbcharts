@@ -1,6 +1,6 @@
 import type {
   LinesParams,
-  GroupAreaParams,
+  GroupAuxParams,
   DotsParams,
   BarsParams,
   BarStackParams,
@@ -24,7 +24,7 @@ export const DEFAULT_DOTS_PARAMS: DotsParams = {
   onlyShowHighlighted: false
 }
 
-export const DEFAULT_GROUP_AREA_PARAMS: GroupAreaParams = {
+export const DEFAULT_GROUP_AREA_PARAMS: GroupAuxParams = {
   showLine: true,
   showLabel: true,
   lineDashArray: '3, 3',
@@ -56,7 +56,7 @@ export const DEFAULT_BARS_TRIANGLE_PARAMS: BarsTriangleParams = {
   linearGradientOpacity: [1, 0]
 }
 
-export const DEFAULT_GROUPING_AXIS_PARAMS: GroupAxisParams = {
+export const DEFAULT_GROUP_AXIS_PARAMS: GroupAxisParams = {
   // labelAnchor: 'start',
   labelOffset: [0, 0],
   labelColorType: 'primary',

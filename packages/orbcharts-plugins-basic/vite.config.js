@@ -13,6 +13,11 @@ const releaseConfig = {
   compilerOptions: {
     composite: true
   },
+  // resolve: {
+  //   alias: {
+  //     '@core': '@orbcharts/core'
+  //   }
+  // },
   build: {
     lib: {
       entry: "src/index.ts",

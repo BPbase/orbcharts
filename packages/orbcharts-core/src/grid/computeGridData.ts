@@ -49,7 +49,7 @@ export const computeBaseGridData = (context: DataFormatterContext<'grid'>, chart
       return d.map((_d, _i) => {
 
         // const _color = dataFormatter.colorsPredicate(_d, i, _i, context)
-        const _visible = dataFormatter.visibleFilter(_d, i, _i, context)
+        const _visible = dataFormatter.grid.visibleFilter(_d, i, _i, context)
 
         const datum: DataGridDatumTemp = _d == null
           ? {
@@ -85,21 +85,26 @@ export const computeBaseGridData = (context: DataFormatterContext<'grid'>, chart
       })
     })
 
-    // 依seriesType轉置資料矩陣
-    const transposedDataGrid = transposeData(dataFormatter.grid.seriesType, dataGrid)
+    // 依seriesDirection轉置資料矩陣
+    const transposedDataGrid = transposeData(dataFormatter.grid.gridData.seriesDirection, dataGrid)
 
     // -- groupScale --
-    const groupAxisWidth = (dataFormatter.groupAxis.position === 'top' || dataFormatter.groupAxis.position === 'bottom')
-      ? layout.width
-      : layout.height
-    const groupEndIndex = transposedDataGrid[0] ? transposedDataGrid[0].length - 1 : 0
-    const groupScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
-      maxValue: groupEndIndex,
-      minValue: 0,
-      axisWidth: groupAxisWidth,
-      scaleDomain: [0, groupEndIndex], // 不使用dataFormatter設定
-      scaleRange: [0, 1] // 不使用dataFormatter設定
-    })
+    const { groupScale } = (() => {
+      const groupAxisWidth = (dataFormatter.grid.groupAxis.position === 'top' || dataFormatter.grid.groupAxis.position === 'bottom')
+        ? layout.width
+        : layout.height
+      const groupEndIndex = transposedDataGrid[0] ? transposedDataGrid[0].length - 1 : 0
+      const groupScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+        maxValue: groupEndIndex,
+        minValue: 0,
+        axisWidth: groupAxisWidth,
+        scaleDomain: [0, groupEndIndex], // 不使用dataFormatter設定
+        scaleRange: [0, 1] // 不使用dataFormatter設定
+      })
+      return { groupScale }
+    })()
+
+    
 
     // const seriesColors = chartParams.colors[chartParams.colorScheme].series
 
@@ -131,26 +136,76 @@ export const computeBaseGridData = (context: DataFormatterContext<'grid'>, chart
     //   })
     // })
 
-    // -- valueScale --
-    const visibleData = transposedDataGrid.flat().filter(d => d._visible != false)
-    const [minValue, maxValue] = getMinAndMaxValue(visibleData)
-
-    const valueAxisWidth = (dataFormatter.valueAxis.position === 'left' || dataFormatter.valueAxis.position === 'right')
-      ? layout.height
-      : layout.width
-
     const seriesLabels = createGridSeriesLabels({ transposedDataGrid, dataFormatter, chartType, gridIndex })
     const groupLabels = createGridGroupLabels({ transposedDataGrid, dataFormatter, chartType, gridIndex })
 
-    const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
-      maxValue,
-      minValue,
-      axisWidth: valueAxisWidth,
-      scaleDomain: [minValue, maxValue], // 不使用dataFormatter設定
-      scaleRange: [0, 1] // 不使用dataFormatter設定
-    })
+    // 每一個series的valueScale
+    const seriesValueScaleArr = (() => {
+      const valueAxisWidth = (dataFormatter.grid.valueAxis.position === 'left' || dataFormatter.grid.valueAxis.position === 'right')
+        ? layout.height
+        : layout.width
 
-    const zeroY = valueScale(0)
+      // // 每一個series的 [minValue, maxValue]
+      // const minAndMaxValueArr = (() => {
+      //   // 有設定series定位，各別series計算各自的最大最小值
+      //   if (dataFormatter.grid.seriesSlotIndexes
+      //     && dataFormatter.grid.seriesSlotIndexes.length === transposedDataGrid.length
+      //   ) {
+      //     return transposedDataGrid
+      //       .map(series => {
+      //         const visibleData = series.filter(d => d._visible != false)
+      //         return getMinAndMaxValue(visibleData)
+      //       })
+      //   } else {
+      //     // 沒有設定series定位，全部資料一起計算最大值最小值
+      //     const visibleData = transposedDataGrid.flat().filter(d => d._visible != false)
+      //     const [minValue, maxValue] = getMinAndMaxValue(visibleData)
+      //     return transposedDataGrid
+      //       .map(series => {
+      //         return [minValue, maxValue]
+      //       })
+      //   }
+      // })()
+
+      const visibleData = transposedDataGrid.flat().filter(d => d._visible != false)
+      const [minValue, maxValue] = getMinAndMaxValue(visibleData)
+      
+      return transposedDataGrid.map((seriesData, seriesIndex) => {
+        // const minValue = minAndMaxValueArr[seriesIndex][0]
+        // const maxValue = minAndMaxValueArr[seriesIndex][1]
+        const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+          maxValue,
+          minValue,
+          axisWidth: valueAxisWidth,
+          scaleDomain: [minValue, maxValue], // 不使用dataFormatter設定
+          scaleRange: [0, 1] // 不使用dataFormatter設定
+        })
+        return valueScale
+      })
+    })()
+
+    // const { valueScale } = (() => {
+      
+    //   const visibleData = transposedDataGrid.flat().filter(d => d._visible != false)
+    //   const [minValue, maxValue] = getMinAndMaxValue(visibleData)
+
+    //   const valueAxisWidth = (dataFormatter.grid.valueAxis.position === 'left' || dataFormatter.grid.valueAxis.position === 'right')
+    //     ? layout.height
+    //     : layout.width
+
+    //   const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+    //     maxValue,
+    //     minValue,
+    //     axisWidth: valueAxisWidth,
+    //     scaleDomain: [minValue, maxValue], // 不使用dataFormatter設定
+    //     scaleRange: [0, 1] // 不使用dataFormatter設定
+    //   })
+    //   return { valueScale }
+    // })()
+    
+    const zeroYArr = transposedDataGrid.map((series, seriesIndex) => {
+      return seriesValueScaleArr[seriesIndex]!(0)
+    })
 
     let _index = 0
     computedDataGrid = transposedDataGrid.map((seriesData, seriesIndex) => {
@@ -159,7 +214,9 @@ export const computeBaseGridData = (context: DataFormatterContext<'grid'>, chart
         const defaultId = createDefaultDatumId(chartType, gridIndex, seriesIndex, groupIndex)
         // const visible = visibleFilter(groupDatum, seriesIndex, groupIndex, context)
         const groupLabel = groupLabels[groupIndex]
+        const valueScale = seriesValueScaleArr[seriesIndex]
         const axisY = valueScale(groupDatum.value ?? 0)
+        const zeroY = zeroYArr[seriesIndex]
 
         const computedDatum: ComputedDatumGrid = {
           id: groupDatum.id ? groupDatum.id : defaultId,
