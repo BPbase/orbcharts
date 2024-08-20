@@ -280,6 +280,26 @@ export const demoList: DemoChartTypeItem[] = [
         ]
       },
       {
+        title: 'MultiBarStack',
+        list: [
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiBarStack',
+            presetName: 'PRESET_MULTI_GRID_2_GRID_SLOT'
+          },
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiBarStack',
+            presetName: 'PRESET_MULTI_GRID_3_GRID_SLOT'
+          },
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiBarStack',
+            presetName: 'PRESET_MULTI_GRID_4_GRID_SLOT'
+          },
+        ]
+      },
+      {
         title: 'MultiBarsTriangle',
         list: [
           {
@@ -325,7 +345,32 @@ export const demoList: DemoChartTypeItem[] = [
           {
             chartType: 'multiGrid',
             pluginName: 'MultiBars',
-            presetName: 'PRESET_MULTI_BARS_MULTI_LINES_BASIC'
+            presetName: 'PRESET_MULTI_GRID_BASIC'
+          },
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiBars',
+            presetName: 'PRESET_MULTI_GRID_ROUND_STYLE'
+          },
+        ]
+      },
+      {
+        title: 'MultiBarStack, MultiLines',
+        list: [
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiBarStack',
+            presetName: 'PRESET_MULTI_GRID_BASIC'
+          },
+        ]
+      },
+      {
+        title: 'MultiBarsTriangle, MultiLines',
+        list: [
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiBarsTriangle',
+            presetName: 'PRESET_MULTI_GRID_BASIC'
           },
         ]
       }
