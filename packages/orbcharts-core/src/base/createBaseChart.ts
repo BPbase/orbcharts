@@ -84,6 +84,18 @@ function resizeObservable(elem: HTMLElement | Element): Observable<DOMRectReadOn
   })
 }
 
+function mergeDataFormatter <T>(dataFormatter: any, defaultDataFormatter: T, chartType: ChartType): T {
+  const mergedData = mergeOptionsWithDefault(dataFormatter, defaultDataFormatter)
+
+  if (chartType === 'multiGrid' && (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList != null) {
+    // multiGrid欄位為陣列，需要各別來merge預設值
+    (mergedData as DataFormatterTypeMap<'multiGrid'>).gridList = (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList.map(d => {
+      return mergeOptionsWithDefault(d, (defaultDataFormatter as DataFormatterTypeMap<'multiGrid'>).gridList[0])
+    })
+  }
+  return mergedData
+}
+
 export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultDataFormatter, computedDataFn, contextObserverFn }: {
   defaultDataFormatter: DataFormatterTypeMap<T>
   computedDataFn: ComputedDataFn<T>
@@ -127,12 +139,14 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
     const mergedPresetWithDefault: Preset<T> = ((options) => {
       const _options = options ? options : CHART_OPTIONS_DEFAULT as ChartOptionsPartial<T>
       const preset = _options.preset ? _options.preset : {} as PresetPartial<T>
+
       return {
         chartParams: preset.chartParams
           ? mergeOptionsWithDefault(preset.chartParams, CHART_PARAMS_DEFAULT)
           : CHART_PARAMS_DEFAULT,
         dataFormatter: preset.dataFormatter
-          ? mergeOptionsWithDefault(preset.dataFormatter, defaultDataFormatter)
+          // ? mergeOptionsWithDefault(preset.dataFormatter, defaultDataFormatter)
+          ? mergeDataFormatter(preset.dataFormatter, defaultDataFormatter, chartType)
           : defaultDataFormatter,
         allPluginParams: preset.allPluginParams
           ? preset.allPluginParams
@@ -147,15 +161,16 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
         takeUntil(destroy$),
         startWith({}),
         map((dataFormatter) => {
-          const mergedData = mergeOptionsWithDefault(dataFormatter, mergedPresetWithDefault.dataFormatter)
+          // const mergedData = mergeOptionsWithDefault(dataFormatter, mergedPresetWithDefault.dataFormatter)
 
-          if (chartType === 'multiGrid' && (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList != null) {
-            // multiGrid欄位為陣列，需要各別來merge預設值
-            (mergedData as DataFormatterTypeMap<'multiGrid'>).gridList = (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList.map(d => {
-              return mergeOptionsWithDefault(d, (mergedPresetWithDefault.dataFormatter as DataFormatterTypeMap<'multiGrid'>).gridList[0])
-            })
-          }
-          return mergedData
+          // if (chartType === 'multiGrid' && (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList != null) {
+          //   // multiGrid欄位為陣列，需要各別來merge預設值
+          //   (mergedData as DataFormatterTypeMap<'multiGrid'>).gridList = (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList.map(d => {
+          //     return mergeOptionsWithDefault(d, (mergedPresetWithDefault.dataFormatter as DataFormatterTypeMap<'multiGrid'>).gridList[0])
+          //   })
+          // }
+          // return mergedData
+          return mergeDataFormatter(dataFormatter, mergedPresetWithDefault.dataFormatter, chartType)
         }),
         shareReplay(1)
       )

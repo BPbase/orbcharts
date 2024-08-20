@@ -49,7 +49,7 @@ onMounted(() => {
 
   chart.chartParams$.next({
     padding: {
-      bottom: 200
+      bottom: 120
     },
     highlightTarget: 'series'
   })
@@ -167,6 +167,12 @@ onMounted(() => {
   intervalId = setInterval(() => {
     console.log('i:', i, ',j:', j)
     if (i == 0) {
+      chart.chartParams$.next({
+        padding: {
+          bottom: 200
+        },
+        highlightTarget: 'series'
+      })
       chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
       chart!.dataFormatter$.next({
         container: {
@@ -191,6 +197,13 @@ onMounted(() => {
         gridIndexes: [0, 1]
       })
     } else if (i == 1) {
+      chart.chartParams$.next({
+        padding: {
+          bottom: 200
+        },
+        highlightTarget: 'series'
+      })
+      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 1,
@@ -206,7 +219,22 @@ onMounted(() => {
           }
         ]
       })
+      multiGroupAxis.params$.next({
+        gridIndexes: [0, 1],
+        tickTextRotate: -30
+      })
+
+      multiValueAxis.params$.next({
+        gridIndexes: [0, 1]
+      })
     } else if (i == 2)  {
+      chart.chartParams$.next({
+        padding: {
+          bottom: 200
+        },
+        highlightTarget: 'series'
+      })
+      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 2,
@@ -221,19 +249,45 @@ onMounted(() => {
           }
         ]
       })
+      multiGroupAxis.params$.next({
+        gridIndexes: [0, 1],
+        tickTextRotate: -30
+      })
+
+      multiValueAxis.params$.next({
+        gridIndexes: [0, 1]
+      })
     } else if (i == 3)  {
-      chart!.plugins$.next([ multiGroupAxis, overlappingValueAxes, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
+      chart.chartParams$.next({
+        padding: {
+          bottom: 120
+        },
+        highlightTarget: 'series'
+      })
+      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
       chart!.dataFormatter$.next({
+        container: {
+          rowAmount: 2,
+          columnAmount: 1
+        },
         gridList: [
           {
             gridData: {
               seriesDirection: 'column'
-            }
+            },
+            slotIndex: 0
           },
           {
-            
+            gridData: {
+              seriesDirection: 'column'
+            },
+            slotIndex: 1
           }
         ]
+      })
+      multiGroupAxis.params$.next({
+        gridIndexes: [0, 1],
+        tickTextRotate: 0
       })
     } else if (i == 4)  {
       chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
@@ -250,6 +304,9 @@ onMounted(() => {
             seriesSlotIndexes: [0, 1, 2, 3, 4]
           },
           {
+            gridData: {
+              seriesDirection: 'column'
+            },
             slotIndex: 5
           },
         ]
@@ -281,6 +338,9 @@ onMounted(() => {
             }
           },
           {
+            gridData: {
+              seriesDirection: 'column'
+            },
             slotIndex: 5
           }
         ]
@@ -314,6 +374,9 @@ onMounted(() => {
             }
           },
           {
+            gridData: {
+              seriesDirection: 'column'
+            },
             slotIndex: 1
           }
         ]
@@ -370,7 +433,7 @@ onMounted(() => {
     if (i > iMax) {
       i = 0
     }
-  }, 1500)
+  }, 2000)
 
 
 

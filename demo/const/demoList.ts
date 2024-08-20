@@ -265,7 +265,67 @@ export const demoList: DemoChartTypeItem[] = [
           {
             chartType: 'multiGrid',
             pluginName: 'MultiBars',
-            presetName: 'PRESET_MULTI_GRID_BASIC'
+            presetName: 'PRESET_MULTI_GRID_2_GRID_SLOT'
+          },
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiBars',
+            presetName: 'PRESET_MULTI_GRID_3_GRID_SLOT'
+          },
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiBars',
+            presetName: 'PRESET_MULTI_GRID_4_GRID_SLOT'
+          },
+        ]
+      },
+      {
+        title: 'MultiBarsTriangle',
+        list: [
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiBarsTriangle',
+            presetName: 'PRESET_MULTI_GRID_2_GRID_SLOT'
+          },
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiBarsTriangle',
+            presetName: 'PRESET_MULTI_GRID_3_GRID_SLOT'
+          },
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiBarsTriangle',
+            presetName: 'PRESET_MULTI_GRID_4_GRID_SLOT'
+          },
+        ]
+      },
+      {
+        title: 'MultiLines',
+        list: [
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiLines',
+            presetName: 'PRESET_MULTI_LINES_2_GRID_SLOT'
+          },
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiLines',
+            presetName: 'PRESET_MULTI_LINES_3_GRID_SLOT'
+          },
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiLines',
+            presetName: 'PRESET_MULTI_LINES_4_GRID_SLOT'
+          },
+        ]
+      },
+      {
+        title: 'MultiBars, MultiLines',
+        list: [
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiBars',
+            presetName: 'PRESET_MULTI_BARS_MULTI_LINES_BASIC'
           },
         ]
       }

@@ -13,7 +13,7 @@ import type { ComputedDatumGrid, ComputedDataGrid } from '../types/ComputedDataG
 import type { ComputedDataMultiGrid } from '../types/ComputedDataMultiGrid'
 import type { Layout } from '../types/Layout'
 // import type { ComputedDatumMultiGrid } from '../types/ComputedDataMultiGrid'
-import { isObject } from './commonUtils'
+import { isPlainObject } from './commonUtils'
 
 export function formatValueToLabel (value: any, valueFormatter: string | ((text: d3.NumberValue) => string)) {
   if (valueFormatter! instanceof Function == true) {
@@ -103,7 +103,7 @@ export function getMinAndMaxSeries (data: DataSeries): [number, number] {
     ? data.flat()
     : data as (DataSeriesValue | DataSeriesDatum)[]
   const arr = flatData
-    .filter(d => (d == null || (isObject(d) && (d as DataSeriesDatum).value == null)) === false) // 過濾掉null &
+    .filter(d => (d == null || (isPlainObject(d) && (d as DataSeriesDatum).value == null)) === false) // 過濾掉null &
     .map(d => typeof d === 'number' ? d : d.value )
   return getMinAndMax(arr)
 }
@@ -112,7 +112,7 @@ export function getMinAndMaxSeries (data: DataSeries): [number, number] {
 export function getMinAndMaxGrid (data: DataGrid): [number, number] {
   const flatData: (DataGridValue | DataGridDatum)[] = data.flat()
   const arr = flatData
-    .filter(d => (d == null || (isObject(d) && (d as DataGridDatum).value == null)) === false) // 過濾掉null
+    .filter(d => (d == null || (isPlainObject(d) && (d as DataGridDatum).value == null)) === false) // 過濾掉null
     .map(d => typeof d === 'number' ? d : d.value )
   return getMinAndMax(arr)
 }
@@ -121,7 +121,7 @@ export function getMinAndMaxGrid (data: DataGrid): [number, number] {
 export function getMinAndMaxMultiGrid (data: DataMultiGrid): [number, number] {
   const flatData: (DataGridValue | DataGridDatum)[] = data.flat().flat()
   const arr = flatData
-    .filter(d => (d == null || (isObject(d) && (d as DataGridDatum).value == null)) === false) // 過濾掉null
+    .filter(d => (d == null || (isPlainObject(d) && (d as DataGridDatum).value == null)) === false) // 過濾掉null
     .map(d => typeof d === 'number' ? d : d.value )
   return getMinAndMax(arr)
 }
@@ -130,7 +130,7 @@ export function getMinAndMaxMultiGrid (data: DataMultiGrid): [number, number] {
 export function getMinAndMaxMultiValue (data: DataMultiValue, valueIndex: number = 2): [number, number] {
   const flatData: (DataMultiValueDatum | DataMultiValueValue)[] = data.flat().filter((d, i) => i == valueIndex)
   const arr = flatData
-    .filter(d => (d == null || (isObject(d) && (d as DataMultiValueDatum).value == null)) === false) // 過濾掉null
+    .filter(d => (d == null || (isPlainObject(d) && (d as DataMultiValueDatum).value == null)) === false) // 過濾掉null
     .map(d => typeof d === 'number' ? d : d.value )
   return getMinAndMax(arr)
 }

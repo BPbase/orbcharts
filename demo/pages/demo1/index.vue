@@ -67,7 +67,7 @@ onMounted(() => {
     // }
     
     i++
-  }, 1500)
+  }, 2000)
 
   // chart!.dataFormatter$.next({
   //   container: {

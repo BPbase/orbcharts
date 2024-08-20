@@ -1,7 +1,7 @@
 import type { DataTree, DataTreeObj, DataTreeDatum } from '../types/DataTree'
 import type { ComputedDataFn } from '../types/ComputedData'
 import type { ComputedDataTree } from '../types/ComputedDataTree'
-import { isObject } from '../utils/commonUtils'
+import { isPlainObject } from '../utils/commonUtils'
 
 export const computeTreeData: ComputedDataFn<'tree'> = (context) => {
   const { data = [], dataFormatter, chartParams } = context
@@ -23,7 +23,7 @@ export const computeTreeData: ComputedDataFn<'tree'> = (context) => {
   try {
     // 建立樹狀結構資料
     const dataTreeObj: DataTreeObj = (function () {
-      if (isObject(data) === true) {
+      if (isPlainObject(data) === true) {
         // 原本就是樹狀結構則直接複製
         return structuredClone(data) as DataTreeObj
       } else if (Array.isArray(data) === false) {

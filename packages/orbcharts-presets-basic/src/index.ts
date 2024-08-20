@@ -147,30 +147,57 @@ export const PRESET_LINES_HIGHLIGHT_GROUP_DOTS = createGridPreset({
 // 通用 - PRESET_MULTI_GRID_[name]
 export const PRESET_MULTI_GRID_BASIC = createMultiGridPreset({
   chartParamsId: 'CP_BOTTOM_PADDING',
-  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_RECT_AND_LINE_LIST'],
+  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM'],
   description: '基本MultiGrid參數'
 })
 export const PRESET_MULTI_GRID_2_GRID_SLOT = createMultiGridPreset({
-  chartParamsId: 'CP_BOTTOM_PADDING',
+  chartParamsId: 'CP_BOTTOM_LONG_PADDING',
   dataFormatterId: 'DF_MULTI_GRID_2_GRID_SLOT',
-  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM'],
+  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM', 'PP_MULTI_GROUP_AXIS_2_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_2_GRID_SLOT', 'PP_MULTI_BARS_2_GRID_SLOT', 'PP_MULTI_BAR_STACK_2_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_2_GRID_SLOT', 'PP_MULTI_LINES_2_GRID_SLOT'],
   description: '2組Grid圖表'
 })
 export const PRESET_MULTI_GRID_3_GRID_SLOT = createMultiGridPreset({
-  chartParamsId: 'CP_BOTTOM_PADDING',
+  chartParamsId: 'CP_BOTTOM_LONG_PADDING',
   dataFormatterId: 'DF_MULTI_GRID_3_GRID_SLOT',
-  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM'],
+  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM', 'PP_MULTI_GROUP_AXIS_3_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_3_GRID_SLOT', 'PP_MULTI_BARS_3_GRID_SLOT', 'PP_MULTI_BAR_STACK_3_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_3_GRID_SLOT', 'PP_MULTI_LINES_3_GRID_SLOT'],
   description: '3組Grid圖表'
 })
 export const PRESET_MULTI_GRID_4_GRID_SLOT = createMultiGridPreset({
-  chartParamsId: 'CP_BOTTOM_PADDING',
+  chartParamsId: 'CP_BOTTOM_LONG_PADDING',
   dataFormatterId: 'DF_MULTI_GRID_4_GRID_SLOT',
-  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM'],
+  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM', 'PP_MULTI_GROUP_AXIS_4_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_4_GRID_SLOT', 'PP_MULTI_BARS_4_GRID_SLOT', 'PP_MULTI_BAR_STACK_4_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_4_GRID_SLOT', 'PP_MULTI_LINES_4_GRID_SLOT'],
   description: '4組Grid圖表'
 })
-// MultiBars, MultiLines - PRESET_BARS_AND_LINES_[name]
-
-
+// MultiBars, MultiLines - PRESET_MULTI_BARS_MULTI_LINES_[name]
+export const PRESET_MULTI_BARS_MULTI_LINES_BASIC = createMultiGridPreset({
+  chartParamsId: 'CP_BOTTOM_PADDING_WITH_SERIES_HIGHLIGHT',
+  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_RECT_AND_LINE_LIST'],
+  description: '基本MultiGrid參數'
+})
+// MultiLines - PRESET_MULTI_LINES_[name]
+// export const PRESET_MULTI_LINES_BASIC = createMultiGridPreset({
+//   chartParamsId: 'CP_BOTTOM_PADDING',
+//   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
+//   description: '基本MultiGrid參數'
+// })
+export const PRESET_MULTI_LINES_2_GRID_SLOT = createMultiGridPreset({
+  chartParamsId: 'CP_BOTTOM_LONG_PADDING',
+  dataFormatterId: 'DF_MULTI_GRID_2_GRID_SLOT',
+  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_LINE_LIST', 'PP_MULTI_GROUP_AXIS_2_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_2_GRID_SLOT', 'PP_MULTI_BARS_2_GRID_SLOT', 'PP_MULTI_BAR_STACK_2_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_2_GRID_SLOT', 'PP_MULTI_LINES_2_GRID_SLOT'],
+  description: '2組Grid圖表'
+})
+export const PRESET_MULTI_LINES_3_GRID_SLOT = createMultiGridPreset({
+  chartParamsId: 'CP_BOTTOM_LONG_PADDING',
+  dataFormatterId: 'DF_MULTI_GRID_3_GRID_SLOT',
+  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_LINE_LIST', 'PP_MULTI_GROUP_AXIS_3_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_3_GRID_SLOT', 'PP_MULTI_BARS_3_GRID_SLOT', 'PP_MULTI_BAR_STACK_3_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_3_GRID_SLOT', 'PP_MULTI_LINES_3_GRID_SLOT'],
+  description: '3組Grid圖表'
+})
+export const PRESET_MULTI_LINES_4_GRID_SLOT = createMultiGridPreset({
+  chartParamsId: 'CP_BOTTOM_LONG_PADDING',
+  dataFormatterId: 'DF_MULTI_GRID_4_GRID_SLOT',
+  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_LINE_LIST', 'PP_MULTI_GROUP_AXIS_4_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_4_GRID_SLOT', 'PP_MULTI_BARS_4_GRID_SLOT', 'PP_MULTI_BAR_STACK_4_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_4_GRID_SLOT', 'PP_MULTI_LINES_4_GRID_SLOT'],
+  description: '4組Grid圖表'
+})
 
 // -- multi-value --
 
