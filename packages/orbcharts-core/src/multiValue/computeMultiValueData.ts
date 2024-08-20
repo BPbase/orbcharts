@@ -82,6 +82,7 @@ export const computeMultiValueData: ComputedDataFn<'multiValue'> = (context) => 
       dataFormatter.yAxis.scaleDomain[0] === 'auto' ? yMinValue : dataFormatter.yAxis.scaleDomain[0],
       dataFormatter.yAxis.scaleDomain[1] === 'auto' ? yMaxValue : dataFormatter.yAxis.scaleDomain[1]
     ]
+    debugger
     // 篩選顯示狀態
     const visibleFilter = (datum: DataMultiValueDatum, rowIndex: number, columnIndex: number, context: DataFormatterContext<"multiValue">) => {
       // 如果不在scale的範圍內則為false，不再做visibleFilter的判斷

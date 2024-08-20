@@ -1,1 +1,7 @@
+export * from './MultiBars'
+export * from './MultiBarStack'
+export * from './MultiBarsTriangle'
+export * from './MultiLines'
 export * from './MultiGridLegend'
+export * from './MultiGroupAxis'
+export * from './MultiValueAxis'

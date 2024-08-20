@@ -7,7 +7,7 @@ export const DF_MULTI_GRID_2_GRID_SLOT: DataFormatterFile<'multiGrid'> = {
   data: {
     gridList: [
       {
-        slotIndex: 0
+        // slotIndex: 0
       },
       {
         slotIndex: 1

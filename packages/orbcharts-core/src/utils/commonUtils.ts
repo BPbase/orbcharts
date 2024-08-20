@@ -1,7 +1,7 @@
 // import * as d3 from 'd3'
 
-// 是否為物件
-export function isObject(variable: any) {
+// 是否為原始物件
+export function isPlainObject(variable: any) {
   return Object.prototype.toString.call(variable) === "[object Object]";
 }
 
@@ -12,7 +12,7 @@ export function isFunction(fn: any) {
 
 // 將可選的參數和預設值合併
 export function mergeOptionsWithDefault<Options extends { [key: string]: any; }> (options: {[key: string]: any}, defaultOptions: Options): Options {
-  if (isObject(options) === false || isObject(defaultOptions) === false) {
+  if (isPlainObject(options) === false || isPlainObject(defaultOptions) === false) {
     return Object.assign({}, defaultOptions)
   }
   const mergeObjColumns = (_options: {[key: string]: any}, _defaultOptions: {[key: string]: any}) => {
@@ -22,12 +22,12 @@ export function mergeOptionsWithDefault<Options extends { [key: string]: any; }>
         continue
       }
       let objValue: any = undefined
-      // 下一層的object
-      if (isObject(_options[key]) && isObject(_defaultOptions[key])) {
+      // 下一層的plain object
+      if (isPlainObject(_options[key]) && isPlainObject(_defaultOptions[key])) {
         objValue = mergeObjColumns(_options[key], _defaultOptions[key])
         obj[key as keyof Options] = objValue
       }
-      // 不是object直接賦值
+      // 不是plain object直接賦值
       else {
         obj[key as keyof Options] = _options[key]
       }
