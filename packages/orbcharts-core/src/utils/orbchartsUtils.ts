@@ -7,6 +7,7 @@ import type { DataGrid, DataGridDatum, DataGridValue } from '../types/DataGrid'
 import type { DataMultiGrid } from '../types/DataMultiGrid'
 import type { DataMultiValue, DataMultiValueDatum, DataMultiValueValue } from '../types/DataMultiValue'
 import type { SeriesDirection, DataFormatterGrid, DataFormatterGridContainer } from '../types/DataFormatterGrid'
+import type { DataFormatterMultiGrid } from '../types/DataFormatterMultiGrid'
 import type { ComputedDatumSeriesValue } from '../types/ComputedData'
 import type { ComputedDatumSeries } from '../types/ComputedDataSeries'
 import type { ComputedDatumGrid, ComputedDataGrid } from '../types/ComputedDataGrid'
@@ -38,7 +39,22 @@ export function createDefaultGroupLabel (chartTypeOrPrefix: string, groupIndex: 
   return `${chartTypeOrPrefix}_group${groupIndex}`
 }
 
-export function createGridSeriesLabels ({ transposedDataGrid, dataFormatter, chartType = 'grid', gridIndex = 0 }: {
+export function createGridSeriesLabels ({ transposedDataGrid, dataFormatter, chartType = 'grid' }: {
+  transposedDataGrid: DataGridDatum[][],
+  dataFormatter: DataFormatterGrid
+  chartType?: ChartType
+}) {
+  const labels = dataFormatter.grid.gridData.seriesDirection === 'row'
+    ? dataFormatter.grid.gridData.rowLabels
+    : dataFormatter.grid.gridData.columnLabels
+  return transposedDataGrid.map((_, rowIndex) => {
+    return labels[rowIndex] != null
+      ? labels[rowIndex]
+      : createDefaultSeriesLabel(chartType, rowIndex)
+  })
+}
+
+export function createMultiGridSeriesLabels ({ transposedDataGrid, dataFormatter, chartType = 'multiGrid', gridIndex = 0 }: {
   transposedDataGrid: DataGridDatum[][],
   dataFormatter: DataFormatterGrid
   chartType?: ChartType
@@ -54,7 +70,25 @@ export function createGridSeriesLabels ({ transposedDataGrid, dataFormatter, cha
   })
 }
 
-export function createGridGroupLabels ({ transposedDataGrid, dataFormatter, chartType = 'grid', gridIndex = 0 }: {
+export function createGridGroupLabels ({ transposedDataGrid, dataFormatter, chartType = 'grid' }: {
+  transposedDataGrid: DataGridDatum[][],
+  dataFormatter: DataFormatterGrid
+  chartType?: ChartType
+}) {
+  if (transposedDataGrid[0] == null) {
+    return []
+  }
+  const labels = dataFormatter.grid.gridData.seriesDirection === 'row'
+    ? dataFormatter.grid.gridData.columnLabels
+    : dataFormatter.grid.gridData.rowLabels
+  return transposedDataGrid[0].map((_, columnLabels) => {
+    return labels[columnLabels] != null
+      ? labels[columnLabels]
+      : createDefaultGroupLabel(chartType, columnLabels)
+  })
+}
+
+export function createMultiGridGroupLabels ({ transposedDataGrid, dataFormatter, chartType = 'multiGrid', gridIndex = 0 }: {
   transposedDataGrid: DataGridDatum[][],
   dataFormatter: DataFormatterGrid
   chartType?: ChartType

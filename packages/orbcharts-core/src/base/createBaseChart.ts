@@ -89,10 +89,12 @@ function mergeDataFormatter <T>(dataFormatter: any, defaultDataFormatter: T, cha
 
   if (chartType === 'multiGrid' && (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList != null) {
     // multiGrid欄位為陣列，需要各別來merge預設值
-    (mergedData as DataFormatterTypeMap<'multiGrid'>).gridList = (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList.map(d => {
-      return mergeOptionsWithDefault(d, (defaultDataFormatter as DataFormatterTypeMap<'multiGrid'>).gridList[0])
+    (mergedData as DataFormatterTypeMap<'multiGrid'>).gridList = (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList.map((d, i) => {
+      const defaultGrid = (defaultDataFormatter as DataFormatterTypeMap<'multiGrid'>).gridList[i] || (defaultDataFormatter as DataFormatterTypeMap<'multiGrid'>).gridList[0]
+      return mergeOptionsWithDefault(d, defaultGrid)
     })
   }
+  console.log(mergedData)
   return mergedData
 }
 

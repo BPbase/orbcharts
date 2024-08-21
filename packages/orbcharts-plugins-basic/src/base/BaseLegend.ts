@@ -4,6 +4,7 @@ import {
   map,
   switchMap,
   takeUntil,
+  shareReplay,
   Observable,
   Subject } from 'rxjs'
 import type { BasePluginFn } from './types'
@@ -110,6 +111,44 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
   //     return Array.from(data.keys())
   //   })
   // )
+
+  const SeriesLabelColorMap$ = combineLatest({
+    seriesLabels: seriesLabels$,
+    fullChartParams: fullChartParams$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d),
+    map(data => {
+      const SeriesLabelColorMap: Map<string, string> = new Map()
+      let accIndex = 0
+      data.seriesLabels.forEach((label, i) => {
+        if (!SeriesLabelColorMap.has(label)) {
+          const color = getSeriesColor(accIndex, data.fullChartParams)
+          SeriesLabelColorMap.set(label, color)
+          accIndex ++
+        }
+      })
+      return SeriesLabelColorMap
+    })
+  )
+
+  // 對應seriesLabels是否顯示（只顯示不重覆的）
+  const visibleList$ = seriesLabels$.pipe(
+    takeUntil(destroy$),
+    map(data => {
+      const AccSeriesLabelSet = new Set()
+      let visibleList: boolean[] = []
+      data.forEach(d => {
+        if (AccSeriesLabelSet.has(d)) {
+          visibleList.push(false) // 已存在則不顯示
+        } else {
+          visibleList.push(true)
+        }
+        AccSeriesLabelSet.add(d) // 累加已存在的seriesLabel
+      })
+      return visibleList
+    })
+  )
 
   const lineDirection$ = fullParams$.pipe(
     takeUntil(destroy$),
@@ -222,20 +261,28 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
 
   // 先計算list內每個item
   const lengendItems$: Observable<LegendItem[][]> = combineLatest({
+    visibleList: visibleList$,
     fullParams: fullParams$,
     fullChartParams: fullChartParams$,
     seriesLabels: seriesLabels$,
     lineDirection: lineDirection$,
     lineMaxSize: lineMaxSize$,
-    defaultListStyle: defaultListStyle$
+    defaultListStyle: defaultListStyle$,
+    SeriesLabelColorMap: SeriesLabelColorMap$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
     map(data => {
       return data.seriesLabels.reduce((prev: LegendItem[][], current, currentIndex) => {
+        // visible為flase則不加入
+        if (!data.visibleList[currentIndex]) {
+          return prev
+        }
+        
         const textWidth = measureTextWidth(current, data.fullChartParams.styles.textSize)
         const itemWidth = (data.fullChartParams.styles.textSize * 1.5) + textWidth
-        const color = getSeriesColor(currentIndex, data.fullChartParams)
+        // const color = getSeriesColor(currentIndex, data.fullChartParams)
+        const color = data.SeriesLabelColorMap.get(current)
         const lastItem: LegendItem | null = prev[0] && prev[0][0]
           ? prev[prev.length - 1][prev[prev.length - 1].length - 1]
           : null
@@ -311,7 +358,8 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
         
         return prev
       }, [])
-    })
+    }),
+    shareReplay(1)
   )
 
   // 依list計算出來的排序位置來計算整體容器的尺寸
@@ -353,14 +401,15 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
         return { width, height }
       })(data, data.lengendItems)
 
-      return {
+      return <LegendList>{
         direction: data.lineDirection,
         width,
         height,
         translateX: data.fullParams.gap,
         translateY: data.fullParams.gap
       }
-    })
+    }),
+    shareReplay(1)
   )
 
   const legendCard$: Observable<LegendCard> = combineLatest({
