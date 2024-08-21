@@ -290,6 +290,12 @@ onMounted(() => {
         tickTextRotate: 0
       })
     } else if (i == 4)  {
+      chart.chartParams$.next({
+        padding: {
+          bottom: 120
+        },
+        highlightTarget: 'series'
+      })
       chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
       chart!.dataFormatter$.next({
         container: {
@@ -315,7 +321,7 @@ onMounted(() => {
       chart.chartParams$.next({
         padding: {
           left: 120,
-          bottom: 200
+          bottom: 120
         }
       })
       chart!.dataFormatter$.next({
@@ -353,7 +359,7 @@ onMounted(() => {
       chart.chartParams$.next({
         padding: {
           left: 120,
-          bottom: 200
+          bottom: 120
         }
       })
       chart!.dataFormatter$.next({
@@ -389,6 +395,12 @@ onMounted(() => {
         gridIndexes: [1]
       })
     } else if (i == 7)  {
+      chart.chartParams$.next({
+        padding: {
+          left: 120,
+          bottom: 120
+        }
+      })
       if (j == 0) {
         multiBars.params$.next({
           barRadius: true
@@ -410,6 +422,12 @@ onMounted(() => {
       }
       
     } else if (i == 8)  {
+      chart.chartParams$.next({
+        padding: {
+          left: 60,
+          bottom: 120
+        }
+      })
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 1,

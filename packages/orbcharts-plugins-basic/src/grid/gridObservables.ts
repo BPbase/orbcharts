@@ -1,5 +1,17 @@
 import * as d3 from 'd3'
-import { Observable, Subject, of, takeUntil, filter, map, switchMap, combineLatest, merge, distinctUntilChanged } from 'rxjs'
+import {
+  Observable,
+  Subject,
+  of,
+  takeUntil,
+  filter,
+  map,
+  switchMap,
+  combineLatest,
+  merge,
+  shareReplay,
+  distinctUntilChanged
+} from 'rxjs'
 import type {
   ChartParams,
   HighlightTarget,
@@ -82,7 +94,8 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, ex
           return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
         })
       return data.seriesSelection
-    })
+    }),
+    shareReplay(1)
   )
 
   // combineLatest({
@@ -110,12 +123,14 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, ex
       return data.seriesSelection
         .select<SVGGElement>(`g.${axesClassName}`)
         .style('transform', data.gridAxesTransform.value)
-    })
+    }),
+    shareReplay(1)
   )
   const defsSelection$ = axesSelection$.pipe(
     map(axesSelection => {
       return axesSelection.select<SVGDefsElement>('defs')
-    })
+    }),
+    shareReplay(1)
   )
   const graphicGSelection$ = combineLatest({
     axesSelection: axesSelection$,
@@ -130,7 +145,8 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, ex
         .duration(50)
         .style('transform', data.gridGraphicTransform.value)
       return graphicGSelection
-    })
+    }),
+    shareReplay(1)
   )
 
   return {
