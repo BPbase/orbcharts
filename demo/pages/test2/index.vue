@@ -3,10 +3,10 @@
 </template>
 
 <script setup lang="ts">
-import { MultiGridChart } from '../../../packages/orbcharts-core/src'
-import { MultiBars, MultiLines, MultiDots, MultiGridLegend, MultiGroupAxis, MultiValueAxis, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { GridChart } from '../../../packages/orbcharts-core/src'
+import { Bars, GridLegend, GroupAxis, ValueAxis, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
-import { multiGridData1 } from '../../const/data/multiGridData1'
+import { gridData4 } from '../../const/data/gridData4'
 
 onMounted(() => {
 
@@ -14,9 +14,7 @@ onMounted(() => {
 
   console.log(PRESET_MULTI_GRID_2_GRID_SLOT)
 
-  const chart = new MultiGridChart(el!, {
-    preset: PRESET_MULTI_GRID_2_GRID_SLOT
-  })
+  const chart = new GridChart(el!)
 
   // chart!.dataFormatter$.next({
   //       container: {
@@ -32,26 +30,57 @@ onMounted(() => {
   //         }
   //       ]
   //     })
-  const multiBars = new MultiBars()
-  const multiLines = new MultiLines()
-  const multiDots = new MultiDots()
-  const multiGroupAxis = new MultiGroupAxis()
-  const multiValueAxis = new MultiValueAxis()
-  const multiGridLegend = new MultiGridLegend()
+  const bars = new Bars()
+  const groupAxis = new GroupAxis()
+  const valueAxis = new ValueAxis()
+  const gridLegend = new GridLegend()
   const tooltip = new Tooltip()
-  chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
+  chart!.plugins$.next([ groupAxis, valueAxis, bars, gridLegend, tooltip])
 
-  chart.chartParams$.next({
-    highlightTarget: 'series'
+  chart.dataFormatter$.next({
+    grid: {
+      gridData: {
+        // seriesDirection: 'column'
+      },
+      valueAxis: {
+        scaleDomain: [0, 'auto'],
+        scaleRange: [0.5, 0.95],
+        
+      }
+    }
   })
 
-  multiBars.params$.next({
-    gridIndexes: [0]
+  bars.params$.next({
+    barWidth: 100,
+    barPadding: -50
   })
 
-  multiLines.params$.next({
-    gridIndexes: [1]
-  })
+//   multiDots.params$.next({
+//     gridIndexes: [0, 1],
+//   })
+
+//   multiGridLegend.params$.next({
+//     gridList: [
+//       {
+
+//       },
+//       {
+//         listRectHeight: 5
+//       }
+//     ]
+//   })
+
+  // chart.chartParams$.next({
+  //   highlightTarget: 'series'
+  // })
+
+  // multiBars.params$.next({
+  //   gridIndexes: [0]
+  // })
+
+  // multiLines.params$.next({
+  //   gridIndexes: [1]
+  // })
 
   // chart!.dataFormatter$.next({
   //   gridList: [
@@ -186,7 +215,7 @@ onMounted(() => {
   //   lineCurve: 'curveMonotoneX'
   // })
 
-  chart!.data$.next(multiGridData1)
+  chart!.data$.next(gridData4)
 
 
 })

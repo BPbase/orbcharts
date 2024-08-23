@@ -94,7 +94,6 @@ function mergeDataFormatter <T>(dataFormatter: any, defaultDataFormatter: T, cha
       return mergeOptionsWithDefault(d, defaultGrid)
     })
   }
-  console.log(mergedData)
   return mergedData
 }
 

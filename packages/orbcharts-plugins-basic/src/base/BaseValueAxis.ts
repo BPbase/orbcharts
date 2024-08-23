@@ -116,6 +116,10 @@ function renderLinearAxis ({ selection, yAxisClassName, textClassName, fullParam
 
   const valueLength = minAndMax[1] - minAndMax[0]
   
+  // const _valueScale = d3.scaleLinear()
+  //   .domain([0, 150])
+  //   .range([416.5, 791.349])
+
   // 設定Y軸刻度
   const yAxis = d3.axisLeft(valueScale)
     .scale(valueScale)
@@ -365,6 +369,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
       switchMap(async (d) => d),
     ).subscribe(data => {
+      console.log(data)
     
       const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
         maxValue: data.minAndMax[1],

@@ -43,6 +43,8 @@ export interface BarsParams {
   barRadius: number | boolean
 }
 
+export interface BarsDivergingParams extends BarsParams {}
+
 export interface BarStackParams {
   barWidth: number
   barGroupPadding: number

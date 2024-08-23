@@ -43,6 +43,10 @@ export const DEFAULT_BARS_PARAMS: BarsParams = {
   barRadius: false,
 }
 
+export const DEFAULT_BARS_DIVERGING_PARAMS: BarsParams = {
+  ...DEFAULT_BARS_PARAMS
+}
+
 export const DEFAULT_BAR_STACK_PARAMS: BarStackParams = {
   barWidth: 0,
   barGroupPadding: 10,
