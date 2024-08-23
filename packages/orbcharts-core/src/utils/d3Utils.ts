@@ -16,24 +16,20 @@ export const createAxisLinearScale = ({
   scaleRange: [number, number] // 0-1
 }) => {
 
+  // -- 無值補上預設值 --
   const domainMin: number | 'auto' = scaleDomain[0] ?? DATA_FORMATTER_VALUE_AXIS.scaleDomain[0]
   const domainMax: number | 'auto' = scaleDomain[1] ?? DATA_FORMATTER_VALUE_AXIS.scaleDomain[1]
   const rangeMin: number = scaleRange[0] ?? DATA_FORMATTER_VALUE_AXIS.scaleRange[0]
   const rangeMax: number = scaleRange[1] ?? DATA_FORMATTER_VALUE_AXIS.scaleRange[1]
 
-  // const _minValue = domainMin === 'auto' ? minValue : domainMin
-  // const domainMinValue: number = maxValue - (maxValue - _minValue) / (1 - rangeMin)
-  // const _maxValue = domainMax === 'auto' ? maxValue : domainMax
-  // const domainMaxValue: number = _maxValue / rangeMax
-
-  // return d3.scaleLinear()
-  //   .domain([domainMinValue, domainMaxValue])
-  //   .range([0, axisWidth])
-
+  // -- 'auto'提換成實際值 --
   const domainMinValue = domainMin === 'auto' ? minValue : domainMin
   const domainMaxValue = domainMax === 'auto' ? maxValue : domainMax
-  let rangeMinValue = axisWidth * rangeMin
-  let rangeMaxValue = axisWidth * rangeMax
+  
+  // let rangeMinValue = axisWidth * rangeMin
+  // let rangeMaxValue = axisWidth * rangeMax
+
+  // -- 計算padding --
   // if (padding > 0) {
   //   const stepAmount = maxValue - minValue + (padding * 2)
   //   const eachStepWidth = axisWidth / stepAmount
@@ -41,10 +37,17 @@ export const createAxisLinearScale = ({
   //   rangeMinValue += paddingWidth
   //   rangeMaxValue -= paddingWidth
   // }
+
+  // -- 依場景大小換算 --
+  const axisDomainMinValue = maxValue - (maxValue - domainMinValue) / (1 - rangeMin)
+  const axisDomainMaxValue = domainMaxValue / rangeMax
   
+  // return d3.scaleLinear()
+  //   .domain([domainMinValue, domainMaxValue])
+  //   .range([rangeMinValue, rangeMaxValue])
   return d3.scaleLinear()
-    .domain([domainMinValue, domainMaxValue])
-    .range([rangeMinValue, rangeMaxValue])
+    .domain([axisDomainMinValue, axisDomainMaxValue])
+    .range([0, axisWidth])
 }
 
 // scalePoint - 非連續資料對應到比例尺座標上

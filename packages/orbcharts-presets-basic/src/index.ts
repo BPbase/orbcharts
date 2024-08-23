@@ -64,6 +64,12 @@ export const PRESET_GRID_HORIZONTAL = createGridPreset({
   allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
   description: '橫向圖'
 })
+export const PRESET_GRID_DIVERGING_SCALE = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_PADDING',
+  dataFormatterId: 'DF_GRID_DIVERGING_SCALE',
+  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
+  description: '正負值分向圖'
+})
 export const PRESET_GRID_2_SERIES_SLOT = createGridPreset({
   chartParamsId:  'CP_BOTTOM_LONG_PADDING',
   dataFormatterId: 'DF_GRID_2_SERIES_SLOT',

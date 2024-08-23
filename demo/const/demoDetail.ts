@@ -5,9 +5,11 @@ import { seriesData1 } from './data/seriesData1'
 import { gridData1 } from './data/gridData1'
 import { gridData2 } from './data/gridData2'
 import { gridData3 } from './data/gridData3'
+import { gridData4 } from './data/gridData4'
 import { multiGridData1 } from './data/multiGridData1'
 import { multiGridData2 } from './data/multiGridData2'
 import { multiGridData3 } from './data/multiGridData3'
+import { multiGridData4 } from './data/multiGridData4'
 
 type KeyOfOrbChartsCore = keyof typeof core
 type KeyOfOrbChartsPluginsBasic = keyof typeof pluginsBasic
@@ -144,6 +146,14 @@ export const demoDetail: DemoDetail = {
         preset: presetsBasic.PRESET_GRID_4_SERIES_SLOT,
         data: gridData3
       },
+    },
+    'BarsDiverging': {
+      'PRESET_GRID_DIVERGING_SCALE': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.BarsDiverging, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_DIVERGING_SCALE,
+        data: gridData4
+      }
     },
     'BarStack': {
       'PRESET_GRID_BASIC': {

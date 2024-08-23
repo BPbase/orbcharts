@@ -140,6 +140,16 @@ export const demoList: DemoChartTypeItem[] = [
         ]
       },
       {
+        title: 'BarsDiverging',
+        list: [
+          {
+            chartType: 'grid',
+            pluginName: 'BarsDiverging',
+            presetName: 'PRESET_GRID_DIVERGING_SCALE'
+          },
+        ]
+      },
+      {
         title: 'BarStack',
         list: [
           {
