@@ -27,8 +27,9 @@ import type {
 //   groupLabel?: string // 要符合每一種computedData所以不一定會有groupLabel
 // }
 
+// 通用 highlight Observable
 export const highlightObservable = ({ datumList$, fullChartParams$, event$ }: {
-  datumList$: Observable<ComputedDatumTypeMap<'series' | 'grid'>[]>
+  datumList$: Observable<ComputedDatumTypeMap<'series' | 'grid' | 'multiValue' | 'relationship' | 'tree'>[]>
   fullChartParams$: Observable<ChartParams>
   event$: Subject<any>
 }): Observable<string[]> => {
@@ -42,6 +43,7 @@ export const highlightObservable = ({ datumList$, fullChartParams$, event$ }: {
         id: null,
         seriesLabel: null,
         groupLabel: null,
+        categoryLabel: null,
         highlightDefault: d.highlightDefault
       }
     }),
@@ -59,12 +61,14 @@ export const highlightObservable = ({ datumList$, fullChartParams$, event$ }: {
           id: (d.datum as any).id,
           seriesLabel: (d.datum as any).seriesLabel,
           groupLabel: (d.datum as any).groupLabel,
+          categoryLabel: (d.datum as any).categoryLabel,
           highlightDefault: null
         }
         : {
           id: null,
           seriesLabel: null,
           groupLabel: null,
+          categoryLabel: null,
           highlightDefault: null
         }
     })
@@ -79,68 +83,28 @@ export const highlightObservable = ({ datumList$, fullChartParams$, event$ }: {
     switchMap(d => highlightDefault$)
   )
 
-  const getHighlightIds =  ({ data, id, seriesLabel, groupLabel, highlightDefault, target }: {
-    data: ComputedDatumTypeMap<'series' | 'grid'>[]
-    id: string | null
-    seriesLabel: string | null
-    groupLabel: string | null
-    highlightDefault: string | null
-    target: HighlightTarget
-  }) => {
-    let ids: string[] = []
-    // if (id) {
-    //   ids.push(id)
-    // }
-    // if (label) {
-    //   if (target === 'group') {
-    //     const _ids = data.flat()
-    //       .filter(d => {
-    //         return d.groupLabel === label
-    //           || d.label === label
-    //       })
-    //       .map(d => d.id)
-    //     ids = ids.concat(_ids)
-    //   } else if (target === 'series') {
-    //     const _ids = data.flat()
-    //       .filter(d => {
-    //         return d.seriesLabel === label
-    //           || d.label === label
-    //       })
-    //       .map(d => d.id)
-    //     ids = ids.concat(_ids)
-    //   }
-    // }
-    // 依highlightDefault找到id/seriesLabel/groupLabel
-    if (highlightDefault != null && highlightDefault != '') {
-      if (target === 'datum') {
-        id = highlightDefault
-      } else if (target === 'series') {
-        const datum = data.flat().find(d => d.id === highlightDefault || d.seriesLabel === highlightDefault)
-        seriesLabel = (datum && datum.seriesLabel) ? datum.seriesLabel : null
-      } else if (target === 'group') {
-        const datum = data.flat().find(d => d.id === highlightDefault || (d as ComputedDatumTypeMap<"grid">).groupLabel === highlightDefault)
-        groupLabel = (datum && (datum as ComputedDatumTypeMap<"grid">).groupLabel) ? (datum as ComputedDatumTypeMap<"grid">).groupLabel : null
-      }
-    }
-    if (target === 'datum' && id != null && id != '') {
-      ids.push(id)
-    } else if (target === 'series' && seriesLabel != null && seriesLabel != '') {
-      const _ids = data.flat()
-        .filter(d => {
-          return d.seriesLabel === seriesLabel
-        })
-        .map(d => d.id)
-      ids = ids.concat(_ids)
-    } else if (target === 'group' && groupLabel != null && groupLabel != '') {
-      const _ids = data.flat()
-        .filter(d => {
-          return (d as ComputedDatumTypeMap<"grid">).groupLabel === groupLabel
-        })
-        .map(d => d.id)
-      ids = ids.concat(_ids)
-    }
+  function getDatumIds (datumList: ComputedDatumTypeMap<'series' | 'grid' | 'multiValue' | 'relationship' | 'tree'>[], id: string | null) {
+    return id == null
+      ? []
+      : datumList.find(d => d.id === id) ? [id] : []
+  }
 
-    return ids
+  function getSeriesIds (datumList: ComputedDatumTypeMap<'series' | 'grid'>[], seriesLabel: string | null) {
+    return seriesLabel == null
+      ? datumList.filter(d => d.seriesLabel === seriesLabel).map(d => d.id)
+      : []
+  }
+
+  function getGroupIds (datumList: ComputedDatumTypeMap<'grid'>[], groupLabel: string | null) {
+    return groupLabel == null
+      ? datumList.filter(d => (d as ComputedDatumTypeMap<"grid">).groupLabel === groupLabel).map(d => d.id)
+      : []
+  }
+
+  function getCategoryIds (datumList: ComputedDatumTypeMap<'multiValue' | 'relationship' | 'tree'>[], categoryLabel: string | null) {
+    return categoryLabel == null
+      ? []
+      : datumList.filter(d => (d as ComputedDatumTypeMap<"multiValue" | "relationship" | "tree">).categoryLabel === categoryLabel).map(d => d.id)
   }
 
   return new Observable<string[]>(subscriber => {
@@ -149,16 +113,19 @@ export const highlightObservable = ({ datumList$, fullChartParams$, event$ }: {
       datumList: datumList$,
       fullChartParams: fullChartParams$,
     }).pipe(
-      takeUntil(destroy$)
+      takeUntil(destroy$),
+      switchMap(async d => d)
     ).subscribe(data => {
-      const ids = getHighlightIds({
-        data: data.datumList,
-        id: data.target.id,
-        seriesLabel: data.target.seriesLabel,
-        groupLabel: data.target.groupLabel,
-        highlightDefault: data.target.highlightDefault,
-        target: data.fullChartParams.highlightTarget,
-      })
+      let ids: string[] = []
+      if (data.fullChartParams.highlightTarget === 'datum') {
+        ids = getDatumIds(data.datumList, data.target.id)
+      } else if (data.fullChartParams.highlightTarget === 'series') {
+        ids = getSeriesIds(data.datumList as ComputedDatumTypeMap<'series' | 'grid'>[], data.target.seriesLabel)
+      } else if (data.fullChartParams.highlightTarget === 'group') {
+        ids = getGroupIds(data.datumList as ComputedDatumTypeMap<'grid'>[], data.target.groupLabel)
+      } else if (data.fullChartParams.highlightTarget === 'category') {
+        ids = getCategoryIds(data.datumList as ComputedDatumTypeMap<'multiValue' | 'relationship' | 'tree'>[], data.target.categoryLabel)
+      }
       subscriber.next(ids)
     })
 
@@ -168,29 +135,45 @@ export const highlightObservable = ({ datumList$, fullChartParams$, event$ }: {
   })
 }
 
-export const seriesDataMapObservable = <DatumType extends ComputedDatumTypeMap<ChartType>>({ datumList$ }: { datumList$: Observable<DatumType[]> }) => {
+export const seriesDataMapObservable = <DatumType extends ComputedDatumTypeMap<'series' | 'grid'>>({ datumList$ }: { datumList$: Observable<DatumType[]> }) => {
   return datumList$.pipe(
     map(data => {
       const SeriesDataMap: Map<string, DatumType[]> = new Map()
       data.forEach(d => {
-        const seriesData = SeriesDataMap.get((d as ComputedDatumTypeMap<'series' | 'grid'>).seriesLabel) ?? []
+        const seriesData = SeriesDataMap.get(d.seriesLabel) ?? []
         seriesData.push(d)
-        SeriesDataMap.set((d as ComputedDatumTypeMap<'series' | 'grid'>).seriesLabel, seriesData)
+        SeriesDataMap.set(d.seriesLabel, seriesData)
       })
       return SeriesDataMap
     })
   )
 }
 
-export const groupDataMapObservable = <DatumType extends ComputedDatumTypeMap<ChartType>> ({ datumList$ }: { datumList$: Observable<DatumType[]> }) => {
+export const groupDataMapObservable = <DatumType extends ComputedDatumTypeMap<'grid'>> ({ datumList$ }: { datumList$: Observable<DatumType[]> }) => {
   return datumList$.pipe(
     map(data => {
       const GroupDataMap: Map<string, DatumType[]> = new Map()
       data.forEach(d => {
-        const groupData = GroupDataMap.get((d as ComputedDatumTypeMap<'grid'>).groupLabel) ?? []
+        const groupData = GroupDataMap.get(d.groupLabel) ?? []
         groupData.push(d)
-        GroupDataMap.set((d as ComputedDatumTypeMap<'grid'>).groupLabel, groupData)
+        GroupDataMap.set(d.groupLabel, groupData)
       })
+      return GroupDataMap
+    })
+  )
+}
+
+export const categoryDataMapObservable = <DatumType extends ComputedDatumTypeMap<'multiValue' | 'relationship' | 'tree'>> ({ datumList$ }: { datumList$: Observable<DatumType[]> }) => {
+  return datumList$.pipe(
+    map(data => {
+      const GroupDataMap: Map<string, DatumType[]> = new Map()
+      data
+        .filter(d => d.categoryLabel != null)
+        .forEach(d => {
+          const groupData = GroupDataMap.get(d.categoryLabel) ?? []
+          groupData.push(d)
+          GroupDataMap.set(d.categoryLabel, groupData)
+        })
       return GroupDataMap
     })
   )

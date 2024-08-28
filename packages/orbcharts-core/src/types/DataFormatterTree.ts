@@ -6,6 +6,7 @@ export interface DataFormatterTree
     visibleFilter: VisibleFilter<'tree'>
   // labelFormat: (datum: unknown) => string
   // descriptionFormat: (datum: unknown) => string
+    categoryLabels: string[]
 }
 
 export type DataFormatterTreePartial = Partial<DataFormatterTree>

@@ -41,17 +41,17 @@ onMounted(() => {
   const tooltip = new Tooltip()
   chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
 
-  chart.chartParams$.next({
-    highlightTarget: 'series'
-  })
+  // chart.chartParams$.next({
+  //   highlightTarget: 'series'
+  // })
 
-  multiBars.params$.next({
-    gridIndexes: [0]
-  })
+  // multiBars.params$.next({
+  //   gridIndexes: [0]
+  // })
 
-  multiLines.params$.next({
-    gridIndexes: [1]
-  })
+  // multiLines.params$.next({
+  //   gridIndexes: [1]
+  // })
 
   // chart!.dataFormatter$.next({
   //   gridList: [

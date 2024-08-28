@@ -5,7 +5,7 @@ import { DataFormatterBase, DataFormatterBasePartial, VisibleFilter } from './Da
 export interface DataFormatterSeries extends DataFormatterBase<'series'> {
   visibleFilter: VisibleFilter<'series'>
   // series: DataFormatterSeriesSeries
-  unitLabel: string
+  // unitLabel: string
   seriesLabels: string[]
   // labelFormat: (datum: DataSeriesDatum) => string
   // mapSeries: (datum: DataSeriesDatum | DataSeriesValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'series'>) => string
@@ -16,7 +16,7 @@ export interface DataFormatterSeries extends DataFormatterBase<'series'> {
 
 export interface DataFormatterSeriesPartial extends DataFormatterBasePartial<'series'> {
   // series: Partial<DataFormatterSeriesSeries>
-  unitLabel?: string
+  // unitLabel?: string
   seriesLabels?: string[]
   // colorsPredicate?: (datum: DataSeriesDatum | DataSeriesValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'series'>) => string
   sort?: ((a: DataSeriesDatum | DataSeriesValue, b: DataSeriesDatum | number) => number) | null

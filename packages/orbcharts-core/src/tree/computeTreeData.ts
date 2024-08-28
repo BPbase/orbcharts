@@ -2,15 +2,24 @@ import type { DataTree, DataTreeObj, DataTreeDatum } from '../types/DataTree'
 import type { ComputedDataFn } from '../types/ComputedData'
 import type { ComputedDataTree } from '../types/ComputedDataTree'
 import { isPlainObject } from '../utils/commonUtils'
+import { seriesColorPredicate } from '../utils/orbchartsUtils'
 
 export const computeTreeData: ComputedDataFn<'tree'> = (context) => {
   const { data = [], dataFormatter, chartParams } = context
+
+  // <categoryLabel, categoryIndex>
+  const CategoryIndexMap = new Map<string, number>(
+    dataFormatter.categoryLabels.map((label, index) => [label, index])
+  )
 
   let computedBranchData: ComputedDataTree = {
     id: '',
     index: 0,
     label: '',
     description: '',
+    categoryIndex: 0,
+    categoryLabel: '',
+    color: '',
     visible: true,
     // tooltipContent: '',
     data: {},
@@ -56,6 +65,7 @@ export const computeTreeData: ComputedDataFn<'tree'> = (context) => {
           data: root.data,
           // tooltipContent: root.tooltipContent,
           value: root.value,
+          categoryLabel: root.categoryLabel,
           children: (ChildrenMap.get(root.id) ?? []).map(d => {
             // 遞迴
             return createBranchData(d)
@@ -73,23 +83,35 @@ export const computeTreeData: ComputedDataFn<'tree'> = (context) => {
 
     let index = 0
     
-    const formatBranchData = (branchRoot: DataTreeObj, level: number, seq: number): ComputedDataTree => {
+    const formatBranchData = (branch: DataTreeObj, level: number, seq: number): ComputedDataTree => {
       const childLayer = level + 1
-      const visible = dataFormatter.visibleFilter(branchRoot, level, seq, context)
+      const visible = dataFormatter.visibleFilter(branch, level, seq, context)
+      const categoryLabel: string | null = branch.categoryLabel ?? null
+      let categoryIndex = 0
+      if (categoryLabel != null) {
+        if (!CategoryIndexMap.has(categoryLabel)) {
+          CategoryIndexMap.set(categoryLabel, CategoryIndexMap.size)
+        }
+        categoryIndex = CategoryIndexMap.get(categoryLabel) ?? 0
+      }
+
       const currentIndex = index
       index++
       return {
-        id: branchRoot.id,
+        id: branch.id,
         index: currentIndex,
         level,
         seq,
-        label: branchRoot.label ?? '',
-        description: branchRoot.description ?? '',
-        data: branchRoot.data ?? {},
-        // tooltipContent: branchRoot.tooltipContent ? branchRoot.tooltipContent : dataFormatter.tooltipContentFormat(branchRoot, level, seq, context),
-        value: branchRoot.value,
+        label: branch.label ?? '',
+        description: branch.description ?? '',
+        categoryIndex,
+        categoryLabel,
+        color: seriesColorPredicate(categoryIndex, chartParams),
+        data: branch.data ?? {},
+        // tooltipContent: branch.tooltipContent ? branch.tooltipContent : dataFormatter.tooltipContentFormat(branch, level, seq, context),
+        value: branch.value,
         visible,
-        children: (branchRoot.children ?? []).map((d, i) => {
+        children: (branch.children ?? []).map((d, i) => {
           // 遞迴
           return formatBranchData(d, childLayer, i)
         })

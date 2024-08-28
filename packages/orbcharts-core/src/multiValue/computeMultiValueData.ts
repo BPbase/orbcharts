@@ -24,6 +24,7 @@ export const computeMultiValueData: ComputedDataFn<'multiValue'> = (context) => 
             description: '',
             // tooltipContent: '',
             data: {},
+            categoryLabel: '',
             value: _d
           }
           : {
@@ -32,6 +33,7 @@ export const computeMultiValueData: ComputedDataFn<'multiValue'> = (context) => 
             description: _d.description ?? '',
             // tooltipContent: _d.tooltipContent ?? '',
             data: _d.data ?? {},
+            categoryLabel: _d.categoryLabel ??'',
             value: _d.value
           }
         
@@ -82,7 +84,7 @@ export const computeMultiValueData: ComputedDataFn<'multiValue'> = (context) => 
       dataFormatter.yAxis.scaleDomain[0] === 'auto' ? yMinValue : dataFormatter.yAxis.scaleDomain[0],
       dataFormatter.yAxis.scaleDomain[1] === 'auto' ? yMaxValue : dataFormatter.yAxis.scaleDomain[1]
     ]
-    debugger
+    
     // 篩選顯示狀態
     const visibleFilter = (datum: DataMultiValueDatum, rowIndex: number, columnIndex: number, context: DataFormatterContext<"multiValue">) => {
       // 如果不在scale的範圍內則為false，不再做visibleFilter的判斷
@@ -115,9 +117,12 @@ export const computeMultiValueData: ComputedDataFn<'multiValue'> = (context) => 
           // tooltipContent: _d.tooltipContent ? _d.tooltipContent : dataFormatter.tooltipContentFormat(_d, i, _i, context),
           data: _d.data,
           value: _d.value,
+          categoryIndex: 0, // @Q@ 未完成
+          categoryLabel: '', // @Q@ 未完成
           // valueLabel: formatValueToLabel(_d.value, dataFormatter.multiValue[_i].valueFormat),
           axis: _i == 0 ? xScale(_d.value) : yScale(_d.value),
-          visible
+          visible,
+          color: '' // @Q@ 未完成
         }
         return computedDatum
       })

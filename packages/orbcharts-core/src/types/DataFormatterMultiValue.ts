@@ -17,5 +17,5 @@ export interface DataFormatterMultiValuePartial extends DataFormatterBasePartial
 
 // multiValue欄位
 export interface DataFormatterMultiValueMultiValue {
-  unitLabel: string
+  // unitLabel: string
 }

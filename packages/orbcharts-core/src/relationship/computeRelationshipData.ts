@@ -36,6 +36,9 @@ export const computeRelationshipData: ComputedDataFn<'relationship'> = (context)
         // tooltipContent: node.tooltipContent ? node.tooltipContent : dataFormatter.tooltipContentFormat(node, 0, i, context), // 0代表node
         data: node.data ?? {},
         value: node.value ?? 0,
+        categoryIndex: 0, // @Q@ 未完成
+        categoryLabel: '', // @Q@ 未完成
+        color: '', // @Q@ 未完成
         startNodes: [], // 後面再取得資料
         startNodeIds: [], // 後面再取得資料
         endNodes: [], // 後面再取得資料

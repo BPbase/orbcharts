@@ -1,9 +1,8 @@
-import type { ComputedDatumBase } from './ComputedData'
+import type { ComputedDatumBase, ComputedDatumCategoryValue } from './ComputedData'
 
 export type ComputedDataMultiValue = ComputedDatumMultiValue[][]
 
-export interface ComputedDatumMultiValue
-  extends ComputedDatumBase {
+export interface ComputedDatumMultiValue extends ComputedDatumBase, ComputedDatumCategoryValue {
   axis: number
 }
 

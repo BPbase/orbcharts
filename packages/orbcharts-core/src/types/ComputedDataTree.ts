@@ -1,4 +1,4 @@
-import type { ComputedDatumBase } from './ComputedData'
+import type { ComputedDatumBase, ComputedDatumCategoryValue } from './ComputedData'
 
 // export type ComputedDataTree = ComputedDataTreeDatum[]
 
@@ -13,7 +13,7 @@ import type { ComputedDatumBase } from './ComputedData'
 // }
 
 // 樹狀結構
-export interface ComputedDataTree extends ComputedDatumBase {
+export interface ComputedDataTree extends ComputedDatumBase, ComputedDatumCategoryValue {
   level: number
   seq: number
   children?: ComputedDataTree[]

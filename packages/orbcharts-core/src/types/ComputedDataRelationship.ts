@@ -1,11 +1,11 @@
-import type { ComputedDatumBase } from './ComputedData'
+import type { ComputedDatumBase, ComputedDatumCategoryValue } from './ComputedData'
 
 export type ComputedDataRelationship = {
   nodes: ComputedNode[]
   edges: ComputedEdge[]
 }
 
-export interface ComputedNode extends ComputedDatumBase {
+export interface ComputedNode extends ComputedDatumBase, ComputedDatumCategoryValue {
   startNodes: ComputedNode[]
   startNodeIds: string[]
   endNodes: ComputedNode[]

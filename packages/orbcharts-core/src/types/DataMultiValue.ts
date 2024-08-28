@@ -6,6 +6,7 @@ export type DataMultiValue = (DataMultiValueDatum | DataMultiValueValue)[][]
 export type DataMultiValueValue = number
 
 export interface DataMultiValueDatum extends DatumBase, DatumValue {
+  categoryLabel?: string
 }
 
 

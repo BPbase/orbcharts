@@ -40,11 +40,28 @@ export interface ComputedDatumBase {
 //   axisY: number
 // }
 
-// datum - 序列顏色
+// datum - 序列資料
 export interface ComputedDatumSeriesValue {
   color: string
   seriesIndex: number
   seriesLabel: string
+}
+
+// datum - 矩陣資料
+export interface ComputedDatumGridValue {
+  gridIndex: number
+  color: string
+  seriesIndex: number
+  seriesLabel: string
+  groupIndex: number
+  groupLabel: string
+}
+
+// datum - 類別資料
+export interface ComputedDatumCategoryValue {
+  color: string
+  categoryIndex: number
+  categoryLabel: string | null
 }
 
 // 透過類型選擇ComputedData

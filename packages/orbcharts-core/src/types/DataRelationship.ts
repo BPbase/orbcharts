@@ -18,6 +18,7 @@ export type DataRelationshipList = [
 export interface Node extends DatumBase {
   id: string
   value?: number
+  categoryLabel?: string
 }
 
 export interface Edge extends DatumBase {
