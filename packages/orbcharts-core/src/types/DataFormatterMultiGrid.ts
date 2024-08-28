@@ -9,13 +9,13 @@ import type {
 import type { AxisPosition } from './Axis'
 
 export interface DataFormatterMultiGrid extends DataFormatterBase<'multiGrid'> {
-  visibleFilter: VisibleFilter<'multiGrid'>
+  // visibleFilter: VisibleFilter<'multiGrid'>
   gridList: Array<DataFormatterGridGrid>
   container: DataFormatterMultiGridContainer
 }
 
 export interface DataFormatterMultiGridPartial extends DataFormatterBasePartial<'multiGrid'> {
-  visibleFilter?: VisibleFilter<'multiGrid'>
+  // visibleFilter?: VisibleFilter<'multiGrid'>
   gridList?: Array<DataFormatterGridGridPartial>
   container?: Partial<DataFormatterMultiGridContainer>
 }

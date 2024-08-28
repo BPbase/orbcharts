@@ -5,7 +5,7 @@ import type { ComputedDataSeries, ComputedDatumSeries } from './ComputedDataSeri
 import type { ComputedDataGrid, ComputedDatumGrid } from './ComputedDataGrid'
 import type { ComputedDataMultiGrid } from './ComputedDataMultiGrid'
 import type { ComputedDataMultiValue, ComputedDatumMultiValue } from './ComputedDataMultiValue'
-import type { ComputedNode } from './ComputedDataRelationship'
+import type { ComputedDataRelationship, ComputedNode } from './ComputedDataRelationship'
 import type { ComputedDataTree } from './ComputedDataTree'
 import type { HighlightTarget } from './ChartParams'
 
@@ -104,11 +104,19 @@ export interface EventMultiValue extends EventBase {
 
 export interface EventRelationship extends EventBase {
   type: 'relationship'
+  data: ComputedDataRelationship
+  category: ComputedNode[]
+  categoryIndex: number
+  categoryLabel: string
   datum: ComputedNode | null
 }
 
 export interface EventTree extends EventBase {
   type: 'tree'
+  data: ComputedDataTree
+  category: ComputedDataTree[]
+  categoryIndex: number
+  categoryLabel: string
   datum: ComputedDataTree | null
 }
 

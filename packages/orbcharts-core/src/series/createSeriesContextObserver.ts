@@ -1,9 +1,9 @@
 import { shareReplay } from 'rxjs'
 import type { ContextObserverFn } from '../types'
 import {
-  highlightObservable,
   seriesDataMapObservable,
   groupDataMapObservable } from '../utils/observables'
+import { highlightObservable } from '../utils/observables'
 
 export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subject, observer }) => {
 

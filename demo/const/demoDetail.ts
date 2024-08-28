@@ -10,6 +10,7 @@ import { multiGridData1 } from './data/multiGridData1'
 import { multiGridData2 } from './data/multiGridData2'
 import { multiGridData3 } from './data/multiGridData3'
 import { multiGridData4 } from './data/multiGridData4'
+import { treeData1 } from './data/treeData1'
 
 type KeyOfOrbChartsCore = keyof typeof core
 type KeyOfOrbChartsPluginsBasic = keyof typeof pluginsBasic
@@ -391,6 +392,16 @@ export const demoDetail: DemoDetail = {
         plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_MULTI_LINES_4_GRID_SLOT,
         data: multiGridData3
+      },
+    },
+  },
+  tree: {
+    'TreeMap': {
+      'PRESET_TREE_BASIC': {
+        chart: core.TreeChart,
+        plugins: [pluginsBasic.TreeMap, pluginsBasic.TreeLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_TREE_BASIC,
+        data: treeData1
       },
     }
   }

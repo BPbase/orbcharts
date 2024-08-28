@@ -215,4 +215,9 @@ export const PRESET_MULTI_LINES_4_GRID_SLOT = createMultiGridPreset({
 // -- relationship --
 
 // -- tree --
-
+// 通用 - PRESET_TREE_[name]
+export const PRESET_TREE_BASIC = createTreePreset({
+  chartParamsId: 'CP_BOTTOM_SLIGHT_PADDING',
+  allPluginParamsIds: ['PP_TREE_LEGEND_BOTTOM'],
+  description: '基本Tree參數'
+})

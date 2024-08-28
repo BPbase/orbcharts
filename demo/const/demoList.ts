@@ -385,5 +385,20 @@ export const demoList: DemoChartTypeItem[] = [
         ]
       }
     ]
+  },
+  {
+    title: 'Tree',
+    list: [
+      {
+        title: 'TreeMap',
+        list: [
+          {
+            chartType: 'tree',
+            pluginName: 'TreeMap',
+            presetName: 'PRESET_TREE_BASIC'
+          },
+        ]
+      },
+    ]
   }
 ]
