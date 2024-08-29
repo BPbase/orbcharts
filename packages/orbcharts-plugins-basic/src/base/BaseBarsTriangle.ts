@@ -31,7 +31,7 @@ interface BaseBarsContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
-  existedSeriesLabels$: Observable<string[]>
+  existSeriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullParams$: Observable<BaseBarsTriangleParams>
@@ -286,7 +286,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
   selection,
   computedData$,
   visibleComputedData$,
-  existedSeriesLabels$,
+  existSeriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
   fullParams$,
@@ -415,7 +415,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
     selection,
     pluginName,
     clipPathID,
-    existedSeriesLabels$,
+    existSeriesLabels$,
     gridContainer$,
     gridAxesTransform$,
     gridGraphicTransform$

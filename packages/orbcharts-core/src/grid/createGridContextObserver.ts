@@ -10,7 +10,7 @@ import {
   gridGraphicTransformObservable,
   gridGraphicReverseScaleObservable,
   gridAxesSizeObservable,
-  existedSeriesLabelsObservable,
+  existSeriesLabelsObservable,
   gridVisibleComputedDataObservable,
   isSeriesPositionSeprateObservable,
   gridContainerObservable } from './gridObservables'
@@ -79,7 +79,7 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     shareReplay(1)
   )
 
-  const existedSeriesLabels$ = existedSeriesLabelsObservable({
+  const existSeriesLabels$ = existSeriesLabelsObservable({
     computedData$: observer.computedData$,
   })
 
@@ -116,7 +116,7 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     gridGraphicReverseScale$,
     gridAxesSize$,
     gridHighlight$,
-    existedSeriesLabels$,
+    existSeriesLabels$,
     SeriesDataMap$,
     GroupDataMap$,
     visibleComputedData$,

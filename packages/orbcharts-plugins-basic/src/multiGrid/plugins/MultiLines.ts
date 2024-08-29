@@ -35,7 +35,7 @@ export const MultiLines = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_LINES_
         unsubscribeFnArr[i] = createBaseLines(pluginName, {
           selection: gridSelection,
           computedData$: d.gridComputedData$,
-          existedSeriesLabels$: d.existedSeriesLabels$,
+          existSeriesLabels$: d.existSeriesLabels$,
           SeriesDataMap$: d.SeriesDataMap$,
           GroupDataMap$: d.GroupDataMap$,
           fullDataFormatter$: d.gridDataFormatter$,

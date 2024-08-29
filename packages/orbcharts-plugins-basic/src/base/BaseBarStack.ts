@@ -32,7 +32,7 @@ interface BaseBarStackContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
-  existedSeriesLabels$: Observable<string[]>
+  existSeriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullParams$: Observable<BaseBarStackParams>
@@ -288,7 +288,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
   selection,
   computedData$,
   visibleComputedData$,
-  existedSeriesLabels$,
+  existSeriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
   fullParams$,
@@ -448,7 +448,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
     selection,
     pluginName,
     clipPathID,
-    existedSeriesLabels$,
+    existSeriesLabels$,
     gridContainer$,
     gridAxesTransform$,
     gridGraphicTransform$

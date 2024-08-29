@@ -15,7 +15,7 @@ export const Dots = defineGridPlugin(pluginName, DEFAULT_DOTS_PARAMS)(({ selecti
     selection,
     computedData$: observer.computedData$,
     visibleComputedData$: observer.visibleComputedData$,
-    existedSeriesLabels$: observer.existedSeriesLabels$,
+    existSeriesLabels$: observer.existSeriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,

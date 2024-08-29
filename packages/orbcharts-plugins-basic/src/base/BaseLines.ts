@@ -38,7 +38,7 @@ export interface BaseLinesParams {
 interface BaseLinesContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
-  existedSeriesLabels$: Observable<string[]>
+  existSeriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullDataFormatter$: Observable<DataFormatterGrid>
@@ -225,7 +225,7 @@ function renderClipPath ({ defsSelection, clipPathData, transitionDuration, tran
 export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: string, {
   selection,
   computedData$,
-  existedSeriesLabels$,
+  existSeriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
   fullParams$,
@@ -386,7 +386,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
     selection,
     pluginName,
     clipPathID,
-    existedSeriesLabels$,
+    existSeriesLabels$,
     gridContainer$,
     gridAxesTransform$,
     gridGraphicTransform$

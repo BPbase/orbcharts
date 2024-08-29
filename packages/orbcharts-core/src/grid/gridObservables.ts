@@ -380,7 +380,7 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
 //   return highlightObservable ({ datumList$, fullChartParams$, event$ })
 // }
 
-export const existedSeriesLabelsObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
+export const existSeriesLabelsObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
   return computedData$.pipe(
     map(data => {
       return data

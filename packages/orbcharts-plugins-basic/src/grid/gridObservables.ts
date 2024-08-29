@@ -24,12 +24,12 @@ import type {
 import { createAxisQuantizeScale } from '@orbcharts/core'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 
-export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, existedSeriesLabels$, gridContainer$, gridAxesTransform$, gridGraphicTransform$ }: {
+export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, existSeriesLabels$, gridContainer$, gridAxesTransform$, gridGraphicTransform$ }: {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
   clipPathID: string
   // computedData$: Observable<ComputedDataGrid>
-  existedSeriesLabels$: Observable<string[]>
+  existSeriesLabels$: Observable<string[]>
   gridContainer$: Observable<ContainerPosition[]>
   gridAxesTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>
@@ -38,11 +38,11 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, ex
   const axesClassName = getClassName(pluginName, 'axes')
   const graphicClassName = getClassName(pluginName, 'graphic')
 
-  const seriesSelection$ = existedSeriesLabels$.pipe(
-    map((existedSeriesLabels, i) => {
+  const seriesSelection$ = existSeriesLabels$.pipe(
+    map((existSeriesLabels, i) => {
       return selection
         .selectAll<SVGGElement, string>(`g.${seriesClassName}`)
-        .data(existedSeriesLabels, d => d)
+        .data(existSeriesLabels, d => d)
         .join(
           enter => {
             return enter

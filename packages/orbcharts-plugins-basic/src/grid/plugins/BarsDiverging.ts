@@ -16,7 +16,7 @@ export const BarsDiverging = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)((
     selection,
     computedData$: observer.computedData$,
     visibleComputedData$: observer.visibleComputedData$,
-    existedSeriesLabels$: observer.existedSeriesLabels$,
+    existSeriesLabels$: observer.existSeriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,

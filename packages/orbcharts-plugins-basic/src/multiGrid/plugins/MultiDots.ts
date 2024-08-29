@@ -35,7 +35,7 @@ export const MultiDots = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_DOTS_PA
           selection: gridSelection,
           computedData$: d.gridComputedData$,
           visibleComputedData$: d.visibleComputedData$,
-          existedSeriesLabels$: d.existedSeriesLabels$,
+          existSeriesLabels$: d.existSeriesLabels$,
           SeriesDataMap$: d.SeriesDataMap$,
           GroupDataMap$: d.GroupDataMap$,
           fullParams$: observer.fullParams$,
