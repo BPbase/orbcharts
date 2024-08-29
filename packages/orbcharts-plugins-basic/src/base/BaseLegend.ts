@@ -571,8 +571,6 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
     switchMap(async d => d),
     map(data => {
       const items = data.lengendItems[0] ? data.lengendItems.flat() : []
-
-      console.log('data.fullParams.textColorType', data.fullParams.textColorType)
       
       return data.lengendListSelection
         .selectAll<SVGGElement, string>(`g.${legendItemClassName}`)

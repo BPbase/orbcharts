@@ -15,7 +15,6 @@ export const createAxisLinearScale = ({
   scaleDomain: [number | 'auto', number | 'auto']
   scaleRange: [number, number] // 0-1
 }) => {
-
   // -- 無值補上預設值 --
   const domainMin: number | 'auto' = scaleDomain[0] ?? DATA_FORMATTER_VALUE_AXIS.scaleDomain[0]
   const domainMax: number | 'auto' = scaleDomain[1] ?? DATA_FORMATTER_VALUE_AXIS.scaleDomain[1]

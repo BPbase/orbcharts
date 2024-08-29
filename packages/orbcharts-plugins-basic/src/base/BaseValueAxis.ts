@@ -369,7 +369,6 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
       switchMap(async (d) => d),
     ).subscribe(data => {
-      console.log(data)
     
       const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
         maxValue: data.minAndMax[1],
