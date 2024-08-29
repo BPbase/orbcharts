@@ -35,6 +35,9 @@ onMounted(() => {
 
   // chart.dataFormatter$.next({
   // })
+  treeLegend.params$.next({
+    // textColorType: 'series'
+  })
 
   treeMap.params$.next({
   })

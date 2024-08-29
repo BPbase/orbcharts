@@ -113,4 +113,5 @@ export interface GridLegendParams {
   listRectWidth: number
   listRectHeight: number
   listRectRadius: number
+  textColorType: ColorType
 }

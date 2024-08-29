@@ -29,6 +29,7 @@ export interface MultiGridLegendParams {
     listRectHeight: number
     listRectRadius: number
   }>
+  textColorType: ColorType
 }
 
 export interface MultiGroupAxisParams extends BaseGroupAxisParams {

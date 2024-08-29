@@ -63,4 +63,5 @@ export interface SeriesLegendParams {
   listRectWidth: number
   listRectHeight: number
   listRectRadius: number
+  textColorType: ColorType
 }

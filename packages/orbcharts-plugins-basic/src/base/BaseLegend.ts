@@ -10,7 +10,7 @@ import {
 import type { BasePluginFn } from './types'
 import type {
   ChartParams, Layout, ColorType } from '@orbcharts/core'
-import { getSeriesColor, getClassName, getColor } from '../utils/orbchartsUtils'
+import { getClassName, getColor, getDatumColor } from '../utils/orbchartsUtils'
 import { measureTextWidth } from '../utils/commonUtils'
 
 export interface BaseLegendParams {
@@ -20,6 +20,7 @@ export interface BaseLegendParams {
   // offset: [number, number]
   backgroundFill: ColorType
   backgroundStroke: ColorType
+  textColorType: ColorType
   gap: number
   seriesList: Array<{
     listRectWidth: number
@@ -88,6 +89,17 @@ const defaultListStyle: ListStyle = {
   listRectWidth: 14,
   listRectHeight: 14,
   listRectRadius: 0,
+}
+
+function getSeriesColor (seriesIndex: number, fullChartParams: ChartParams) {
+  const colorIndex = seriesIndex < fullChartParams.colors[fullChartParams.colorScheme].series.length
+    ? seriesIndex
+    : seriesIndex % fullChartParams.colors[fullChartParams.colorScheme].series.length
+  return fullChartParams.colors[fullChartParams.colorScheme].series[colorIndex]
+}
+
+function getLegendColor () {
+
 }
 
 export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: string, {
@@ -559,6 +571,8 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
     switchMap(async d => d),
     map(data => {
       const items = data.lengendItems[0] ? data.lengendItems.flat() : []
+
+      console.log('data.fullParams.textColorType', data.fullParams.textColorType)
       
       return data.lengendListSelection
         .selectAll<SVGGElement, string>(`g.${legendItemClassName}`)
@@ -609,6 +623,9 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
             )
             .attr('x', data.fullChartParams.styles.textSize * 1.5)
             .attr('font-size', data.fullChartParams.styles.textSize)
+            .attr('fill', d => data.fullParams.textColorType === 'series'
+              ? getSeriesColor(d.seriesIndex, data.fullChartParams)
+              : getColor(data.fullParams.textColorType, data.fullChartParams))
             .text(d => d.text)
         })
     })

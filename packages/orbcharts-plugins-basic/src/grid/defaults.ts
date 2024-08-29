@@ -111,4 +111,5 @@ export const DEFAULT_GRID_LEGEND_PARAMS: GridLegendParams = {
   listRectHeight: 14,
   listRectRadius: 0,
   // highlightEvent: false
+  textColorType: 'primary'
 }

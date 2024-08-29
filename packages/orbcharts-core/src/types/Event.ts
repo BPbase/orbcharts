@@ -41,82 +41,113 @@ export type EventTypeMap<T extends ChartType> = T extends 'series' ? EventSeries
   : T extends 'multiValue' ? EventMultiValue
   : T extends 'relationship' ? EventRelationship
   : T extends 'tree' ? EventTree
-  : EventBase
+  : EventBase<any>
 
-export interface EventBase {
+export interface EventBase<T extends ChartType> {
+  type: T
   eventName: EventName
   pluginName: string
-  // data: EventData
-  type: ChartType
   event: MouseEvent | undefined
   highlightTarget: HighlightTarget
-  datum: ComputedDatumBase | null
+  // datum: ComputedDatumBase | null
   tween?: number
 }
 
-export interface EventSeries extends EventBase {
-  type: 'series'
-  data: ComputedDataSeries
-  series: ComputedDatumSeries[]
+export interface EventBaseSeriesValue<DatumType, DataType> {
+  data: DataType
+  series: DatumType[]
   seriesIndex: number
   seriesLabel: string
-  datum: ComputedDatumSeries | null
-  // highlightTarget: 'series' | 'datum' | 'none'
-  // highlightLabel: string | null
-  // highlightId: string | null
+  datum: DatumType | null
 }
 
-export interface EventGrid extends EventBase {
-  type: 'grid'
-  data: ComputedDataGrid
-  series: ComputedDatumGrid[]
-  seriesIndex: number
-  seriesLabel: string
-  groups: ComputedDatumGrid[]
-  groupIndex: number
-  groupLabel: string
-  datum: ComputedDatumGrid | null
-  // highlightTarget: 'series' | 'group' | 'datum' | 'none'
-  // highlightLabel: string | null
-  // highlightId: string | null
-}
-
-export interface EventMultiGrid extends EventBase {
-  type: 'multiGrid'
-  data: ComputedDataMultiGrid
+export interface EventBaseGridValue<DatumType, DataType> {
+  data: DataType
   gridIndex: number
-  series: ComputedDatumGrid[]
+  series: DatumType[]
   seriesIndex: number
   seriesLabel: string
-  group: ComputedDatumGrid[]
+  groups: DatumType[]
   groupIndex: number
   groupLabel: string
-  datum: ComputedDatumGrid | null
-  // highlightTarget: 'series' | 'group' | 'datum' | 'none'
-  // highlightLabel: string | null
-  // highlightId: string | null
+  datum: DatumType | null
 }
 
-export interface EventMultiValue extends EventBase {
-  type: 'multiValue'
-  datum: ComputedDatumMultiValue | null
-}
-
-export interface EventRelationship extends EventBase {
-  type: 'relationship'
-  data: ComputedDataRelationship
-  category: ComputedNode[]
+export interface EventBaseCategoryValue<DatumType, DataType> {
+  data: DataType
+  category: DatumType[]
   categoryIndex: number
   categoryLabel: string
-  datum: ComputedNode | null
+  datum: DatumType | null
 }
 
-export interface EventTree extends EventBase {
-  type: 'tree'
-  data: ComputedDataTree
-  category: ComputedDataTree[]
-  categoryIndex: number
-  categoryLabel: string
-  datum: ComputedDataTree | null
+export interface EventSeries extends EventBase<'series'>, EventBaseSeriesValue<ComputedDatumSeries, ComputedDataSeries> {
+  // type: 'series'
+  // data: ComputedDataSeries
+  // series: ComputedDatumSeries[]
+  // seriesIndex: number
+  // seriesLabel: string
+  // datum: ComputedDatumSeries | null
+  // // highlightTarget: 'series' | 'datum' | 'none'
+  // // highlightLabel: string | null
+  // // highlightId: string | null
+}
+
+export interface EventGrid extends EventBase<'grid'>, EventBaseGridValue<ComputedDatumGrid, ComputedDataGrid> {
+  // type: 'grid'
+  // data: ComputedDataGrid
+  // series: ComputedDatumGrid[]
+  // seriesIndex: number
+  // seriesLabel: string
+  // groups: ComputedDatumGrid[]
+  // groupIndex: number
+  // groupLabel: string
+  // datum: ComputedDatumGrid | null
+  // // highlightTarget: 'series' | 'group' | 'datum' | 'none'
+  // // highlightLabel: string | null
+  // // highlightId: string | null
+}
+
+export interface EventMultiGrid extends EventBase<'multiGrid'>, EventBaseGridValue<ComputedDatumGrid, ComputedDataMultiGrid> {
+  // type: 'multiGrid'
+  // data: ComputedDataMultiGrid
+  // gridIndex: number
+  // series: ComputedDatumGrid[]
+  // seriesIndex: number
+  // seriesLabel: string
+  // group: ComputedDatumGrid[]
+  // groupIndex: number
+  // groupLabel: string
+  // datum: ComputedDatumGrid | null
+  // // highlightTarget: 'series' | 'group' | 'datum' | 'none'
+  // // highlightLabel: string | null
+  // // highlightId: string | null
+}
+
+export interface EventMultiValue extends EventBase<'multiValue'>, EventBaseCategoryValue<ComputedDatumMultiValue, ComputedDataMultiValue> {
+  // type: 'multiValue'
+  // data: ComputedDataMultiValue
+  // category: ComputedDatumMultiValue[]
+  // categoryIndex: number
+  // categoryLabel: string
+  // datum: ComputedDatumMultiValue | null
+}
+
+export interface EventRelationship extends EventBase<'relationship'>, EventBaseCategoryValue<ComputedNode, ComputedDataRelationship> {
+  // type: 'relationship'
+  // data: ComputedDataRelationship
+  // category: ComputedNode[]
+  // categoryIndex: number
+  // categoryLabel: string
+  // datum: ComputedNode | null
+}
+
+export interface EventTree extends EventBase<'tree'>, EventBaseCategoryValue<ComputedDataTree, ComputedDataTree> {
+  // type: 'tree'
+  // data: ComputedDataTree
+  // category: ComputedDataTree[]
+  // categoryIndex: number
+  // categoryLabel: string
+  // datum: ComputedDataTree | null
 }
 

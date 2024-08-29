@@ -18,5 +18,6 @@ export interface TreeLegendParams {
   listRectWidth: number
   listRectHeight: number
   listRectRadius: number
+  textColorType: ColorType
 }
 
