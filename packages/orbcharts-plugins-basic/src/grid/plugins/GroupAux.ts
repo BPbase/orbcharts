@@ -407,6 +407,7 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
           eventName: 'mouseover',
           highlightTarget: data.highlightTarget,
           datum: null,
+          gridIndex: 0, // @Q@ 暫不處理
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -428,6 +429,7 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
           eventName: 'mousemove',
           highlightTarget: data.highlightTarget,
           datum: null,
+          gridIndex: 0, // @Q@ 暫不處理
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -449,6 +451,7 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
           eventName: 'mouseout',
           highlightTarget: data.highlightTarget,
           datum: null,
+          gridIndex: 0, // @Q@ 暫不處理
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -470,6 +473,7 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
           eventName: 'click',
           highlightTarget: data.highlightTarget,
           datum: null,
+          gridIndex: 0, // @Q@ 暫不處理
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -550,6 +554,7 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
           eventName: 'mouseover',
           highlightTarget: data.highlightTarget,
           datum: null,
+          gridIndex: 0, // @Q@ 暫不處理
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -569,6 +574,7 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
           eventName: 'mousemove',
           highlightTarget: data.highlightTarget,
           datum: null,
+          gridIndex: 0, // @Q@ 暫不處理
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -588,6 +594,7 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
           eventName: 'mouseout',
           highlightTarget: data.highlightTarget,
           datum: null,
+          gridIndex: 0, // @Q@ 暫不處理
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -607,6 +614,7 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
           eventName: 'click',
           highlightTarget: data.highlightTarget,
           datum: null,
+          gridIndex: 0, // @Q@ 暫不處理
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
