@@ -1,4 +1,10 @@
-import type { AxisPosition, ColorType, ChartParams, ComputedDatumBase, ComputedDatumSeriesValue } from '@orbcharts/core'
+import type {
+  AxisPosition,
+  ColorType,
+  ChartParams,
+  ComputedDatumBase,
+  ComputedDatumSeriesValue,
+  ComputedDatumCategoryValue } from '@orbcharts/core'
 import { getMinAndMax } from './commonUtils'
 
 // 取得最小及最大值 - datum格式陣列資料
@@ -27,15 +33,23 @@ export function getColor (colorType: ColorType, fullChartParams: ChartParams) {
       : colors.primary // 如果比對不到
 }
 
-// 取得Series顏色
-export function getSeriesColor (seriesIndex: number, fullChartParams: ChartParams) {
-  const colorIndex = seriesIndex < fullChartParams.colors[fullChartParams.colorScheme].series.length
-    ? seriesIndex
-    : seriesIndex % fullChartParams.colors[fullChartParams.colorScheme].series.length
-  return fullChartParams.colors[fullChartParams.colorScheme].series[colorIndex]
+export function getSeriesValueColor () {
+
 }
 
-// 取得Datum顏色
+export function getCategoryValueColor ({ datum, colorType, fullChartParams }: { datum: ComputedDatumCategoryValue, colorType: ColorType, fullChartParams: ChartParams }) {
+
+}
+
+// // 取得Series顏色 @Q@ 待重構完後刪除
+// export function getSeriesColor (seriesIndex: number, fullChartParams: ChartParams) {
+//   const colorIndex = seriesIndex < fullChartParams.colors[fullChartParams.colorScheme].series.length
+//     ? seriesIndex
+//     : seriesIndex % fullChartParams.colors[fullChartParams.colorScheme].series.length
+//   return fullChartParams.colors[fullChartParams.colorScheme].series[colorIndex]
+// }
+
+// 取得Datum顏色 @Q@ 待重構完後刪除
 export function getDatumColor ({ datum, colorType, fullChartParams }: { datum: ComputedDatumBase, colorType: ColorType, fullChartParams: ChartParams }) {
   // 對應series資料中的顏色
   if (colorType === 'series') {

@@ -19,7 +19,7 @@ export interface ContextObserverMultiGrid<PluginParams> extends ContextObserverB
 //   gridGraphicReverseScale$: Observable<[number, number][]>
 //   gridAxesSize$: Observable<{ width: number; height: number; }>
 //   gridHighlight$: Observable<string[]>
-//   existedSeriesLabels$: Observable<string[]>
+//   existSeriesLabels$: Observable<string[]>
 //   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
 //   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
 //   visibleComputedData$: Observable<ComputedDataGrid>

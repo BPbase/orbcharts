@@ -9,6 +9,7 @@ import {
   takeUntil,
   debounceTime,
   Subject } from 'rxjs'
+import type { DataFormatterGrid } from '@orbcharts/core'
 import {
   defineGridPlugin } from '@orbcharts/core'
 import { DEFAULT_SCALING_AREA_PARAMS } from '../defaults'
@@ -87,9 +88,9 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
       ? groupMax + data.initGroupAxis.scalePadding
       : data.initGroupAxis.scaleDomain[1] as number + data.initGroupAxis.scalePadding
 
-    const scaleRange: [number, number] = data.fullDataFormatter.grid.valueAxis.position === 'left' || data.fullDataFormatter.grid.valueAxis.position === 'top'
-      ? [0, 1]
-      : [1, 0]
+    // const scaleRange: [number, number] = data.fullDataFormatter.grid.valueAxis.position === 'left' || data.fullDataFormatter.grid.valueAxis.position === 'top'
+    //   ? [0, 1]
+    //   : [1, 0]
 
     const groupScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
       maxValue: data.groupMaxIndex,
@@ -97,7 +98,7 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
       axisWidth: data.axisSize.width,
       scaleDomain: [groupScaleDomainMin, groupScaleDomainMax],
       // scaleDomain: [groupMin, groupMax],
-      scaleRange
+      scaleRange: [0, 1]
     })
 
     const shadowScale = groupScale.copy()
@@ -106,6 +107,7 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
       // .scaleExtent([1, data.groupMaxIndex])
       // .translateExtent([[0, 0], [data.layout.rootWidth, data.layout.rootWidth]])
       .on("zoom", function zoomed(event) {
+        // debugger
         // console.log('event', event)
         const t = event.transform;
         // console.log('t', t)
@@ -146,7 +148,8 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
         lastTransform.y = t.y
 // console.log(String(data.fullDataFormatter.visibleFilter))
         // console.log('zoomedDomain', zoomedDomain)
-        subject.dataFormatter$.next({
+
+        const newDataFormatter: DataFormatterGrid = {
           ...data.fullDataFormatter,
           grid: {
             ...data.fullDataFormatter.grid,
@@ -154,8 +157,9 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
               ...data.fullDataFormatter.grid.groupAxis,
               scaleDomain: zoomedDomain
             }
-          }
-        })
+          },
+        }
+        subject.dataFormatter$.next(newDataFormatter)
       })
 
     // 傳入外層selection

@@ -18,31 +18,27 @@ import type {
   ChartParams, 
   Layout,
   TransformData } from '@orbcharts/core'
+import { DATA_FORMATTER_VALUE_AXIS } from '@orbcharts/core/src/defaults'
+import { createAxisLinearScale } from '@orbcharts/core'
 import { getD3TransitionEase } from '../utils/d3Utils'
-import { getClassName, getUniID } from '../utils/orbchartsUtils'
+import { getClassName, getUniID, getMinAndMaxValue } from '../utils/orbchartsUtils'
 import { gridGroupPositionFnObservable } from '../grid/gridObservables'
 import { gridSelectionsObservable } from '../grid/gridObservables'
 
-export interface BaseLinesParams {
-  // lineType: LineType
+export interface BaseLineAreasParams {
   lineCurve: string
-  lineWidth: number
-  // labelFn: (d: ComputedDatumSeries) => string
-  // labelPositionFn: (d: ComputedDatumSeries) => 'top' | 'bottom' | 'left' | 'right' | 'center'
-  // labelStyleFn: (d: ComputedDatumSeries) => string
-  // labelFontSizeFn: (d: ComputedDatumSeries) => number
-  // labelColorFn: (d: ComputedDatumSeries) => string
-  // labelPadding: number
+  // lineWidth: number
+  linearGradientOpacity: [number, number]
 }
 
-interface BaseLinesContext {
+interface BaseLineAreasContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
   existSeriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullDataFormatter$: Observable<DataFormatterGrid>
-  fullParams$: Observable<BaseLinesParams>
+  fullParams$: Observable<BaseLineAreasParams>
   fullChartParams$: Observable<ChartParams>
   gridAxesTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>
@@ -52,9 +48,9 @@ interface BaseLinesContext {
   }>
   gridHighlight$: Observable<string[]>
   gridContainer$: Observable<ContainerPosition[]>
+  layout$: Observable<Layout>
   event$: Subject<EventGrid>
 }
-
 
 type ClipPathDatum = {
   id: string;
@@ -68,15 +64,17 @@ type ClipPathDatum = {
 // const pathClassName = getClassName(pluginName, 'path')
 
 
-function createLinePath (lineCurve: string = 'curveLinear'): d3.Line<ComputedDatumGrid> {
-  return d3.line<ComputedDatumGrid>()
+function createAreaPath (lineCurve: string = 'curveLinear', valueAxisStart: number): d3.Line<ComputedDatumGrid> {
+  return d3.area<ComputedDatumGrid>()
     .x((d) => d.axisX)
-    .y((d) => d.axisY)
+    .y0(d => valueAxisStart)
+    .y1((d) => d.axisY)
     .curve((d3 as any)[lineCurve])
+
 }
 
 // 依無值的資料分段
-function  makeSegmentData (data: ComputedDatumGrid[]): ComputedDatumGrid[][] {
+function makeSegmentData (data: ComputedDatumGrid[]): ComputedDatumGrid[][] {
   let segmentData: ComputedDatumGrid[][] = [[]]
 
   let currentIndex = 0
@@ -96,18 +94,19 @@ function  makeSegmentData (data: ComputedDatumGrid[]): ComputedDatumGrid[][] {
 }
 
 
-function renderLines ({ selection, pathClassName, segmentData, linePath, params }: {
+function renderLineAreas ({ selection, pathClassName, segmentData, areaPath, linearGradientIds, params }: {
   selection: d3.Selection<SVGGElement, unknown, any, unknown>
   pathClassName: string
   segmentData: ComputedDatumGrid[][]
-  linePath: d3.Line<ComputedDatumGrid>
-  params: BaseLinesParams
+  areaPath: d3.Line<ComputedDatumGrid>
+  linearGradientIds: string[]
+  params: BaseLineAreasParams
 }): d3.Selection<SVGPathElement, ComputedDatumGrid[], any, any> {
   // if (!data[0]) {
   //   return undefined
   // }
 
-  const lines = selection
+  const lineAreas = selection
     .selectAll<SVGPathElement, ComputedDatumGrid[]>('path')
     .data(segmentData, (d, i) => d.length ? `${d[0].id}_${d[d.length - 1].id}` : i) // 以線段起迄id結合為線段id
     .join(
@@ -116,23 +115,24 @@ function renderLines ({ selection, pathClassName, segmentData, linePath, params 
           .append<SVGPathElement>('path')
           .classed(pathClassName, true)
           .attr("fill","none")
-          .attr('pointer-events', 'visibleStroke') // 只對線條產生事件
+          // .attr('pointer-events', 'visibleStroke') // 只對線條產生事件
           .style('vector-effect', 'non-scaling-stroke')
           .style('cursor', 'pointer')
       },
       update => update,
       exit => exit.remove()
     )
-    .attr("stroke-width", params.lineWidth)
-    .attr("stroke", (d, i) => d[0] && d[0].color)
+    // .attr("stroke-width", params.lineWidth)
+    // .attr("stroke", (d, i) => d[0] && d[0].color)
+    .attr("fill", (d, i) => d[0] ? `url(#${linearGradientIds[d[0].seriesIndex]})` : '')
     .attr("d", (d) => {
-      return linePath(d)
+      return areaPath(d)
     })
 
-  return lines
+  return lineAreas
 }
 
-function highlightLines ({ selection, seriesLabel, fullChartParams }: {
+function highlightLineAreas ({ selection, seriesLabel, fullChartParams }: {
   selection: d3.Selection<any, string, any, any>
   seriesLabel: string | null
   fullChartParams: ChartParams
@@ -159,6 +159,41 @@ function highlightLines ({ selection, seriesLabel, fullChartParams }: {
           .style('opacity', fullChartParams.styles.unhighlightedOpacity)
       }
     })
+}
+
+function renderLinearGradient ({ defsSelection, computedData, linearGradientIds, params }: {
+  defsSelection: d3.Selection<SVGDefsElement, any, any, any>
+  computedData: ComputedDataGrid
+  linearGradientIds: string[]
+  params: BaseLineAreasParams
+}) {
+  defsSelection!
+    .selectAll<SVGLinearGradientElement, ComputedDatumGrid>('linearGradient')
+    .data(computedData ?? [])
+    .join(
+      enter => {
+        return enter
+          .append('linearGradient')
+          .attr('x1', '0%')
+          .attr('x2', '0%')
+          .attr('y1', '100%')
+          .attr('y2', '0%')
+          .attr('spreadMethod', 'pad')
+      },
+      update => update,
+      exit => exit.remove()
+    )
+    .attr('id', (d, i) => {
+      return d[0] ? linearGradientIds[d[0].seriesIndex] : ''
+    })
+    .html((d, i) => {
+      const color = d[0] ? d[0].color : ''
+      return `
+        <stop offset="0%"   stop-color="${color}" stop-opacity="${params.linearGradientOpacity[0]}"/>
+        <stop offset="100%" stop-color="${color}" stop-opacity="${params.linearGradientOpacity[1]}"/>
+      `
+    })
+
 }
 
 function renderClipPath ({ defsSelection, clipPathData, transitionDuration, transitionEase }: {
@@ -218,7 +253,7 @@ function renderClipPath ({ defsSelection, clipPathData, transitionDuration, tran
 
 }
 
-export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: string, {
+export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginName: string, {
   selection,
   computedData$,
   existSeriesLabels$,
@@ -232,6 +267,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
   gridAxesSize$,
   gridHighlight$,
   gridContainer$,
+  layout$,
   event$
 }) => {
 
@@ -239,139 +275,6 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
 
   const clipPathID = getUniID(pluginName, 'clipPath-box')
   const pathClassName = getClassName(pluginName, 'path')
-  // const clipPathSeriesID = getUniID(pluginName, 'clipPath')
-
-  // const axisSelection: d3.Selection<SVGGElement, any, any, any> = selection
-  //   .append('g')
-  //   .attr('clip-path', `url(#${clipPathID})`)
-  // const defsSelection: d3.Selection<SVGDefsElement, any, any, any> = axisSelection.append('defs')
-  // const graphicGSelection: d3.Selection<SVGGElement, any, any, any> = axisSelection.append('g')
-  // const graphicSelection$: Subject<d3.Selection<SVGGElement, string, any, any>> = new Subject()
-
-
-  // gridAxesTransform$
-  //   .pipe(
-  //     takeUntil(destroy$),
-  //     map(d => d.value),
-  //     distinctUntilChanged()
-  //   ).subscribe(d => {
-  //     axisSelection
-  //       .style('transform', d)
-  //   })
-
-  // gridGraphicTransform$
-  //   .pipe(
-  //     takeUntil(destroy$),
-  //     map(d => d.value),
-  //     distinctUntilChanged()
-  //   ).subscribe(d => {
-  //     graphicGSelection
-  //       .transition()
-  //       .duration(50)
-  //       .style('transform', d)
-  //   })
-  
-  // const seriesSelection$ = computedData$.pipe(
-  //   takeUntil(destroy$),
-  //   distinctUntilChanged((a, b) => {
-  //     // 只有當series的數量改變時，才重新計算
-  //     return a.length === b.length
-  //   }),
-  //   map((computedData, i) => {
-  //     return selection
-  //       .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${seriesClassName}`)
-  //       .data(computedData, d => d[0] ? d[0].seriesIndex : i)
-  //       .join(
-  //         enter => {
-  //           return enter
-  //             .append('g')
-  //             .classed(seriesClassName, true)
-  //             .each((d, i, g) => {
-  //               const axesSelection = d3.select(g[i])
-  //                 .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${axesClassName}`)
-  //                 .data([i])
-  //                 .join(
-  //                   enter => {
-  //                     return enter
-  //                       .append('g')
-  //                       .classed(axesClassName, true)
-  //                       .attr('clip-path', `url(#${clipPathID})`)
-  //                       .each((d, i, g) => {
-  //                         const defsSelection = d3.select(g[i])
-  //                           .selectAll<SVGDefsElement, any>('defs')
-  //                           .data([i])
-  //                           .join('defs')
-            
-  //                         const graphicGSelection = d3.select(g[i])
-  //                           .selectAll<SVGGElement, any>('g')
-  //                           .data([i])
-  //                           .join('g')
-  //                           .classed(graphicClassName, true)
-  //                       })
-  //                   },
-  //                   update => update,
-  //                   exit => exit.remove()
-  //                 )
-  //             })
-  //         },
-  //         update => update,
-  //         exit => exit.remove()
-  //       )
-  //   })
-  // )
-
-  // combineLatest({
-  //   seriesSelection: seriesSelection$,
-  //   gridContainer: gridContainer$                                                                                                                                                                                       
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async d => d)
-  // ).subscribe(data => {
-  //   data.seriesSelection
-  //     .transition()
-  //     .attr('transform', (d, i) => {
-  //       const translate = data.gridContainer[i].translate
-  //       const scale = data.gridContainer[i].scale
-  //       return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
-  //     })
-  // })
-
-
-  // const axesSelection$ = combineLatest({
-  //   seriesSelection: seriesSelection$,
-  //   gridAxesTransform: gridAxesTransform$
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async d => d),
-  //   map(data => {
-  //     return data.seriesSelection
-  //       .select<SVGGElement>(`g.${axesClassName}`)
-  //       .style('transform', data.gridAxesTransform.value)
-  //   })
-  // )
-  // const defsSelection$ = axesSelection$.pipe(
-  //   takeUntil(destroy$),
-  //   map(axesSelection => {
-  //     return axesSelection.select<SVGDefsElement>('defs')
-  //   })
-  // )
-  // const graphicGSelection$ = combineLatest({
-  //   axesSelection: axesSelection$,
-  //   gridGraphicTransform: gridGraphicTransform$
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async d => d),
-  //   map(data => {
-  //     const graphicGSelection = data.axesSelection
-  //       .select<SVGGElement>(`g.${graphicClassName}`)
-  //       .attr('clip-path', (d) => `url(#${clipPathSeriesID}-${d[0] ? d[0].seriesLabel : ''})`)
-  //     graphicGSelection
-  //       .transition()
-  //       .duration(50)
-  //       .style('transform', data.gridGraphicTransform.value)
-  //     return graphicGSelection
-  //   })
-  // )
 
   const { 
     seriesSelection$,
@@ -388,16 +291,26 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
     gridGraphicTransform$
   })
 
-  const linePath$: Observable<d3.Line<ComputedDatumGrid>> = new Observable(subscriber => {
-    const paramsSubscription = fullParams$
-      .pipe(
-        takeUntil(destroy$)
-      )
-      .subscribe(d => {
-        if (!d) return
-        const linePath = createLinePath(d.lineCurve)
-        subscriber.next(linePath)
-      })
+  // valueAxis 的起始座標
+  const valueAxisStart$: Observable<number> = gridGraphicTransform$.pipe(
+    takeUntil(destroy$),
+    map(data => {
+      // 抵消掉外層的變型
+      return - data.translate[1] / data.scale[1]
+    })
+  )
+
+  const areaPath$: Observable<d3.Line<ComputedDatumGrid>> = new Observable(subscriber => {
+    const paramsSubscription = combineLatest({
+      fullParams: fullParams$,
+      valueAxisStart: valueAxisStart$
+    }).pipe(
+      takeUntil(destroy$)
+    )
+    .subscribe(d => {
+      const areaPath = createAreaPath(d.fullParams.lineCurve, d.valueAxisStart)
+      subscriber.next(areaPath)
+    })
     return () => {
       paramsSubscription.unsubscribe()
     }
@@ -498,14 +411,23 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
     map(d => d.highlightTarget),
     distinctUntilChanged()
   )
+
+  const linearGradientIds$ = seriesLabels$.pipe(
+    takeUntil(destroy$),
+    map(d => d.map((d, i) => {
+      return getUniID(pluginName, `lineargradient-${d}`)
+    }))
+  )
   
   const graphSubscription = combineLatest({
     graphicGSelection: graphicGSelection$,
+    defsSelection: defsSelection$,
     seriesLabels: seriesLabels$,
     computedData: computedData$,
+    linearGradientIds: linearGradientIds$,
     SeriesDataMap: SeriesDataMap$,
     GroupDataMap: GroupDataMap$,
-    linePath: linePath$,
+    areaPath: areaPath$,
     params: fullParams$,
     highlightTarget: highlightTarget$,
     gridGroupPositionFn: gridGroupPositionFn$,
@@ -530,11 +452,18 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
       // 將資料分段
       const segmentData = makeSegmentData(data.computedData[i] ?? [])
 
-      const pathSelection = renderLines({
+      const pathSelection = renderLineAreas({
         selection: d3.select(all[i]),
         pathClassName,
-        linePath: data.linePath,
+        areaPath: data.areaPath,
         segmentData: segmentData,
+        linearGradientIds: data.linearGradientIds,
+        params: data.params
+      })
+      renderLinearGradient({
+        defsSelection: data.defsSelection,
+        computedData: data.computedData,
+        linearGradientIds: data.linearGradientIds,
         params: data.params
       })
 
@@ -651,9 +580,9 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
     // graphicSelection$.next(graphicSelection)
 
 
-    // pathSelection = renderLines({
+    // pathSelection = renderLineAreas({
     //   selection: graphicSelection,
-    //   linePath: d.linePath,
+    //   areaPath: d.areaPath,
     //   data: d.computedData
     // })
   })
@@ -682,7 +611,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
     // if (!datum) {
     //   return
     // }
-    highlightLines({
+    highlightLineAreas({
       selection: data.graphicGSelection,
       seriesLabel: (datum && datum.seriesLabel) ? datum.seriesLabel : null,
       fullChartParams: data.fullChartParams

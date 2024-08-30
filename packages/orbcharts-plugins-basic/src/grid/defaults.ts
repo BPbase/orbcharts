@@ -1,5 +1,6 @@
 import type {
   LinesParams,
+  LineAreasParams,
   GroupAuxParams,
   DotsParams,
   BarsParams,
@@ -14,6 +15,11 @@ import type {
 export const DEFAULT_LINES_PARAMS: LinesParams = {
   lineCurve: 'curveLinear',
   lineWidth: 2
+}
+
+export const DEFAULT_LINE_AREAS_PARAMS: LineAreasParams = {
+  lineCurve: 'curveLinear',
+  linearGradientOpacity: [1, 0]
 }
 
 export const DEFAULT_DOTS_PARAMS: DotsParams = {
@@ -111,4 +117,5 @@ export const DEFAULT_GRID_LEGEND_PARAMS: GridLegendParams = {
   listRectHeight: 14,
   listRectRadius: 0,
   // highlightEvent: false
+  textColorType: 'primary'
 }

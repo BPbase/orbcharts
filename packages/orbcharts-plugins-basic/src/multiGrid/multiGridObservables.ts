@@ -100,8 +100,8 @@ import type { ContextObserverMultiGrid, ComputedDataGrid, DataFormatterGrid, Con
 //     switchMap(d => d.gridHighlight$)
 //   )
 
-//   const existedSeriesLabels$ = gridDetail$.pipe(
-//     switchMap(d => d.existedSeriesLabels$)
+//   const existSeriesLabels$ = gridDetail$.pipe(
+//     switchMap(d => d.existSeriesLabels$)
 //   )
 
 //   const SeriesDataMap$ = gridDetail$.pipe(
@@ -127,7 +127,7 @@ import type { ContextObserverMultiGrid, ComputedDataGrid, DataFormatterGrid, Con
 //     gridAxesReverseTransform$,
 //     gridAxesSize$,
 //     gridHighlight$,
-//     existedSeriesLabels$,
+//     existSeriesLabels$,
 //     SeriesDataMap$,
 //     GroupDataMap$,
 //     visibleComputedData$,
@@ -241,8 +241,8 @@ export const multiGridDetailObservables = (observer: ContextObserverMultiGrid<Mu
           switchMap(d => d.gridHighlight$)
         )
       
-        const existedSeriesLabels$ = gridDetail$.pipe(
-          switchMap(d => d.existedSeriesLabels$)
+        const existSeriesLabels$ = gridDetail$.pipe(
+          switchMap(d => d.existSeriesLabels$)
         )
       
         const SeriesDataMap$ = gridDetail$.pipe(
@@ -266,7 +266,7 @@ export const multiGridDetailObservables = (observer: ContextObserverMultiGrid<Mu
           gridAxesReverseTransform$,
           gridAxesSize$,
           gridHighlight$,
-          existedSeriesLabels$,
+          existSeriesLabels$,
           SeriesDataMap$,
           GroupDataMap$,
           visibleComputedData$,

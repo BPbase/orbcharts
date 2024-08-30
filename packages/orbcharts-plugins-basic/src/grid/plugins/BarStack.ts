@@ -15,7 +15,7 @@ export const BarStack = defineGridPlugin(pluginName, DEFAULT_BAR_STACK_PARAMS)((
     selection,
     computedData$: observer.computedData$,
     visibleComputedData$: observer.visibleComputedData$,
-    existedSeriesLabels$: observer.existedSeriesLabels$,
+    existSeriesLabels$: observer.existSeriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,

@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { GridChart } from '../../../packages/orbcharts-core/src'
-import { Bars, GroupAxis, ValueAxis, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { Bars, Lines, LineAreas, GroupAxis, ValueAxis, ScalingArea, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
 import { gridData1 } from '../../const/data/gridData1'
 
@@ -15,16 +15,43 @@ onMounted(() => {
   const el = document.querySelector('#chart')
 
   const chart = new GridChart(el!, {
-    preset: PRESET_GRID_HORIZONTAL
+    // preset: PRESET_GRID_HORIZONTAL
   })
 
-  const bars = new Bars()
+  // chart.dataFormatter$.next({
+  //   grid: {
+  //     groupAxis: {
+  //       position: 'left'
+  //     },
+  //     valueAxis: {
+  //       position: 'bottom'
+  //     }
+  //   }
+  // })
 
-  bars.params$.next({
+  // const bars = new Bars()
+
+  // bars.params$.next({
     
+  // })
+
+  chart.dataFormatter$.next({
+    grid: {
+      groupAxis: {
+        scalePadding: 0
+      }
+    }
   })
 
-  chart.plugins$.next([bars, new GroupAxis(), new ValueAxis(), new Tooltip()])
+  const lines = new Lines()
+
+  const lineAreas = new LineAreas()
+
+  chart.chartParams$.next({
+    highlightTarget: 'series'
+  })
+
+  chart.plugins$.next([lines, lineAreas, new GroupAxis(), new ValueAxis(), new ScalingArea(), new Tooltip()])
 
   chart.data$.next(gridData1)
 

@@ -36,7 +36,7 @@ import {
   gridGraphicReverseScaleObservable,
   gridAxesReverseTransformObservable,
   gridAxesSizeObservable,
-  existedSeriesLabelsObservable,
+  existSeriesLabelsObservable,
   gridVisibleComputedDataObservable,
   isSeriesPositionSeprateObservable,
   gridContainerObservable } from '../grid/gridObservables'
@@ -128,7 +128,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
       shareReplay(1)
     )
 
-    const existedSeriesLabels$ = existedSeriesLabelsObservable({
+    const existSeriesLabels$ = existSeriesLabelsObservable({
       computedData$: gridComputedData$,
     })
 
@@ -160,7 +160,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
       gridGraphicReverseScale$,
       gridAxesSize$,
       gridHighlight$,
-      existedSeriesLabels$,
+      existSeriesLabels$,
       SeriesDataMap$,
       GroupDataMap$,
       visibleComputedData$,

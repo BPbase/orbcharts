@@ -18,4 +18,5 @@ export const DEFAULT_TREE_LEGEND_PARAMS: TreeLegendParams = {
   listRectWidth: 14,
   listRectHeight: 14,
   listRectRadius: 0,
+  textColorType: 'primary'
 }

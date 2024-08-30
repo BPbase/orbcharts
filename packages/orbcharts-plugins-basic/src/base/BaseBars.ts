@@ -32,7 +32,7 @@ interface BaseBarsContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
-  existedSeriesLabels$: Observable<string[]>
+  existSeriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullParams$: Observable<BaseBarsParams>
@@ -267,7 +267,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
   selection,
   computedData$,
   visibleComputedData$,
-  existedSeriesLabels$,
+  existSeriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
   fullParams$,
@@ -397,7 +397,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     selection,
     pluginName,
     clipPathID,
-    existedSeriesLabels$,
+    existSeriesLabels$,
     gridContainer$,
     gridAxesTransform$,
     gridGraphicTransform$
@@ -651,6 +651,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
           pluginName,
           highlightTarget: data.highlightTarget,
           datum,
+          gridIndex: datum.gridIndex,
           series: data.SeriesDataMap.get(datum.seriesLabel)!,
           seriesIndex: datum.seriesIndex,
           seriesLabel: datum.seriesLabel,
@@ -670,6 +671,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
           pluginName,
           highlightTarget: data.highlightTarget,
           datum,
+          gridIndex: datum.gridIndex,
           series: data.SeriesDataMap.get(datum.seriesLabel)!,
           seriesIndex: datum.seriesIndex,
           seriesLabel: datum.seriesLabel,
@@ -689,6 +691,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
           pluginName,
           highlightTarget: data.highlightTarget,
           datum,
+          gridIndex: datum.gridIndex,
           series: data.SeriesDataMap.get(datum.seriesLabel)!,
           seriesIndex: datum.seriesIndex,
           seriesLabel: datum.seriesLabel,
@@ -708,6 +711,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
           pluginName,
           highlightTarget: data.highlightTarget,
           datum,
+          gridIndex: datum.gridIndex,
           series: data.SeriesDataMap.get(datum.seriesLabel)!,
           seriesIndex: datum.seriesIndex,
           seriesLabel: datum.seriesLabel,

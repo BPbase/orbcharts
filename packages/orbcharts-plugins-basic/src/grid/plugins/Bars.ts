@@ -15,7 +15,7 @@ export const Bars = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)(({ selecti
     selection,
     computedData$: observer.computedData$,
     visibleComputedData$: observer.visibleComputedData$,
-    existedSeriesLabels$: observer.existedSeriesLabels$,
+    existSeriesLabels$: observer.existSeriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,

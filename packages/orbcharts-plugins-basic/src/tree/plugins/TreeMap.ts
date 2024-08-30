@@ -18,6 +18,7 @@ import { getClassName, getColor } from '../../utils/orbchartsUtils'
 
 const pluginName = 'TreeMap'
 const treeClassName = getClassName(pluginName, 'tree')
+const tileClassName = getClassName(pluginName, 'tile')
 
 function renderTree ({ selection, treeData, fullParams, fullChartParams }: {
   selection: d3.Selection<any, any, any, any>
@@ -40,11 +41,12 @@ function renderTree ({ selection, treeData, fullParams, fullChartParams }: {
       const eachCell = d3.select(nodes[i])
 
       const tile = eachCell
-        .selectAll<SVGRectElement, d3.HierarchyRectangularNode<ComputedDataTree>>('rect')
+        .selectAll<SVGRectElement, d3.HierarchyRectangularNode<ComputedDataTree>>(`rect.${tileClassName}`)
         .data([d], d => d.data.id)
         .join('rect')
         .attr("id", d => d.data.id)
-        .attr("class", "tile")
+        .attr("class", tileClassName)
+        .attr('cursor', 'pointer')
         .attr("width", (d) => d.x1 - d.x0)
         .attr("height", (d) => d.y1 - d.y0)
         .attr('fill', d => d.data.color)
@@ -80,7 +82,7 @@ function renderTree ({ selection, treeData, fullParams, fullChartParams }: {
               let tspan = textElement
                 .text(null)
                 .append("tspan")
-                .attr('cursor', 'default')
+                .attr('cursor', 'pointer')
                 .attr('fill', getColor(fullParams.labelColorType, fullChartParams))
                 .attr('font-size', fullChartParams.styles.textSize)
                 .attr("x", x)
@@ -96,7 +98,7 @@ function renderTree ({ selection, treeData, fullParams, fullChartParams }: {
                   dy += lineHeight
                   tspan = textElement
                     .append("tspan")
-                    .attr('cursor', 'default')
+                    .attr('cursor', 'pointer')
                     .attr('fill', getColor(fullParams.labelColorType, fullChartParams))
                     .attr('font-size', fullChartParams.styles.textSize)
                     .attr("x", x)

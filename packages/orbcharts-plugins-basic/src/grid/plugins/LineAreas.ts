@@ -1,32 +1,34 @@
 import {
-  Subject,
-  Observable } from 'rxjs'
-import { defineGridPlugin } from '@orbcharts/core'
-import { DEFAULT_BARS_TRIANGLE_PARAMS } from '../defaults'
-import { createBaseBarsTriangle } from '../../base/BaseBarsTriangle'
+  Subject } from 'rxjs'
+import {
+  defineGridPlugin } from '@orbcharts/core'
+import { DEFAULT_LINE_AREAS_PARAMS } from '../defaults'
+import { createBaseLineAreas } from '../../base/BaseLineAreas'
 
-const pluginName = 'BarsTriangle'
+const pluginName = 'LineAreas'
 
-export const BarsTriangle = defineGridPlugin(pluginName, DEFAULT_BARS_TRIANGLE_PARAMS)(({ selection, name, subject, observer }) => {
+export const LineAreas = defineGridPlugin(pluginName, DEFAULT_LINE_AREAS_PARAMS)(({ selection, name, observer, subject }) => {
+
   const destroy$ = new Subject()
 
-  const unsubscribeBaseBars = createBaseBarsTriangle(pluginName, {
+  const unsubscribeBaseBars = createBaseLineAreas(pluginName, {
     selection,
     computedData$: observer.computedData$,
-    visibleComputedData$: observer.visibleComputedData$,
     existSeriesLabels$: observer.existSeriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,
+    fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,
     gridAxesTransform$: observer.gridAxesTransform$,
     gridGraphicTransform$: observer.gridGraphicTransform$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
     gridContainer$: observer.gridContainer$,
-    isSeriesPositionSeprate$: observer.isSeriesPositionSeprate$,
+    layout$: observer.layout$,
     event$: subject.event$,
   })
+
 
   return () => {
     destroy$.next(undefined)

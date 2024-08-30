@@ -26,7 +26,8 @@ export const DEFAULT_MULTI_GRID_LEGEND_PARAMS: MultiGridLegendParams = {
       listRectHeight: 14,
       listRectRadius: 0,
     }
-  ]
+  ],
+  textColorType: 'primary'
 }
 
 export const DEFAULT_MULTI_GROUP_AXIS_PARAMS: MultiGroupAxisParams = {

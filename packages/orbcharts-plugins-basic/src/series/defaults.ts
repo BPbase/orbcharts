@@ -95,4 +95,5 @@ export const DEFAULT_SERIES_LEGEND_PARAMS: SeriesLegendParams = {
   listRectHeight: 14,
   listRectRadius: 0,
   // highlightEvent: false
+  textColorType: 'primary'
 }

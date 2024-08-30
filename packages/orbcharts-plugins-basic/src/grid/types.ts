@@ -5,7 +5,6 @@ import type { ColorType } from '@orbcharts/core'
 // export type BarType = 'rect' | 'triangle'
 
 export interface LinesParams {
-  // lineType: LineType
   lineCurve: string
   lineWidth: number
   // labelFn: (d: ComputedDatumSeries) => string
@@ -14,6 +13,11 @@ export interface LinesParams {
   // labelFontSizeFn: (d: ComputedDatumSeries) => number
   // labelColorFn: (d: ComputedDatumSeries) => string
   // labelPadding: number
+}
+
+export interface LineAreasParams {
+  lineCurve: string
+  linearGradientOpacity: [number, number]
 }
 
 export interface DotsParams {
@@ -113,4 +117,5 @@ export interface GridLegendParams {
   listRectWidth: number
   listRectHeight: number
   listRectRadius: number
+  textColorType: ColorType
 }
