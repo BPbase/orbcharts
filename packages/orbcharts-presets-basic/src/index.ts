@@ -126,7 +126,7 @@ export const PRESET_LINES_HORIZONTAL = createGridPreset({
   chartParamsId: 'CP_BOTTOM_AND_LEFT_PADDING_WITH_SERIES_HIGHLIGHT',
   dataFormatterId: 'DF_GRID_BOTTOM_VALUE_AXIS',
   allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
-  description: '橫向圓角長條圖'
+  description: '橫向折線圖'
 })
 // export const PRESET_LINES_WITH_SOLID_DOTS = createGridPreset({
 //   chartParamsId: 'CP_BOTTOM_PADDING_WITH_SERIES_HIGHLIGHT',
@@ -145,6 +145,37 @@ export const PRESET_LINES_CURVE = createGridPreset({
 // })
 export const PRESET_LINES_HIGHLIGHT_GROUP_DOTS = createGridPreset({
   chartParamsId: 'CP_BOTTOM_PADDING_WITH_GROUP_HIGHLIGHT',
+  allPluginParamsIds: ['PP_DOTS_ONLY_SHOW_HIGHLIGHTED', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
+  description: '折線圖及Highlight Group圓點'
+})
+// LineAreas - PRESET_LINE_AREAS_[name]
+export const PRESET_LINE_AREAS_BASIC = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_PADDING_WITH_SERIES_HIGHLIGHT',
+  dataFormatterId: 'DF_GRID_NONE_GROUP_SCALE_PADDING',
+  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
+  description: '基本Grid參數'
+})
+export const PRESET_LINE_AREAS_ROTATE_AXIS_LABEL = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_LONG_PADDING_WITH_SERIES_HIGHLIGHT',
+  dataFormatterId: 'DF_GRID_NONE_GROUP_SCALE_PADDING',
+  allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
+  description: '傾斜標籤'
+})
+export const PRESET_LINE_AREAS_HORIZONTAL = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_AND_LEFT_PADDING_WITH_SERIES_HIGHLIGHT',
+  dataFormatterId: 'DF_GRID_BOTTOM_VALUE_AXIS_AND_NONE_GROUP_SCALE_PADDING',
+  allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
+  description: '橫向折線圖'
+})
+export const PRESET_LINE_AREAS_CURVE = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_PADDING_WITH_SERIES_HIGHLIGHT',
+  dataFormatterId: 'DF_GRID_NONE_GROUP_SCALE_PADDING',
+  allPluginParamsIds: ['PP_LINES_CURVE', 'PP_LINE_AREAS_CURVE', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
+  description: '弧線折線圖'
+})
+export const PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_PADDING_WITH_GROUP_HIGHLIGHT',
+  dataFormatterId: 'DF_GRID_NONE_GROUP_SCALE_PADDING',
   allPluginParamsIds: ['PP_DOTS_ONLY_SHOW_HIGHLIGHTED', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
   description: '折線圖及Highlight Group圓點'
 })

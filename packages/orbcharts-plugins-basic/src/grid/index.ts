@@ -1,6 +1,7 @@
 export * from './defaults'
 export * from './types'
 export { Lines } from './plugins/Lines'
+export { LineAreas } from './plugins/LineAreas'
 export { Bars } from './plugins/Bars'
 export { BarsDiverging } from './plugins/BarsDiverging'
 export { BarStack } from './plugins/BarStack'

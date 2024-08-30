@@ -263,6 +263,51 @@ export const demoList: DemoChartTypeItem[] = [
             presetName: 'PRESET_GRID_4_SERIES_SLOT'
           },
         ]
+      },
+      {
+        title: 'LineAreas',
+        list: [
+          {
+            chartType: 'grid',
+            pluginName: 'LineAreas',
+            presetName: 'PRESET_LINE_AREAS_BASIC'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'LineAreas',
+            presetName: 'PRESET_LINE_AREAS_ROTATE_AXIS_LABEL'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'LineAreas',
+            presetName: 'PRESET_LINE_AREAS_HORIZONTAL'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'LineAreas',
+            presetName: 'PRESET_LINE_AREAS_CURVE'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'LineAreas',
+            presetName: 'PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS'
+          },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'LineAreas',
+          //   presetName: 'PRESET_GRID_2_SERIES_SLOT'
+          // },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'LineAreas',
+          //   presetName: 'PRESET_GRID_3_SERIES_SLOT'
+          // },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'LineAreas',
+          //   presetName: 'PRESET_GRID_4_SERIES_SLOT'
+          // },
+        ]
       }
     ]
   },

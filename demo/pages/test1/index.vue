@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { GridChart } from '../../../packages/orbcharts-core/src'
-import { Bars, GroupAxis, ValueAxis, ScalingArea, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { Bars, Lines, LineAreas, GroupAxis, ValueAxis, ScalingArea, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
 import { gridData1 } from '../../const/data/gridData1'
 
@@ -18,24 +18,40 @@ onMounted(() => {
     // preset: PRESET_GRID_HORIZONTAL
   })
 
+  // chart.dataFormatter$.next({
+  //   grid: {
+  //     groupAxis: {
+  //       position: 'left'
+  //     },
+  //     valueAxis: {
+  //       position: 'bottom'
+  //     }
+  //   }
+  // })
+
+  // const bars = new Bars()
+
+  // bars.params$.next({
+    
+  // })
+
   chart.dataFormatter$.next({
     grid: {
       groupAxis: {
-        position: 'left'
-      },
-      valueAxis: {
-        position: 'bottom'
+        scalePadding: 0
       }
     }
   })
 
-  const bars = new Bars()
+  const lines = new Lines()
 
-  bars.params$.next({
-    
+  const lineAreas = new LineAreas()
+
+  chart.chartParams$.next({
+    highlightTarget: 'series'
   })
 
-  chart.plugins$.next([bars, new GroupAxis(), new ValueAxis(), new ScalingArea(), new Tooltip()])
+  chart.plugins$.next([lines, lineAreas, new GroupAxis(), new ValueAxis(), new ScalingArea(), new Tooltip()])
 
   chart.data$.next(gridData1)
 
