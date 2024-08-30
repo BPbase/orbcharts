@@ -220,7 +220,7 @@ export const demoList: DemoChartTypeItem[] = [
         ]
       },
       {
-        title: 'Lines',
+        title: 'Lines, Dots',
         list: [
           {
             chartType: 'grid',
@@ -265,7 +265,7 @@ export const demoList: DemoChartTypeItem[] = [
         ]
       },
       {
-        title: 'LineAreas',
+        title: 'LineAreas, Lines, Dots',
         list: [
           {
             chartType: 'grid',
