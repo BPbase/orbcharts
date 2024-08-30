@@ -36,7 +36,7 @@ onMounted(() => {
   const plugins = detail.plugins.map((plugin) => {
     return new plugin()
   })
-// console.log('detail.preset', detail.preset)
+console.log('detail.preset', detail.preset)
   const chart = new detail.chart(el!, {
     preset: detail.preset
   })

@@ -91,14 +91,14 @@ export const highlightObservable = ({ datumList$, fullChartParams$, event$ }: {
 
   function getSeriesIds (datumList: ComputedDatumTypeMap<'series' | 'grid'>[], seriesLabel: string | null) {
     return seriesLabel == null
-      ? datumList.filter(d => d.seriesLabel === seriesLabel).map(d => d.id)
-      : []
+      ? []
+      : datumList.filter(d => d.seriesLabel === seriesLabel).map(d => d.id)
   }
 
   function getGroupIds (datumList: ComputedDatumTypeMap<'grid'>[], groupLabel: string | null) {
     return groupLabel == null
-      ? datumList.filter(d => (d as ComputedDatumTypeMap<"grid">).groupLabel === groupLabel).map(d => d.id)
-      : []
+      ? []
+      : datumList.filter(d => (d as ComputedDatumTypeMap<"grid">).groupLabel === groupLabel).map(d => d.id)
   }
 
   function getCategoryIds (datumList: ComputedDatumTypeMap<'multiValue' | 'relationship' | 'tree'>[], categoryLabel: string | null) {
@@ -116,6 +116,7 @@ export const highlightObservable = ({ datumList$, fullChartParams$, event$ }: {
       takeUntil(destroy$),
       switchMap(async d => d)
     ).subscribe(data => {
+      console.log('data.fullChartParams.highlightTarget', data.fullChartParams.highlightTarget)
       let ids: string[] = []
       if (data.fullChartParams.highlightTarget === 'datum') {
         ids = getDatumIds(data.datumList, data.target.id)
@@ -126,6 +127,7 @@ export const highlightObservable = ({ datumList$, fullChartParams$, event$ }: {
       } else if (data.fullChartParams.highlightTarget === 'category') {
         ids = getCategoryIds(data.datumList as ComputedDatumTypeMap<'multiValue' | 'relationship' | 'tree'>[], data.target.categoryLabel)
       }
+      console.log('ids', ids)
       subscriber.next(ids)
     })
 

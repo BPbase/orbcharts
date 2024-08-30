@@ -15,7 +15,12 @@ onMounted(() => {
   const el = document.querySelector('#chart')
 
   const chart = new GridChart(el!, {
-    // preset: PRESET_GRID_HORIZONTAL
+    // preset: {
+    //     "chartParams": {
+            
+    //         "highlightTarget": "series"
+    //     },
+    // }
   })
 
   // chart.dataFormatter$.next({
@@ -42,6 +47,9 @@ onMounted(() => {
       }
     }
   })
+  chart.chartParams$.subscribe(data => {
+    console.log(data)
+  })
 
   const lines = new Lines()
 
@@ -50,17 +58,14 @@ onMounted(() => {
   chart.chartParams$.next({
     highlightTarget: 'series'
   })
-
+  
   chart.plugins$.next([lines, lineAreas, new GroupAxis(), new ValueAxis(), new ScalingArea(), new Tooltip()])
-
+  
   chart.data$.next(gridData1)
+  
+  
 
-  chart.chartParams$.next({
-    padding: {
-      
-    }
-  })
-
+  
 })
 
 </script>

@@ -179,6 +179,24 @@ export const PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS = createGridPreset({
   allPluginParamsIds: ['PP_DOTS_ONLY_SHOW_HIGHLIGHTED', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
   description: '折線圖及Highlight Group圓點'
 })
+export const PRESET_LINE_AREAS_2_SERIES_SLOT = createGridPreset({
+  chartParamsId:  'CP_BOTTOM_LONG_PADDING',
+  dataFormatterId: 'DF_LINE_AREAS_2_SERIES_SLOT',
+  allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
+  description: '2組Series圖表'
+})
+export const PRESET_LINE_AREAS_3_SERIES_SLOT = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_LONG_PADDING',
+  dataFormatterId: 'DF_LINE_AREAS_3_SERIES_SLOT',
+  allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM', 'PP_GROUP_AXIS_ROTATE_LABEL'],
+  description: '3組Series圖表'
+})
+export const PRESET_LINE_AREAS_4_SERIES_SLOT = createGridPreset({
+  chartParamsId:  'CP_BOTTOM_LONG_PADDING',
+  dataFormatterId: 'DF_LINE_AREAS_4_SERIES_SLOT',
+  allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
+  description: '4組Series圖表'
+})
 
 // -- multi-grid --
 // 通用 - PRESET_MULTI_GRID_[name]
