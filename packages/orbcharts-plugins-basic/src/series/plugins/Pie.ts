@@ -511,7 +511,9 @@ export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PARAMS)(({ selecti
   
   combineLatest({
     pathSelection: pathSelection$,
-    highlight: observer.seriesHighlight$,
+    highlight: observer.seriesHighlight$.pipe(
+      map(data => data.map(d => d.id))
+    ),
     fullChartParams: observer.fullChartParams$,
     arc: arc$,
     arcMouseover: arcMouseover$

@@ -4,6 +4,7 @@ import type {
   MultiBarStackParams,
   MultiBarsTriangleParams,
   MultiLinesParams,
+  MultiLineAreasParams,
   MultiDotsParams,
   MultiGroupAxisParams,
   MultiValueAxisParams,
@@ -91,6 +92,12 @@ export const DEFAULT_MULTI_BARS_TRIANGLE_PARAMS: MultiBarsTriangleParams = {
 export const DEFAULT_MULTI_LINES_PARAMS: MultiLinesParams = {
   lineCurve: 'curveLinear',
   lineWidth: 2,
+  gridIndexes: [1]
+}
+
+export const DEFAULT_MULTI_LINE_AREAS_PARAMS: MultiLineAreasParams = {
+  lineCurve: 'curveLinear',
+  linearGradientOpacity: [1, 0],
   gridIndexes: [1]
 }
 

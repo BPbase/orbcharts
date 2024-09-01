@@ -44,7 +44,7 @@ interface BaseDotsContext {
     width: number;
     height: number;
   }>
-  gridHighlight$: Observable<string[]>
+  gridHighlight$: Observable<ComputedDatumGrid[]>
   gridContainer$: Observable<ContainerPosition[]>
   event$: Subject<EventGrid>
 }
@@ -604,7 +604,7 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
   //   map(d => d.flat())
   // )
   // const highlight$ = highlightObservable({ datumList$, fullChartParams$, event$: store.event$ })
-  const highlightSubscription = gridHighlight$.subscribe()
+  // const highlightSubscription = gridHighlight$.subscribe()
   const onlyShowHighlighted$ = fullParams$.pipe(
     takeUntil(destroy$),
     map(d => d.onlyShowHighlighted),
@@ -615,7 +615,9 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
     takeUntil(destroy$),
     switchMap(d => combineLatest({
       graphicSelection: graphicSelection$,
-      highlight: gridHighlight$,
+      highlight: gridHighlight$.pipe(
+        map(data => data.map(d => d.id))
+      ),
       onlyShowHighlighted: onlyShowHighlighted$,
       fullChartParams: fullChartParams$
     }).pipe(
@@ -633,6 +635,6 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
 
   return () => {
     destroy$.next(undefined)
-    highlightSubscription.unsubscribe()
+    // highlightSubscription.unsubscribe()
   }
 }

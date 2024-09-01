@@ -15,6 +15,7 @@ import type {
   ComputedDataTypeMap,
   ComputedDatumTypeMap,
   DataFormatterTypeMap,
+  EventTypeMap,
   HighlightTarget,
   Layout,
   TransformData } from '../types'
@@ -28,11 +29,11 @@ import type {
 // }
 
 // 通用 highlight Observable
-export const highlightObservable = ({ datumList$, fullChartParams$, event$ }: {
-  datumList$: Observable<ComputedDatumTypeMap<'series' | 'grid' | 'multiValue' | 'relationship' | 'tree'>[]>
+export const highlightObservable = <T extends ChartType, D>({ datumList$, fullChartParams$, event$ }: {
+  datumList$: Observable<D[]>
   fullChartParams$: Observable<ChartParams>
-  event$: Subject<any>
-}): Observable<string[]> => {
+  event$: Subject<EventTypeMap<T>>
+}): Observable<D[]> => {
   const destroy$ = new Subject()
 
   // 預設的highlight
@@ -83,31 +84,30 @@ export const highlightObservable = ({ datumList$, fullChartParams$, event$ }: {
     switchMap(d => highlightDefault$)
   )
 
-  function getDatumIds (datumList: ComputedDatumTypeMap<'series' | 'grid' | 'multiValue' | 'relationship' | 'tree'>[], id: string | null) {
-    return id == null
-      ? []
-      : datumList.find(d => d.id === id) ? [id] : []
+  function getDatumIds (datumList: ComputedDatumTypeMap<T>[], id: string | null) {
+    const datum = datumList.find(d => d.id === id)
+    return datum ? [datum] : []
   }
 
-  function getSeriesIds (datumList: ComputedDatumTypeMap<'series' | 'grid'>[], seriesLabel: string | null) {
+  function getSeriesIds (datumList: ComputedDatumTypeMap<T>[], seriesLabel: string | null) {
     return seriesLabel == null
       ? []
-      : datumList.filter(d => d.seriesLabel === seriesLabel).map(d => d.id)
+      : datumList.filter(d => (d as ComputedDatumTypeMap<"series">).seriesLabel === seriesLabel)
   }
 
-  function getGroupIds (datumList: ComputedDatumTypeMap<'grid'>[], groupLabel: string | null) {
+  function getGroupIds (datumList: ComputedDatumTypeMap<T>[], groupLabel: string | null) {
     return groupLabel == null
       ? []
-      : datumList.filter(d => (d as ComputedDatumTypeMap<"grid">).groupLabel === groupLabel).map(d => d.id)
+      : datumList.filter(d => (d as ComputedDatumTypeMap<"grid">).groupLabel === groupLabel)
   }
 
-  function getCategoryIds (datumList: ComputedDatumTypeMap<'multiValue' | 'relationship' | 'tree'>[], categoryLabel: string | null) {
+  function getCategoryIds (datumList: ComputedDatumTypeMap<T>[], categoryLabel: string | null) {
     return categoryLabel == null
       ? []
-      : datumList.filter(d => (d as ComputedDatumTypeMap<"multiValue" | "relationship" | "tree">).categoryLabel === categoryLabel).map(d => d.id)
+      : datumList.filter(d => (d as ComputedDatumTypeMap<"multiValue" | "relationship" | "tree">).categoryLabel === categoryLabel)
   }
 
-  return new Observable<string[]>(subscriber => {
+  return new Observable<D[]>(subscriber => {
     combineLatest({
       target: merge(highlightMouseover$, highlightMouseout$, highlightDefault$),
       datumList: datumList$,
@@ -116,19 +116,17 @@ export const highlightObservable = ({ datumList$, fullChartParams$, event$ }: {
       takeUntil(destroy$),
       switchMap(async d => d)
     ).subscribe(data => {
-      console.log('data.fullChartParams.highlightTarget', data.fullChartParams.highlightTarget)
-      let ids: string[] = []
+      let datumList: ComputedDatumTypeMap<T>[] = []
       if (data.fullChartParams.highlightTarget === 'datum') {
-        ids = getDatumIds(data.datumList, data.target.id)
+        datumList = getDatumIds(data.datumList as ComputedDatumTypeMap<T>[], data.target.id)
       } else if (data.fullChartParams.highlightTarget === 'series') {
-        ids = getSeriesIds(data.datumList as ComputedDatumTypeMap<'series' | 'grid'>[], data.target.seriesLabel)
+        datumList = getSeriesIds(data.datumList as ComputedDatumTypeMap<T>[], data.target.seriesLabel)
       } else if (data.fullChartParams.highlightTarget === 'group') {
-        ids = getGroupIds(data.datumList as ComputedDatumTypeMap<'grid'>[], data.target.groupLabel)
+        datumList = getGroupIds(data.datumList as ComputedDatumTypeMap<T>[], data.target.groupLabel)
       } else if (data.fullChartParams.highlightTarget === 'category') {
-        ids = getCategoryIds(data.datumList as ComputedDatumTypeMap<'multiValue' | 'relationship' | 'tree'>[], data.target.categoryLabel)
+        datumList = getCategoryIds(data.datumList as ComputedDatumTypeMap<T>[], data.target.categoryLabel)
       }
-      console.log('ids', ids)
-      subscriber.next(ids)
+      subscriber.next(datumList as D[])
     })
 
     return function unsubscribe () {

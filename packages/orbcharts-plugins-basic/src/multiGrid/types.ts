@@ -2,16 +2,12 @@ import type { BaseBarsParams } from '../base/BaseBars'
 import type { BaseBarStackParams } from '../base/BaseBarStack'
 import type { BaseBarsTriangleParams } from '../base/BaseBarsTriangle'
 import type { BaseLinesParams } from '../base/BaseLines'
+import type { BaseLineAreasParams } from '../base/BaseLineAreas'
 import type { BaseDotsParams } from '../base/BaseDots'
 import type { BaseGroupAxisParams } from '../base/BaseGroupAxis'
 import type { BaseValueAxisParams } from '../base/BaseValueAxis'
 import type {
   ChartParams, Layout, ColorType } from '@orbcharts/core'
-
-export interface BarsAndLinesParams {
-  bars: BaseBarsParams
-  lines: BaseLinesParams
-}
 
 export interface MultiGridLegendParams {
   position: 'top' | 'bottom' | 'left' | 'right'
@@ -53,6 +49,10 @@ export interface MultiBarsTriangleParams extends BaseBarsTriangleParams {
 }
 
 export interface MultiLinesParams extends BaseLinesParams {
+  gridIndexes: number[]
+}
+
+export interface MultiLineAreasParams extends BaseLineAreasParams {
   gridIndexes: number[]
 }
 

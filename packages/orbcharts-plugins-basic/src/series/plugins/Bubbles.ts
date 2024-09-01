@@ -509,7 +509,9 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
   combineLatest({
     bubblesSelection: bubblesSelection$,
     bubblesData: bubblesData$,
-    highlight: observer.seriesHighlight$,
+    highlight: observer.seriesHighlight$.pipe(
+      map(data => data.map(d => d.id))
+    ),
     fullChartParams: observer.fullChartParams$,
     fullParams: observer.fullParams$,
     layout: observer.layout$

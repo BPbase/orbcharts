@@ -46,7 +46,7 @@ interface BaseLineAreasContext {
     width: number;
     height: number;
   }>
-  gridHighlight$: Observable<string[]>
+  gridHighlight$: Observable<ComputedDatumGrid[]>
   gridContainer$: Observable<ContainerPosition[]>
   layout$: Observable<Layout>
   event$: Subject<EventGrid>
@@ -599,7 +599,7 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
     filter(d => d.highlightTarget === 'series'),
     switchMap(d => combineLatest({
       graphicGSelection: graphicGSelection$,
-      highlight: gridHighlight$,
+      gridHighlight: gridHighlight$,
       DataMap: DataMap$,
       fullChartParams: fullChartParams$
     }).pipe(
@@ -607,13 +607,10 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
       switchMap(async d => d)
     ))
   ).subscribe(data => {
-    const datum = data.DataMap.get(data.highlight[0])
-    // if (!datum) {
-    //   return
-    // }
+    const seriesLabel = data.gridHighlight[0] ? data.gridHighlight[0].seriesLabel : null
     highlightLineAreas({
       selection: data.graphicGSelection,
-      seriesLabel: (datum && datum.seriesLabel) ? datum.seriesLabel : null,
+      seriesLabel,
       fullChartParams: data.fullChartParams
     })
   })

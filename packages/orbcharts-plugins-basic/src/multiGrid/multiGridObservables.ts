@@ -4,6 +4,7 @@ import {
   takeUntil,
   of,
   map,
+  reduce,
   switchMap,
   combineLatest,
   distinctUntilChanged,
@@ -156,6 +157,16 @@ export const multiGridDetailObservables = (observer: ContextObserverMultiGrid<Mu
   )
   const destroy$ = new Subject()
 
+  // 合併所有gridHighlight$
+  const gridHighlight$ = observer.multiGridEachDetail$.pipe(
+    // switchMap(data => concat(...data.map(d => d.gridHighlight$))),
+    switchMap(data => {
+      return combineLatest(data.map(d => d.gridHighlight$))
+    }),
+    map(d => d.flat()),
+    shareReplay(1)
+  )
+
   return gridIndexes$.pipe(
     map(gridIndexes => {
       return gridIndexes.map(gridIndex => {
@@ -237,9 +248,9 @@ export const multiGridDetailObservables = (observer: ContextObserverMultiGrid<Mu
           switchMap(d => d.gridGraphicReverseScale$)
         )
       
-        const gridHighlight$ = gridDetail$.pipe(
-          switchMap(d => d.gridHighlight$)
-        )
+        // const gridHighlight$ = gridDetail$.pipe(
+        //   switchMap(d => d.gridHighlight$)
+        // )
       
         const existSeriesLabels$ = gridDetail$.pipe(
           switchMap(d => d.existSeriesLabels$)

@@ -3,6 +3,7 @@ import {
   combineLatest,
   switchMap,
   first,
+  map,
   takeUntil,
   Subject,
   BehaviorSubject } from 'rxjs'
@@ -266,7 +267,9 @@ export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAM
   
   combineLatest({
     labelSelection: labelSelection$,
-    highlight: observer.seriesHighlight$,
+    highlight: observer.seriesHighlight$.pipe(
+      map(data => data.map(d => d.id))
+    ),
     fullChartParams: observer.fullChartParams$,
   }).pipe(
     takeUntil(destroy$),

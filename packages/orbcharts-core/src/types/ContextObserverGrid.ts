@@ -17,7 +17,7 @@ export interface ContextObserverGridDetail {
   gridGraphicTransform$: Observable<TransformData>
   gridGraphicReverseScale$: Observable<[number, number][]>
   gridAxesSize$: Observable<{ width: number; height: number; }>
-  gridHighlight$: Observable<string[]>
+  gridHighlight$: Observable<ComputedDatumGrid[]>
   existSeriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>

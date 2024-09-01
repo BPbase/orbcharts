@@ -444,6 +444,26 @@ export const demoDetail: DemoDetail = {
         data: multiGridData3
       },
     },
+    'MultiLineAreas': {
+      'PRESET_MULTI_LINE_AREAS_2_GRID_SLOT': {
+        chart: core.MultiGridChart,
+        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLineAreas, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_MULTI_LINE_AREAS_2_GRID_SLOT,
+        data: multiGridData1
+      },
+      'PRESET_MULTI_LINE_AREAS_3_GRID_SLOT': {
+        chart: core.MultiGridChart,
+        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLineAreas, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_MULTI_LINE_AREAS_3_GRID_SLOT,
+        data: multiGridData2
+      },
+      'PRESET_MULTI_LINE_AREAS_4_GRID_SLOT': {
+        chart: core.MultiGridChart,
+        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLineAreas, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_MULTI_LINE_AREAS_4_GRID_SLOT,
+        data: multiGridData3
+      },
+    }
   },
   tree: {
     'TreeMap': {

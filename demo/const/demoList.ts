@@ -395,6 +395,26 @@ export const demoList: DemoChartTypeItem[] = [
         ]
       },
       {
+        title: 'MultiLineAreas',
+        list: [
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiLineAreas',
+            presetName: 'PRESET_MULTI_LINE_AREAS_2_GRID_SLOT'
+          },
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiLineAreas',
+            presetName: 'PRESET_MULTI_LINE_AREAS_3_GRID_SLOT'
+          },
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiLineAreas',
+            presetName: 'PRESET_MULTI_LINE_AREAS_4_GRID_SLOT'
+          },
+        ]
+      },
+      {
         title: 'MultiBars, MultiLines',
         list: [
           {
