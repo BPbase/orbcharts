@@ -52,7 +52,7 @@ import { SeriesChart, Pie, Tooltip } from 'orbcharts'
 
 const element = document.querySelector('#pie-chart')
 
-const chart = SeriesChart(element)
+const chart = new SeriesChart(element)
 
 chart.plugins$.next([new Pie(), new Tooltip()])
 
