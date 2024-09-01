@@ -48,13 +48,13 @@ npm i orbcharts
 ### 範例
 
 ```js
-import { useSeriesChart, pie, tooltip } from 'orbcharts'
+import { SeriesChart, Pie, Tooltip } from 'orbcharts'
 
 const element = document.querySelector('#pie-chart')
 
-const chart = useSeriesChart(element)
+const chart = SeriesChart(element)
 
-chart.plugins$.next([pie, tooltip])
+chart.plugins$.next([new Pie(), new Tooltip()])
 
 chart.data$.next([
   55026,
@@ -121,7 +121,7 @@ const chart = new SeriesChart(element)
 
 
 
-在 BPChart 的設計當中，Chart 類別只是一個載體，我們還需要資料以及 Plugins 才能夠把圖型繪製出來。在下個章節我們將詳細說明這個 `chart` 的使用方式。
+在 OrbCharts 的設計當中，Chart 類別只是一個載體，我們還需要資料以及 Plugins 才能夠把圖型繪製出來。在下個章節我們將詳細說明這個 `chart` 的使用方式。
 
 
 

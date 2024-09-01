@@ -45,7 +45,7 @@ interface BaseBarStackContext {
     width: number;
     height: number;
   }>
-  gridHighlight$: Observable<string[]>
+  gridHighlight$: Observable<ComputedDatumGrid[]>
   gridContainer$: Observable<ContainerPosition[]>
   isSeriesPositionSeprate$: Observable<boolean>
   event$: Subject<EventGrid>
@@ -861,7 +861,9 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
   
   combineLatest({
     barSelection: barSelection$,
-    highlight: gridHighlight$,
+    highlight: gridHighlight$.pipe(
+      map(data => data.map(d => d.id))
+    ),
     fullChartParams: fullChartParams$
   }).pipe(
     takeUntil(destroy$),

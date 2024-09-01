@@ -61,7 +61,6 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
           } else if (fullDataFormatter.gridList[data.firstGridIndex].valueAxis.position === 'right') {
             reversePosition = 'left'
           }
-          console.log('reversePosition', reversePosition)
           return <DataFormatterGrid>{
             type: 'grid',
             grid: {

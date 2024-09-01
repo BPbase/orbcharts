@@ -220,7 +220,7 @@ export const demoList: DemoChartTypeItem[] = [
         ]
       },
       {
-        title: 'Lines',
+        title: 'Lines, Dots',
         list: [
           {
             chartType: 'grid',
@@ -265,7 +265,7 @@ export const demoList: DemoChartTypeItem[] = [
         ]
       },
       {
-        title: 'LineAreas',
+        title: 'LineAreas, Lines, Dots',
         list: [
           {
             chartType: 'grid',
@@ -292,21 +292,21 @@ export const demoList: DemoChartTypeItem[] = [
             pluginName: 'LineAreas',
             presetName: 'PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS'
           },
-          // {
-          //   chartType: 'grid',
-          //   pluginName: 'LineAreas',
-          //   presetName: 'PRESET_GRID_2_SERIES_SLOT'
-          // },
-          // {
-          //   chartType: 'grid',
-          //   pluginName: 'LineAreas',
-          //   presetName: 'PRESET_GRID_3_SERIES_SLOT'
-          // },
-          // {
-          //   chartType: 'grid',
-          //   pluginName: 'LineAreas',
-          //   presetName: 'PRESET_GRID_4_SERIES_SLOT'
-          // },
+          {
+            chartType: 'grid',
+            pluginName: 'LineAreas',
+            presetName: 'PRESET_LINE_AREAS_2_SERIES_SLOT'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'LineAreas',
+            presetName: 'PRESET_LINE_AREAS_3_SERIES_SLOT'
+          },
+          {
+            chartType: 'grid',
+            pluginName: 'LineAreas',
+            presetName: 'PRESET_LINE_AREAS_4_SERIES_SLOT'
+          },
         ]
       }
     ]
@@ -391,6 +391,26 @@ export const demoList: DemoChartTypeItem[] = [
             chartType: 'multiGrid',
             pluginName: 'MultiLines',
             presetName: 'PRESET_MULTI_LINES_4_GRID_SLOT'
+          },
+        ]
+      },
+      {
+        title: 'MultiLineAreas',
+        list: [
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiLineAreas',
+            presetName: 'PRESET_MULTI_LINE_AREAS_2_GRID_SLOT'
+          },
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiLineAreas',
+            presetName: 'PRESET_MULTI_LINE_AREAS_3_GRID_SLOT'
+          },
+          {
+            chartType: 'multiGrid',
+            pluginName: 'MultiLineAreas',
+            presetName: 'PRESET_MULTI_LINE_AREAS_4_GRID_SLOT'
           },
         ]
       },

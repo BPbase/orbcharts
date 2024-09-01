@@ -259,7 +259,7 @@ export const demoDetail: DemoDetail = {
       },
       'PRESET_LINES_HIGHLIGHT_GROUP_DOTS': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.Dots, pluginsBasic.GroupAux, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.GroupAux, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_LINES_HIGHLIGHT_GROUP_DOTS,
         data: gridData1
       },
@@ -309,26 +309,26 @@ export const demoDetail: DemoDetail = {
       },
       'PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.LineAreas, pluginsBasic.Lines, pluginsBasic.Dots, pluginsBasic.GroupAux, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.LineAreas, pluginsBasic.Lines, pluginsBasic.GroupAux, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS,
         data: gridData1
       },
-      'PRESET_GRID_2_SERIES_SLOT': {
+      'PRESET_LINE_AREAS_2_SERIES_SLOT': {
         chart: core.GridChart,
         plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.LineAreas, pluginsBasic.Lines, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_GRID_2_SERIES_SLOT,
+        preset: presetsBasic.PRESET_LINE_AREAS_2_SERIES_SLOT,
         data: gridData1
       },
-      'PRESET_GRID_3_SERIES_SLOT': {
+      'PRESET_LINE_AREAS_3_SERIES_SLOT': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_GRID_3_SERIES_SLOT,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.LineAreas, pluginsBasic.Lines, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_LINE_AREAS_3_SERIES_SLOT,
         data: gridData2
       },
-      'PRESET_GRID_4_SERIES_SLOT': {
+      'PRESET_LINE_AREAS_4_SERIES_SLOT': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_GRID_4_SERIES_SLOT,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.LineAreas, pluginsBasic.Lines, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_LINE_AREAS_4_SERIES_SLOT,
         data: gridData3
       },
     },
@@ -444,6 +444,26 @@ export const demoDetail: DemoDetail = {
         data: multiGridData3
       },
     },
+    'MultiLineAreas': {
+      'PRESET_MULTI_LINE_AREAS_2_GRID_SLOT': {
+        chart: core.MultiGridChart,
+        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLineAreas, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_MULTI_LINE_AREAS_2_GRID_SLOT,
+        data: multiGridData1
+      },
+      'PRESET_MULTI_LINE_AREAS_3_GRID_SLOT': {
+        chart: core.MultiGridChart,
+        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLineAreas, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_MULTI_LINE_AREAS_3_GRID_SLOT,
+        data: multiGridData2
+      },
+      'PRESET_MULTI_LINE_AREAS_4_GRID_SLOT': {
+        chart: core.MultiGridChart,
+        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLineAreas, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_MULTI_LINE_AREAS_4_GRID_SLOT,
+        data: multiGridData3
+      },
+    }
   },
   tree: {
     'TreeMap': {

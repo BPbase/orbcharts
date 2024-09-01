@@ -281,7 +281,9 @@ export const TreeMap = defineTreePlugin(pluginName, DEFAULT_TREE_MAP_PARAMS)(({ 
 
   combineLatest({
     cellSelection: cellSelection$,
-    highlight: observer.treeHighlight$,
+    highlight: observer.treeHighlight$.pipe(
+      map(data => data.map(d => d.id))
+    ),
     fullChartParams: observer.fullChartParams$
   }).pipe(
     takeUntil(destroy$),
