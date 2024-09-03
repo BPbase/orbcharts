@@ -36,7 +36,7 @@ function test (): ChartParamsPartial {
 export type HighlightTarget = 'series' | 'group' | 'category' | 'datum' | 'none'
 
 export interface Styles {
-  textSize: number
+  textSize: string | number
   unhighlightedOpacity: number
 }
 

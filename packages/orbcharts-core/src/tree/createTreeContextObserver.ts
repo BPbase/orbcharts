@@ -1,6 +1,6 @@
 import { map, shareReplay } from 'rxjs'
 import type { ContextObserverFn } from '../types'
-import { highlightObservable, categoryDataMapObservable } from '../utils/observables'
+import { highlightObservable, categoryDataMapObservable, textSizePxObservable } from '../utils/observables'
 import {
   nodeListObservable,
   existCategoryLabelsObservable,
@@ -8,6 +8,10 @@ import {
 } from './treeObservables'
 
 export const createTreeContextObserver: ContextObserverFn<'tree'> = ({ subject, observer }) => {
+
+  const textSizePx$ = textSizePxObservable(observer.fullChartParams$).pipe(
+    shareReplay(1)
+  )
 
   const nodeList$ = nodeListObservable({
     computedData$: observer.computedData$
@@ -48,6 +52,7 @@ export const createTreeContextObserver: ContextObserverFn<'tree'> = ({ subject, 
     fullDataFormatter$: observer.fullDataFormatter$,
     computedData$: observer.computedData$,
     layout$: observer.layout$,
+    textSizePx$,
     treeHighlight$,
     existCategoryLabels$,
     CategoryDataMap$,

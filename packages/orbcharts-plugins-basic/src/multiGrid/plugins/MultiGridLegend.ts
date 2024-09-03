@@ -77,7 +77,8 @@ export const MultiGridLegend = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_G
     seriesLabels$,
     fullParams$,
     layout$: observer.layout$,
-    fullChartParams$: observer.fullChartParams$
+    fullChartParams$: observer.fullChartParams$,
+    textSizePx$: observer.textSizePx$
   })
 
   return () => {

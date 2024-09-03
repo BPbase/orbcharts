@@ -148,7 +148,7 @@ function renderBubbles ({ graphicSelection, bubblesData, fullParams }: {
     .append<SVGGElement>("g")
     .attr('cursor', 'pointer')
   enter
-    .style('font-size', 12)
+    .attr('font-size', 12)
     .style('fill', '#ffffff')
     .attr("text-anchor", "middle")
     .attr("transform", (d) => {

@@ -47,7 +47,8 @@ export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND
     seriesLabels$,
     fullParams$,
     layout$: observer.layout$,
-    fullChartParams$: observer.fullChartParams$
+    fullChartParams$: observer.fullChartParams$,
+    textSizePx$: observer.textSizePx$
   })
 
   return () => {

@@ -179,3 +179,24 @@ export const categoryDataMapObservable = <DatumType extends ComputedDatumTypeMap
   )
 }
 
+export const textSizePxObservable = (chartParams$: Observable<ChartParams>) => {
+  return chartParams$.pipe(
+    map(d => d.styles.textSize),
+    distinctUntilChanged(),
+    map(data => {
+      let value = NaN
+      if (typeof data === 'string') {
+        if (data.includes('rem')) {
+          const rootFontSizePx = parseFloat(getComputedStyle(document.documentElement).fontSize)
+          const num = parseFloat(data)
+          value = num * rootFontSizePx
+        } else if (data.includes('px')) {
+          value = parseFloat(data)
+        }
+      } else if (typeof data === 'number') {
+        return data
+      }
+      return value ? value : 14 // default
+    })
+  )
+}

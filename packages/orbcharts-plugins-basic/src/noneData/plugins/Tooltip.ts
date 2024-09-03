@@ -17,6 +17,7 @@ import { defineNoneDataPlugin } from '@orbcharts/core'
 import { getSvgGElementSize, appendSvg } from '../../utils/d3Utils'
 import { getColor, getClassName } from '../../utils/orbchartsUtils'
 import { TOOLTIP_PARAMS } from '../defaults'
+import { textSizePxObservable } from '@orbcharts/core'
 
 interface TooltipStyle {
   backgroundColor: string
@@ -25,7 +26,8 @@ interface TooltipStyle {
   offset: [number, number]
   padding: number
   textColor: string
-  textSize: number
+  textSize: number | string // chartParams上的設定
+  textSizePx: number
 }
 
 const pluginName = 'Tooltip'
@@ -33,7 +35,7 @@ const gClassName = getClassName(pluginName, 'g')
 const boxClassName = getClassName(pluginName, 'box')
 
 function textToSvg (textArr: string[], textStyle: TooltipStyle) {
-  const lineHeight = textStyle.textSize * 1.5
+  const lineHeight = textStyle.textSizePx * 1.5
   return textArr
     .filter(d => d != '')
     .map((text, i) => {
@@ -203,9 +205,12 @@ export const Tooltip: PluginConstructor<any, string, any> = defineNoneDataPlugin
     // map(d => d as EventTypeMap<typeof chartType>)
   )
 
+  const textSizePx$ = textSizePxObservable(observer.fullChartParams$)
+
   const tooltipStyle$: Observable<TooltipStyle> = combineLatest({
     fullChartParams: observer.fullChartParams$,
-    fullParams: observer.fullParams$
+    fullParams: observer.fullParams$,
+    textSizePx: textSizePx$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
@@ -217,6 +222,7 @@ export const Tooltip: PluginConstructor<any, string, any> = defineNoneDataPlugin
         offset: data.fullParams.offset,
         padding: data.fullParams.padding,
         textSize: data.fullChartParams.styles.textSize,
+        textSizePx: data.textSizePx,
         textColor: getColor(data.fullParams.textColorType, data.fullChartParams),
       }
     })

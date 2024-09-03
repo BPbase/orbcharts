@@ -7,7 +7,7 @@ export interface ContextObserverGrid<PluginParams>
   extends
     ContextObserverBase<'grid', PluginParams>,
     ContextObserverGridDetail {
-  
+      textSizePx$: Observable<number>
     }
 
 export interface ContextObserverGridDetail {

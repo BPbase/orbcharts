@@ -47,7 +47,8 @@ export const TreeLegend = defineTreePlugin(pluginName, DEFAULT_TREE_LEGEND_PARAM
     seriesLabels$: categoryLabels$,
     fullParams$,
     layout$: observer.layout$,
-    fullChartParams$: observer.fullChartParams$
+    fullChartParams$: observer.fullChartParams$,
+    textSizePx$: observer.textSizePx$
   })
 
   return () => {
