@@ -20,13 +20,15 @@ const pluginName = 'TreeMap'
 const treeClassName = getClassName(pluginName, 'tree')
 const tileClassName = getClassName(pluginName, 'tile')
 
-function renderTree ({ selection, treeData, fullParams, fullChartParams }: {
+function renderTree ({ selection, treeData, fullParams, fullChartParams, textSizePx }: {
   selection: d3.Selection<any, any, any, any>
   treeData: d3.HierarchyRectangularNode<ComputedDataTree>[]
   fullParams: TreeMapParams
   fullChartParams: ChartParams
+  textSizePx: number
 }) {
-  const padding = fullChartParams.styles.textSize / 2
+  const padding = textSizePx / 2
+  const lineHeight = textSizePx // 行高
 
   const cell = selection.selectAll<SVGGElement, d3.HierarchyRectangularNode<ComputedDataTree>>(`g.${treeClassName}`)
     .data(treeData, d => d.data.id)
@@ -75,7 +77,6 @@ function renderTree ({ selection, treeData, fullParams, fullChartParams }: {
               const words = d.data.label.split(/\s+/).reverse() // 以空隔分割字串
               let word;
               let line: string[] = []
-              const lineHeight = fullChartParams.styles.textSize // 行高
               const x = textElement.attr("x")
               let y = textElement.attr("y")
               let dy = 0
@@ -180,7 +181,8 @@ export const TreeMap = defineTreePlugin(pluginName, DEFAULT_TREE_MAP_PARAMS)(({ 
     selection: of(selection),
     treeData: treeData$,
     fullParams: observer.fullParams$,
-    fullChartParams: observer.fullChartParams$
+    fullChartParams: observer.fullChartParams$,
+    textSizePx: observer.textSizePx$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
@@ -189,7 +191,8 @@ export const TreeMap = defineTreePlugin(pluginName, DEFAULT_TREE_MAP_PARAMS)(({ 
         selection,
         treeData: data.treeData,
         fullParams: data.fullParams,
-        fullChartParams: data.fullChartParams
+        fullChartParams: data.fullChartParams,
+        textSizePx: data.textSizePx
       })
     })
   )

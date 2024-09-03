@@ -3,7 +3,8 @@ import type { ContextObserverFn } from '../types'
 import {
   highlightObservable,
   seriesDataMapObservable,
-  groupDataMapObservable } from '../utils/observables'
+  groupDataMapObservable,
+  textSizePxObservable } from '../utils/observables'
 import {
   gridAxesTransformObservable,
   gridAxesReverseTransformObservable,
@@ -17,6 +18,10 @@ import {
 
 export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, observer }) => {
   
+  const textSizePx$ = textSizePxObservable(observer.fullChartParams$).pipe(
+    shareReplay(1)
+  )
+
   const isSeriesPositionSeprate$ = isSeriesPositionSeprateObservable({
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$
@@ -108,6 +113,7 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     fullDataFormatter$: observer.fullDataFormatter$,
     computedData$: observer.computedData$,
     layout$: observer.layout$,
+    textSizePx$,
     isSeriesPositionSeprate$,
     gridContainer$,
     gridAxesTransform$,

@@ -47,7 +47,8 @@ export const GridLegend = defineGridPlugin(pluginName, DEFAULT_GRID_LEGEND_PARAM
     seriesLabels$,
     fullParams$,
     layout$: observer.layout$,
-    fullChartParams$: observer.fullChartParams$
+    fullChartParams$: observer.fullChartParams$,
+    textSizePx$: observer.textSizePx$
   })
 
   return () => {

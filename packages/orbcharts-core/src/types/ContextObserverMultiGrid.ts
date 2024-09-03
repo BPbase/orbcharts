@@ -6,6 +6,7 @@ import type { TransformData } from './TransformData'
 import type { ContextObserverGridDetail } from './ContextObserverGrid'
 
 export interface ContextObserverMultiGrid<PluginParams> extends ContextObserverBase<'multiGrid', PluginParams> {
+  textSizePx$: Observable<number>
   multiGridEachDetail$: Observable<ContextObserverGridDetail[]>
   multiGridContainer$: Observable<ContainerPosition[][]>
 }

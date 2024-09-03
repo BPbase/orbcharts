@@ -36,6 +36,7 @@ interface BaseLegendContext {
   fullParams$: Observable<BaseLegendParams>
   layout$: Observable<Layout>
   fullChartParams$: Observable<ChartParams>
+  textSizePx$: Observable<number>
 }
 
 // 第1層 - 定位的容器
@@ -107,7 +108,8 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
   seriesLabels$,
   fullParams$,
   layout$,
-  fullChartParams$
+  fullChartParams$,
+  textSizePx$
 }) => {
 
   const rootPositionClassName = getClassName(pluginName, 'root-position')
@@ -280,7 +282,8 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
     lineDirection: lineDirection$,
     lineMaxSize: lineMaxSize$,
     defaultListStyle: defaultListStyle$,
-    SeriesLabelColorMap: SeriesLabelColorMap$
+    SeriesLabelColorMap: SeriesLabelColorMap$,
+    textSizePx: textSizePx$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
@@ -291,8 +294,8 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
           return prev
         }
         
-        const textWidth = measureTextWidth(current, data.fullChartParams.styles.textSize)
-        const itemWidth = (data.fullChartParams.styles.textSize * 1.5) + textWidth
+        const textWidth = measureTextWidth(current, data.textSizePx)
+        const itemWidth = (data.textSizePx * 1.5) + textWidth
         // const color = getSeriesColor(currentIndex, data.fullChartParams)
         const color = data.SeriesLabelColorMap.get(current)
         const lastItem: LegendItem | null = prev[0] && prev[0][0]
@@ -307,10 +310,10 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
 
           if (_data.lineDirection === 'column') {
             let tempTranslateY = _lastItem
-              ? _lastItem.translateY + _data.fullChartParams.styles.textSize + _data.fullParams.gap
+              ? _lastItem.translateY + _data.textSizePx + _data.fullParams.gap
               : 0
             
-            if ((tempTranslateY + _data.fullChartParams.styles.textSize) > _data.lineMaxSize) {
+            if ((tempTranslateY + _data.textSizePx) > _data.lineMaxSize) {
               // 換行
               lineIndex = _lastItem.lineIndex + 1
               itemIndex = 0
@@ -340,7 +343,7 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
               itemIndex = _lastItem ? _lastItem.itemIndex + 1 : 0
               translateX = tempTranslateX
             }
-            translateY = (_data.fullChartParams.styles.textSize + _data.fullParams.gap) * lineIndex
+            translateY = (_data.textSizePx + _data.fullParams.gap) * lineIndex
           }
           
           return { translateX, translateY, lineIndex, itemIndex }
@@ -379,7 +382,8 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
     fullParams: fullParams$,
     fullChartParams: fullChartParams$,
     lineDirection: lineDirection$,
-    lengendItems: lengendItems$
+    lengendItems: lengendItems$,
+    textSizePx: textSizePx$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
@@ -404,10 +408,10 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
             return p + maxWidthInLine
           }, 0)
           width += _data.fullParams.gap * (_lengendItems.length - 1)
-          height = firstLineLastItem.translateY + _data.fullChartParams.styles.textSize
+          height = firstLineLastItem.translateY + _data.textSizePx
         } else {
           width = firstLineLastItem.translateX + firstLineLastItem.itemWidth
-          height = (_data.fullChartParams.styles.textSize * _lengendItems.length) + (_data.fullParams.gap * (_lengendItems.length - 1))
+          height = (_data.textSizePx * _lengendItems.length) + (_data.fullParams.gap * (_lengendItems.length - 1))
         }
 
         return { width, height }
@@ -565,7 +569,8 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
     lengendListSelection: lengendListSelection$,
     fullParams: fullParams$,
     fullChartParams: fullChartParams$,
-    lengendItems: lengendItems$
+    lengendItems: lengendItems$,
+    textSizePx: textSizePx$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
@@ -589,7 +594,7 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
           return `translate(${d.translateX}, ${d.translateY})`
         })
         .each((d, i, g) => {
-          const rectCenterX = data.fullChartParams.styles.textSize / 2
+          const rectCenterX = data.textSizePx / 2
           const transformRectWidth = - d.listRectWidth / 2
           const transformRectHeight = - d.listRectHeight / 2
           // 方塊
@@ -619,7 +624,7 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
               },
               exit => exit.remove()
             )
-            .attr('x', data.fullChartParams.styles.textSize * 1.5)
+            .attr('x', data.textSizePx * 1.5)
             .attr('font-size', data.fullChartParams.styles.textSize)
             .attr('fill', d => data.fullParams.textColorType === 'series'
               ? getSeriesColor(d.seriesIndex, data.fullChartParams)

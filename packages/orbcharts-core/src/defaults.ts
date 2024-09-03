@@ -73,7 +73,8 @@ export const CHART_PARAMS_DEFAULT: ChartParams = {
     }
   },
   styles: {
-    textSize: 14,
+    // textSize: 14,
+    textSize: '0.875rem',
     unhighlightedOpacity: 0.3
   },
   transitionDuration: 800,

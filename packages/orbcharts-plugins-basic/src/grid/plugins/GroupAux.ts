@@ -126,14 +126,15 @@ function createLabelData ({ groupLabel, axisX, fullParams }: {
     : []
 }
 
-function renderLabel ({ selection, labelData, fullParams, fullChartParams, gridAxesReverseTransformValue }: {
+function renderLabel ({ selection, labelData, fullParams, fullChartParams, gridAxesReverseTransformValue, textSizePx }: {
   selection: d3.Selection<any, unknown, any, unknown>
   labelData: LabelDatum[]
   fullParams: GroupAuxParams
   fullChartParams: ChartParams
   gridAxesReverseTransformValue: string
+  textSizePx: number
 }) {
-  const rectHeight = fullChartParams.styles.textSize + 4
+  const rectHeight = textSizePx + 4
 
   const gUpdate = selection
     .selectAll<SVGGElement, LabelDatum>(`g.${labelClassName}`)
@@ -157,7 +158,7 @@ function renderLabel ({ selection, labelData, fullParams, fullChartParams, gridA
   gUpdate.exit().remove()
 
   axisLabelSelection.each((datum, i, n) => {
-    const rectWidth = measureTextWidth(datum.text, fullChartParams.styles.textSize) + 12
+    const rectWidth = measureTextWidth(datum.text, textSizePx) + 12
     const rectX = - rectWidth / 2
 
     const rectUpdate = d3.select(n[i])
@@ -503,6 +504,7 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
     gridAxesReverseTransform: observer.gridAxesReverseTransform$,
     GroupDataMap: observer.GroupDataMap$,
     gridGroupPositionFn: gridGroupPositionFn$,
+    textSizePx: observer.textSizePx$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
@@ -539,7 +541,8 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
       labelData,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams,
-      gridAxesReverseTransformValue: data.gridAxesReverseTransform.value
+      gridAxesReverseTransformValue: data.gridAxesReverseTransform.value,
+      textSizePx: data.textSizePx
     })
 
     // label的事件
