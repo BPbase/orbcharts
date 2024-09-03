@@ -4,5 +4,10 @@ export default defineNuxtConfig({
   app: {
     baseURL: process.env.NODE_ENV === 'production' ? '/orbcharts/' : '/',
     buildAssetsDir: '/static/'
+  },
+  nitro: {
+    prerender:{
+      failOnError:false,
+    }
   }
 })
