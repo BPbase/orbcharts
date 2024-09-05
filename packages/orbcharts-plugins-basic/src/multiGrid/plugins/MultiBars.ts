@@ -35,6 +35,8 @@ export const MultiBars = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_BARS_PA
           selection: gridSelection,
           computedData$: d.gridComputedData$,
           visibleComputedData$: d.visibleComputedData$,
+          computedLayoutData$: d.computedLayoutData$,
+          visibleComputedLayoutData$: d.visibleComputedLayoutData$,
           existSeriesLabels$: d.existSeriesLabels$,
           SeriesDataMap$: d.SeriesDataMap$,
           GroupDataMap$: d.GroupDataMap$,

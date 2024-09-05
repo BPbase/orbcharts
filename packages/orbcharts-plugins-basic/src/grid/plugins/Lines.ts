@@ -14,6 +14,9 @@ export const Lines = defineGridPlugin(pluginName, DEFAULT_LINES_PARAMS)(({ selec
   const unsubscribeBaseBars = createBaseLines(pluginName, {
     selection,
     computedData$: observer.computedData$,
+    computedLayoutData$: observer.computedLayoutData$,
+    visibleComputedData$: observer.visibleComputedData$,
+    visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
     existSeriesLabels$: observer.existSeriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,

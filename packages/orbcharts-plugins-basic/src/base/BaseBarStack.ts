@@ -12,6 +12,8 @@ import type { BasePluginFn } from './types'
 import type {
   ComputedDatumGrid,
   ComputedDataGrid,
+  ComputedLayoutDatumGrid,
+  ComputedLayoutDataGrid,
   DataFormatterGrid,
   EventGrid,
   ChartParams,
@@ -21,6 +23,7 @@ import type {
 import { getD3TransitionEase } from '../utils/d3Utils'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 import { gridSelectionsObservable } from '../grid/gridObservables'
+import { shareReplay } from 'rxjs/operators'
 
 export interface BaseBarStackParams {
   barWidth: number
@@ -31,7 +34,9 @@ export interface BaseBarStackParams {
 interface BaseBarStackContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
+  computedLayoutData$: Observable<ComputedLayoutDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
+  visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
   existSeriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
@@ -52,7 +57,7 @@ interface BaseBarStackContext {
 }
 
 
-interface GraphicDatum extends ComputedDatumGrid {
+interface GraphicDatum extends ComputedLayoutDatumGrid {
   _barStartY: number // bar的起點y座標
   _barHeight: number // bar的高度
 }
@@ -287,7 +292,9 @@ function highlight ({ selection, ids, fullChartParams }: {
 export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName: string, {
   selection,
   computedData$,
+  computedLayoutData$,
   visibleComputedData$,
+  visibleComputedLayoutData$,
   existSeriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
@@ -309,136 +316,6 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
   const clipPathID = getUniID(pluginName, 'clipPath-box')
   const rectClassName = getClassName(pluginName, 'rect')
 
-  // const axisSelection: d3.Selection<SVGGElement, any, any, any> = selection
-  //   .append('g')
-  //   .attr('clip-path', `url(#${clipPathID})`)
-  // const defsSelection: d3.Selection<SVGDefsElement, ComputedDatumGrid, any, any> = axisSelection.append('defs')
-  // const graphicGSelection: d3.Selection<SVGGElement, any, any, any> = axisSelection.append('g')
-  // const barSelection$: Subject<d3.Selection<SVGRectElement, ComputedDatumGrid, SVGGElement, unknown>> = new Subject()
-
-  // gridAxesTransform$
-  //   .pipe(
-  //     takeUntil(destroy$),
-  //     map(d => d.value),
-  //     distinctUntilChanged()
-  //   ).subscribe(d => {
-  //     axisSelection
-  //       .style('transform', d)
-  //   })
-
-  // gridGraphicTransform$
-  //   .pipe(
-  //     takeUntil(destroy$),
-  //     switchMap(async d => d.value),
-  //     distinctUntilChanged()
-  //   ).subscribe(d => {
-  //     graphicGSelection
-  //       .transition()
-  //       .duration(50)
-  //       .style('transform', d)
-  //   })
-
-  // const seriesSelection$ = computedData$.pipe(
-  //   takeUntil(destroy$),
-  //   distinctUntilChanged((a, b) => {
-  //     // 只有當series的數量改變時，才重新計算
-  //     return a.length === b.length
-  //   }),
-  //   map((computedData, i) => {
-  //     return selection
-  //       .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${seriesClassName}`)
-  //       .data(computedData, d => d[0] ? d[0].seriesIndex : i)
-  //       .join(
-  //         enter => {
-  //           return enter
-  //             .append('g')
-  //             .classed(seriesClassName, true)
-  //             .each((d, i, g) => {
-  //               const axesSelection = d3.select(g[i])
-  //                 .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${axesClassName}`)
-  //                 .data([i])
-  //                 .join(
-  //                   enter => {
-  //                     return enter
-  //                       .append('g')
-  //                       .classed(axesClassName, true)
-  //                       .attr('clip-path', `url(#${clipPathID})`)
-  //                       .each((d, i, g) => {
-  //                         const defsSelection = d3.select(g[i])
-  //                           .selectAll<SVGDefsElement, any>('defs')
-  //                           .data([i])
-  //                           .join('defs')
-            
-  //                         const graphicGSelection = d3.select(g[i])
-  //                           .selectAll<SVGGElement, any>('g')
-  //                           .data([i])
-  //                           .join('g')
-  //                           .classed(graphicClassName, true)
-  //                       })
-  //                   },
-  //                   update => update,
-  //                   exit => exit.remove()
-  //                 )
-  //             })
-  //         },
-  //         update => update,
-  //         exit => exit.remove()
-  //       )
-  //   })
-  // )
-
-  // combineLatest({
-  //   seriesSelection: seriesSelection$,
-  //   gridContainer: gridContainer$                                                                                                                                                                                       
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async d => d)
-  // ).subscribe(data => {
-  //   data.seriesSelection
-  //     .transition()
-  //     .attr('transform', (d, i) => {
-  //       const translate = data.gridContainer[i].translate
-  //       const scale = data.gridContainer[i].scale
-  //       return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
-  //     })
-  // })
-
-
-  // const axesSelection$ = combineLatest({
-  //   seriesSelection: seriesSelection$,
-  //   gridAxesTransform: gridAxesTransform$
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async d => d),
-  //   map(data => {
-  //     return data.seriesSelection
-  //       .select<SVGGElement>(`g.${axesClassName}`)
-  //       .style('transform', data.gridAxesTransform.value)
-  //   })
-  // )
-  // const defsSelection$ = axesSelection$.pipe(
-  //   takeUntil(destroy$),
-  //   map(axesSelection => {
-  //     return axesSelection.select<SVGDefsElement>('defs')
-  //   })
-  // )
-  // const graphicGSelection$ = combineLatest({
-  //   axesSelection: axesSelection$,
-  //   gridGraphicTransform: gridGraphicTransform$
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async d => d),
-  //   map(data => {
-  //     const graphicGSelection = data.axesSelection
-  //       .select<SVGGElement>(`g.${graphicClassName}`)
-  //     graphicGSelection
-  //       .transition()
-  //       .duration(50)
-  //       .style('transform', data.gridGraphicTransform.value)
-  //     return graphicGSelection
-  //   })
-  // )
-
   const { 
     seriesSelection$,
     axesSelection$,
@@ -455,7 +332,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
   })
 
 
-  const zeroY$ = visibleComputedData$.pipe(
+  const zeroY$ = visibleComputedLayoutData$.pipe(
     takeUntil(destroy$),
     map(d => d[0] && d[0][0]
       ? d[0][0].axisY - d[0][0].axisYFromZero
@@ -536,7 +413,8 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
         })
       })
       return Array.from(GroupLabelSet)
-    })
+    }),
+    shareReplay(1)
   )
 
   const transitionDuration$ = fullChartParams$.pipe(
@@ -598,7 +476,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
   //   })
   // )
 
-  const yRatio$ = combineLatest({
+  const groupScaleDomain$ = combineLatest({
     computedData: computedData$,
     dataFormatter: fullDataFormatter$,
   }).pipe(
@@ -608,56 +486,70 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
       const groupScaleDomainMin = data.dataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-        ? groupMin - data.dataFormatter.grid.groupAxis.scalePadding
-        : data.dataFormatter.grid.groupAxis.scaleDomain[0] as number - data.dataFormatter.grid.groupAxis.scalePadding
+        ? groupMin // - data.dataFormatter.grid.groupAxis.scalePadding
+        : data.dataFormatter.grid.groupAxis.scaleDomain[0] as number // - data.dataFormatter.grid.groupAxis.scalePadding
       const groupScaleDomainMax = data.dataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
-        ? groupMax + data.dataFormatter.grid.groupAxis.scalePadding
-        : data.dataFormatter.grid.groupAxis.scaleDomain[1] as number + data.dataFormatter.grid.groupAxis.scalePadding
-        
-      const filteredData = data.computedData
+        ? groupMax // + data.dataFormatter.grid.groupAxis.scalePadding
+        : data.dataFormatter.grid.groupAxis.scaleDomain[1] as number // + data.dataFormatter.grid.groupAxis.scalePadding
+
+      return [groupScaleDomainMin, groupScaleDomainMax]
+    })
+  )
+
+  // 堆疊後的高度對應圖軸的比例（最大值/最大值所在group的總和）
+  const yRatio$ = combineLatest({
+    visibleComputedLayoutData: visibleComputedLayoutData$,
+    groupScaleDomain: groupScaleDomain$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d),
+    map(data => {
+      const groupScaleDomainMin = data.groupScaleDomain[0]
+      const groupScaleDomainMax = data.groupScaleDomain[1]
+      // 只選取group篩選範圍內的資料
+      const filteredData = data.visibleComputedLayoutData
         .map(d => {
           return d.filter((_d, i) => {
             return _d.groupIndex >= groupScaleDomainMin && _d.groupIndex <= groupScaleDomainMax
           })
         })
-      // console.log('filteredData', filteredData)
-        
-      if (filteredData.length <= 1) {
+      
+      const filteredDataList = filteredData.flat()
+      if (filteredDataList.length <= 1) {
         return 1
-      } else {
-        const yArr = filteredData.flat().map(d => d.axisYFromZero)
-        const barMaxY = Math.max(...yArr)
-        // const stackYArr = filteredData.map(d => d.reduce((prev, current) => prev + current.axisYFromZero, 0))
-        const stackYArr = data.computedData[0]
-          ? data.computedData[0].map((_, groupIndex) => {
-            // 加總同一group的value
-            return data.computedData.reduce((prev, current) => {
-              return prev + current[groupIndex].axisYFromZero
-            }, 0)
-          })
-          : []
-        const barStackMaxY = Math.max(...stackYArr)
-
-        return barMaxY / barStackMaxY
       }
+      
+      const maxValueDatum = filteredDataList.reduce((max, current) => {
+        return current.value > max.value ? current : max;
+      }, filteredDataList[0])
+      const maxValueGroupIndex = maxValueDatum.groupIndex
+      const maxValueGroupSum = filteredDataList
+        .filter(d => d.groupIndex === maxValueGroupIndex)
+        .reduce((sum, current) => {
+          return sum + current.value
+        }, 0)
+      return maxValueDatum.value / maxValueGroupSum
     })
   )
 
   const stackedData$ = combineLatest({
-    computedData: computedData$,
+    computedLayoutData: computedLayoutData$,
     yRatio: yRatio$,
     zeroY: zeroY$
   }).pipe(
     takeUntil(destroy$),
     map(data => {
-      let accYArr: number[] = data.computedData[0]
-        ? data.computedData[0].map(() => data.zeroY)
+      let accYArr: number[] = data.computedLayoutData[0]
+        ? data.computedLayoutData[0].map(() => data.zeroY)
         : []
-      return data.computedData.map((series, seriesIndex) => {
+      return data.computedLayoutData.map((series, seriesIndex) => {
         return series.map((datum, groupIndex) => {
           const _barStartY = accYArr[groupIndex] // 前一次的累加高度
-          const _barHeight = datum.axisYFromZero * data.yRatio
-          accYArr[groupIndex] = accYArr[groupIndex] + _barHeight // 累加高度
+          let _barHeight = 0
+          if (datum.visible) {
+            _barHeight = datum.axisYFromZero * data.yRatio
+            accYArr[groupIndex] = accYArr[groupIndex] + _barHeight // 累加高度
+          }
           return <GraphicDatum>{
             ...datum,
             _barStartY,
@@ -682,13 +574,13 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
   )
 
   const noneStackedData$ = combineLatest({
-    computedData: computedData$,
+    computedLayoutData: computedLayoutData$,
     // yRatio: yRatio$,
     zeroY: zeroY$
   }).pipe(
     takeUntil(destroy$),
     map(data => {
-      return data.computedData.map((series, seriesIndex) => {
+      return data.computedLayoutData.map((series, seriesIndex) => {
         return series.map((datum, groupIndex) => {
           return <GraphicDatum>{
             ...datum,
@@ -730,9 +622,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
     distinctUntilChanged()
   )
 
-  const barSelection$ = new Subject<d3.Selection<SVGRectElement, ComputedDatumGrid, SVGGElement, unknown>>()
-
-  combineLatest({
+  const barSelection$ = combineLatest({
     graphicGSelection: graphicGSelection$,
     graphicData: graphicData$,
     zeroY: zeroY$,
@@ -745,30 +635,38 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
     transformedBarRadius: transformedBarRadius$,
     delayGroup: delayGroup$,
     transitionItem: transitionItem$,
-    SeriesDataMap: SeriesDataMap$,
-    GroupDataMap: GroupDataMap$,
     isSeriesPositionSeprate: isSeriesPositionSeprate$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
-  ).subscribe(data => {
-    const barSelection = renderRectBars({
-      graphicGSelection: data.graphicGSelection,
-      rectClassName,
-      barData: data.graphicData,
-      zeroY: data.zeroY,
-      groupLabels: data.groupLabels,
-      // barScale: data.barScale,
-      params: data.params,
-      chartParams: data.chartParams,
-      barWidth: data.barWidth,
-      transformedBarRadius: data.transformedBarRadius,
-      delayGroup: data.delayGroup,
-      transitionItem: data.transitionItem,
-      isSeriesPositionSeprate: data.isSeriesPositionSeprate
+    map(data => {
+      return renderRectBars({
+        graphicGSelection: data.graphicGSelection,
+        rectClassName,
+        barData: data.graphicData,
+        zeroY: data.zeroY,
+        groupLabels: data.groupLabels,
+        // barScale: data.barScale,
+        params: data.params,
+        chartParams: data.chartParams,
+        barWidth: data.barWidth,
+        transformedBarRadius: data.transformedBarRadius,
+        delayGroup: data.delayGroup,
+        transitionItem: data.transitionItem,
+        isSeriesPositionSeprate: data.isSeriesPositionSeprate
+      })
     })
+  )
 
-    barSelection!
+  combineLatest({
+    barSelection: barSelection$,
+    computedData: computedData$,
+    highlightTarget: highlightTarget$,
+    SeriesDataMap: SeriesDataMap$,
+    GroupDataMap: GroupDataMap$,
+  }).subscribe(data => {
+
+    data.barSelection!
       .on('mouseover', (event, datum) => {
         event.stopPropagation()
 
@@ -786,7 +684,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
           groupIndex: datum.groupIndex,
           groupLabel: datum.groupLabel,
           event,
-          data: data.graphicData
+          data: data.computedData
         })
       })
       .on('mousemove', (event, datum) => {
@@ -806,7 +704,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
           groupIndex: datum.groupIndex,
           groupLabel: datum.groupLabel,
           event,
-          data: data.graphicData
+          data: data.computedData
         })
       })
       .on('mouseout', (event, datum) => {
@@ -826,7 +724,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
           groupIndex: datum.groupIndex,
           groupLabel: datum.groupLabel,
           event,
-          data: data.graphicData
+          data: data.computedData
         })
       })
       .on('click', (event, datum) => {
@@ -846,11 +744,10 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
           groupIndex: datum.groupIndex,
           groupLabel: datum.groupLabel,
           event,
-          data: data.graphicData
+          data: data.computedData
         })
       })
 
-    barSelection$.next(barSelection!)
   })
 
   // const datumList$ = computedData$.pipe(

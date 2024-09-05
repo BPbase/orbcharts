@@ -354,7 +354,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       })
     
       const filteredMinAndMax = getMinAndMaxValue(filteredData.flat())
-
+      
       subscriber.next(filteredMinAndMax)
     })
   })

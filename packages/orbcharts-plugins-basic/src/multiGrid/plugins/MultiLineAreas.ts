@@ -35,6 +35,9 @@ export const MultiLineAreas = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_LI
         unsubscribeFnArr[i] = createBaseLineAreas(pluginName, {
           selection: gridSelection,
           computedData$: d.gridComputedData$,
+          computedLayoutData$: d.computedLayoutData$,
+          visibleComputedData$: d.visibleComputedData$,
+          visibleComputedLayoutData$: d.visibleComputedLayoutData$,
           existSeriesLabels$: d.existSeriesLabels$,
           SeriesDataMap$: d.SeriesDataMap$,
           GroupDataMap$: d.GroupDataMap$,

@@ -17,11 +17,15 @@ import type {
   ComputedDatumTypeMap,
   ContextObserverFn,
   DataTypeMap,
+  DataGridDatum,
+  ComputedDatumGrid,
   DataFormatterTypeMap,
   DataFormatterGrid,
   DataFormatterGridContainer,
   DataFormatterValueAxis,
   DataFormatterGroupAxis,
+  ComputedLayoutDatumGrid,
+  ComputedLayoutDataGrid,
   ContainerPosition,
   HighlightTarget,
   Layout,
@@ -31,6 +35,76 @@ import { createAxisLinearScale, createAxisPointScale, createAxisQuantizeScale } 
 import { highlightObservable } from '../utils/observables'
 import { calcGridContainerPosition } from '../utils/orbchartsUtils'
 import { DATA_FORMATTER_GRID_GRID_DEFAULT } from '../defaults'
+import { getMinAndMaxValue, transposeData, createGridSeriesLabels, createGridGroupLabels, seriesColorPredicate } from '../utils/orbchartsUtils'
+
+export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
+  computedData$: Observable<ComputedDataTypeMap<'grid'>>
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
+  layout$: Observable<Layout>
+}): Observable<ComputedLayoutDatumGrid[][]> => {
+
+  // 未篩選group範圍前的group scale
+  function createOriginGroupScale (computedData: ComputedDatumGrid[][], dataFormatter: DataFormatterGrid, layout: Layout) {
+    const groupAxisWidth = (dataFormatter.grid.groupAxis.position === 'top' || dataFormatter.grid.groupAxis.position === 'bottom')
+      ? layout.width
+      : layout.height
+    const groupEndIndex = computedData[0] ? computedData[0].length - 1 : 0
+    const groupScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+      maxValue: groupEndIndex,
+      minValue: 0,
+      axisWidth: groupAxisWidth,
+      scaleDomain: [0, groupEndIndex], // 不使用dataFormatter設定
+      scaleRange: [0, 1] // 不使用dataFormatter設定
+    })
+    return groupScale
+  }
+
+  // 未篩選group範圍及visible前的value scale
+  function createOriginValueScale (computedData: ComputedDatumGrid[][], dataFormatter: DataFormatterGrid, layout: Layout) {
+    const valueAxisWidth = (dataFormatter.grid.valueAxis.position === 'left' || dataFormatter.grid.valueAxis.position === 'right')
+      ? layout.height
+      : layout.width
+  
+    const listData = computedData.flat()
+    const [minValue, maxValue] = getMinAndMaxValue(listData)
+
+    const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+      maxValue,
+      minValue,
+      axisWidth: valueAxisWidth,
+      scaleDomain: [minValue, maxValue], // 不使用dataFormatter設定
+      scaleRange: [0, 1] // 不使用dataFormatter設定
+    })
+    
+    return valueScale
+  }
+
+  return combineLatest({
+    computedData: computedData$,
+    fullDataFormatter: fullDataFormatter$,
+    layout: layout$
+  }).pipe(
+    switchMap(async d => d),
+    map(data => {
+      const groupScale = createOriginGroupScale(data.computedData, data.fullDataFormatter, data.layout)
+      const valueScale = createOriginValueScale(data.computedData, data.fullDataFormatter, data.layout)
+      const zeroY = valueScale(0)
+
+      return data.computedData.map((seriesData, seriesIndex) => {
+        return seriesData.map((groupDatum, groupIndex) => {
+          const axisX = groupScale(groupIndex)
+          const axisY = valueScale(groupDatum.value ?? 0)
+          return {
+            ...groupDatum,
+            axisX,
+            axisY,
+            axisYFromZero: axisY - zeroY
+          }
+        })
+      })
+    })
+  )
+}
 
 export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
   fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
@@ -218,10 +292,16 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
     // -- translateX, scaleX --
     const rangeMinX = groupScale(groupMin)
     const rangeMaxX = groupScale(groupMax)
-    translateX = rangeMinX
-    const gWidth = rangeMaxX - rangeMinX
-    scaleX = gWidth / groupAxisWidth
-  
+    if (groupMin == groupMax) {
+      // 當group只有一個
+      translateX = 0
+      scaleX = 1
+    } else {
+      translateX = rangeMinX
+      const gWidth = rangeMaxX - rangeMinX
+      scaleX = gWidth / groupAxisWidth
+    }
+
     // -- valueScale --
     const filteredData = data.map((d, i) => {
       return d.filter((_d, _i) => {
@@ -397,6 +477,21 @@ export const existSeriesLabelsObservable = ({ computedData$ }: { computedData$: 
 
 export const gridVisibleComputedDataObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
   return computedData$.pipe(
+    map(data => {
+      const visibleComputedData = data
+        .map(d => {
+          return d.filter(_d => {
+            return _d.visible == true
+          })
+        })
+        .filter(d => d.length)
+      return visibleComputedData
+    })
+  )
+}
+
+export const gridVisibleComputedLayoutDataObservable = ({ computedLayoutData$ }: { computedLayoutData$: Observable<ComputedLayoutDataGrid> }) => {
+  return computedLayoutData$.pipe(
     map(data => {
       const visibleComputedData = data
         .map(d => {

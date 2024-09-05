@@ -14,7 +14,9 @@ export const Bars = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)(({ selecti
   const unsubscribeBaseBars = createBaseBars(pluginName, {
     selection,
     computedData$: observer.computedData$,
+    computedLayoutData$: observer.computedLayoutData$,
     visibleComputedData$: observer.visibleComputedData$,
+    visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
     existSeriesLabels$: observer.existSeriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,

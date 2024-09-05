@@ -1,6 +1,7 @@
 import type { ChartType } from './Chart'
 import type { ChartParams } from './ChartParams'
 import type { DataTypeMap, DatumTypeMap } from './Data'
+import type { ComputedDataTypeMap, ComputedDatumTypeMap } from './ComputedData'
 import type { DataFormatterSeries, DataFormatterSeriesPartial } from './DataFormatterSeries'
 import type { DataFormatterGrid, DataFormatterGridPartial } from './DataFormatterGrid'
 import type { DataFormatterMultiGrid, DataFormatterMultiGridPartial } from './DataFormatterMultiGrid'
@@ -29,7 +30,7 @@ export interface DataFormatterContext<T extends ChartType> {
   data: DataTypeMap<T>
   dataFormatter: DataFormatterTypeMap<T>
   chartParams: ChartParams
-  layout: Layout
+  // layout: Layout
 }
 
 
@@ -90,6 +91,8 @@ export interface DataFormatterGroupAxis {
 
 // export type ValueFormat = string | ((text: d3.NumberValue) => string)
 
-export type VisibleFilter<T extends ChartType> = (datum: DatumTypeMap<T>, rowIndex: number, columnIndex: number, context: DataFormatterContext<T>) => boolean | null
+// export type VisibleFilter<T extends ChartType> = (datum: DatumTypeMap<T>, rowIndex: number, columnIndex: number, context: DataFormatterContext<T>) => boolean | null
 
-export type TooltipContentFormat<T extends ChartType> = (datum: DatumTypeMap<T>, rowIndex: number, columnIndex: number, context: DataFormatterContext<T>) => string | null
+export type VisibleFilter<T extends ChartType> = (datum: ComputedDatumTypeMap<T>, context: DataFormatterContext<T>) => boolean | null
+
+// export type TooltipContentFormat<T extends ChartType> = (datum: DatumTypeMap<T>, rowIndex: number, columnIndex: number, context: DataFormatterContext<T>) => string | null

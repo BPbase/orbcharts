@@ -14,6 +14,7 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUP_AXIS_PARAMS)
   const unsubscribeBaseGroupAxis = createBaseGroupAxis(pluginName, {
     selection,
     computedData$: observer.computedData$,
+    computedLayoutData$: observer.computedLayoutData$,
     fullParams$: observer.fullParams$,
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,  

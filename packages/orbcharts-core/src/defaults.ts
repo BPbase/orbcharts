@@ -160,7 +160,7 @@ export const DATA_FORMATTER_SERIES_DEFAULT: DataFormatterSeries = {
 }
 
 export const DATA_FORMATTER_GRID_GRID_DEFAULT: DataFormatterGridGrid = {
-  visibleFilter: (datum, rowIndex, columnIndex, context) => true,
+  // visibleFilter: (datum, context) => true,
   gridData: {
     seriesDirection: 'row',
     rowLabels: [],
@@ -175,6 +175,7 @@ export const DATA_FORMATTER_GRID_GRID_DEFAULT: DataFormatterGridGrid = {
 export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
   // ...DATA_FORMATTER_WITH_VALUE,
   type: 'grid',
+  visibleFilter: (datum, context) => true,
   grid: {
     ...DATA_FORMATTER_GRID_GRID_DEFAULT
   },
@@ -188,6 +189,7 @@ export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
   //   const seriesIndex = dataFormatter.grid.seriesDirection === 'row' ? rowIndex : columnIndex
   //   return chartParams.colors[chartParams.colorScheme].series[seriesIndex]
   // },
+  
 }
 
 // export const DATA_FORMATTER_MULTI_GRID_MULTI_GRID_DEFAULT: DataFormatterMultiGridMultiGrid = {
@@ -202,7 +204,7 @@ export const DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT: DataFormatterMultiGridGrid 
 
 export const DATA_FORMATTER_MULTI_GRID_DEFAULT: DataFormatterMultiGrid = {
   type: 'multiGrid',
-  // visibleFilter: (datum, rowIndex, columnIndex, context) => true,
+  visibleFilter: (datum, context) => true,
   gridList: [
     {
       ...DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT

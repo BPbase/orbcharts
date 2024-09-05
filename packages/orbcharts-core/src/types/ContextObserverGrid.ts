@@ -21,7 +21,9 @@ export interface ContextObserverGridDetail {
   existSeriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
+  computedLayoutData$: Observable<ComputedLayoutDataGrid>
   visibleComputedData$: Observable<ComputedDataGrid>
+  visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
   isSeriesPositionSeprate$: Observable<boolean>
 }
 
@@ -31,4 +33,12 @@ export interface ContainerPosition {
   columnIndex: number
   translate: [number, number]
   scale: [number, number]
+}
+
+export type ComputedLayoutDataGrid = ComputedLayoutDatumGrid[][]
+
+export interface ComputedLayoutDatumGrid extends ComputedDatumGrid {
+  axisX: number
+  axisY: number
+  axisYFromZero: number
 }

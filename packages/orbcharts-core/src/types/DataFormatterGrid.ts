@@ -5,6 +5,7 @@ import type { DataFormatterBase, DataFormatterBasePartial, DataFormatterValueAxi
 export type SeriesDirection = 'row' | 'column' // default: 'row'
 
 export interface DataFormatterGrid extends DataFormatterBase<'grid'> {
+  visibleFilter: VisibleFilter<'grid'>
   grid: DataFormatterGridGrid
   container: DataFormatterGridContainer
   // visibleGroupRange: [number, number] | null
@@ -12,12 +13,12 @@ export interface DataFormatterGrid extends DataFormatterBase<'grid'> {
 }
 
 export interface DataFormatterGridPartial extends DataFormatterBasePartial<'grid'> {
+  visibleFilter?: VisibleFilter<'grid'>
   grid?: DataFormatterGridGridPartial
   container?: Partial<DataFormatterGridContainer>
 }
 
 export interface DataFormatterGridGrid {
-  visibleFilter: VisibleFilter<'grid'>
   gridData: DataFormatterGridGridData
   valueAxis: DataFormatterValueAxis
   groupAxis: DataFormatterGroupAxis
@@ -26,7 +27,6 @@ export interface DataFormatterGridGrid {
 }
 
 export interface DataFormatterGridGridPartial {
-  visibleFilter?: VisibleFilter<'grid'>
   gridData?: Partial<DataFormatterGridGridData>
   valueAxis?: Partial<DataFormatterValueAxis>
   groupAxis?: Partial<DataFormatterGroupAxis>

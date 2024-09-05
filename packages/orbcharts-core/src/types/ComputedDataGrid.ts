@@ -6,9 +6,9 @@ export interface ComputedDatumGrid
   // gridIndex: number
   // groupIndex: number
   // groupLabel: string
-  axisX: number
-  axisY: number
-  axisYFromZero: number
+  // axisX: number
+  // axisY: number
+  // axisYFromZero: number
 }
 
 export type ComputedDataGrid = ComputedDatumGrid[][]

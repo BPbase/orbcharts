@@ -12,6 +12,8 @@ import type { BasePluginFn } from './types'
 import type {
   ComputedDatumGrid,
   ComputedDataGrid,
+  ComputedLayoutDatumGrid,
+  ComputedLayoutDataGrid,
   DataFormatterGrid,
   EventGrid,
   ContainerPosition,
@@ -38,6 +40,9 @@ export interface BaseLinesParams {
 interface BaseLinesContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
+  computedLayoutData$: Observable<ComputedLayoutDataGrid>
+  visibleComputedData$: Observable<ComputedDatumGrid[][]>
+  visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
   existSeriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
@@ -68,16 +73,16 @@ type ClipPathDatum = {
 // const pathClassName = getClassName(pluginName, 'path')
 
 
-function createLinePath (lineCurve: string = 'curveLinear'): d3.Line<ComputedDatumGrid> {
-  return d3.line<ComputedDatumGrid>()
+function createLinePath (lineCurve: string = 'curveLinear'): d3.Line<ComputedLayoutDatumGrid> {
+  return d3.line<ComputedLayoutDatumGrid>()
     .x((d) => d.axisX)
     .y((d) => d.axisY)
     .curve((d3 as any)[lineCurve])
 }
 
 // 依無值的資料分段
-function  makeSegmentData (data: ComputedDatumGrid[]): ComputedDatumGrid[][] {
-  let segmentData: ComputedDatumGrid[][] = [[]]
+function makeSegmentData (data: ComputedLayoutDatumGrid[]): ComputedLayoutDatumGrid[][] {
+  let segmentData: ComputedLayoutDatumGrid[][] = [[]]
 
   let currentIndex = 0
   for (let i in data) {
@@ -99,16 +104,16 @@ function  makeSegmentData (data: ComputedDatumGrid[]): ComputedDatumGrid[][] {
 function renderLines ({ selection, pathClassName, segmentData, linePath, params }: {
   selection: d3.Selection<SVGGElement, unknown, any, unknown>
   pathClassName: string
-  segmentData: ComputedDatumGrid[][]
-  linePath: d3.Line<ComputedDatumGrid>
+  segmentData: ComputedLayoutDatumGrid[][]
+  linePath: d3.Line<ComputedLayoutDatumGrid>
   params: BaseLinesParams
-}): d3.Selection<SVGPathElement, ComputedDatumGrid[], any, any> {
+}): d3.Selection<SVGPathElement, ComputedLayoutDatumGrid[], any, any> {
   // if (!data[0]) {
   //   return undefined
   // }
 
   const lines = selection
-    .selectAll<SVGPathElement, ComputedDatumGrid[]>('path')
+    .selectAll<SVGPathElement, ComputedLayoutDatumGrid[]>('path')
     .data(segmentData, (d, i) => d.length ? `${d[0].id}_${d[d.length - 1].id}` : i) // 以線段起迄id結合為線段id
     .join(
       enter => {
@@ -221,6 +226,9 @@ function renderClipPath ({ defsSelection, clipPathData, transitionDuration, tran
 export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: string, {
   selection,
   computedData$,
+  computedLayoutData$,
+  visibleComputedData$,
+  visibleComputedLayoutData$,
   existSeriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
@@ -388,7 +396,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
     gridGraphicTransform$
   })
 
-  const linePath$: Observable<d3.Line<ComputedDatumGrid>> = new Observable(subscriber => {
+  const linePath$: Observable<d3.Line<ComputedLayoutDatumGrid>> = new Observable(subscriber => {
     const paramsSubscription = fullParams$
       .pipe(
         takeUntil(destroy$)
@@ -499,45 +507,58 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
     distinctUntilChanged()
   )
   
-  const graphSubscription = combineLatest({
+  const pathSelectionArr$ = combineLatest({
     graphicGSelection: graphicGSelection$,
-    seriesLabels: seriesLabels$,
+    visibleComputedLayoutData: visibleComputedLayoutData$,
+    linePath: linePath$,
+    params: fullParams$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      // const updateGraphic = data.graphicGSelection
+      //   .selectAll<SVGGElement, number>('g')
+      //   .data(data.seriesLabels, (d, i) => d)
+      // const enterGraphic = updateGraphic.enter()
+      //   .append('g')
+      //   .classed(graphicClassName, true)
+      // updateGraphic.exit().remove()
+      // const graphicSelection = updateGraphic.merge(enterGraphic)
+      //   .attr('clip-path', (d, i) => `url(#orbcharts__clipPath_${d})`)
+      let pathSelectionArr: d3.Selection<SVGPathElement, ComputedLayoutDatumGrid[], any, any>[] = []
+
+      // 繪圖
+      data.graphicGSelection.each((d, i, all) => {
+        // 將資料分段
+        const segmentData = makeSegmentData(data.visibleComputedLayoutData[i] ?? [])
+
+        pathSelectionArr[i] = renderLines({
+          selection: d3.select(all[i]),
+          pathClassName,
+          linePath: data.linePath,
+          segmentData: segmentData,
+          params: data.params
+        })
+      })
+
+      return pathSelectionArr
+    })
+
+
+  )
+
+  combineLatest({
+    pathSelectionArr: pathSelectionArr$,
     computedData: computedData$,
     SeriesDataMap: SeriesDataMap$,
     GroupDataMap: GroupDataMap$,
-    linePath: linePath$,
-    params: fullParams$,
     highlightTarget: highlightTarget$,
     gridGroupPositionFn: gridGroupPositionFn$,
   }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
-    switchMap(async (d) => d),
+    switchMap(async (d) => d)
   ).subscribe(data => {
-
-    // const updateGraphic = data.graphicGSelection
-    //   .selectAll<SVGGElement, number>('g')
-    //   .data(data.seriesLabels, (d, i) => d)
-    // const enterGraphic = updateGraphic.enter()
-    //   .append('g')
-    //   .classed(graphicClassName, true)
-    // updateGraphic.exit().remove()
-    // const graphicSelection = updateGraphic.merge(enterGraphic)
-    //   .attr('clip-path', (d, i) => `url(#orbcharts__clipPath_${d})`)
-
-    // 繪圖
-    data.graphicGSelection.each((d, i, all) => {
-      // 將資料分段
-      const segmentData = makeSegmentData(data.computedData[i] ?? [])
-
-      const pathSelection = renderLines({
-        selection: d3.select(all[i]),
-        pathClassName,
-        linePath: data.linePath,
-        segmentData: segmentData,
-        params: data.params
-      })
-
+    data.pathSelectionArr.forEach(pathSelection => {
       pathSelection
         .on('mouseover', (event, datum) => {
           event.stopPropagation()
@@ -643,19 +664,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
             data: data.computedData
           })
         })
-
     })
-
-    
-
-    // graphicSelection$.next(graphicSelection)
-
-
-    // pathSelection = renderLines({
-    //   selection: graphicSelection,
-    //   linePath: d.linePath,
-    //   data: d.computedData
-    // })
   })
 
   // const datumList$ = computedData$.pipe(

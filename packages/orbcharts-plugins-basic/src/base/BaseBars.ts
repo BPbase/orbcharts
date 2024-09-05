@@ -11,6 +11,7 @@ import type { BasePluginFn } from './types'
 import type {
   ComputedDatumGrid,
   ComputedDataGrid,
+  ComputedLayoutDataGrid,
   ContainerPosition,
   EventGrid,
   ChartParams, 
@@ -31,7 +32,9 @@ export interface BaseBarsParams {
 interface BaseBarsContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
+  computedLayoutData$: Observable<ComputedLayoutDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
+  visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
   existSeriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
@@ -53,7 +56,7 @@ interface BaseBarsContext {
 interface RenderBarParams {
   graphicGSelection: d3.Selection<SVGGElement, string, any, any>
   rectClassName: string
-  computedData: ComputedDatumGrid[][]
+  visibleComputedLayoutData: ComputedLayoutDataGrid
   zeroYArr: number[]
   groupLabels: string[]
   barScale: d3.ScalePoint<string>
@@ -86,7 +89,9 @@ function calcBarWidth ({ axisWidth, groupAmount, barAmountOfGroup, barPadding = 
   barPadding: number
   barGroupPadding: number
 }) {
-  const eachGroupWidth = axisWidth / (groupAmount - 1)
+  const eachGroupWidth = groupAmount > 1
+    ? axisWidth / (groupAmount - 1) // -1是因為要扣掉兩側的padding
+    : axisWidth
   const width = (eachGroupWidth - barGroupPadding) / barAmountOfGroup - barPadding
   return width > 1 ? width : 1
 }
@@ -116,7 +121,7 @@ function calctransitionItem (barGroupAmount: number, totalDuration: number) {
 }
 // let _data: ComputedDatumGrid[][] = []
 
-function renderRectBars ({ graphicGSelection, rectClassName, computedData, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesPositionSeprate }: RenderBarParams) {
+function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedLayoutData, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesPositionSeprate }: RenderBarParams) {
 
   const barHalfWidth = barWidth! / 2
 
@@ -124,7 +129,7 @@ function renderRectBars ({ graphicGSelection, rectClassName, computedData, zeroY
     .each((seriesData, seriesIndex, g) => {
       d3.select(g[seriesIndex])
         .selectAll<SVGGElement, ComputedDatumGrid>(`rect.${rectClassName}`)
-        .data(computedData[seriesIndex] ?? [], d => d.id)
+        .data(visibleComputedLayoutData[seriesIndex] ?? [], d => d.id)
         .join(
           enter => {
             // console.log('enter')
@@ -266,7 +271,9 @@ function highlight ({ selection, ids, fullChartParams }: {
 export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string, {
   selection,
   computedData$,
+  computedLayoutData$,
   visibleComputedData$,
+  visibleComputedLayoutData$,
   existSeriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
@@ -403,7 +410,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     gridGraphicTransform$
   })
 
-  const zeroYArr$ = visibleComputedData$.pipe(
+  const zeroYArr$ = visibleComputedLayoutData$.pipe(
     takeUntil(destroy$),
     map(data => {
       return data.map(d => {
@@ -467,7 +474,8 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
       
       return data.computedData.map((series, seriesIndex) => {
         const gridGraphicReverseScale = data.gridGraphicReverseScale[seriesIndex] ?? data.gridGraphicReverseScale[0]
-
+console.log(radius)
+console.log('gridGraphicReverseScale', gridGraphicReverseScale)
         let transformedRx = radius * gridGraphicReverseScale[0]
         let transformedRy = radius * gridGraphicReverseScale[1]
         // if (radius == 0) {
@@ -495,7 +503,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
           transformedRx = transformedRx * rScale
           transformedRy = transformedRy * rScale
         }
-
+console.log([transformedRx, transformedRy] )
         return [transformedRx, transformedRy] 
       })
     })
@@ -601,11 +609,9 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     distinctUntilChanged()
   )
 
-  const barSelection$ = new Subject<d3.Selection<SVGRectElement, ComputedDatumGrid, SVGGElement, unknown>>()
-
-  combineLatest({
+  const barSelection$ = combineLatest({
     graphicGSelection: graphicGSelection$,
-    computedData: computedData$,
+    visibleComputedLayoutData: visibleComputedLayoutData$,
     // barData$: barData$,
     zeroYArr: zeroYArr$,
     groupLabels: groupLabels$,
@@ -617,31 +623,40 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     transformedBarRadius: transformedBarRadius$,
     delayGroup: delayGroup$,
     transitionItem: transitionItem$,
-    SeriesDataMap: SeriesDataMap$,
-    GroupDataMap: GroupDataMap$,
     isSeriesPositionSeprate: isSeriesPositionSeprate$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
-  ).subscribe(data => {
-    
-    const barSelection = renderRectBars({
-      graphicGSelection: data.graphicGSelection,
-      rectClassName,
-      computedData: data.computedData,
-      zeroYArr: data.zeroYArr,
-      groupLabels: data.groupLabels,
-      barScale: data.barScale,
-      params: data.params,
-      chartParams: data.chartParams,
-      barWidth: data.barWidth,
-      transformedBarRadius: data.transformedBarRadius,
-      delayGroup: data.delayGroup,
-      transitionItem: data.transitionItem,
-      isSeriesPositionSeprate: data.isSeriesPositionSeprate
+    map(data => {
+      return renderRectBars({
+        graphicGSelection: data.graphicGSelection,
+        rectClassName,
+        visibleComputedLayoutData: data.visibleComputedLayoutData,
+        zeroYArr: data.zeroYArr,
+        groupLabels: data.groupLabels,
+        barScale: data.barScale,
+        params: data.params,
+        chartParams: data.chartParams,
+        barWidth: data.barWidth,
+        transformedBarRadius: data.transformedBarRadius,
+        delayGroup: data.delayGroup,
+        transitionItem: data.transitionItem,
+        isSeriesPositionSeprate: data.isSeriesPositionSeprate
+      })
     })
+  )
 
-    barSelection!
+  combineLatest({
+    barSelection: barSelection$,
+    computedData: computedData$,
+    highlightTarget: highlightTarget$,
+    SeriesDataMap: SeriesDataMap$,
+    GroupDataMap: GroupDataMap$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+  ).subscribe(data => {
+    data.barSelection
       .on('mouseover', (event, datum) => {
         event.stopPropagation()
   
@@ -722,8 +737,6 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
           data: data.computedData
         })
       })
-
-    barSelection$.next(barSelection!)
   })
 
   

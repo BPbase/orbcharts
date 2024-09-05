@@ -11,7 +11,7 @@ export interface DataFormatterSeries extends DataFormatterBase<'series'> {
   // mapSeries: (datum: DataSeriesDatum | DataSeriesValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'series'>) => string
   // colorsPredicate: (datum: DataSeriesDatum | DataSeriesValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'series'>) => string
   sort: ((a: DataSeriesDatum | DataSeriesValue, b: DataSeriesDatum | number) => number) | null
-  // colors: Colors
+  
 }
 
 export interface DataFormatterSeriesPartial extends DataFormatterBasePartial<'series'> {
@@ -28,3 +28,9 @@ export interface DataFormatterSeriesPartial extends DataFormatterBasePartial<'se
 //   // labelFormat: (datum: DataSeriesDatum) => string
 //   sort: ((computedDatum: ComputedDatumSeries) => number) | null
 // }
+
+export interface DataFormatterSeriesContainer {
+  gap: number
+  rowAmount: number
+  columnAmount: number
+}

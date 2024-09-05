@@ -14,7 +14,9 @@ export const Dots = defineGridPlugin(pluginName, DEFAULT_DOTS_PARAMS)(({ selecti
   const unsubscribeBaseBars = createBaseDots(pluginName, {
     selection,
     computedData$: observer.computedData$,
+    computedLayoutData$: observer.computedLayoutData$,
     visibleComputedData$: observer.visibleComputedData$,
+    visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
     existSeriesLabels$: observer.existSeriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,

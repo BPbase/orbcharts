@@ -15,6 +15,7 @@ export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)
   const unsubscribeBaseValueAxis = createBaseValueAxis(pluginName, {
     selection,
     computedData$: observer.computedData$,
+    computedLayoutData$: observer.computedLayoutData$,
     fullParams$: observer.fullParams$,
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,  
