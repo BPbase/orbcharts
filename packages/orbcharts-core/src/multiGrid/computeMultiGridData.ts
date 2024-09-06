@@ -16,72 +16,6 @@ import {
 // import type { DataGridDatumTemp } from '../grid/computeGridData'
 import { createTransposedDataGrid } from '../grid/computeGridData'
 
-// function createGridData ({ context, gridIndex, transposedDataGrid, gridSeriesLabels, SeriesLabelColorMap }: {
-//   context: DataFormatterContext<'grid'>
-//   gridIndex: number
-//   transposedDataGrid: DataGridDatum[][]
-//   gridSeriesLabels: string[]
-//   SeriesLabelColorMap: Map<string, string>
-// }) {
-//   const { data = [], dataFormatter, chartParams } = context
-//   if (!data.length) {
-//     return []
-//   }
-  
-//   // const groupScale = createGroupScale(transposedDataGrid, dataFormatter, layout)
-
-//   // const seriesLabels = createGridSeriesLabels({ transposedDataGrid, dataFormatter, chartType: 'multiGrid', gridIndex })
-  
-//   const groupLabels = createMultiGridGroupLabels({ transposedDataGrid, dataFormatter, chartType: 'multiGrid', gridIndex })
-
-//   // 每一個series的valueScale
-//   // const seriesValueScaleArr = createSeriesValueScaleArr(transposedDataGrid, dataFormatter, layout)
-
-//   // const zeroYArr = transposedDataGrid.map((series, seriesIndex) => {
-//   //   return seriesValueScaleArr[seriesIndex]!(0)
-//   // })
-
-//   let _index = 0
-//   let computedDataGrid: ComputedDatumGrid[][] = transposedDataGrid.map((seriesData, seriesIndex) => {
-//     return seriesData.map((groupDatum, groupIndex) => {
-      
-//       const defaultId = createDefaultDatumId('multiGrid', gridIndex, seriesIndex, groupIndex)
-//       const groupLabel = groupLabels[groupIndex]
-//       const seriesLabel = gridSeriesLabels[seriesIndex]
-//       // const valueScale = seriesValueScaleArr[seriesIndex]
-//       // const axisY = valueScale(groupDatum.value ?? 0)
-//       // const zeroY = zeroYArr[seriesIndex]
-
-//       const computedDatum: ComputedDatumGrid = {
-//         id: groupDatum.id ? groupDatum.id : defaultId,
-//         index: _index,
-//         label: groupDatum.label ? groupDatum.label : defaultId,
-//         description: groupDatum.description ?? '',
-//         data: groupDatum.data,
-//         value: groupDatum.value,
-//         gridIndex,
-//         // accSeriesIndex: seriesIndex, // 預設為seriesIndex
-//         seriesIndex,
-//         seriesLabel,
-//         groupIndex,
-//         groupLabel,
-//         // color: seriesColorPredicate(seriesIndex, chartParams),
-//         color: SeriesLabelColorMap.get(seriesLabel),
-//         // axisX: groupScale(groupIndex),
-//         // axisY,
-//         // axisYFromZero: axisY - zeroY,
-//         visible: groupDatum._visible
-//       }
-
-//       _index ++
-
-//       return computedDatum
-//     })
-//   })
-
-//   return computedDataGrid
-// }
-
 export const computeMultiGridData: ComputedDataFn<'multiGrid'> = (context) => {
   const { data = [], dataFormatter, chartParams } = context
   if (!data.length) {
@@ -97,15 +31,6 @@ export const computeMultiGridData: ComputedDataFn<'multiGrid'> = (context) => {
     const gridDataFormatterList: DataFormatterGridGrid[] = data.map((gridData, gridIndex) => {
       return dataFormatter.gridList[gridIndex] || defaultGrid
     })
-
-    // const gridContextList = data.map((gridData, gridIndex) => {
-    //   // grid context
-    //   return {
-    //     data: gridData,
-    //     dataFormatterGrid: gridDataFormatterList[gridIndex],
-    //     chartParams,
-    //   }  
-    // })
 
     const transposedDataGridList = data.map((gridData, gridIndex) => {
       // 依seriesDirection轉置資料矩陣
@@ -146,14 +71,6 @@ export const computeMultiGridData: ComputedDataFn<'multiGrid'> = (context) => {
 
     // 計算每個grid的資料
     multiGridData = transposedDataGridList.map((gridData, gridIndex) => {
-      // return createGridData({
-      //   context: gridContextList[gridIndex],
-      //   gridIndex,
-      //   transposedDataGrid: gridData,
-      //   gridSeriesLabels: multiGridSeriesLabels[gridIndex],
-      //   SeriesLabelColorMap
-      // })
-      // const gridContext = gridContextList[gridIndex]
       const gridSeriesLabels = multiGridSeriesLabels[gridIndex]
       const groupLabels = createMultiGridGroupLabels({
         transposedDataGrid: gridData,
@@ -169,9 +86,6 @@ export const computeMultiGridData: ComputedDataFn<'multiGrid'> = (context) => {
           const defaultId = createDefaultDatumId('multiGrid', gridIndex, seriesIndex, groupIndex)
           const groupLabel = groupLabels[groupIndex]
           const seriesLabel = gridSeriesLabels[seriesIndex]
-          // const valueScale = seriesValueScaleArr[seriesIndex]
-          // const axisY = valueScale(groupDatum.value ?? 0)
-          // const zeroY = zeroYArr[seriesIndex]
     
           const computedDatum: ComputedDatumGrid = {
             id: groupDatum.id ? groupDatum.id : defaultId,
@@ -186,11 +100,7 @@ export const computeMultiGridData: ComputedDataFn<'multiGrid'> = (context) => {
             seriesLabel,
             groupIndex,
             groupLabel,
-            // color: seriesColorPredicate(seriesIndex, chartParams),
             color: SeriesLabelColorMap.get(seriesLabel),
-            // axisX: groupScale(groupIndex),
-            // axisY,
-            // axisYFromZero: axisY - zeroY,
             visible: true // 先給一個預設值
           }
 

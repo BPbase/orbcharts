@@ -33,6 +33,15 @@ onMounted(() => {
   const tooltip = new Tooltip()
   chart!.plugins$.next([ treeMap, treeLegend, tooltip])
 
+
+  // chart.dataFormatter$.next({
+  //   visibleFilter: (datum, context) => {
+  //     if (datum.id === 'Movies.Action.Avatar ') {
+  //       return false
+  //     }
+  //     return true
+  //   }
+  // })
   // chart.dataFormatter$.next({
   // })
   treeLegend.params$.next({

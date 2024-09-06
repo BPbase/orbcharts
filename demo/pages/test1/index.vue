@@ -3,10 +3,10 @@
 </template>
 
 <script setup lang="ts">
-import { GridChart } from '../../../packages/orbcharts-core/src'
-import { Bars, BarStack, BarsTriangle, Lines, LineAreas, Dots, GroupAxis, ValueAxis, ValueStackAxis, ScalingArea, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { SeriesChart } from '../../../packages/orbcharts-core/src'
+import { Pie, Bubbles, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
-import { gridData1 } from '../../const/data/gridData1'
+import { seriesData1 } from '../../const/data/seriesData1'
 
 // import { GridChart, PRESET_GRID_HORIZONTAL, MultiBars } from 'orbcharts'
 
@@ -14,7 +14,7 @@ onMounted(() => {
 
   const el = document.querySelector('#chart')
 
-  const chart = new GridChart(el!, {
+  const chart = new SeriesChart(el!, {
     // preset: {
     //     "chartParams": {
             
@@ -34,41 +34,23 @@ onMounted(() => {
   //   }
   // })
 
-  const bars = new Bars()
+  const pie = new Pie()
 
-  const barStack = new BarStack()
-
-  const barsTriangle = new BarsTriangle()
-
-  const lines = new Lines()
-
-  const lineAreas = new LineAreas()
-
-  const dots = new Dots()
-
-  const valueAxis = new ValueAxis()
-
-  const valueStackAxis = new ValueStackAxis()
+  const bubbles = new Bubbles()
 
 
   // bars.params$.next({
     
   // })
 
-  chart.dataFormatter$.next({
-    // grid: {
-    //   groupAxis: {
-    //     scalePadding: 0
-    //   }
-    // }
-    visibleFilter: (datum, context) => {
-      if (datum.id === 'grid_0_0_4') {
-        // console.log('grid_0_1_4')
-        return false
-      }
-      return true
-    }
-  })
+  // chart.dataFormatter$.next({
+  //   visibleFilter: (datum, context) => {
+  //     if (datum.id === 'series_0_0') {
+  //       return false
+  //     }
+  //     return true
+  //   }
+  // })
   chart.chartParams$.subscribe(data => {
     console.log(data)
   })
@@ -78,9 +60,9 @@ onMounted(() => {
     highlightTarget: 'series'
   })
   
-  chart.plugins$.next([lines, lineAreas, dots, new GroupAxis(), valueAxis, new ScalingArea(), new Tooltip()])
+  chart.plugins$.next([pie, new Tooltip()])
   
-  chart.data$.next(gridData1)
+  chart.data$.next(seriesData1)
   
   
 

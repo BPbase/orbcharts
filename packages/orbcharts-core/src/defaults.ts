@@ -140,7 +140,7 @@ export const DATA_FORMATTER_GROUP_AXIS: DataFormatterGroupAxis = {
 export const DATA_FORMATTER_SERIES_DEFAULT: DataFormatterSeries = {
   // ...DATA_FORMATTER_WITH_VALUE,
   type: 'series',
-  visibleFilter: (datum, rowIndex, columnIndex, context) => true,
+  visibleFilter: (datum, context) => true,
   // unitLabel: '',
   seriesLabels: [],
   // mapSeries: (datum, rowIndex, columnIndex, { data, dataFormatter }) => {
@@ -219,7 +219,7 @@ export const DATA_FORMATTER_MULTI_GRID_DEFAULT: DataFormatterMultiGrid = {
 
 export const DATA_FORMATTER_MULTI_VALUE_DEFAULT: DataFormatterMultiValue = {
   type: 'multiValue',
-  visibleFilter: (datum, rowIndex, columnIndex, context) => true,
+  visibleFilter: (datum, context) => true,
   // labelFormat: (datum: any) => (datum && datum.label) ?? '',
   multiValue: [],
   xAxis: { ...DATA_FORMATTER_VALUE_AXIS },
@@ -228,14 +228,14 @@ export const DATA_FORMATTER_MULTI_VALUE_DEFAULT: DataFormatterMultiValue = {
 
 export const DATA_FORMATTER_TREE_DEFAULT: DataFormatterTree = {
   type: 'tree',
-  visibleFilter: (datum, rowIndex, columnIndex, context) => true,
+  visibleFilter: (datum, context) => true,
   // labelFormat: (datum: any) => (datum && datum.label) ?? '',
   categoryLabels: []
 }
 
 export const DATA_FORMATTER_RELATIONAL_DEFAULT: DataFormatterRelationship = {
   type: 'relationship',
-  visibleFilter: (datum, rowIndex, columnIndex, context) => true,
+  visibleFilter: (datum, context) => true,
   // node: {
   //   // labelFormat: (node: any) => (node && node.label) ?? '',
   //   descriptionFormat: (node: any) => (node && node.label) ?? ''
