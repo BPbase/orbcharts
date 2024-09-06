@@ -474,8 +474,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
       
       return data.computedData.map((series, seriesIndex) => {
         const gridGraphicReverseScale = data.gridGraphicReverseScale[seriesIndex] ?? data.gridGraphicReverseScale[0]
-console.log(radius)
-console.log('gridGraphicReverseScale', gridGraphicReverseScale)
+
         let transformedRx = radius * gridGraphicReverseScale[0]
         let transformedRy = radius * gridGraphicReverseScale[1]
         // if (radius == 0) {
@@ -503,7 +502,7 @@ console.log('gridGraphicReverseScale', gridGraphicReverseScale)
           transformedRx = transformedRx * rScale
           transformedRy = transformedRy * rScale
         }
-console.log([transformedRx, transformedRy] )
+
         return [transformedRx, transformedRy] 
       })
     })

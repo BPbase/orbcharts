@@ -6,7 +6,7 @@ import {
 
 import { DEFAULT_MULTI_LINE_AREAS_PARAMS } from '../defaults'
 import { createBaseLineAreas } from '../../base/BaseLineAreas'
-import { multiGridDetailObservables } from '../multiGridObservables'
+import { multiGridPluginObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 
 const pluginName = 'MultiLineAreas'
@@ -18,7 +18,7 @@ export const MultiLineAreas = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_LI
   
   const unsubscribeFnArr: (() => void)[] = []
 
-  const multiGridPlugin$ = multiGridDetailObservables(observer)
+  const multiGridPlugin$ = multiGridPluginObservables(observer)
 
   multiGridPlugin$.subscribe(data => {
     // 每次重新計算時，清除之前的訂閱
@@ -34,14 +34,14 @@ export const MultiLineAreas = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_LI
 
         unsubscribeFnArr[i] = createBaseLineAreas(pluginName, {
           selection: gridSelection,
-          computedData$: d.gridComputedData$,
+          computedData$: d.computedData$,
           computedLayoutData$: d.computedLayoutData$,
           visibleComputedData$: d.visibleComputedData$,
           visibleComputedLayoutData$: d.visibleComputedLayoutData$,
           existSeriesLabels$: d.existSeriesLabels$,
           SeriesDataMap$: d.SeriesDataMap$,
           GroupDataMap$: d.GroupDataMap$,
-          fullDataFormatter$: d.gridDataFormatter$,
+          fullDataFormatter$: d.dataFormatter$,
           fullParams$: observer.fullParams$,
           fullChartParams$: observer.fullChartParams$,
           gridAxesTransform$: d.gridAxesTransform$,

@@ -25,7 +25,7 @@ import type {
   HighlightTarget,
   Layout,
   TransformData } from '../types'
-import type { ContextObserverGridDetail } from '../types'
+import type { ContextObserverGridDetail, ContextObserverMultiGridDetail } from '../types'
 import {
   highlightObservable,
   seriesDataMapObservable,
@@ -52,139 +52,22 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
   layout$: Observable<Layout>
   fullChartParams$: Observable<ChartParams>
   event$: Subject<EventMultiGrid>
-}) => {
-
-  // 建立Observables
-  function detailObservables ({ gridDataFormatter$, gridComputedData$, layout$, fullChartParams$, event$ }: {
-    // fullDataFormatter$: Observable<DataFormatterTypeMap<'multiGrid'>>
-    // computedData$: Observable<ComputedDataTypeMap<'multiGrid'>>
-    gridDataFormatter$: Observable<DataFormatterGrid>
-    gridComputedData$: Observable<ComputedDataGrid>
-    layout$: Observable<Layout>
-    fullChartParams$: Observable<ChartParams>
-    event$: Subject<EventMultiGrid>
-  }): ContextObserverGridDetail {
-    
-    const isSeriesPositionSeprate$ = isSeriesPositionSeprateObservable({
-      computedData$: gridComputedData$,
-      fullDataFormatter$: gridDataFormatter$,
-    }).pipe(
-      shareReplay(1)
-    )
-  
-    const gridContainer$ = gridContainerObservable({
-      computedData$: gridComputedData$,
-      fullDataFormatter$: gridDataFormatter$,
-      fullChartParams$,
-      layout$
-    }).pipe(
-      shareReplay(1)
-    )
-    
-    const gridAxesTransform$ = gridAxesTransformObservable({
-      fullDataFormatter$: gridDataFormatter$,
-      layout$: layout$
-    }).pipe(
-      shareReplay(1)
-    )
-
-    
-    const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({
-      gridAxesTransform$
-    }).pipe(
-      shareReplay(1)
-    )
-    
-    const gridGraphicTransform$ = gridGraphicTransformObservable({
-      computedData$: gridComputedData$,
-      fullDataFormatter$: gridDataFormatter$,
-      layout$: layout$
-    }).pipe(
-      shareReplay(1)
-    )
-
-    const gridGraphicReverseScale$ = gridGraphicReverseScaleObservable({
-      gridContainer$: gridContainer$,
-      gridAxesTransform$: gridAxesTransform$,
-      gridGraphicTransform$: gridGraphicTransform$,
-    })
-
-    const gridAxesSize$ = gridAxesSizeObservable({
-      fullDataFormatter$: gridDataFormatter$,
-      layout$: layout$
-    }).pipe(
-      shareReplay(1)
-    )
-
-    const datumList$ = gridComputedData$.pipe(
-      map(d => d.flat())
-    ).pipe(
-      shareReplay(1)
-    )
-
-    const gridHighlight$ = highlightObservable({
-      datumList$,
-      fullChartParams$: fullChartParams$,
-      event$: event$
-    }).pipe(
-      shareReplay(1)
-    )
-
-    const existSeriesLabels$ = existSeriesLabelsObservable({
-      computedData$: gridComputedData$,
-    })
-
-    const SeriesDataMap$ = seriesDataMapObservable({
-      datumList$: datumList$
-    }).pipe(
-      shareReplay(1)
-    )
-
-    const GroupDataMap$ = groupDataMapObservable({
-      datumList$: datumList$
-    }).pipe(
-      shareReplay(1)
-    )
-
-    const visibleComputedData$ = gridVisibleComputedDataObservable({
-      computedData$: gridComputedData$,
-    }).pipe(
-      shareReplay(1)
-    )
-
-    const computedLayoutData$ = gridComputedLayoutDataObservable({
-      computedData$: gridComputedData$,
-      fullDataFormatter$: gridDataFormatter$,
-      layout$: layout$,
-    }).pipe(
-      shareReplay(1)
-    )
-
-    const visibleComputedLayoutData$ = gridVisibleComputedLayoutDataObservable({
-      computedLayoutData$: computedLayoutData$,
-    }).pipe(
-      shareReplay(1)
-    )
-
-    return {
-      isSeriesPositionSeprate$,
-      gridContainer$,
-      gridAxesTransform$,
-      gridAxesReverseTransform$,
-      gridGraphicTransform$,
-      gridGraphicReverseScale$,
-      gridAxesSize$,
-      gridHighlight$,
-      existSeriesLabels$,
-      SeriesDataMap$,
-      GroupDataMap$,
-      computedLayoutData$,
-      visibleComputedData$,
-      visibleComputedLayoutData$
-    }
-  }
+}): Observable<ContextObserverMultiGridDetail[]> => {
 
   const destroy$ = new Subject()
+
+  // highlight全部grid
+  const allGridHighlight$ = highlightObservable({
+    datumList$: computedData$.pipe(
+      map(d => d.flat().flat()),
+      shareReplay(1)
+    ),
+    fullChartParams$: fullChartParams$,
+    event$: event$
+  }).pipe(
+    shareReplay(1)
+  )
+
 
   return combineLatest({
     fullDataFormatter: fullDataFormatter$,
@@ -224,14 +107,139 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           shareReplay(1)
         )
 
-        // -- 建立Observables --
-        return detailObservables ({
-          gridDataFormatter$,
-          gridComputedData$,
-          layout$,
+        const isSeriesPositionSeprate$ = isSeriesPositionSeprateObservable({
+          computedData$: gridComputedData$,
+          fullDataFormatter$: gridDataFormatter$,
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+      
+        const gridContainer$ = gridContainerObservable({
+          computedData$: gridComputedData$,
+          fullDataFormatter$: gridDataFormatter$,
           fullChartParams$,
-          event$
+          layout$
+        }).pipe(
+          shareReplay(1)
+        )
+        
+        const gridAxesTransform$ = gridAxesTransformObservable({
+          fullDataFormatter$: gridDataFormatter$,
+          layout$: layout$
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+    
+        
+        const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({
+          gridAxesTransform$
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+        
+        const gridGraphicTransform$ = gridGraphicTransformObservable({
+          computedData$: gridComputedData$,
+          fullDataFormatter$: gridDataFormatter$,
+          layout$: layout$
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+    
+        const gridGraphicReverseScale$ = gridGraphicReverseScaleObservable({
+          gridContainer$: gridContainer$,
+          gridAxesTransform$: gridAxesTransform$,
+          gridGraphicTransform$: gridGraphicTransform$,
         })
+    
+        const gridAxesSize$ = gridAxesSizeObservable({
+          fullDataFormatter$: gridDataFormatter$,
+          layout$: layout$
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+    
+        const datumList$ = gridComputedData$.pipe(
+          map(d => d.flat())
+        ).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+    
+        // const gridHighlight$ = highlightObservable({
+        //   datumList$,
+        //   fullChartParams$: fullChartParams$,
+        //   event$: event$
+        // }).pipe(
+        //   shareReplay(1)
+        // )
+    
+        const existSeriesLabels$ = existSeriesLabelsObservable({
+          computedData$: gridComputedData$,
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+    
+        const SeriesDataMap$ = seriesDataMapObservable({
+          datumList$: datumList$
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+    
+        const GroupDataMap$ = groupDataMapObservable({
+          datumList$: datumList$
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+    
+        const visibleComputedData$ = gridVisibleComputedDataObservable({
+          computedData$: gridComputedData$,
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+    
+        const computedLayoutData$ = gridComputedLayoutDataObservable({
+          computedData$: gridComputedData$,
+          fullDataFormatter$: gridDataFormatter$,
+          layout$: layout$,
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+    
+        const visibleComputedLayoutData$ = gridVisibleComputedLayoutDataObservable({
+          computedLayoutData$: computedLayoutData$,
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+
+        return <ContextObserverMultiGridDetail>{
+          gridContainer$,
+          gridAxesTransform$,
+          gridAxesReverseTransform$,
+          gridGraphicTransform$,
+          gridGraphicReverseScale$,
+          gridAxesSize$,
+          gridHighlight$: allGridHighlight$,
+          existSeriesLabels$,
+          SeriesDataMap$,
+          GroupDataMap$,
+          dataFormatter$: gridDataFormatter$,
+          computedData$: gridComputedData$,
+          computedLayoutData$,
+          visibleComputedData$,
+          visibleComputedLayoutData$,
+          isSeriesPositionSeprate$
+        }
       })
     })
   )

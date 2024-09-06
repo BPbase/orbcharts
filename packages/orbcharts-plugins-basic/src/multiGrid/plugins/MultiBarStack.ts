@@ -5,7 +5,7 @@ import {
   defineMultiGridPlugin } from '@orbcharts/core'
 import { DEFAULT_MULTI_BAR_STACK_PARAMS } from '../defaults'
 import { createBaseBarStack } from '../../base/BaseBarStack'
-import { multiGridDetailObservables } from '../multiGridObservables'
+import { multiGridPluginObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 
 const pluginName = 'MultiBarStack'
@@ -17,7 +17,7 @@ export const MultiBarStack = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_BAR
 
   const unsubscribeFnArr: (() => void)[] = []
 
-  const multiGridPlugin$ = multiGridDetailObservables(observer)
+  const multiGridPlugin$ = multiGridPluginObservables(observer)
 
   multiGridPlugin$.subscribe(data => {
     // 每次重新計算時，清除之前的訂閱
@@ -33,7 +33,7 @@ export const MultiBarStack = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_BAR
 
         unsubscribeFnArr[i] = createBaseBarStack(pluginName, {
           selection: gridSelection,
-          computedData$: d.gridComputedData$,
+          computedData$: d.computedData$,
           visibleComputedData$: d.visibleComputedData$,
           computedLayoutData$: d.computedLayoutData$,
           visibleComputedLayoutData$: d.visibleComputedLayoutData$,
@@ -41,7 +41,7 @@ export const MultiBarStack = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_BAR
           SeriesDataMap$: d.SeriesDataMap$,
           GroupDataMap$: d.GroupDataMap$,
           fullParams$: observer.fullParams$,
-          fullDataFormatter$: d.gridDataFormatter$,
+          fullDataFormatter$: d.dataFormatter$,
           fullChartParams$: observer.fullChartParams$,
           gridAxesTransform$: d.gridAxesTransform$,
           gridGraphicTransform$: d.gridGraphicTransform$,

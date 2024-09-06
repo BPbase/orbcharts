@@ -5,7 +5,7 @@ import {
   defineMultiGridPlugin } from '@orbcharts/core'
 import { DEFAULT_MULTI_BARS_TRIANGLE_PARAMS } from '../defaults'
 import { createBaseBarsTriangle } from '../../base/BaseBarsTriangle'
-import { multiGridDetailObservables } from '../multiGridObservables'
+import { multiGridPluginObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 
 const pluginName = 'MultiBarsTriangle'
@@ -17,7 +17,7 @@ export const MultiBarsTriangle = defineMultiGridPlugin(pluginName, DEFAULT_MULTI
   
   const unsubscribeFnArr: (() => void)[] = []
 
-  const multiGridPlugin$ = multiGridDetailObservables(observer)
+  const multiGridPlugin$ = multiGridPluginObservables(observer)
 
   multiGridPlugin$.subscribe(data => {
     // 每次重新計算時，清除之前的訂閱
@@ -33,7 +33,7 @@ export const MultiBarsTriangle = defineMultiGridPlugin(pluginName, DEFAULT_MULTI
 
         unsubscribeFnArr[i] = createBaseBarsTriangle(pluginName, {
           selection: gridSelection,
-          computedData$: d.gridComputedData$,
+          computedData$: d.computedData$,
           visibleComputedData$: d.visibleComputedData$,
           computedLayoutData$: d.computedLayoutData$,
           visibleComputedLayoutData$: d.visibleComputedLayoutData$,

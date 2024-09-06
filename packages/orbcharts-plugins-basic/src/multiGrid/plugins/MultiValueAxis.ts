@@ -5,7 +5,7 @@ import {
   defineMultiGridPlugin } from '@orbcharts/core'
 import { DEFAULT_MULTI_VALUE_AXIS_PARAMS } from '../defaults'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
-import { multiGridDetailObservables } from '../multiGridObservables'
+import { multiGridPluginObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 
 const pluginName = 'MultiValueAxis'
@@ -17,7 +17,7 @@ export const MultiValueAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_VA
 
   const unsubscribeFnArr: (() => void)[] = []
 
-  const multiGridPlugin$ = multiGridDetailObservables(observer)
+  const multiGridPlugin$ = multiGridPluginObservables(observer)
 
   multiGridPlugin$.subscribe(data => {
     // 每次重新計算時，清除之前的訂閱
@@ -33,9 +33,9 @@ export const MultiValueAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_VA
 
         unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
           selection: gridSelection,
-          computedData$: d.gridComputedData$,
+          computedData$: d.computedData$,
           fullParams$: observer.fullParams$,
-          fullDataFormatter$: d.gridDataFormatter$,
+          fullDataFormatter$: d.dataFormatter$,
           fullChartParams$: observer.fullChartParams$,  
           gridAxesTransform$: d.gridAxesTransform$,
           gridAxesReverseTransform$: d.gridAxesReverseTransform$,

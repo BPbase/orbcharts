@@ -3,12 +3,10 @@ import type { ContextObserverBase } from './ContextObserver'
 import type { ComputedDataGrid, ComputedDatumGrid } from './ComputedDataGrid'
 import type { TransformData } from './TransformData'
 
-export interface ContextObserverGrid<PluginParams>
-  extends
-    ContextObserverBase<'grid', PluginParams>,
-    ContextObserverGridDetail {
-      textSizePx$: Observable<number>
-    }
+export interface ContextObserverGrid<PluginParams> extends
+ContextObserverBase<'grid', PluginParams>, ContextObserverGridDetail {
+  textSizePx$: Observable<number>
+}
 
 export interface ContextObserverGridDetail {
   gridContainer$: Observable<ContainerPosition[]>
