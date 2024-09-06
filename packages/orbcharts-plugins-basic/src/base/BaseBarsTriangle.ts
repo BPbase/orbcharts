@@ -513,6 +513,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
   const barSelection$ = combineLatest({
     graphicGSelection: graphicGSelection$,
     defsSelection: defsSelection$,
+    computedData: computedData$,
     visibleComputedLayoutData: visibleComputedLayoutData$,
     linearGradientIds: linearGradientIds$,
     zeroYArr: zeroYArr$,
@@ -520,17 +521,21 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
     barScale: barScale$,
     params: fullParams$,
     chartParams: fullChartParams$,
-    highlightTarget: highlightTarget$,
     barWidth: barWidth$,
     delayGroup: delayGroup$,
     transitionItem: transitionItem$,
-    SeriesDataMap: SeriesDataMap$,
-    GroupDataMap: GroupDataMap$,
     isSeriesPositionSeprate: isSeriesPositionSeprate$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
+      renderLinearGradient({
+        defsSelection: data.defsSelection,
+        computedData: data.computedData,
+        linearGradientIds: data.linearGradientIds,
+        params: data.params
+      })
+
       return renderTriangleBars({
         graphicGSelection: data.graphicGSelection,
         pathGClassName,
@@ -640,24 +645,6 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
         })
       })
   })
-
-  combineLatest({
-    defsSelection: defsSelection$,
-    computedData: computedData$,
-    linearGradientIds: linearGradientIds$,
-    params: fullParams$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async d => d)
-  ).subscribe(data => {
-    renderLinearGradient({
-      defsSelection: data.defsSelection,
-      computedData: data.computedData,
-      linearGradientIds: data.linearGradientIds,
-      params: data.params
-    })
-  })
-
 
   combineLatest({
     barSelection: barSelection$,

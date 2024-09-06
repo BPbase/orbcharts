@@ -37,7 +37,9 @@ import {
   gridAxesReverseTransformObservable,
   gridAxesSizeObservable,
   existSeriesLabelsObservable,
+  gridComputedLayoutDataObservable,
   gridVisibleComputedDataObservable,
+  gridVisibleComputedLayoutDataObservable,
   isSeriesPositionSeprateObservable,
   gridContainerObservable } from '../grid/gridObservables'
 import { DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT } from '../defaults'
@@ -150,6 +152,19 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
       shareReplay(1)
     )
 
+    const computedLayoutData$ = gridComputedLayoutDataObservable({
+      computedData$: gridComputedData$,
+      fullDataFormatter$: gridDataFormatter$,
+      layout$: layout$,
+    }).pipe(
+      shareReplay(1)
+    )
+
+    const visibleComputedLayoutData$ = gridVisibleComputedLayoutDataObservable({
+      computedLayoutData$: computedLayoutData$,
+    }).pipe(
+      shareReplay(1)
+    )
 
     return {
       isSeriesPositionSeprate$,
@@ -163,7 +178,9 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
       existSeriesLabels$,
       SeriesDataMap$,
       GroupDataMap$,
+      computedLayoutData$,
       visibleComputedData$,
+      visibleComputedLayoutData$
     }
   }
 
@@ -190,6 +207,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
         const grid = data.fullDataFormatter.gridList[gridIndex] ?? defaultGrid
         const gridDataFormatter: DataFormatterGrid = {
           type: 'grid',
+          visibleFilter: data.fullDataFormatter.visibleFilter as any,
           grid: {
             ...grid
           },

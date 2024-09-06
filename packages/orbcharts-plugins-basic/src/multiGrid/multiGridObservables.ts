@@ -198,6 +198,7 @@ export const multiGridDetailObservables = (observer: ContextObserverMultiGrid<Mu
             
             return {
               type: 'grid',
+              visibleFilter: data.fullDataFormatter.visibleFilter as any,
               grid: {
                 ...data.fullDataFormatter.gridList[data.gridIndex] ?? defaultGrid
               },
@@ -267,9 +268,19 @@ export const multiGridDetailObservables = (observer: ContextObserverMultiGrid<Mu
         const visibleComputedData$ = gridDetail$.pipe(
           switchMap(d => d.visibleComputedData$)
         )
+
+        const computedLayoutData$ = gridDetail$.pipe(
+          switchMap(d => d.computedLayoutData$)
+        )
+      
+        const visibleComputedLayoutData$ = gridDetail$.pipe(
+          switchMap(d => d.visibleComputedLayoutData$)
+        )
       
         return {
           gridComputedData$,
+          computedLayoutData$,
+          visibleComputedLayoutData$,
           gridDataFormatter$,
           gridAxesTransform$,
           gridGraphicTransform$,
