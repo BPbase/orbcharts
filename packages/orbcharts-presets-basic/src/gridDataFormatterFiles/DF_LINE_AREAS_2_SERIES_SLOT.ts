@@ -6,7 +6,8 @@ export const DF_LINE_AREAS_2_SERIES_SLOT: DataFormatterFile<'grid'> = {
   description: 'LineAreas 2個Series Slot',
   data: {
     grid: {
-      seriesSlotIndexes: [0, 1],
+      // seriesSlotIndexes: [0, 1],
+      separateSeries: true,
       groupAxis: {
         scalePadding: 0
       }

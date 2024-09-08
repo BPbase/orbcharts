@@ -29,8 +29,8 @@ export const BarsDiverging = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)((
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
     gridContainer$: observer.gridContainer$,
-    // isSeriesPositionSeprate$: observer.isSeriesPositionSeprate$,
-    isSeriesPositionSeprate$: of(true), // hack: 永遠為true，可以強制讓每組series的bars的x位置都是一樣的
+    // isSeriesSeprate$: observer.isSeriesSeprate$,
+    isSeriesSeprate$: of(true), // hack: 永遠為true，可以強制讓每組series的bars的x位置都是一樣的
     event$: subject.event$,
   })
 

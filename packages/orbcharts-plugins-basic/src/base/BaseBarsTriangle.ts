@@ -5,6 +5,7 @@ import {
   switchMap,
   takeUntil,
   distinctUntilChanged,
+  shareReplay,
   Observable,
   Subject } from 'rxjs'
 import type { BasePluginFn } from './types'
@@ -13,6 +14,7 @@ import type {
   ComputedDataGrid,
   ComputedLayoutDatumGrid,
   ComputedLayoutDataGrid,
+  DataFormatterTypeMap,
   EventGrid,
   ChartParams,
   ContainerPosition,
@@ -35,6 +37,7 @@ interface BaseBarsContext {
   computedLayoutData$: Observable<ComputedLayoutDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
   visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
   existSeriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
@@ -48,7 +51,7 @@ interface BaseBarsContext {
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
   gridContainer$: Observable<ContainerPosition[]>
-  isSeriesPositionSeprate$: Observable<boolean>
+  isSeriesSeprate$: Observable<boolean>
   event$: Subject<EventGrid>
 }
 
@@ -67,7 +70,7 @@ interface RenderBarParams {
   barWidth: number
   delayGroup: number
   transitionItem: number
-  isSeriesPositionSeprate: boolean
+  isSeriesSeprate: boolean
 }
 
 // interface BarDatumGrid extends ComputedDatumGrid {
@@ -124,7 +127,7 @@ function calctransitionItem (barGroupAmount: number, totalDuration: number) {
   return totalDuration * (1 - groupDelayProportionOfDuration) // delay後剩餘的時間
 }
 
-function renderTriangleBars ({ graphicGSelection, pathGClassName, pathClassName, visibleComputedLayoutData, linearGradientIds, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, delayGroup, transitionItem, isSeriesPositionSeprate }: RenderBarParams) {
+function renderTriangleBars ({ graphicGSelection, pathGClassName, pathClassName, visibleComputedLayoutData, linearGradientIds, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, delayGroup, transitionItem, isSeriesSeprate }: RenderBarParams) {
   
   const barHalfWidth = barWidth! / 2
 
@@ -155,13 +158,13 @@ function renderTriangleBars ({ graphicGSelection, pathGClassName, pathClassName,
           update => update,
           exit => exit.remove()
         )
-        .attr('transform', d => `translate(${isSeriesPositionSeprate ? 0 : barScale(d.seriesLabel)!}, 0)`)
+        .attr('transform', d => `translate(${isSeriesSeprate ? 0 : barScale(d.seriesLabel)!}, 0)`)
 
       // path
       gSelection.select(`path.${pathClassName}`)
         .attr('height', d => Math.abs(d.axisYFromZero))
         .attr('y', d => d.axisY < zeroYArr[seriesIndex] ? d.axisY : zeroYArr[seriesIndex])
-        .attr('x', d => isSeriesPositionSeprate ? 0 : barScale(d.seriesLabel)!)
+        .attr('x', d => isSeriesSeprate ? 0 : barScale(d.seriesLabel)!)
         // .style('fill', d => `url(#${d.linearGradientId})`)
         .style('fill', d => `url(#${linearGradientIds[d.seriesIndex]})`)
         .attr('stroke', d => d.color)
@@ -295,6 +298,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
   computedLayoutData$,
   visibleComputedData$,
   visibleComputedLayoutData$,
+  fullDataFormatter$,
   existSeriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
@@ -305,7 +309,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
   gridAxesSize$,
   gridHighlight$,
   gridContainer$,
-  isSeriesPositionSeprate$,
+  isSeriesSeprate$,
   event$
 }) => {
   const destroy$ = new Subject()
@@ -355,14 +359,14 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
     visibleComputedData: visibleComputedData$,
     params: fullParams$,
     gridAxesSize: gridAxesSize$,
-    isSeriesPositionSeprate: isSeriesPositionSeprate$
+    isSeriesSeprate: isSeriesSeprate$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
     map(data => {
       if (data.params.barWidth) {
         return data.params.barWidth
-      } else if (data.isSeriesPositionSeprate) {
+      } else if (data.isSeriesSeprate) {
         return calcBarWidth({
           axisWidth: data.gridAxesSize.width,
           groupAmount: data.computedData[0] ? data.computedData[0].length : 0,
@@ -524,7 +528,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
     barWidth: barWidth$,
     delayGroup: delayGroup$,
     transitionItem: transitionItem$,
-    isSeriesPositionSeprate: isSeriesPositionSeprate$
+    isSeriesSeprate: isSeriesSeprate$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -550,7 +554,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
         barWidth: data.barWidth,
         delayGroup: data.delayGroup,
         transitionItem: data.transitionItem,
-        isSeriesPositionSeprate: data.isSeriesPositionSeprate
+        isSeriesSeprate: data.isSeriesSeprate
       })
     })
   )

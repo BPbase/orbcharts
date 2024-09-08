@@ -62,7 +62,7 @@ export function createTransposedDataGrid (data: DataGrid, dataFormatterGrid: Dat
     })
 
     // 依seriesDirection轉置資料矩陣
-    const transposedDataGrid = transposeData(dataFormatterGrid.gridData.seriesDirection, dataGrid)
+    const transposedDataGrid = transposeData(dataFormatterGrid.seriesDirection, dataGrid)
 
     return transposedDataGrid
   } catch (e) {

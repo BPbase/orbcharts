@@ -3,11 +3,14 @@ import { DataFormatterBase, DataFormatterBasePartial, VisibleFilter } from './Da
 
 export interface DataFormatterRelationship extends DataFormatterBase<'relationship'> {
   visibleFilter: VisibleFilter<'relationship'>
+  categoryLabels: string[]
   // node: DataFormatterRelationshipNode
   // edge: DataFormatterRelationshipEdge
 }
 
 export interface DataFormatterRelationshipPartial extends DataFormatterBasePartial<'relationship'> {
+  visibleFilter?: VisibleFilter<'relationship'>
+  categoryLabels?: string[]
   // node: Partial<DataFormatterRelationshipNode>
   // edge: Partial<DataFormatterRelationshipEdge>
 }

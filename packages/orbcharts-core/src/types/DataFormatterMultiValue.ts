@@ -4,12 +4,15 @@ import { DataFormatterBase, DataFormatterBasePartial, DataFormatterValueAxis, Vi
 export interface DataFormatterMultiValue extends DataFormatterBase<'multiValue'> {
   visibleFilter: VisibleFilter<'multiValue'>
   // labelFormat: (datum: unknown) => string
+  categoryLabels: string[]
   multiValue: Array<DataFormatterMultiValueMultiValue>
   xAxis: DataFormatterValueAxis
   yAxis: DataFormatterValueAxis
 }
 
 export interface DataFormatterMultiValuePartial extends DataFormatterBasePartial<'multiValue'> {
+  visibleFilter?: VisibleFilter<'multiValue'>
+  categoryLabels?: string[]
   multiValue?: Array<Partial<DataFormatterMultiValueMultiValue>>
   xAxis?: Partial<DataFormatterValueAxis>
   yAxis?: Partial<DataFormatterValueAxis>

@@ -161,15 +161,19 @@ export const DATA_FORMATTER_SERIES_DEFAULT: DataFormatterSeries = {
 
 export const DATA_FORMATTER_GRID_GRID_DEFAULT: DataFormatterGridGrid = {
   // visibleFilter: (datum, context) => true,
-  gridData: {
-    seriesDirection: 'row',
-    rowLabels: [],
-    columnLabels: [],
-  },
+  // gridData: {
+  //   seriesDirection: 'row',
+  //   rowLabels: [],
+  //   columnLabels: [],
+  // },
+  seriesDirection: 'row',
+  rowLabels: [],
+  columnLabels: [],
   valueAxis: { ...DATA_FORMATTER_VALUE_AXIS },
   groupAxis: { ...DATA_FORMATTER_GROUP_AXIS, },
-  slotIndex: 0,
-  seriesSlotIndexes: null
+  separateSeries: false,
+  // slotIndex: 0,
+  // seriesSlotIndexes: null
 }
 
 export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
@@ -210,6 +214,7 @@ export const DATA_FORMATTER_MULTI_GRID_DEFAULT: DataFormatterMultiGrid = {
       ...DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT
     },
   ],
+  separateGrid: false,
   container: {
     gap: 120,
     rowAmount: 1,
@@ -221,6 +226,7 @@ export const DATA_FORMATTER_MULTI_VALUE_DEFAULT: DataFormatterMultiValue = {
   type: 'multiValue',
   visibleFilter: (datum, context) => true,
   // labelFormat: (datum: any) => (datum && datum.label) ?? '',
+  categoryLabels: [],
   multiValue: [],
   xAxis: { ...DATA_FORMATTER_VALUE_AXIS },
   yAxis: { ...DATA_FORMATTER_VALUE_AXIS },
@@ -236,6 +242,7 @@ export const DATA_FORMATTER_TREE_DEFAULT: DataFormatterTree = {
 export const DATA_FORMATTER_RELATIONAL_DEFAULT: DataFormatterRelationship = {
   type: 'relationship',
   visibleFilter: (datum, context) => true,
+  categoryLabels: []
   // node: {
   //   // labelFormat: (node: any) => (node && node.label) ?? '',
   //   descriptionFormat: (node: any) => (node && node.label) ?? ''

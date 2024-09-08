@@ -5,6 +5,7 @@ import {
   switchMap,
   takeUntil,
   distinctUntilChanged,
+  shareReplay,
   Observable,
   Subject } from 'rxjs'
 import type { BasePluginFn } from './types'
@@ -12,6 +13,7 @@ import type {
   ComputedDatumGrid,
   ComputedDataGrid,
   ComputedLayoutDataGrid,
+  DataFormatterTypeMap,
   ContainerPosition,
   EventGrid,
   ChartParams, 
@@ -49,7 +51,7 @@ interface BaseBarsContext {
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
   gridContainer$: Observable<ContainerPosition[]>
-  isSeriesPositionSeprate$: Observable<boolean>
+  isSeriesSeprate$: Observable<boolean>
   event$: Subject<EventGrid>
 }
 
@@ -66,7 +68,7 @@ interface RenderBarParams {
   transformedBarRadius: [number, number][]
   delayGroup: number
   transitionItem: number
-  isSeriesPositionSeprate: boolean
+  isSeriesSeprate: boolean
 }
 
 type ClipPathDatum = {
@@ -121,7 +123,7 @@ function calctransitionItem (barGroupAmount: number, totalDuration: number) {
 }
 // let _data: ComputedDatumGrid[][] = []
 
-function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedLayoutData, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesPositionSeprate }: RenderBarParams) {
+function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedLayoutData, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesSeprate }: RenderBarParams) {
 
   const barHalfWidth = barWidth! / 2
 
@@ -145,7 +147,7 @@ function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedLayo
         .attr('transform', (d, i) => `translate(${(d ? d.axisX : 0) - barHalfWidth}, ${0})`)
         .attr('fill', d => d.color)
         .attr('y', d => d.axisY < zeroYArr[seriesIndex] ? d.axisY : zeroYArr[seriesIndex])
-        .attr('x', d => isSeriesPositionSeprate ? 0 : barScale(d.seriesLabel)!)
+        .attr('x', d => isSeriesSeprate ? 0 : barScale(d.seriesLabel)!)
         .attr('width', barWidth!)
         .attr('rx', transformedBarRadius[seriesIndex][0] ?? 1)
         .attr('ry', transformedBarRadius[seriesIndex][1] ?? 1)
@@ -182,7 +184,7 @@ function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedLayo
   //           .attr('cursor', 'pointer')
   //           .attr('fill', d => d.color)
   //           .attr('y', d => d.axisY < zeroYArr[seriesIndex] ? d.axisY : zeroYArr[seriesIndex])
-  //           .attr('x', d => isSeriesPositionSeprate ? 0 : barScale(d.seriesLabel)!)
+  //           .attr('x', d => isSeriesSeprate ? 0 : barScale(d.seriesLabel)!)
   //           .attr('width', barWidth!)
   //           .attr('transform', `translate(${-barHalfWidth}, 0)`)
   //           // .attr('rx', params.barRadius == true ? barHalfWidth
@@ -285,7 +287,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
   gridAxesSize$,
   gridHighlight$,
   gridContainer$,
-  isSeriesPositionSeprate$,
+  isSeriesSeprate$,
   event$
 }) => {
 
@@ -425,14 +427,14 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     visibleComputedData: visibleComputedData$,
     params: fullParams$,
     gridAxesSize: gridAxesSize$,
-    isSeriesPositionSeprate: isSeriesPositionSeprate$
+    isSeriesSeprate: isSeriesSeprate$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
     map(data => {
       if (data.params.barWidth) {
         return data.params.barWidth
-      } else if (data.isSeriesPositionSeprate) {
+      } else if (data.isSeriesSeprate) {
         return calcBarWidth({
           axisWidth: data.gridAxesSize.width,
           groupAmount: data.computedData[0] ? data.computedData[0].length : 0,
@@ -622,7 +624,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     transformedBarRadius: transformedBarRadius$,
     delayGroup: delayGroup$,
     transitionItem: transitionItem$,
-    isSeriesPositionSeprate: isSeriesPositionSeprate$
+    isSeriesSeprate: isSeriesSeprate$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -640,7 +642,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
         transformedBarRadius: data.transformedBarRadius,
         delayGroup: data.delayGroup,
         transitionItem: data.transitionItem,
-        isSeriesPositionSeprate: data.isSeriesPositionSeprate
+        isSeriesSeprate: data.isSeriesSeprate
       })
     })
   )

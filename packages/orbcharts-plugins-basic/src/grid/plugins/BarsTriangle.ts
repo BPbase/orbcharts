@@ -1,6 +1,11 @@
 import {
   Subject,
-  Observable } from 'rxjs'
+  Observable,
+  takeUntil,
+  map,
+  distinctUntilChanged,
+  shareReplay
+} from 'rxjs'
 import { defineGridPlugin } from '@orbcharts/core'
 import { DEFAULT_BARS_TRIANGLE_PARAMS } from '../defaults'
 import { createBaseBarsTriangle } from '../../base/BaseBarsTriangle'
@@ -10,12 +15,21 @@ const pluginName = 'BarsTriangle'
 export const BarsTriangle = defineGridPlugin(pluginName, DEFAULT_BARS_TRIANGLE_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
+
+  const isSeriesSeprate$ = observer.fullDataFormatter$.pipe(
+    takeUntil(destroy$),
+    map(d => d.grid.separateSeries),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
+
   const unsubscribeBaseBars = createBaseBarsTriangle(pluginName, {
     selection,
     computedData$: observer.computedData$,
     computedLayoutData$: observer.computedLayoutData$,
     visibleComputedData$: observer.visibleComputedData$,
     visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
+    fullDataFormatter$: observer.fullDataFormatter$,
     existSeriesLabels$: observer.existSeriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
@@ -26,7 +40,7 @@ export const BarsTriangle = defineGridPlugin(pluginName, DEFAULT_BARS_TRIANGLE_P
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
     gridContainer$: observer.gridContainer$,
-    isSeriesPositionSeprate$: observer.isSeriesPositionSeprate$,
+    isSeriesSeprate$,
     event$: subject.event$,
   })
 

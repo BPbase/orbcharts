@@ -13,12 +13,13 @@ export const DF_MULTI_LINE_AREAS_2_GRID_SLOT: DataFormatterFile<'multiGrid'> = {
         }
       },
       {
-        slotIndex: 1,
+        // slotIndex: 1,
         groupAxis: {
           scalePadding: 0
         }
       }
     ],
+    separateGrid: true,
     container: {
       rowAmount: 1,
       columnAmount: 2,

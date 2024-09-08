@@ -25,7 +25,7 @@ import type {
   HighlightTarget,
   Layout,
   TransformData } from '../types'
-import type { ContextObserverGridDetail, ContextObserverMultiGridDetail } from '../types'
+import type { ContextObserverGridDetail, ContextObserverMultiGridDetail, ContainerPosition } from '../types'
 import {
   highlightObservable,
   seriesDataMapObservable,
@@ -40,7 +40,7 @@ import {
   gridComputedLayoutDataObservable,
   gridVisibleComputedDataObservable,
   gridVisibleComputedLayoutDataObservable,
-  isSeriesPositionSeprateObservable,
+  // isSeriesSeprateObservable,
   gridContainerObservable } from '../grid/gridObservables'
 import { DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT } from '../defaults'
 import { calcGridContainerPosition } from '../utils/orbchartsUtils'
@@ -68,10 +68,18 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
     shareReplay(1)
   )
 
+  const multiGridContainer$ = multiGridContainerObservable({
+    computedData$: computedData$,
+    fullDataFormatter$: fullDataFormatter$,
+    layout$: layout$,
+  }).pipe(
+    shareReplay(1)
+  )
 
   return combineLatest({
     fullDataFormatter: fullDataFormatter$,
     computedData: computedData$,
+    multiGridContainer: multiGridContainer$
   }).pipe(
     switchMap(async (d) => d),
     // distinctUntilChanged((a, b) => {
@@ -107,20 +115,24 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           shareReplay(1)
         )
 
-        const isSeriesPositionSeprate$ = isSeriesPositionSeprateObservable({
-          computedData$: gridComputedData$,
-          fullDataFormatter$: gridDataFormatter$,
-        }).pipe(
-          takeUntil(destroy$),
-          shareReplay(1)
-        )
+        // const isSeriesSeprate$ = isSeriesSeprateObservable({
+        //   computedData$: gridComputedData$,
+        //   fullDataFormatter$: gridDataFormatter$,
+        // }).pipe(
+        //   takeUntil(destroy$),
+        //   shareReplay(1)
+        // )
       
-        const gridContainer$ = gridContainerObservable({
-          computedData$: gridComputedData$,
-          fullDataFormatter$: gridDataFormatter$,
-          fullChartParams$,
-          layout$
-        }).pipe(
+        // const gridContainer$ = gridContainerObservable({
+        //   computedData$: gridComputedData$,
+        //   fullDataFormatter$: gridDataFormatter$,
+        //   layout$
+        // }).pipe(
+        //   shareReplay(1)
+        // )
+
+        const gridContainer$ = of(data.multiGridContainer[gridIndex]).pipe(
+          takeUntil(destroy$),
           shareReplay(1)
         )
         
@@ -238,7 +250,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           computedLayoutData$,
           visibleComputedData$,
           visibleComputedLayoutData$,
-          isSeriesPositionSeprate$
+          // isSeriesSeprate$
         }
       })
     })
@@ -247,17 +259,15 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
 
 
 // 所有container位置（對應series）
-export const multiGridContainerObservable = ({ computedData$, fullDataFormatter$, fullChartParams$, layout$ }: {
+export const multiGridContainerObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'multiGrid'>>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiGrid'>>
-  fullChartParams$: Observable<ChartParams>
   layout$: Observable<Layout>
-}) => {
+}): Observable<ContainerPosition[][]> => {
 
-  const multiGridContainer$ = combineLatest({
+  return combineLatest({
     computedData: computedData$,
     fullDataFormatter: fullDataFormatter$,
-    fullChartParams: fullChartParams$,
     layout: layout$,
   }).pipe(
     switchMap(async (d) => d),
@@ -265,48 +275,50 @@ export const multiGridContainerObservable = ({ computedData$, fullDataFormatter$
 
       const defaultGrid = data.fullDataFormatter.gridList[0] ?? DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT
       
-      const boxArr = data.computedData.map((gridData, gridIndex) => {
+      let accGridSlotIndex = 0
+      
+      const gridContainerArr = data.computedData.map((gridData, gridIndex) => {
         const grid = data.fullDataFormatter.gridList[gridIndex] ?? defaultGrid
         
-        // 有設定series定位
-        const hasSeriesPosition = grid.seriesSlotIndexes && grid.seriesSlotIndexes.length === gridData.length
-          ? true
-          : false
-        
-        if (hasSeriesPosition) {
+        if (grid.separateSeries) {
           // -- 依seriesSlotIndexes計算 --
-          return gridData.map((seriesData, seriesIndex) => {
-            const columnIndex = grid.seriesSlotIndexes[seriesIndex] % data.fullDataFormatter.container.columnAmount
-            const rowIndex = Math.floor(grid.seriesSlotIndexes[seriesIndex] / data.fullDataFormatter.container.columnAmount)
+          const seriesContainerArr = gridData.map((seriesData, seriesIndex) => {
+            const currentSlotIndex = accGridSlotIndex + seriesIndex
+            const columnIndex = currentSlotIndex % data.fullDataFormatter.container.columnAmount
+            const rowIndex = Math.floor(currentSlotIndex / data.fullDataFormatter.container.columnAmount)
             const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
             return {
-              slotIndex: grid.seriesSlotIndexes[seriesIndex],
+              slotIndex: currentSlotIndex,
               rowIndex,
               columnIndex,
               translate,
               scale,
             }
           })
+          accGridSlotIndex += seriesContainerArr.length
+          return seriesContainerArr
         } else {
           // -- 依grid的slotIndex計算 --
-          const columnIndex = grid.slotIndex % data.fullDataFormatter.container.columnAmount
-          const rowIndex = Math.floor(grid.slotIndex / data.fullDataFormatter.container.columnAmount)
-          return gridData.map((seriesData, seriesIndex) => {
+          const columnIndex = accGridSlotIndex % data.fullDataFormatter.container.columnAmount
+          const rowIndex = Math.floor(accGridSlotIndex / data.fullDataFormatter.container.columnAmount)
+          const seriesContainerArr = gridData.map((seriesData, seriesIndex) => {
             const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
             return {
-              slotIndex: grid.slotIndex,
+              slotIndex: accGridSlotIndex,
               rowIndex,
               columnIndex,
               translate,
               scale,
             }
           })
+          if (data.fullDataFormatter.separateGrid) {
+            accGridSlotIndex += 1
+          }
+          return seriesContainerArr
         }
-
       })
-      return boxArr
+      
+      return gridContainerArr
     }),
   )
-
-  return multiGridContainer$
 }

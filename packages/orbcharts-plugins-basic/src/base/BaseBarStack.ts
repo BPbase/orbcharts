@@ -52,7 +52,7 @@ interface BaseBarStackContext {
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
   gridContainer$: Observable<ContainerPosition[]>
-  isSeriesPositionSeprate$: Observable<boolean>
+  isSeriesSeprate$: Observable<boolean>
   event$: Subject<EventGrid>
 }
 
@@ -75,7 +75,7 @@ interface RenderBarParams {
   transformedBarRadius: [number, number][]
   delayGroup: number
   transitionItem: number
-  isSeriesPositionSeprate: boolean
+  isSeriesSeprate: boolean
 }
 
 type ClipPathDatum = {
@@ -126,7 +126,7 @@ function calctransitionItem (barGroupAmount: number, totalDuration: number) {
   return totalDuration * (1 - groupDelayProportionOfDuration) // delay後剩餘的時間
 }
 
-function renderRectBars ({ graphicGSelection, rectClassName, barData, zeroY, groupLabels, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesPositionSeprate }: RenderBarParams) {
+function renderRectBars ({ graphicGSelection, rectClassName, barData, zeroY, groupLabels, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesSeprate }: RenderBarParams) {
   
   const barHalfWidth = barWidth! / 2
 
@@ -307,7 +307,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
   gridAxesSize$,
   gridHighlight$,
   gridContainer$,
-  isSeriesPositionSeprate$,
+  isSeriesSeprate$,
   event$
 }) => {
 
@@ -345,7 +345,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
     // visibleComputedData: visibleComputedData$,
     params: fullParams$,
     axisSize: gridAxesSize$,
-    isSeriesPositionSeprate: isSeriesPositionSeprate$
+    isSeriesSeprate: isSeriesSeprate$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
@@ -592,9 +592,9 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
     })
   )
 
-  const graphicData$ = isSeriesPositionSeprate$.pipe(
-    switchMap(isSeriesPositionSeprate => {
-      return iif(() => isSeriesPositionSeprate, noneStackedData$, stackedData$)
+  const graphicData$ = isSeriesSeprate$.pipe(
+    switchMap(isSeriesSeprate => {
+      return iif(() => isSeriesSeprate, noneStackedData$, stackedData$)
     })
   )
 
@@ -635,7 +635,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
     transformedBarRadius: transformedBarRadius$,
     delayGroup: delayGroup$,
     transitionItem: transitionItem$,
-    isSeriesPositionSeprate: isSeriesPositionSeprate$
+    isSeriesSeprate: isSeriesSeprate$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -653,7 +653,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
         transformedBarRadius: data.transformedBarRadius,
         delayGroup: data.delayGroup,
         transitionItem: data.transitionItem,
-        isSeriesPositionSeprate: data.isSeriesPositionSeprate
+        isSeriesSeprate: data.isSeriesSeprate
       })
     })
   )

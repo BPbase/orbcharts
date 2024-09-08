@@ -1,6 +1,11 @@
 import * as d3 from 'd3'
 import {
-  Subject } from 'rxjs'
+  Subject,
+  map,
+  distinctUntilChanged,
+  shareReplay,
+  takeUntil
+} from 'rxjs'
 import {
   defineMultiGridPlugin } from '@orbcharts/core'
 import { DEFAULT_MULTI_BARS_PARAMS } from '../defaults'
@@ -31,6 +36,13 @@ export const MultiBars = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_BARS_PA
 
         const gridSelection = d3.select(g[i])
 
+        const isSeriesSeprate$ = d.dataFormatter$.pipe(
+          takeUntil(destroy$),
+          map(d => d.grid.separateSeries),
+          distinctUntilChanged(),
+          shareReplay(1)
+        )
+
         unsubscribeFnArr[i] = createBaseBars(pluginName, {
           selection: gridSelection,
           computedData$: d.computedData$,
@@ -48,7 +60,7 @@ export const MultiBars = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_BARS_PA
           gridAxesSize$: d.gridAxesSize$,
           gridHighlight$: d.gridHighlight$,
           gridContainer$: d.gridContainer$,
-          isSeriesPositionSeprate$: d.isSeriesPositionSeprate$,
+          isSeriesSeprate$,
           event$: subject.event$ as Subject<any>,
         })
       })

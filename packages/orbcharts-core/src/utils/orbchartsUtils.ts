@@ -44,9 +44,9 @@ export function createGridSeriesLabels ({ transposedDataGrid, dataFormatterGrid,
   dataFormatterGrid: DataFormatterGridGrid
   chartType?: ChartType
 }) {
-  const labels = dataFormatterGrid.gridData.seriesDirection === 'row'
-    ? dataFormatterGrid.gridData.rowLabels
-    : dataFormatterGrid.gridData.columnLabels
+  const labels = dataFormatterGrid.seriesDirection === 'row'
+    ? dataFormatterGrid.rowLabels
+    : dataFormatterGrid.columnLabels
   return transposedDataGrid.map((_, rowIndex) => {
     return labels[rowIndex] != null
       ? labels[rowIndex]
@@ -60,9 +60,9 @@ export function createMultiGridSeriesLabels ({ transposedDataGrid, dataFormatter
   chartType?: ChartType
   gridIndex?: number
 }) {
-  const labels = dataFormatterGrid.gridData.seriesDirection === 'row'
-    ? dataFormatterGrid.gridData.rowLabels
-    : dataFormatterGrid.gridData.columnLabels
+  const labels = dataFormatterGrid.seriesDirection === 'row'
+    ? dataFormatterGrid.rowLabels
+    : dataFormatterGrid.columnLabels
   return transposedDataGrid.map((_, rowIndex) => {
     return labels[rowIndex] != null
       ? labels[rowIndex]
@@ -78,9 +78,9 @@ export function createGridGroupLabels ({ transposedDataGrid, dataFormatterGrid, 
   if (transposedDataGrid[0] == null) {
     return []
   }
-  const labels = dataFormatterGrid.gridData.seriesDirection === 'row'
-    ? dataFormatterGrid.gridData.columnLabels
-    : dataFormatterGrid.gridData.rowLabels
+  const labels = dataFormatterGrid.seriesDirection === 'row'
+    ? dataFormatterGrid.columnLabels
+    : dataFormatterGrid.rowLabels
   return transposedDataGrid[0].map((_, columnLabels) => {
     return labels[columnLabels] != null
       ? labels[columnLabels]
@@ -97,9 +97,9 @@ export function createMultiGridGroupLabels ({ transposedDataGrid, dataFormatterG
   if (transposedDataGrid[0] == null) {
     return []
   }
-  const labels = dataFormatterGrid.gridData.seriesDirection === 'row'
-    ? dataFormatterGrid.gridData.columnLabels
-    : dataFormatterGrid.gridData.rowLabels
+  const labels = dataFormatterGrid.seriesDirection === 'row'
+    ? dataFormatterGrid.columnLabels
+    : dataFormatterGrid.rowLabels
   return transposedDataGrid[0].map((_, columnLabels) => {
     return labels[columnLabels] != null
       ? labels[columnLabels]

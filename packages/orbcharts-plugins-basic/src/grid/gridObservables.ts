@@ -193,7 +193,7 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
       //   ? data.computedData[0].length
       //   : 0
 
-      let _labels = data.dataFormatter.grid.gridData.seriesDirection === 'row'
+      let _labels = data.dataFormatter.grid.seriesDirection === 'row'
         ? (data.computedData[0] ?? []).map(d => d.groupLabel)
         : data.computedData.map(d => d[0].groupLabel)
 

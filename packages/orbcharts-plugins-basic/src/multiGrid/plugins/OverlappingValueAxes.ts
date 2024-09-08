@@ -5,6 +5,8 @@ import {
   switchMap,
   combineLatest,
   takeUntil,
+  distinctUntilChanged,
+  shareReplay,
   iif,
   Observable,
   Subject } from 'rxjs'
@@ -137,6 +139,13 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
 
         const gridSelection = d3.select(g[i])
 
+        const isSeriesSeprate$ = d.dataFormatter$.pipe(
+          takeUntil(destroy$),
+          map(d => d.grid.separateSeries),
+          distinctUntilChanged(),
+          shareReplay(1)
+        )
+
         unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
           selection: gridSelection,
           computedData$: d.computedData$,
@@ -149,7 +158,7 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
           gridAxesReverseTransform$: d.gridAxesReverseTransform$,
           gridAxesSize$: d.gridAxesSize$,
           gridContainer$: d.gridContainer$,
-          isSeriesPositionSeprate$: d.isSeriesPositionSeprate$,
+          isSeriesSeprate$,
         })
       })
   })

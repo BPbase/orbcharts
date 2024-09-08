@@ -22,7 +22,7 @@ export interface ContextObserverGridDetail {
   computedLayoutData$: Observable<ComputedLayoutDataGrid>
   visibleComputedData$: Observable<ComputedDataGrid>
   visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
-  isSeriesPositionSeprate$: Observable<boolean>
+  // isSeriesSeprate$: Observable<boolean>
 }
 
 export interface ContainerPosition {

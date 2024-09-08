@@ -52,7 +52,7 @@ interface BaseGroupAxisContext {
     height: number;
   }>
   gridContainer$: Observable<ContainerPosition[]>
-  isSeriesPositionSeprate$: Observable<boolean>
+  isSeriesSeprate$: Observable<boolean>
 }
 
 interface TextAlign {
@@ -185,7 +185,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
   gridAxesReverseTransform$,
   gridAxesSize$,
   gridContainer$,
-  isSeriesPositionSeprate$,
+  isSeriesSeprate$,
 }) => {
   
   const destroy$ = new Subject()
@@ -202,12 +202,12 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
         return a.length === b.length
       }),
     ),
-    isSeriesPositionSeprate: isSeriesPositionSeprate$
+    isSeriesSeprate: isSeriesSeprate$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      return data.isSeriesPositionSeprate
+      return data.isSeriesSeprate
         // series分開的時候顯示各別axis
         ? data.computedData
         // series合併的時候只顯示第一個axis

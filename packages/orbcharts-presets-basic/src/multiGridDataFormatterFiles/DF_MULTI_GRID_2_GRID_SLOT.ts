@@ -5,14 +5,15 @@ export const DF_MULTI_GRID_2_GRID_SLOT: DataFormatterFile<'multiGrid'> = {
   chartType: 'multiGrid',
   description: '2個Grid Slot',
   data: {
-    gridList: [
-      {
-        // slotIndex: 0
-      },
-      {
-        slotIndex: 1
-      }
-    ],
+    // gridList: [
+    //   {
+    //     // slotIndex: 0
+    //   },
+    //   {
+    //     slotIndex: 1
+    //   }
+    // ],
+    separateGrid: true,
     container: {
       rowAmount: 1,
       columnAmount: 2,

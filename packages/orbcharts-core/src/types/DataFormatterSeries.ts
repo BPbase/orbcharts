@@ -15,6 +15,7 @@ export interface DataFormatterSeries extends DataFormatterBase<'series'> {
 }
 
 export interface DataFormatterSeriesPartial extends DataFormatterBasePartial<'series'> {
+  visibleFilter?: VisibleFilter<'series'>
   // series: Partial<DataFormatterSeriesSeries>
   // unitLabel?: string
   seriesLabels?: string[]

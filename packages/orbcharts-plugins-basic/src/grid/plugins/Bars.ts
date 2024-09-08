@@ -1,6 +1,11 @@
 import {
   Subject,
-  Observable } from 'rxjs'
+  Observable,
+  map,
+  distinctUntilChanged,
+  shareReplay,
+  takeUntil
+} from 'rxjs'
 import {
   defineGridPlugin } from '@orbcharts/core'
 import { DEFAULT_BARS_PARAMS } from '../defaults'
@@ -10,6 +15,13 @@ const pluginName = 'Bars'
 
 export const Bars = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
+
+  const isSeriesSeprate$ = observer.fullDataFormatter$.pipe(
+    takeUntil(destroy$),
+    map(d => d.grid.separateSeries),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
 
   const unsubscribeBaseBars = createBaseBars(pluginName, {
     selection,
@@ -28,7 +40,7 @@ export const Bars = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)(({ selecti
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
     gridContainer$: observer.gridContainer$,
-    isSeriesPositionSeprate$: observer.isSeriesPositionSeprate$,
+    isSeriesSeprate$: isSeriesSeprate$,
     event$: subject.event$,
   })
 

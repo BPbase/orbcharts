@@ -37,27 +37,32 @@ export const computeMultiGridData: ComputedDataFn<'multiGrid'> = (context) => {
       return createTransposedDataGrid(gridData, gridDataFormatterList[gridIndex])
     })
 
-    const isOverlappingMultiGrid = (() => {
-      const SlotIndexSet = new Set(gridDataFormatterList.map(d => d.slotIndex))
-      // 判斷是否有重疊的grid
-      return SlotIndexSet.size !== gridDataFormatterList.length
-    })()
-    
-    const multiGridSeriesLabels = transposedDataGridList
-      .map((gridData, gridIndex) => {
-        return isOverlappingMultiGrid
-          ? createMultiGridSeriesLabels({
+    // const isOverlappingMultiGrid = (() => {
+    //   const SlotIndexSet = new Set(gridDataFormatterList.map(d => d.slotIndex))
+    //   // 判斷是否有重疊的grid
+    //   return SlotIndexSet.size !== gridDataFormatterList.length
+    // })()
+
+    const multiGridSeriesLabels = dataFormatter.separateGrid
+      // grid分開的時候，預設每組的seriesLabels相同
+      ? transposedDataGridList
+          .map((gridData, gridIndex) => {
+            return createGridSeriesLabels({
+              transposedDataGrid: gridData,
+              dataFormatterGrid: gridDataFormatterList[gridIndex],
+              chartType: 'multiGrid',
+            })
+          })
+      // grid不分開的時候，預設每個grid相同seriesIndex的seriesLabel相同
+      : transposedDataGridList
+          .map((gridData, gridIndex) => {
+            return createMultiGridSeriesLabels({
               transposedDataGrid: gridData,
               dataFormatterGrid: gridDataFormatterList[gridIndex],
               chartType: 'multiGrid',
               gridIndex
             })
-          : createGridSeriesLabels({
-            transposedDataGrid: gridData,
-            dataFormatterGrid: gridDataFormatterList[gridIndex],
-            chartType: 'multiGrid',
           })
-      })
 
     const SeriesLabelColorMap: Map<string, string> = new Map()
     let accIndex = 0

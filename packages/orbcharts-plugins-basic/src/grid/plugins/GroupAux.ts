@@ -336,7 +336,7 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
         ? data.computedData[0].length
         : 0
 
-      let _labels = data.fullDataFormatter.grid.gridData.seriesDirection === 'row'
+      let _labels = data.fullDataFormatter.grid.seriesDirection === 'row'
         // ? data.fullDataFormatter.grid.columnLabels
         // : data.fullDataFormatter.grid.rowLabels
         ? (data.computedData[0] ?? []).map(d => d.groupLabel)
