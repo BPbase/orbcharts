@@ -9,21 +9,7 @@ import type { DataFormatterMultiValue, DataFormatterMultiValuePartial } from './
 import type { DataFormatterTree, DataFormatterTreePartial } from './DataFormatterTree'
 import type { DataFormatterRelationship, DataFormatterRelationshipPartial } from './DataFormatterRelationship'
 import type { AxisPosition } from './Axis'
-import type { Layout } from './Layout'
 
-// export type DataFormatter = DataFormatterSeries
-//   | DataFormatterGrid
-//   | DataFormatterMultiGrid
-//   | DataFormatterMultiValue
-//   | DataFormatterTree
-//   | DataFormatterRelationship
-
-// export type DataFormatterPartial = DataFormatterSeriesPartial
-//   | DataFormatterGridPartial
-//   | DataFormatterMultiGridPartial
-//   | DataFormatterMultiValuePartial
-//   | DataFormatterTreePartial
-//   | DataFormatterRelationshipPartial
 
 // dataFormatter計算當中會使用的資料
 export interface DataFormatterContext<T extends ChartType> {
@@ -59,21 +45,6 @@ export interface DataFormatterBase<T extends ChartType> {
 
 export type DataFormatterBasePartial<T extends ChartType> = Partial<DataFormatterBase<T>>
 
-// 有value
-// export interface DataFormatterValue {
-//   valueFormat: ValueFormat
-// }
-
-// 有axis
-// export interface DataFormatterAxis {
-//   // domainMinValue?: number
-//   // domainMaxValue?: number
-//   // domainMinRange?: number
-//   // domainMaxRange?: number
-//   valueDomain: [number | 'auto', number | 'auto']
-//   valueRange: [number, number] // 0-1
-// }
-
 export interface DataFormatterValueAxis {
   position: AxisPosition
   scaleDomain: [number | 'auto', number | 'auto']
@@ -91,8 +62,13 @@ export interface DataFormatterGroupAxis {
 
 // export type ValueFormat = string | ((text: d3.NumberValue) => string)
 
-// export type VisibleFilter<T extends ChartType> = (datum: DatumTypeMap<T>, rowIndex: number, columnIndex: number, context: DataFormatterContext<T>) => boolean | null
-
 export type VisibleFilter<T extends ChartType> = (datum: ComputedDatumTypeMap<T>, context: DataFormatterContext<T>) => boolean | null
 
 // export type TooltipContentFormat<T extends ChartType> = (datum: DatumTypeMap<T>, rowIndex: number, columnIndex: number, context: DataFormatterContext<T>) => string | null
+
+export interface DataFormatterContainer {
+  gap: number
+  rowAmount: number
+  columnAmount: number
+}
+

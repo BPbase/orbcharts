@@ -21,12 +21,11 @@ import type {
   ComputedDatumGrid,
   DataFormatterTypeMap,
   DataFormatterGrid,
-  DataFormatterGridContainer,
   DataFormatterValueAxis,
   DataFormatterGroupAxis,
   ComputedLayoutDatumGrid,
   ComputedLayoutDataGrid,
-  ContainerPosition,
+  GridContainerPosition,
   HighlightTarget,
   Layout,
   TransformData } from '../types'
@@ -367,31 +366,31 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
   })
 }
 
-export const gridGraphicReverseScaleObservable = ({ gridContainer$, gridAxesTransform$, gridGraphicTransform$ }: {
-  gridContainer$: Observable<ContainerPosition[]>
+export const gridGraphicReverseScaleObservable = ({ gridContainerPosition$, gridAxesTransform$, gridGraphicTransform$ }: {
+  gridContainerPosition$: Observable<GridContainerPosition[]>
   gridAxesTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>
 }): Observable<[number, number][]> => {
   return combineLatest({
-    gridContainer: gridContainer$,
+    gridContainerPosition: gridContainerPosition$,
     gridAxesTransform: gridAxesTransform$,
     gridGraphicTransform: gridGraphicTransform$,
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
       if (data.gridAxesTransform.rotate == 0 || data.gridAxesTransform.rotate == 180) {
-        return data.gridContainer.map((series, seriesIndex) => {
+        return data.gridContainerPosition.map((series, seriesIndex) => {
           return [
-            1 / data.gridGraphicTransform.scale[0] / data.gridContainer[seriesIndex].scale[0],
-            1 / data.gridGraphicTransform.scale[1] / data.gridContainer[seriesIndex].scale[1],
+            1 / data.gridGraphicTransform.scale[0] / data.gridContainerPosition[seriesIndex].scale[0],
+            1 / data.gridGraphicTransform.scale[1] / data.gridContainerPosition[seriesIndex].scale[1],
           ]
         })
       } else {
-        return data.gridContainer.map((series, seriesIndex) => {
+        return data.gridContainerPosition.map((series, seriesIndex) => {
           // 由於有垂直的旋轉，所以外層 (container) x和y的scale要互換
           return [
-            1 / data.gridGraphicTransform.scale[0] / data.gridContainer[seriesIndex].scale[1],
-            1 / data.gridGraphicTransform.scale[1] / data.gridContainer[seriesIndex].scale[0],
+            1 / data.gridGraphicTransform.scale[0] / data.gridContainerPosition[seriesIndex].scale[1],
+            1 / data.gridGraphicTransform.scale[1] / data.gridContainerPosition[seriesIndex].scale[0],
           ]
         })
       }
@@ -460,7 +459,7 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
 //   return highlightObservable ({ datumList$, fullChartParams$, event$ })
 // }
 
-export const existSeriesLabelsObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
+export const seriesLabelsObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
   return computedData$.pipe(
     map(data => {
       return data
@@ -523,13 +522,13 @@ export const gridVisibleComputedLayoutDataObservable = ({ computedLayoutData$ }:
 // }
 
 // 所有container位置（對應series）
-export const gridContainerObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
+export const gridContainerPositionObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'grid'>>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
   layout$: Observable<Layout>
-}): Observable<ContainerPosition[]> => {
+}): Observable<GridContainerPosition[]> => {
 
-  const gridContainer$ = combineLatest({
+  const gridContainerPosition$ = combineLatest({
     computedData: computedData$,
     fullDataFormatter: fullDataFormatter$,
     layout: layout$,
@@ -538,7 +537,7 @@ export const gridContainerObservable = ({ computedData$, fullDataFormatter$, lay
     map(data => {
       
       if (data.fullDataFormatter.grid.separateSeries) {
-        // -- 依seriesSlotIndexes計算 --
+        // -- 依slotIndexes計算 --
         return data.computedData.map((seriesData, seriesIndex) => {
           const columnIndex = seriesIndex % data.fullDataFormatter.container.columnAmount
           const rowIndex = Math.floor(seriesIndex / data.fullDataFormatter.container.columnAmount)
@@ -552,7 +551,7 @@ export const gridContainerObservable = ({ computedData$, fullDataFormatter$, lay
           }
         })
       } else {
-        // -- 依grid的slotIndex計算 --
+        // -- 無拆分 --
         const columnIndex = 0
         const rowIndex = 0
         return data.computedData.map((seriesData, seriesIndex) => {
@@ -569,5 +568,5 @@ export const gridContainerObservable = ({ computedData$, fullDataFormatter$, lay
     })
   )
 
-  return gridContainer$
+  return gridContainerPosition$
 }

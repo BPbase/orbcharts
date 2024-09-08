@@ -7,7 +7,7 @@ import type { DataMultiGrid } from './types/DataMultiGrid'
 import type { DataMultiValue } from './types/DataMultiValue'
 import type { DataTree } from './types/DataTree'
 import type { DataRelationship } from './types/DataRelationship'
-import type { DataFormatterBase, DataFormatterValueAxis, DataFormatterGroupAxis } from './types/DataFormatter'
+import type { DataFormatterBase, DataFormatterValueAxis, DataFormatterGroupAxis, DataFormatterContainer } from './types/DataFormatter'
 import type { DataFormatterSeries } from './types/DataFormatterSeries'
 import type { DataFormatterGrid, DataFormatterGridGrid } from './types/DataFormatterGrid'
 import type { DataFormatterMultiGrid, DataFormatterMultiGridGrid } from './types/DataFormatterMultiGrid'
@@ -43,16 +43,9 @@ export const PADDING_DEFAULT: Padding = {
   left: 60
 }
 
-// export const HIGHLIGHT_DEFAULT: HighlightDefault = {
-//   // trigger: 'datum',
-//   id: null,
-//   label: null
-// }
-
 export const CHART_PARAMS_DEFAULT: ChartParams = {
   padding: PADDING_DEFAULT,
   highlightTarget: 'datum',
-  // highlightDefault: HIGHLIGHT_DEFAULT,
   highlightDefault: null,
   colorScheme: 'light',
   colors: {
@@ -104,45 +97,36 @@ export const DATA_RELATIONA_DEFAULTL: DataRelationship = {
 
 // -- Data Formatter --
 
-// 基本欄位
-// export const DATA_FORMATTER: DataFormatterBase<ChartType> = {
-//   // ...GLOBAL_DEFAULT,
-//   type: ('' as any), // 後面需複蓋掉否則會有問題
-// }
-// 有value
-// export const DATA_FORMATTER_WITH_VALUE: DataFormatterValue = {
-//   valueFormat: ',.0f'
-// }
-// 有axis
-// export const DATA_FORMATTER_WITH_AXIS: DataFormatterAxis = {
-//   // domainMinValue: 0,
-//   // domainMaxValue: undefined,
-//   // domainMinRange: undefined,
-//   // domainMaxRange: 0.9
-//   valueDomain: [0, 'auto'],
-//   valueRange: [0, 0.9]
-// }
-
-export const DATA_FORMATTER_VALUE_AXIS: DataFormatterValueAxis = {
+export const DATA_FORMATTER_VALUE_AXIS_DEFAULT: DataFormatterValueAxis = {
   position: 'left',
   scaleDomain: [0, 'auto'],
   scaleRange: [0, 0.9],
   label: '',
 }
 
-export const DATA_FORMATTER_GROUP_AXIS: DataFormatterGroupAxis = {
+export const DATA_FORMATTER_GROUP_AXIS_DEFAULT: DataFormatterGroupAxis = {
   position: 'bottom',
   scaleDomain: [0, 'auto'],
   scalePadding: 0.5,
   label: ''
 }
 
+export const DATA_FORMATTER_CONTAINER_DEFAULT: DataFormatterContainer = {
+  gap: 120,
+  rowAmount: 1,
+  columnAmount: 1
+}
+
 export const DATA_FORMATTER_SERIES_DEFAULT: DataFormatterSeries = {
-  // ...DATA_FORMATTER_WITH_VALUE,
   type: 'series',
   visibleFilter: (datum, context) => true,
-  // unitLabel: '',
+  sort: null,
   seriesLabels: [],
+  container: {
+    ...DATA_FORMATTER_CONTAINER_DEFAULT
+  },
+  separateSeries: false,
+  sumSeries: false
   // mapSeries: (datum, rowIndex, columnIndex, { data, dataFormatter }) => {
   //   const seriesIndex = rowIndex >= dataFormatter.seriesLabels.length
   //     ? rowIndex % dataFormatter.seriesLabels.length // 如果index大於所設定的seriesLabels的數量則從頭回來算
@@ -156,44 +140,28 @@ export const DATA_FORMATTER_SERIES_DEFAULT: DataFormatterSeries = {
   //       rowIndex % chartParams.colors[chartParams.colorScheme].series.length
   //     ]
   // },
-  sort: null,
 }
 
 export const DATA_FORMATTER_GRID_GRID_DEFAULT: DataFormatterGridGrid = {
-  // visibleFilter: (datum, context) => true,
-  // gridData: {
-  //   seriesDirection: 'row',
-  //   rowLabels: [],
-  //   columnLabels: [],
-  // },
   seriesDirection: 'row',
   rowLabels: [],
   columnLabels: [],
-  valueAxis: { ...DATA_FORMATTER_VALUE_AXIS },
-  groupAxis: { ...DATA_FORMATTER_GROUP_AXIS, },
+  valueAxis: { ...DATA_FORMATTER_VALUE_AXIS_DEFAULT },
+  groupAxis: { ...DATA_FORMATTER_GROUP_AXIS_DEFAULT, },
   separateSeries: false,
   // slotIndex: 0,
   // seriesSlotIndexes: null
 }
 
 export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
-  // ...DATA_FORMATTER_WITH_VALUE,
   type: 'grid',
   visibleFilter: (datum, context) => true,
   grid: {
     ...DATA_FORMATTER_GRID_GRID_DEFAULT
   },
   container: {
-    gap: 120,
-    rowAmount: 1,
-    columnAmount: 1
+    ...DATA_FORMATTER_CONTAINER_DEFAULT
   }
-  // visibleGroupRange: null,
-  // colorsPredicate: (datum, rowIndex, columnIndex, { chartParams, dataFormatter }) => {
-  //   const seriesIndex = dataFormatter.grid.seriesDirection === 'row' ? rowIndex : columnIndex
-  //   return chartParams.colors[chartParams.colorScheme].series[seriesIndex]
-  // },
-  
 }
 
 // export const DATA_FORMATTER_MULTI_GRID_MULTI_GRID_DEFAULT: DataFormatterMultiGridMultiGrid = {
@@ -216,20 +184,17 @@ export const DATA_FORMATTER_MULTI_GRID_DEFAULT: DataFormatterMultiGrid = {
   ],
   separateGrid: false,
   container: {
-    gap: 120,
-    rowAmount: 1,
-    columnAmount: 1
+    ...DATA_FORMATTER_CONTAINER_DEFAULT
   }
 }
 
 export const DATA_FORMATTER_MULTI_VALUE_DEFAULT: DataFormatterMultiValue = {
   type: 'multiValue',
   visibleFilter: (datum, context) => true,
-  // labelFormat: (datum: any) => (datum && datum.label) ?? '',
   categoryLabels: [],
   multiValue: [],
-  xAxis: { ...DATA_FORMATTER_VALUE_AXIS },
-  yAxis: { ...DATA_FORMATTER_VALUE_AXIS },
+  xAxis: { ...DATA_FORMATTER_VALUE_AXIS_DEFAULT },
+  yAxis: { ...DATA_FORMATTER_VALUE_AXIS_DEFAULT },
 }
 
 export const DATA_FORMATTER_TREE_DEFAULT: DataFormatterTree = {
@@ -252,6 +217,4 @@ export const DATA_FORMATTER_RELATIONAL_DEFAULT: DataFormatterRelationship = {
   //   descriptionFormat: (edge: any) => (edge && edge.label) ?? ''
   // },
 }
-
-// -- Render Data --
 

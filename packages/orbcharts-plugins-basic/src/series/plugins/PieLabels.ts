@@ -228,7 +228,6 @@ export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAM
     fullChartParams: observer.fullChartParams$
   }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
     switchMap(async (d) => d),
   ).subscribe(data => {
 

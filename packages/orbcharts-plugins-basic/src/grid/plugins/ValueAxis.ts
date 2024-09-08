@@ -33,7 +33,7 @@ export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)
     gridAxesTransform$: observer.gridAxesTransform$,
     gridAxesReverseTransform$: observer.gridAxesReverseTransform$,
     gridAxesSize$: observer.gridAxesSize$,
-    gridContainer$: observer.gridContainer$,
+    gridContainerPosition$: observer.gridContainerPosition$,
     isSeriesSeprate$,
   })
 

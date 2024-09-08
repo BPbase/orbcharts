@@ -28,7 +28,7 @@ export const BarStack = defineGridPlugin(pluginName, DEFAULT_BAR_STACK_PARAMS)((
     computedLayoutData$: observer.computedLayoutData$,
     visibleComputedData$: observer.visibleComputedData$,
     visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
-    existSeriesLabels$: observer.existSeriesLabels$,
+    seriesLabels$: observer.seriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,
@@ -39,7 +39,7 @@ export const BarStack = defineGridPlugin(pluginName, DEFAULT_BAR_STACK_PARAMS)((
     gridGraphicReverseScale$: observer.gridGraphicReverseScale$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
-    gridContainer$: observer.gridContainer$,
+    gridContainerPosition$: observer.gridContainerPosition$,
     isSeriesSeprate$,
     event$: subject.event$,
   })

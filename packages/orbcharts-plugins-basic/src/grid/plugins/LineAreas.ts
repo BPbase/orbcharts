@@ -17,7 +17,7 @@ export const LineAreas = defineGridPlugin(pluginName, DEFAULT_LINE_AREAS_PARAMS)
     visibleComputedData$: observer.visibleComputedData$,
     computedLayoutData$: observer.computedLayoutData$,
     visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
-    existSeriesLabels$: observer.existSeriesLabels$,
+    seriesLabels$: observer.seriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,
@@ -27,7 +27,7 @@ export const LineAreas = defineGridPlugin(pluginName, DEFAULT_LINE_AREAS_PARAMS)
     gridGraphicTransform$: observer.gridGraphicTransform$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
-    gridContainer$: observer.gridContainer$,
+    gridContainerPosition$: observer.gridContainerPosition$,
     layout$: observer.layout$,
     event$: subject.event$,
   })

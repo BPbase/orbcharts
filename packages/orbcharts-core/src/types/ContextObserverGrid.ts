@@ -9,14 +9,14 @@ ContextObserverBase<'grid', PluginParams>, ContextObserverGridDetail {
 }
 
 export interface ContextObserverGridDetail {
-  gridContainer$: Observable<ContainerPosition[]>
+  gridContainerPosition$: Observable<GridContainerPosition[]>
   gridAxesTransform$: Observable<TransformData>
   gridAxesReverseTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>
   gridGraphicReverseScale$: Observable<[number, number][]>
   gridAxesSize$: Observable<{ width: number; height: number; }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
-  existSeriesLabels$: Observable<string[]>
+  seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   computedLayoutData$: Observable<ComputedLayoutDataGrid>
@@ -25,18 +25,18 @@ export interface ContextObserverGridDetail {
   // isSeriesSeprate$: Observable<boolean>
 }
 
-export interface ContainerPosition {
-  slotIndex: number
-  rowIndex: number
-  columnIndex: number
-  translate: [number, number]
-  scale: [number, number]
-}
-
 export type ComputedLayoutDataGrid = ComputedLayoutDatumGrid[][]
 
 export interface ComputedLayoutDatumGrid extends ComputedDatumGrid {
   axisX: number
   axisY: number
   axisYFromZero: number
+}
+
+export interface GridContainerPosition {
+  slotIndex: number
+  rowIndex: number
+  columnIndex: number
+  translate: [number, number]
+  scale: [number, number]
 }

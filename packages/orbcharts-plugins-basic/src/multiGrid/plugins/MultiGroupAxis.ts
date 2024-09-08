@@ -52,7 +52,7 @@ export const MultiGroupAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GR
           gridAxesTransform$: d.gridAxesTransform$,
           gridAxesReverseTransform$: d.gridAxesReverseTransform$,
           gridAxesSize$: d.gridAxesSize$,
-          gridContainer$: d.gridContainer$,
+          gridContainerPosition$: d.gridContainerPosition$,
           isSeriesSeprate$,
         })
       })

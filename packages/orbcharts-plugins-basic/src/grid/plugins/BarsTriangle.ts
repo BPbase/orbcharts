@@ -30,7 +30,7 @@ export const BarsTriangle = defineGridPlugin(pluginName, DEFAULT_BARS_TRIANGLE_P
     visibleComputedData$: observer.visibleComputedData$,
     visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
     fullDataFormatter$: observer.fullDataFormatter$,
-    existSeriesLabels$: observer.existSeriesLabels$,
+    seriesLabels$: observer.seriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,
@@ -39,7 +39,7 @@ export const BarsTriangle = defineGridPlugin(pluginName, DEFAULT_BARS_TRIANGLE_P
     gridGraphicTransform$: observer.gridGraphicTransform$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
-    gridContainer$: observer.gridContainer$,
+    gridContainerPosition$: observer.gridContainerPosition$,
     isSeriesSeprate$,
     event$: subject.event$,
   })

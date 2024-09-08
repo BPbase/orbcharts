@@ -14,7 +14,7 @@ import type {
   ComputedLayoutDataGrid,
   EventGrid,
   ChartParams, 
-  ContainerPosition,
+  GridContainerPosition,
   Layout,
   TransformData,
   ColorType } from '@orbcharts/core'
@@ -35,7 +35,7 @@ interface BaseDotsContext {
   computedLayoutData$: Observable<ComputedLayoutDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
   visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
-  existSeriesLabels$: Observable<string[]>
+  seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullParams$: Observable<BaseDotsParams>
@@ -48,7 +48,7 @@ interface BaseDotsContext {
     height: number;
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
-  gridContainer$: Observable<ContainerPosition[]>
+  gridContainerPosition$: Observable<GridContainerPosition[]>
   event$: Subject<EventGrid>
 }
 
@@ -262,7 +262,7 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
   computedLayoutData$,
   visibleComputedData$,
   visibleComputedLayoutData$,
-  existSeriesLabels$,
+  seriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
   fullParams$,
@@ -272,7 +272,7 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
   gridGraphicReverseScale$,
   gridAxesSize$,
   gridHighlight$,
-  gridContainer$,
+  gridContainerPosition$,
   event$
 }) => {
 
@@ -298,15 +298,15 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
     selection,
     pluginName,
     clipPathID,
-    existSeriesLabels$,
-    gridContainer$,
+    seriesLabels$,
+    gridContainerPosition$,
     gridAxesTransform$,
     gridGraphicTransform$
   })
 
   const graphicReverseScale$: Observable<[number, number][]> = combineLatest({
     // gridGraphicTransform: gridGraphicTransform$,
-    // gridContainer: gridContainer$,
+    // gridContainerPosition: gridContainerPosition$,
     // gridAxesTransform: gridAxesTransform$
     computedData: computedData$,
     gridGraphicReverseScale: gridGraphicReverseScale$

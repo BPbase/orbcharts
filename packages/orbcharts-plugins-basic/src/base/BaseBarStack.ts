@@ -17,7 +17,7 @@ import type {
   DataFormatterGrid,
   EventGrid,
   ChartParams,
-  ContainerPosition,
+  GridContainerPosition,
   Layout,
   TransformData } from '@orbcharts/core'
 import { getD3TransitionEase } from '../utils/d3Utils'
@@ -37,7 +37,7 @@ interface BaseBarStackContext {
   computedLayoutData$: Observable<ComputedLayoutDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
   visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
-  existSeriesLabels$: Observable<string[]>
+  seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullParams$: Observable<BaseBarStackParams>
@@ -51,7 +51,7 @@ interface BaseBarStackContext {
     height: number;
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
-  gridContainer$: Observable<ContainerPosition[]>
+  gridContainerPosition$: Observable<GridContainerPosition[]>
   isSeriesSeprate$: Observable<boolean>
   event$: Subject<EventGrid>
 }
@@ -295,7 +295,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
   computedLayoutData$,
   visibleComputedData$,
   visibleComputedLayoutData$,
-  existSeriesLabels$,
+  seriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
   fullParams$,
@@ -306,7 +306,7 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
   gridGraphicReverseScale$,
   gridAxesSize$,
   gridHighlight$,
-  gridContainer$,
+  gridContainerPosition$,
   isSeriesSeprate$,
   event$
 }) => {
@@ -325,8 +325,8 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
     selection,
     pluginName,
     clipPathID,
-    existSeriesLabels$,
-    gridContainer$,
+    seriesLabels$,
+    gridContainerPosition$,
     gridAxesTransform$,
     gridGraphicTransform$
   })

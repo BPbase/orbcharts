@@ -12,11 +12,11 @@ import {
   gridGraphicTransformObservable,
   gridGraphicReverseScaleObservable,
   gridAxesSizeObservable,
-  existSeriesLabelsObservable,
+  seriesLabelsObservable,
   gridVisibleComputedDataObservable,
   gridVisibleComputedLayoutDataObservable,
   // isSeriesSeprateObservable,
-  gridContainerObservable } from './gridObservables'
+  gridContainerPositionObservable } from './gridObservables'
 
 export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, observer }) => {
   
@@ -31,7 +31,7 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
   //   shareReplay(1)
   // )
   
-  const gridContainer$ = gridContainerObservable({
+  const gridContainerPosition$ = gridContainerPositionObservable({
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$,
     layout$: observer.layout$,
@@ -59,7 +59,7 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
   )
 
   const gridGraphicReverseScale$ = gridGraphicReverseScaleObservable({
-    gridContainer$: gridContainer$,
+    gridContainerPosition$: gridContainerPosition$,
     gridAxesTransform$: gridAxesTransform$,
     gridGraphicTransform$: gridGraphicTransform$,
   })
@@ -85,7 +85,7 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     shareReplay(1)
   )
 
-  const existSeriesLabels$ = existSeriesLabelsObservable({
+  const seriesLabels$ = seriesLabelsObservable({
     computedData$: observer.computedData$,
   })
 
@@ -130,14 +130,14 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     layout$: observer.layout$,
     textSizePx$,
     // isSeriesSeprate$,
-    gridContainer$,
+    gridContainerPosition$,
     gridAxesTransform$,
     gridAxesReverseTransform$,
     gridGraphicTransform$,
     gridGraphicReverseScale$,
     gridAxesSize$,
     gridHighlight$,
-    existSeriesLabels$,
+    seriesLabels$,
     SeriesDataMap$,
     GroupDataMap$,
     computedLayoutData$,

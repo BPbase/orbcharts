@@ -16,7 +16,7 @@ import type {
   ComputedLayoutDataGrid,
   DataFormatterGrid,
   EventGrid,
-  ContainerPosition,
+  GridContainerPosition,
   ChartParams, 
   Layout,
   TransformData } from '@orbcharts/core'
@@ -43,7 +43,7 @@ interface BaseLinesContext {
   computedLayoutData$: Observable<ComputedLayoutDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
   visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
-  existSeriesLabels$: Observable<string[]>
+  seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullDataFormatter$: Observable<DataFormatterGrid>
@@ -56,7 +56,7 @@ interface BaseLinesContext {
     height: number;
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
-  gridContainer$: Observable<ContainerPosition[]>
+  gridContainerPosition$: Observable<GridContainerPosition[]>
   event$: Subject<EventGrid>
 }
 
@@ -229,7 +229,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
   computedLayoutData$,
   visibleComputedData$,
   visibleComputedLayoutData$,
-  existSeriesLabels$,
+  seriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
   fullParams$,
@@ -239,7 +239,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
   gridGraphicTransform$,
   gridAxesSize$,
   gridHighlight$,
-  gridContainer$,
+  gridContainerPosition$,
   event$
 }) => {
 
@@ -330,7 +330,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
 
   // combineLatest({
   //   seriesSelection: seriesSelection$,
-  //   gridContainer: gridContainer$                                                                                                                                                                                       
+  //   gridContainerPosition: gridContainerPosition$                                                                                                                                                                                       
   // }).pipe(
   //   takeUntil(destroy$),
   //   switchMap(async d => d)
@@ -338,8 +338,8 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
   //   data.seriesSelection
   //     .transition()
   //     .attr('transform', (d, i) => {
-  //       const translate = data.gridContainer[i].translate
-  //       const scale = data.gridContainer[i].scale
+  //       const translate = data.gridContainerPosition[i].translate
+  //       const scale = data.gridContainerPosition[i].scale
   //       return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
   //     })
   // })
@@ -390,8 +390,8 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
     selection,
     pluginName,
     clipPathID,
-    existSeriesLabels$,
-    gridContainer$,
+    seriesLabels$,
+    gridContainerPosition$,
     gridAxesTransform$,
     gridGraphicTransform$
   })
@@ -411,19 +411,18 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
     }
   })
 
-  // 顯示範圍內的series labels
-  const seriesLabels$: Observable<string[]> = new Observable(subscriber => {
-    computedData$.pipe(
-      takeUntil(destroy$),
-      // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
-      switchMap(async (d) => d),
-    ).subscribe(data => {
-      const labels = data[0] && data[0][0]
-        ? data.map(d => d[0].seriesLabel)
-        : []
-      subscriber.next(labels)
-    })
-  })
+  // // 顯示範圍內的series labels
+  // const seriesLabels$: Observable<string[]> = new Observable(subscriber => {
+  //   computedData$.pipe(
+  //     takeUntil(destroy$),
+  //     switchMap(async (d) => d),
+  //   ).subscribe(data => {
+  //     const labels = data[0] && data[0][0]
+  //       ? data.map(d => d[0].seriesLabel)
+  //       : []
+  //     subscriber.next(labels)
+  //   })
+  // })
 
   // const axisSize$ = gridAxisSizeObservable({
   //   fullDataFormatter$,
@@ -450,7 +449,6 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
     transitionEase: transitionEase$
   }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
     switchMap(async (d) => d),
   ).subscribe(data => {
     // 外層的遮罩

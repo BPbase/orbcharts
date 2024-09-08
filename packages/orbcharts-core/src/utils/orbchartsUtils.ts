@@ -6,7 +6,8 @@ import type { DataSeries, DataSeriesDatum, DataSeriesValue } from '../types/Data
 import type { DataGrid, DataGridDatum, DataGridValue } from '../types/DataGrid'
 import type { DataMultiGrid } from '../types/DataMultiGrid'
 import type { DataMultiValue, DataMultiValueDatum, DataMultiValueValue } from '../types/DataMultiValue'
-import type { SeriesDirection, DataFormatterGrid, DataFormatterGridContainer, DataFormatterGridGrid } from '../types/DataFormatterGrid'
+import type { DataFormatterContainer } from '../types/DataFormatter'
+import type { SeriesDirection, DataFormatterGrid, DataFormatterGridGrid } from '../types/DataFormatterGrid'
 import type { DataFormatterMultiGrid } from '../types/DataFormatterMultiGrid'
 import type { ComputedDatumSeriesValue } from '../types/ComputedData'
 import type { ComputedDatumSeries } from '../types/ComputedDataSeries'
@@ -214,7 +215,26 @@ export function seriesColorPredicate (seriesIndex: number, chartParams: ChartPar
     ]
 }
 
-export function calcGridContainerPosition (layout: Layout, container: DataFormatterGridContainer, rowIndex: number, columnIndex: number) {
+export function calcSeriesContainerPosition (layout: Layout, container: DataFormatterContainer, rowIndex: number, columnIndex: number) {
+  const { gap, rowAmount, columnAmount } = container
+  const width = (layout.width - (gap * (columnAmount - 1))) / columnAmount
+  const height = (layout.height - (gap * (rowAmount - 1))) / rowAmount
+  const x = columnIndex * width + (columnIndex * gap)
+  const y = rowIndex * height + (rowIndex * gap)
+  // const translate: [number, number] = [x, y]
+  
+  return {
+    // translate,
+    startX: x,
+    startY: y,
+    centerX: x + width / 2,
+    centerY: y + height / 2,
+    width,
+    height
+  }
+}
+
+export function calcGridContainerPosition (layout: Layout, container: DataFormatterContainer, rowIndex: number, columnIndex: number) {
   const { gap, rowAmount, columnAmount } = container
   const width = (layout.width - (gap * (columnAmount - 1))) / columnAmount
   const height = (layout.height - (gap * (rowAmount - 1))) / rowAmount

@@ -25,7 +25,7 @@ import type {
   HighlightTarget,
   Layout,
   TransformData } from '../types'
-import type { ContextObserverGridDetail, ContextObserverMultiGridDetail, ContainerPosition } from '../types'
+import type { ContextObserverGridDetail, ContextObserverMultiGridDetail, GridContainerPosition } from '../types'
 import {
   highlightObservable,
   seriesDataMapObservable,
@@ -36,12 +36,12 @@ import {
   gridGraphicReverseScaleObservable,
   gridAxesReverseTransformObservable,
   gridAxesSizeObservable,
-  existSeriesLabelsObservable,
+  seriesLabelsObservable,
   gridComputedLayoutDataObservable,
   gridVisibleComputedDataObservable,
   gridVisibleComputedLayoutDataObservable,
   // isSeriesSeprateObservable,
-  gridContainerObservable } from '../grid/gridObservables'
+  gridContainerPositionObservable } from '../grid/gridObservables'
 import { DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT } from '../defaults'
 import { calcGridContainerPosition } from '../utils/orbchartsUtils'
 
@@ -123,7 +123,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
         //   shareReplay(1)
         // )
       
-        // const gridContainer$ = gridContainerObservable({
+        // const gridContainerPosition$ = gridContainerPositionObservable({
         //   computedData$: gridComputedData$,
         //   fullDataFormatter$: gridDataFormatter$,
         //   layout$
@@ -131,7 +131,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
         //   shareReplay(1)
         // )
 
-        const gridContainer$ = of(data.multiGridContainer[gridIndex]).pipe(
+        const gridContainerPosition$ = of(data.multiGridContainer[gridIndex]).pipe(
           takeUntil(destroy$),
           shareReplay(1)
         )
@@ -162,7 +162,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
         )
     
         const gridGraphicReverseScale$ = gridGraphicReverseScaleObservable({
-          gridContainer$: gridContainer$,
+          gridContainerPosition$: gridContainerPosition$,
           gridAxesTransform$: gridAxesTransform$,
           gridGraphicTransform$: gridGraphicTransform$,
         })
@@ -190,7 +190,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
         //   shareReplay(1)
         // )
     
-        const existSeriesLabels$ = existSeriesLabelsObservable({
+        const seriesLabels$ = seriesLabelsObservable({
           computedData$: gridComputedData$,
         }).pipe(
           takeUntil(destroy$),
@@ -235,14 +235,14 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
         )
 
         return <ContextObserverMultiGridDetail>{
-          gridContainer$,
+          gridContainerPosition$,
           gridAxesTransform$,
           gridAxesReverseTransform$,
           gridGraphicTransform$,
           gridGraphicReverseScale$,
           gridAxesSize$,
           gridHighlight$: allGridHighlight$,
-          existSeriesLabels$,
+          seriesLabels$,
           SeriesDataMap$,
           GroupDataMap$,
           dataFormatter$: gridDataFormatter$,
@@ -263,7 +263,7 @@ export const multiGridContainerObservable = ({ computedData$, fullDataFormatter$
   computedData$: Observable<ComputedDataTypeMap<'multiGrid'>>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiGrid'>>
   layout$: Observable<Layout>
-}): Observable<ContainerPosition[][]> => {
+}): Observable<GridContainerPosition[][]> => {
 
   return combineLatest({
     computedData: computedData$,
@@ -277,7 +277,7 @@ export const multiGridContainerObservable = ({ computedData$, fullDataFormatter$
       
       let accGridSlotIndex = 0
       
-      const gridContainerArr = data.computedData.map((gridData, gridIndex) => {
+      const gridContainerPositionArr = data.computedData.map((gridData, gridIndex) => {
         const grid = data.fullDataFormatter.gridList[gridIndex] ?? defaultGrid
         
         if (grid.separateSeries) {
@@ -317,8 +317,8 @@ export const multiGridContainerObservable = ({ computedData$, fullDataFormatter$
           return seriesContainerArr
         }
       })
-      
-      return gridContainerArr
+
+      return gridContainerPositionArr
     }),
   )
 }

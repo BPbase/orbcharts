@@ -374,7 +374,6 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
       scaleType: scaleType$
     }).pipe(
       takeUntil(destroy$),
-      // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
       switchMap(async (d) => d),
     ).subscribe(data => {
       const bubblesData = createBubblesData({
@@ -410,7 +409,6 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
     // highlight: highlight$
   }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
     switchMap(async (d) => d),
   ).subscribe(data => {
 

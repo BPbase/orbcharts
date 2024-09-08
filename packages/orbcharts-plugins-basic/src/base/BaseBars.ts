@@ -14,7 +14,7 @@ import type {
   ComputedDataGrid,
   ComputedLayoutDataGrid,
   DataFormatterTypeMap,
-  ContainerPosition,
+  GridContainerPosition,
   EventGrid,
   ChartParams, 
   Layout,
@@ -37,7 +37,7 @@ interface BaseBarsContext {
   computedLayoutData$: Observable<ComputedLayoutDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
   visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
-  existSeriesLabels$: Observable<string[]>
+  seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullParams$: Observable<BaseBarsParams>
@@ -50,7 +50,7 @@ interface BaseBarsContext {
     height: number;
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
-  gridContainer$: Observable<ContainerPosition[]>
+  gridContainerPosition$: Observable<GridContainerPosition[]>
   isSeriesSeprate$: Observable<boolean>
   event$: Subject<EventGrid>
 }
@@ -276,7 +276,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
   computedLayoutData$,
   visibleComputedData$,
   visibleComputedLayoutData$,
-  existSeriesLabels$,
+  seriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
   fullParams$,
@@ -286,7 +286,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
   gridGraphicReverseScale$,
   gridAxesSize$,
   gridHighlight$,
-  gridContainer$,
+  gridContainerPosition$,
   isSeriesSeprate$,
   event$
 }) => {
@@ -347,7 +347,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
 
   // combineLatest({
   //   seriesSelection: seriesSelection$,
-  //   gridContainer: gridContainer$                                                                                                                                                                                       
+  //   gridContainerPosition: gridContainerPosition$                                                                                                                                                                                       
   // }).pipe(
   //   takeUntil(destroy$),
   //   switchMap(async d => d)
@@ -355,8 +355,8 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
   //   data.seriesSelection
   //     .transition()
   //     .attr('transform', (d, i) => {
-  //       const translate = data.gridContainer[i].translate
-  //       const scale = data.gridContainer[i].scale
+  //       const translate = data.gridContainerPosition[i].translate
+  //       const scale = data.gridContainerPosition[i].scale
   //       return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
   //     })
   // })
@@ -406,8 +406,8 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     selection,
     pluginName,
     clipPathID,
-    existSeriesLabels$,
-    gridContainer$,
+    seriesLabels$,
+    gridContainerPosition$,
     gridAxesTransform$,
     gridGraphicTransform$
   })
@@ -461,7 +461,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     // gridGraphicTransform: gridGraphicTransform$,
     barWidth: barWidth$,
     params: fullParams$,
-    // gridContainer: gridContainer$,
+    // gridContainerPosition: gridContainerPosition$,
     // gridAxesTransform: gridAxesTransform$
     gridGraphicReverseScale: gridGraphicReverseScale$
   }).pipe(
@@ -485,17 +485,17 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
         // } else if (data.gridAxesTransform.rotate == 0) {
         //   transformedRx = radius
         //     // 抵消外層scale的變型
-        //     / data.gridGraphicTransform.scale[0] / data.gridContainer[0].scale[0]
+        //     / data.gridGraphicTransform.scale[0] / data.gridContainerPosition[0].scale[0]
         //   transformedRy = radius
         //     // 抵消外層scale的變型
-        //     / data.gridGraphicTransform.scale[1] / data.gridContainer[0].scale[1]
+        //     / data.gridGraphicTransform.scale[1] / data.gridContainerPosition[0].scale[1]
         // } else if (data.gridAxesTransform.rotate != 0) {
         //   transformedRx = radius
         //     // 抵消外層scale的變型，由於有90度的旋轉，所以外層 (container) x和y的scale要互換
-        //     / data.gridGraphicTransform.scale[0] / data.gridContainer[0].scale[1]
+        //     / data.gridGraphicTransform.scale[0] / data.gridContainerPosition[0].scale[1]
         //   transformedRy = radius
         //     // 抵消外層scale的變型，由於有90度的旋轉，所以外層 (container) x和y的scale要互換
-        //     / data.gridGraphicTransform.scale[1] / data.gridContainer[0].scale[0]
+        //     / data.gridGraphicTransform.scale[1] / data.gridContainerPosition[0].scale[0]
         // }
         
         // 如果計算出來的x圓角值大於寬度一半則進行修正
@@ -511,18 +511,18 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
   )
 
   
-  const seriesLabels$ = visibleComputedData$.pipe(
-    takeUntil(destroy$),
-    map(data => {
-      const SeriesLabelSet: Set<string> = new Set()
-      data.forEach(d => {
-        d.forEach(_d => {
-          SeriesLabelSet.add(_d.seriesLabel)
-        })
-      })
-      return Array.from(SeriesLabelSet)
-    })
-  )
+  // const seriesLabels$ = visibleComputedData$.pipe(
+  //   takeUntil(destroy$),
+  //   map(data => {
+  //     const SeriesLabelSet: Set<string> = new Set()
+  //     data.forEach(d => {
+  //       d.forEach(_d => {
+  //         SeriesLabelSet.add(_d.seriesLabel)
+  //       })
+  //     })
+  //     return Array.from(SeriesLabelSet)
+  //   })
+  // )
 
   const groupLabels$ = visibleComputedData$.pipe(
     takeUntil(destroy$),

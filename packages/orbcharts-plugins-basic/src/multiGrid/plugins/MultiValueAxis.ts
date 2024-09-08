@@ -52,7 +52,7 @@ export const MultiValueAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_VA
           gridAxesTransform$: d.gridAxesTransform$,
           gridAxesReverseTransform$: d.gridAxesReverseTransform$,
           gridAxesSize$: d.gridAxesSize$,
-          gridContainer$: d.gridContainer$,
+          gridContainerPosition$: d.gridContainerPosition$,
           isSeriesSeprate$,
         })
       })

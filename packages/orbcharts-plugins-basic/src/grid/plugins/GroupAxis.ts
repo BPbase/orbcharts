@@ -32,7 +32,7 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUP_AXIS_PARAMS)
     gridAxesTransform$: observer.gridAxesTransform$,
     gridAxesReverseTransform$: observer.gridAxesReverseTransform$,
     gridAxesSize$: observer.gridAxesSize$,
-    gridContainer$: observer.gridContainer$,
+    gridContainerPosition$: observer.gridContainerPosition$,
     isSeriesSeprate$,
   })
 

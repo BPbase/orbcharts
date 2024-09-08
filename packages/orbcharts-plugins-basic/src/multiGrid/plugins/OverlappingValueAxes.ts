@@ -17,7 +17,8 @@ import { DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS } from '../defaults'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
 import { multiGridPluginObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
-import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerObservable } from '@orbcharts/core/src/grid/gridObservables'
+// import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '@orbcharts/core/src/grid/gridObservables'
+import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '../../../../orbcharts-core/src/grid/gridObservables'
 
 const pluginName = 'OverlappingValueAxes'
 
@@ -108,17 +109,16 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
         const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({
           gridAxesTransform$
         })
-        const gridContainer$ = gridContainerObservable({
+        const gridContainerPosition$ = gridContainerPositionObservable({
           computedData$: observables.computedData$,
           fullDataFormatter$: secondGridDataFormatter$,
-          fullChartParams$: observer.fullChartParams$,
           layout$: observer.layout$
         })
         return {
           ...observables,
           gridAxesTransform$,
           gridAxesReverseTransform$,
-          gridContainer$,
+          gridContainerPosition$,
         }
       })
     })
@@ -157,7 +157,7 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
           gridAxesTransform$: d.gridAxesTransform$,
           gridAxesReverseTransform$: d.gridAxesReverseTransform$,
           gridAxesSize$: d.gridAxesSize$,
-          gridContainer$: d.gridContainer$,
+          gridContainerPosition$: d.gridContainerPosition$,
           isSeriesSeprate$,
         })
       })

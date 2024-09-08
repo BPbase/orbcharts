@@ -17,8 +17,8 @@ export interface PieDatum extends D3PieDatum {
   id: string
 }
 
-export function makePieData ({ computedDataSeries, startAngle, endAngle }: {
-  computedDataSeries: ComputedDataSeries
+export function makePieData ({ data, startAngle, endAngle }: {
+  data: ComputedDatumSeries[]
   startAngle: number
   endAngle: number
   // itemLabels: string[]
@@ -30,12 +30,12 @@ export function makePieData ({ computedDataSeries, startAngle, endAngle }: {
     .endAngle(endAngle)
     .value((d) => d.visible == false ? 0 : d.value)
     // .sort(null) // 不要排序
-    .sort((a, b) => a.sortedIndex - b.sortedIndex)
+    .sort((a, b) => a.seq - b.seq)
     // .sort((a: any, b: any) => {
     //   return b.value - a.value
     // })
     // .sort(d3.ascending)
-  const pieData = pie(computedDataSeries)
+  const pieData = pie(data)
   return pieData.map((d: D3PieDatum, i: number) => {
     // const itemLabel = d.data.itemLabel
     let _d: any = d

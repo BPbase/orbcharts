@@ -1,6 +1,6 @@
 import type { DataSeries, DataSeriesDatum } from '../types/DataSeries'
 import type { ComputedDataFn } from '../types/ComputedData'
-import type { ComputedDataSeries, ComputedDatumSeries } from '../types/ComputedDataSeries'
+import type { ComputedDatumSeries } from '../types/ComputedDataSeries'
 import { formatValueToLabel, createDefaultDatumId, createDefaultSeriesLabel, seriesColorPredicate } from '../utils/orbchartsUtils'
 
 export const computeSeriesData: ComputedDataFn<'series'> = (context) => {
@@ -9,7 +9,7 @@ export const computeSeriesData: ComputedDataFn<'series'> = (context) => {
     return []
   }
 
-  let computedDataSeries: ComputedDatumSeries[] = []
+  let computedDataSeries: ComputedDatumSeries[][] = []
   
   try {
 
@@ -21,7 +21,7 @@ export const computeSeriesData: ComputedDataFn<'series'> = (context) => {
         return {
           id: defaultId,
           index: currentIndex,
-          sortedIndex: 0, // 先給預設值
+          seq: 0, // 先給預設值
           label: defaultId,
           description: '',
           data: {},
@@ -35,7 +35,7 @@ export const computeSeriesData: ComputedDataFn<'series'> = (context) => {
         return {
           id: seriesData.id ? seriesData.id : defaultId,
           index: currentIndex,
-          sortedIndex: 0, // 先給預設值
+          seq: 0, // 先給預設值
           label: seriesData.label ? seriesData.label : defaultId,
           description: seriesData.description,
           data: seriesData.data ?? {},
@@ -60,10 +60,10 @@ export const computeSeriesData: ComputedDataFn<'series'> = (context) => {
       })
       // 攤為一維陣列
       .flat()
-      // 排序後給 sortedIndex
+      // 排序後給 seq
       .sort(dataFormatter.sort ?? undefined)
       .map((datum, index) => {
-        datum.sortedIndex = index
+        datum.seq = index
         return datum
       })
       .map(datum => {
@@ -72,6 +72,14 @@ export const computeSeriesData: ComputedDataFn<'series'> = (context) => {
       })
       // 恢復原排序
       .sort((a, b) => a.index - b.index)
+      // 依seriesIndex分組（二維陣列）
+      .reduce((acc, datum) => {
+        if (!acc[datum.seriesIndex]) {
+          acc[datum.seriesIndex] = []
+        }
+        acc[datum.seriesIndex].push(datum)
+        return acc
+      }, [])
 
   } catch (e) {
     // console.error(e)

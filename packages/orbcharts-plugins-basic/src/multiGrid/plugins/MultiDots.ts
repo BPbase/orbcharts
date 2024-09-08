@@ -37,7 +37,7 @@ export const MultiDots = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_DOTS_PA
           visibleComputedData$: d.visibleComputedData$,
           computedLayoutData$: d.computedLayoutData$,
           visibleComputedLayoutData$: d.visibleComputedLayoutData$,
-          existSeriesLabels$: d.existSeriesLabels$,
+          seriesLabels$: d.seriesLabels$,
           SeriesDataMap$: d.SeriesDataMap$,
           GroupDataMap$: d.GroupDataMap$,
           fullParams$: observer.fullParams$,
@@ -47,7 +47,7 @@ export const MultiDots = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_DOTS_PA
           gridGraphicReverseScale$: d.gridGraphicReverseScale$,
           gridAxesSize$: d.gridAxesSize$,
           gridHighlight$: d.gridHighlight$,
-          gridContainer$: d.gridContainer$,
+          gridContainerPosition$: d.gridContainerPosition$,
           event$: subject.event$ as Subject<any>,
         })
       })

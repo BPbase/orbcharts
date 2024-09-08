@@ -16,7 +16,7 @@ import type {
   ComputedLayoutDataGrid,
   DataFormatterGrid,
   EventGrid,
-  ContainerPosition,
+  GridContainerPosition,
   ChartParams, 
   Layout,
   TransformData } from '@orbcharts/core'
@@ -39,7 +39,7 @@ interface BaseLineAreasContext {
   computedLayoutData$: Observable<ComputedLayoutDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
   visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
-  existSeriesLabels$: Observable<string[]>
+  seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullDataFormatter$: Observable<DataFormatterGrid>
@@ -52,7 +52,7 @@ interface BaseLineAreasContext {
     height: number;
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
-  gridContainer$: Observable<ContainerPosition[]>
+  gridContainerPosition$: Observable<GridContainerPosition[]>
   layout$: Observable<Layout>
   event$: Subject<EventGrid>
 }
@@ -264,7 +264,7 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
   computedLayoutData$,
   visibleComputedData$,
   visibleComputedLayoutData$,
-  existSeriesLabels$,
+  seriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
   fullParams$,
@@ -274,7 +274,7 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
   gridGraphicTransform$,
   gridAxesSize$,
   gridHighlight$,
-  gridContainer$,
+  gridContainerPosition$,
   layout$,
   event$
 }) => {
@@ -293,8 +293,8 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
     selection,
     pluginName,
     clipPathID,
-    existSeriesLabels$,
-    gridContainer$,
+    seriesLabels$,
+    gridContainerPosition$,
     gridAxesTransform$,
     gridGraphicTransform$
   })
@@ -324,19 +324,18 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
     }
   })
 
-  // 顯示範圍內的series labels
-  const seriesLabels$: Observable<string[]> = new Observable(subscriber => {
-    computedData$.pipe(
-      takeUntil(destroy$),
-      // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
-      switchMap(async (d) => d),
-    ).subscribe(data => {
-      const labels = data[0] && data[0][0]
-        ? data.map(d => d[0].seriesLabel)
-        : []
-      subscriber.next(labels)
-    })
-  })
+  // // 顯示範圍內的series labels
+  // const seriesLabels$: Observable<string[]> = new Observable(subscriber => {
+  //   computedData$.pipe(
+  //     takeUntil(destroy$),
+  //     switchMap(async (d) => d),
+  //   ).subscribe(data => {
+  //     const labels = data[0] && data[0][0]
+  //       ? data.map(d => d[0].seriesLabel)
+  //       : []
+  //     subscriber.next(labels)
+  //   })
+  // })
 
   // const axisSize$ = gridAxisSizeObservable({
   //   fullDataFormatter$,
@@ -363,7 +362,6 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
     transitionEase: transitionEase$
   }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
     switchMap(async (d) => d),
   ).subscribe(data => {
     // 外層的遮罩
@@ -436,7 +434,6 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
     params: fullParams$,
   }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
     switchMap(async (d) => d),
     map(data => {
       // const updateGraphic = data.graphicGSelection
@@ -484,7 +481,6 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
     gridGroupPositionFn: gridGroupPositionFn$,
   }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
     switchMap(async (d) => d),
   ).subscribe(data => {
     data.pathSelectionArr.forEach(pathSelection => {

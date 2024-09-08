@@ -49,7 +49,7 @@ export const MultiBarsTriangle = defineMultiGridPlugin(pluginName, DEFAULT_MULTI
           visibleComputedData$: d.visibleComputedData$,
           computedLayoutData$: d.computedLayoutData$,
           visibleComputedLayoutData$: d.visibleComputedLayoutData$,
-          existSeriesLabels$: d.existSeriesLabels$,
+          seriesLabels$: d.seriesLabels$,
           SeriesDataMap$: d.SeriesDataMap$,
           GroupDataMap$: d.GroupDataMap$,
           fullParams$: observer.fullParams$,
@@ -59,7 +59,7 @@ export const MultiBarsTriangle = defineMultiGridPlugin(pluginName, DEFAULT_MULTI
           gridGraphicTransform$: d.gridGraphicTransform$,
           gridAxesSize$: d.gridAxesSize$,
           gridHighlight$: d.gridHighlight$,
-          gridContainer$: d.gridContainer$,
+          gridContainerPosition$: d.gridContainerPosition$,
           isSeriesSeprate$: isSeriesSeprate$,
           event$: subject.event$ as Subject<any>,
         })

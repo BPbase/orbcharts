@@ -10,7 +10,7 @@ import {
   Observable,
   Subject } from 'rxjs'
 import { createAxisPointScale } from '@orbcharts/core'
-import type { ColorType, ComputedDataGrid, ContainerPosition } from '@orbcharts/core'
+import type { ColorType, ComputedDataGrid, GridContainerPosition } from '@orbcharts/core'
 import type { BasePluginFn } from './types'
 import type {
   ComputedDatumGrid,
@@ -51,7 +51,7 @@ interface BaseGroupAxisContext {
     width: number;
     height: number;
   }>
-  gridContainer$: Observable<ContainerPosition[]>
+  gridContainerPosition$: Observable<GridContainerPosition[]>
   isSeriesSeprate$: Observable<boolean>
 }
 
@@ -184,7 +184,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
   gridAxesTransform$,
   gridAxesReverseTransform$,
   gridAxesSize$,
-  gridContainer$,
+  gridContainerPosition$,
   isSeriesSeprate$,
 }) => {
   
@@ -235,16 +235,16 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
 
   combineLatest({
     containerSelection: containerSelection$,
-    gridContainer: gridContainer$
+    gridContainerPosition: gridContainerPosition$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
   ).subscribe(data => {
     data.containerSelection
       .attr('transform', (d, i) => {
-        const gridContainer = data.gridContainer[i] ?? data.gridContainer[0]
-        const translate = gridContainer.translate
-        const scale = gridContainer.scale
+        const gridContainerPosition = data.gridContainerPosition[i] ?? data.gridContainerPosition[0]
+        const translate = gridContainerPosition.translate
+        const scale = gridContainerPosition.scale
         return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
       })
       // .attr('opacity', 0)
@@ -326,14 +326,14 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
     fullParams: fullParams$,
     fullDataFormatter: fullDataFormatter$,
     gridAxesReverseTransform: gridAxesReverseTransform$,
-    gridContainer: gridContainer$
+    gridContainerPosition: gridContainerPosition$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
       const axisReverseTranslateValue = `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px)`
       const axisReverseRotateValue = `rotate(${data.gridAxesReverseTransform.rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
-      const containerScaleReverseScaleValue = `scale(${1 / data.gridContainer[0].scale[0]}, ${1 / data.gridContainer[0].scale[1]})`
+      const containerScaleReverseScaleValue = `scale(${1 / data.gridContainerPosition[0].scale[0]}, ${1 / data.gridContainerPosition[0].scale[1]})`
       const tickTextRotateDeg = (data.fullDataFormatter.grid.groupAxis.position === 'left' && data.fullDataFormatter.grid.valueAxis.position === 'top')
         || (data.fullDataFormatter.grid.groupAxis.position === 'right' && data.fullDataFormatter.grid.valueAxis.position === 'bottom')
           ? data.fullParams.tickTextRotate + 180 // 修正文字倒轉

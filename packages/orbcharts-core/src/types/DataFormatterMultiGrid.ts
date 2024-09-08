@@ -1,5 +1,5 @@
-import type { VisibleFilter } from './DataFormatter'
-import type { DataFormatterGridGrid, DataFormatterGridGridPartial, DataFormatterGridContainer } from './DataFormatterGrid'
+import type { VisibleFilter, DataFormatterContainer } from './DataFormatter'
+import type { DataFormatterGridGrid, DataFormatterGridGridPartial } from './DataFormatterGrid'
 import type {
   DataFormatterBase,
   DataFormatterBasePartial,
@@ -31,7 +31,7 @@ export interface DataFormatterMultiGridGridPartial extends DataFormatterGridGrid
 }
 
 // container
-export interface DataFormatterMultiGridContainer extends DataFormatterGridContainer {
+export interface DataFormatterMultiGridContainer extends DataFormatterContainer {
 
 }
 

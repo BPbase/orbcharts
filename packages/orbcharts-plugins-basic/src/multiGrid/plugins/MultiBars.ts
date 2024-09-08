@@ -49,7 +49,7 @@ export const MultiBars = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_BARS_PA
           visibleComputedData$: d.visibleComputedData$,
           computedLayoutData$: d.computedLayoutData$,
           visibleComputedLayoutData$: d.visibleComputedLayoutData$,
-          existSeriesLabels$: d.existSeriesLabels$,
+          seriesLabels$: d.seriesLabels$,
           SeriesDataMap$: d.SeriesDataMap$,
           GroupDataMap$: d.GroupDataMap$,
           fullParams$: observer.fullParams$,
@@ -59,7 +59,7 @@ export const MultiBars = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_BARS_PA
           gridGraphicReverseScale$: d.gridGraphicReverseScale$,
           gridAxesSize$: d.gridAxesSize$,
           gridHighlight$: d.gridHighlight$,
-          gridContainer$: d.gridContainer$,
+          gridContainerPosition$: d.gridContainerPosition$,
           isSeriesSeprate$,
           event$: subject.event$ as Subject<any>,
         })

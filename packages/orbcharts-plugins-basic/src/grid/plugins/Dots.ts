@@ -17,7 +17,7 @@ export const Dots = defineGridPlugin(pluginName, DEFAULT_DOTS_PARAMS)(({ selecti
     computedLayoutData$: observer.computedLayoutData$,
     visibleComputedData$: observer.visibleComputedData$,
     visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
-    existSeriesLabels$: observer.existSeriesLabels$,
+    seriesLabels$: observer.seriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,
@@ -27,7 +27,7 @@ export const Dots = defineGridPlugin(pluginName, DEFAULT_DOTS_PARAMS)(({ selecti
     gridGraphicReverseScale$: observer.gridGraphicReverseScale$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
-    gridContainer$: observer.gridContainer$,
+    gridContainerPosition$: observer.gridContainerPosition$,
     event$: subject.event$,
   })
 

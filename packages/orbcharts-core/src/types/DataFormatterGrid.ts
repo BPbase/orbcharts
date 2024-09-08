@@ -1,19 +1,25 @@
-import type { DataGridDatum, DataGridValue } from './DataGrid'
-import type { DataFormatterBase, DataFormatterBasePartial, DataFormatterValueAxis, DataFormatterGroupAxis, VisibleFilter } from './DataFormatter'
-// import type { AxisPosition } from './Axis'
+import type { 
+  DataFormatterBase, 
+  DataFormatterBasePartial, 
+  DataFormatterValueAxis, 
+  DataFormatterGroupAxis, 
+  VisibleFilter,
+  DataFormatterContainer
+} from './DataFormatter'
+
 
 export type SeriesDirection = 'row' | 'column' // default: 'row'
 
 export interface DataFormatterGrid extends DataFormatterBase<'grid'> {
   visibleFilter: VisibleFilter<'grid'>
   grid: DataFormatterGridGrid
-  container: DataFormatterGridContainer
+  container: DataFormatterContainer
 }
 
 export interface DataFormatterGridPartial extends DataFormatterBasePartial<'grid'> {
   visibleFilter?: VisibleFilter<'grid'>
   grid?: DataFormatterGridGridPartial
-  container?: Partial<DataFormatterGridContainer>
+  container?: Partial<DataFormatterContainer>
 }
 
 export interface DataFormatterGridGrid {

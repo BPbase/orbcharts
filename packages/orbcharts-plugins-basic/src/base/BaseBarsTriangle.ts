@@ -17,7 +17,7 @@ import type {
   DataFormatterTypeMap,
   EventGrid,
   ChartParams,
-  ContainerPosition,
+  GridContainerPosition,
   Layout,
   TransformData } from '@orbcharts/core'
 import { getD3TransitionEase } from '../utils/d3Utils'
@@ -38,7 +38,7 @@ interface BaseBarsContext {
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
   visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
-  existSeriesLabels$: Observable<string[]>
+  seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullParams$: Observable<BaseBarsTriangleParams>
@@ -50,7 +50,7 @@ interface BaseBarsContext {
     height: number;
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
-  gridContainer$: Observable<ContainerPosition[]>
+  gridContainerPosition$: Observable<GridContainerPosition[]>
   isSeriesSeprate$: Observable<boolean>
   event$: Subject<EventGrid>
 }
@@ -299,7 +299,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
   visibleComputedData$,
   visibleComputedLayoutData$,
   fullDataFormatter$,
-  existSeriesLabels$,
+  seriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
   fullParams$,
@@ -308,7 +308,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
   gridGraphicTransform$,
   gridAxesSize$,
   gridHighlight$,
-  gridContainer$,
+  gridContainerPosition$,
   isSeriesSeprate$,
   event$
 }) => {
@@ -327,8 +327,8 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
     selection,
     pluginName,
     clipPathID,
-    existSeriesLabels$,
-    gridContainer$,
+    seriesLabels$,
+    gridContainerPosition$,
     gridAxesTransform$,
     gridGraphicTransform$
   })
@@ -386,18 +386,18 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
     })
   )
   
-  const seriesLabels$ = visibleComputedData$.pipe(
-    takeUntil(destroy$),
-    map(data => {
-      const SeriesLabelSet: Set<string> = new Set()
-      data.forEach(d => {
-        d.forEach(_d => {
-          SeriesLabelSet.add(_d.seriesLabel)
-        })
-      })
-      return Array.from(SeriesLabelSet)
-    })
-  )
+  // const seriesLabels$ = visibleComputedData$.pipe(
+  //   takeUntil(destroy$),
+  //   map(data => {
+  //     const SeriesLabelSet: Set<string> = new Set()
+  //     data.forEach(d => {
+  //       d.forEach(_d => {
+  //         SeriesLabelSet.add(_d.seriesLabel)
+  //       })
+  //     })
+  //     return Array.from(SeriesLabelSet)
+  //   })
+  // )
 
   const groupLabels$ = visibleComputedData$.pipe(
     takeUntil(destroy$),

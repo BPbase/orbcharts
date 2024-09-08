@@ -69,7 +69,7 @@ export const ValueStackAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_STACK_A
     gridAxesTransform$: observer.gridAxesTransform$,
     gridAxesReverseTransform$: observer.gridAxesReverseTransform$,
     gridAxesSize$: observer.gridAxesSize$,
-    gridContainer$: observer.gridContainer$,
+    gridContainerPosition$: observer.gridContainerPosition$,
     isSeriesSeprate$,
   })
 

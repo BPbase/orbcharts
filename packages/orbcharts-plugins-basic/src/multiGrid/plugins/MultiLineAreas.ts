@@ -38,7 +38,7 @@ export const MultiLineAreas = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_LI
           computedLayoutData$: d.computedLayoutData$,
           visibleComputedData$: d.visibleComputedData$,
           visibleComputedLayoutData$: d.visibleComputedLayoutData$,
-          existSeriesLabels$: d.existSeriesLabels$,
+          seriesLabels$: d.seriesLabels$,
           SeriesDataMap$: d.SeriesDataMap$,
           GroupDataMap$: d.GroupDataMap$,
           fullDataFormatter$: d.dataFormatter$,
@@ -48,7 +48,7 @@ export const MultiLineAreas = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_LI
           gridGraphicTransform$: d.gridGraphicTransform$,
           gridAxesSize$: d.gridAxesSize$,
           gridHighlight$: d.gridHighlight$,
-          gridContainer$: d.gridContainer$,
+          gridContainerPosition$: d.gridContainerPosition$,
           layout$: observer.layout$,
           event$: subject.event$ as Subject<any>,
         })
