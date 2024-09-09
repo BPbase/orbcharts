@@ -3,10 +3,10 @@
 </template>
 
 <script setup lang="ts">
-import { GridChart } from '../../../packages/orbcharts-core/src'
-import { GroupAxis, ValueAxis, Bars, GroupAux, ScalingArea, Tooltip, GridLegend } from '../../../packages/orbcharts-plugins-basic/src'
-import { PRESET_GRID_4_SERIES_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
-import { gridData3 } from '../../const/data/gridData3'
+import { SeriesChart } from '../../../packages/orbcharts-core/src'
+import { Pie, PieLabels, Bubbles, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
+import { seriesData3 } from '../../const/data/seriesData3'
 
 let intervalId: any
 
@@ -14,119 +14,87 @@ onMounted(() => {
 
   const el = document.querySelector('#chart')
 
-  const chart = new GridChart(el!, {
-    preset: PRESET_GRID_4_SERIES_SLOT
+  const chart = new SeriesChart(el!, {
+    // preset: PRESET_MULTI_GRID_2_GRID_SLOT
   })
 
-  // chart!.dataFormatter$.next({
-  //   type: '',
-  //   container: {
-  //     columnAmount: 3
-  //   },
-  //   multiGrid: [
-  //     {
-  //       slotIndex: 0
-  //     },
-  //     {
-  //       slotIndex:1
-  //     }
-  //   ]
-  // })
+  const pie = new Pie()
+  const pieLabels = new PieLabels()
+  const bubbles = new Bubbles()
+  const tooltip = new Tooltip()
+  // chart!.plugins$.next([ multiGroupAxis, overlappingValueAxes, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
 
+  chart.chartParams$.next({
+    padding: {
+      top: 200,
+      right: 200,
+      bottom: 200,
+      left: 200
+    },
+    highlightTarget: 'series'
+  })
+  chart!.plugins$.next([ bubbles, tooltip])
+
+
+  const play = true
   let i = 0
+  let j = 0
+  const iMax = 4 // 4
+  const jMax = 1 // 1
   intervalId = setInterval(() => {
-    if (i % 2 == 1) {
-      chart!.dataFormatter$.next({
-        container: {
-          rowAmount: 2,
-          columnAmount: 2
-        },
-        grid: {
-          seriesSlotIndexes: [0, 1, 2, 3]
-        }
+    console.log('i:', i, ',j:', j)
+    if (i == 0) {
+      chart.dataFormatter$.next({
+        sumSeries: false,
+        separateSeries: true
       })
-    } else if (i % 2 == 0) {
-      chart!.dataFormatter$.next({
-        container: {
-          rowAmount: 1,
-          columnAmount: 1
-        },
-        grid: {
-          seriesSlotIndexes: null
-        }
+    } else if (i == 1) {
+      chart.dataFormatter$.next({
+        sumSeries: true,
+        separateSeries: true
       })
+    } else if (i == 2)  {
+      chart.dataFormatter$.next({
+        sumSeries: true,
+        separateSeries: false
+      })
+    } else if (i == 3)  {
+      chart.dataFormatter$.next({
+        sumSeries: false,
+        separateSeries: false
+      })
+    } else if (i == 4)  {
+      chart.dataFormatter$.next({
+        sumSeries: false,
+        separateSeries: false
+      })
+      if (j == 0) {
+        chart!.plugins$.next([ pie, pieLabels, tooltip])
+      } else if (j == 1) {
+        chart!.plugins$.next([ bubbles, tooltip])
+      }
     }
-    // else {
-    //   chart!.dataFormatter$.next({
-    //     grid: {
-    //       gridData: {
-    //         seriesDirection: 'column'
-    //       }
-    //     }
-    //   })
-    // }
+
     
-    i++
+    
+    if (play) {
+      i++
+      if (i > iMax) {
+        i = 0
+        j++
+      }
+      if (j > jMax) {
+        j = 0
+      }
+    }
+    
   }, 2000)
 
-  // chart!.dataFormatter$.next({
-  //   container: {
-  //     columnAmount: 1
-  //   },
-  //   multiGrid: [
-  //     {
-  //       slotIndex: 0
-  //     },
-  //     {
-  //       slotIndex: 0
-  //     }
-  //   ]
-  // })
 
 
+  chart!.data$.next(seriesData3)
 
-  
-  // chart!.chartParams$.next({
-  //   "padding": {
-  //     "top": 80,
-  //     "right": 80,
-  //     "bottom": 80,
-  //     "left": 80
-  //   }
-  // })
-  // chart!.dataFormatter$.next({
-  //   valueAxis: {
-  //     position: 'bottom',
-  //     scaleDomain: [0, 'auto'],
-  //     scaleRange: [0, 0.9],
-  //     label: ''
-  //   },
-  //   groupAxis: {
-  //     position: 'left',
-  //     scaleDomain: [0, 'auto'],
-  //     scalePadding: 0.5,
-  //     label: ''
-  //   },
-  // })
 
-  chart!.plugins$.next([ new GroupAxis(), new ValueAxis(), new Bars(), new GroupAux(), new ScalingArea(), new Tooltip(), new GridLegend() ])
-
-  chart!.data$.next(gridData3)
-
-  // chart!.dataFormatter$.next({
-  //   valueAxis: {
-  //     position: 'bottom',
-  //     scaleDomain: [0, 'auto'],
-  //     scaleRange: [0, 0.9],
-  //     label: ''
-  //   },
-  //   groupAxis: {
-  //     position: 'left',
-  //     scaleDomain: [0, 'auto'],
-  //     scalePadding: 0.5,
-  //     label: ''
-  //   },
-  // })
 })
 
 onUnmounted(() => {

@@ -3,10 +3,10 @@
 </template>
 
 <script setup lang="ts">
-import { GridChart } from '../../../packages/orbcharts-core/src'
-import { Bars, Lines, LineAreas, GroupAxis, ValueAxis, ScalingArea, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { SeriesChart } from '../../../packages/orbcharts-core/src'
+import { Pie, PieLabels, Bubbles, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
-import { gridData1 } from '../../const/data/gridData1'
+import { seriesData3 } from '../../const/data/seriesData3'
 
 // import { GridChart, PRESET_GRID_HORIZONTAL, MultiBars } from 'orbcharts'
 
@@ -14,7 +14,7 @@ onMounted(() => {
 
   const el = document.querySelector('#chart')
 
-  const chart = new GridChart(el!, {
+  const chart = new SeriesChart(el!, {
     // preset: {
     //     "chartParams": {
             
@@ -34,34 +34,73 @@ onMounted(() => {
   //   }
   // })
 
-  // const bars = new Bars()
+  const pie = new Pie()
+
+  const pieLabels = new PieLabels()
+
+  const bubbles = new Bubbles()
+
 
   // bars.params$.next({
     
   // })
 
-  chart.dataFormatter$.next({
-    grid: {
-      groupAxis: {
-        scalePadding: 0
-      }
-    }
-  })
+  // chart.dataFormatter$.next({
+  //   sumSeries: false,
+  //     separateSeries: true
+  //   // container: {
+  //   //   rowAmount: 1,
+  //   //   columnAmount: 3
+  //   // }
+  //   // visibleFilter: (datum, context) => {
+  //   //   if (datum.id === 'series_0_0') {
+  //   //     return false
+  //   //   }
+  //   //   return true
+  //   // }
+  // })
+
+  setTimeout(() => {
+    chart.dataFormatter$.next({
+      sumSeries: true,
+      separateSeries: false
+    })
+    // chart.dataFormatter$.next({
+    //   sumSeries: false,
+    //   separateSeries: true
+    // })
+    // setTimeout(() => {
+    //   chart.dataFormatter$.next({
+    //     sumSeries: true,
+    //     separateSeries: true
+    //   })
+    //   setTimeout(() => {
+    //     chart.dataFormatter$.next({
+    //       sumSeries: true,
+    //       separateSeries: false
+    //     })
+    //     setTimeout(() => {
+    //       chart.dataFormatter$.next({
+    //         sumSeries: false,
+    //         separateSeries: false
+    //       })
+    //     }, 2000)
+    //   }, 2000)
+    // }, 2000)
+  }, 2000)
+
   chart.chartParams$.subscribe(data => {
     console.log(data)
   })
 
-  const lines = new Lines()
-
-  const lineAreas = new LineAreas()
 
   chart.chartParams$.next({
-    highlightTarget: 'series'
+    // highlightTarget: 'series'
   })
   
-  chart.plugins$.next([lines, lineAreas, new GroupAxis(), new ValueAxis(), new ScalingArea(), new Tooltip()])
+  chart.plugins$.next([pie, pieLabels, new Tooltip()])
   
-  chart.data$.next(gridData1)
+  chart.data$.next(seriesData3)
   
   
 

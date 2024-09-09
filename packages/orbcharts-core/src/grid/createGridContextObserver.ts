@@ -6,15 +6,17 @@ import {
   groupDataMapObservable,
   textSizePxObservable } from '../utils/observables'
 import {
+  gridComputedLayoutDataObservable,
   gridAxesTransformObservable,
   gridAxesReverseTransformObservable,
   gridGraphicTransformObservable,
   gridGraphicReverseScaleObservable,
   gridAxesSizeObservable,
-  existSeriesLabelsObservable,
+  seriesLabelsObservable,
   gridVisibleComputedDataObservable,
-  isSeriesPositionSeprateObservable,
-  gridContainerObservable } from './gridObservables'
+  gridVisibleComputedLayoutDataObservable,
+  // isSeriesSeprateObservable,
+  gridContainerPositionObservable } from './gridObservables'
 
 export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, observer }) => {
   
@@ -22,17 +24,16 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     shareReplay(1)
   )
 
-  const isSeriesPositionSeprate$ = isSeriesPositionSeprateObservable({
-    computedData$: observer.computedData$,
-    fullDataFormatter$: observer.fullDataFormatter$
-  }).pipe(
-    shareReplay(1)
-  )
+  // const isSeriesSeprate$ = isSeriesSeprateObservable({
+  //   computedData$: observer.computedData$,
+  //   fullDataFormatter$: observer.fullDataFormatter$
+  // }).pipe(
+  //   shareReplay(1)
+  // )
   
-  const gridContainer$ = gridContainerObservable({
+  const gridContainerPosition$ = gridContainerPositionObservable({
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$,
-    fullChartParams$: observer.fullChartParams$,
     layout$: observer.layout$,
   })
 
@@ -58,7 +59,7 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
   )
 
   const gridGraphicReverseScale$ = gridGraphicReverseScaleObservable({
-    gridContainer$: gridContainer$,
+    gridContainerPosition$: gridContainerPosition$,
     gridAxesTransform$: gridAxesTransform$,
     gridGraphicTransform$: gridGraphicTransform$,
   })
@@ -84,7 +85,7 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     shareReplay(1)
   )
 
-  const existSeriesLabels$ = existSeriesLabelsObservable({
+  const seriesLabels$ = seriesLabelsObservable({
     computedData$: observer.computedData$,
   })
 
@@ -100,8 +101,22 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     shareReplay(1)
   )
 
+  const computedLayoutData$ = gridComputedLayoutDataObservable({
+    computedData$: observer.computedData$,
+    fullDataFormatter$: observer.fullDataFormatter$,
+    layout$: observer.layout$,
+  }).pipe(
+    shareReplay(1)
+  )
+
   const visibleComputedData$ = gridVisibleComputedDataObservable({
     computedData$: observer.computedData$,
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const visibleComputedLayoutData$ = gridVisibleComputedLayoutDataObservable({
+    computedLayoutData$: computedLayoutData$,
   }).pipe(
     shareReplay(1)
   )
@@ -114,17 +129,19 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     computedData$: observer.computedData$,
     layout$: observer.layout$,
     textSizePx$,
-    isSeriesPositionSeprate$,
-    gridContainer$,
+    // isSeriesSeprate$,
+    gridContainerPosition$,
     gridAxesTransform$,
     gridAxesReverseTransform$,
     gridGraphicTransform$,
     gridGraphicReverseScale$,
     gridAxesSize$,
     gridHighlight$,
-    existSeriesLabels$,
+    seriesLabels$,
     SeriesDataMap$,
     GroupDataMap$,
+    computedLayoutData$,
     visibleComputedData$,
+    visibleComputedLayoutData$,
   }
 }

@@ -59,14 +59,14 @@ import {
   CHART_HEIGHT_DEFAULT } from '../defaults'
 
 // 判斷dataFormatter是否需要size參數
-const isAxesTypeMap: {[key in ChartType]: Boolean} = {
-  series: false,
-  grid: true,
-  multiGrid: true,
-  multiValue: true,
-  tree: false,
-  relationship: false
-}
+// const isAxesTypeMap: {[key in ChartType]: Boolean} = {
+//   series: false,
+//   grid: true,
+//   multiGrid: true,
+//   multiValue: true,
+//   tree: false,
+//   relationship: false
+// }
 
 function resizeObservable(elem: HTMLElement | Element): Observable<DOMRectReadOnly> {
   return new Observable(subscriber => {
@@ -267,7 +267,7 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
       data: sharedData$,
       dataFormatter: shareAndMergedDataFormatter$,
       chartParams: shareAndMergedChartParams$,
-      layout: iif(() => isAxesTypeMap[chartType] === true, layout$, of(undefined))
+      // layout: iif(() => isAxesTypeMap[chartType] === true, layout$, of(undefined))
     }).pipe(
       takeUntil(destroy$),
       switchMap(async d => d),
@@ -276,7 +276,7 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
           .pipe(
             map(_d => {
               try {
-                return computedDataFn({ data: _d.data, dataFormatter: _d.dataFormatter, chartParams: _d.chartParams, layout: _d.layout })
+                return computedDataFn({ data: _d.data, dataFormatter: _d.dataFormatter, chartParams: _d.chartParams })
               } catch (e) {
                 console.error(e)
                 throw new Error(e)

@@ -45,6 +45,7 @@ export interface ComputedDatumSeriesValue {
   color: string
   seriesIndex: number
   seriesLabel: string
+  seq: number
 }
 
 // datum - 矩陣資料

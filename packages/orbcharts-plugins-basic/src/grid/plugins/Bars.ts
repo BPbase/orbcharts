@@ -1,6 +1,11 @@
 import {
   Subject,
-  Observable } from 'rxjs'
+  Observable,
+  map,
+  distinctUntilChanged,
+  shareReplay,
+  takeUntil
+} from 'rxjs'
 import {
   defineGridPlugin } from '@orbcharts/core'
 import { DEFAULT_BARS_PARAMS } from '../defaults'
@@ -11,11 +16,20 @@ const pluginName = 'Bars'
 export const Bars = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
+  const isSeriesSeprate$ = observer.fullDataFormatter$.pipe(
+    takeUntil(destroy$),
+    map(d => d.grid.separateSeries),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
+
   const unsubscribeBaseBars = createBaseBars(pluginName, {
     selection,
     computedData$: observer.computedData$,
+    computedLayoutData$: observer.computedLayoutData$,
     visibleComputedData$: observer.visibleComputedData$,
-    existSeriesLabels$: observer.existSeriesLabels$,
+    visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
+    seriesLabels$: observer.seriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,
@@ -25,8 +39,8 @@ export const Bars = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)(({ selecti
     gridGraphicReverseScale$: observer.gridGraphicReverseScale$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
-    gridContainer$: observer.gridContainer$,
-    isSeriesPositionSeprate$: observer.isSeriesPositionSeprate$,
+    gridContainerPosition$: observer.gridContainerPosition$,
+    isSeriesSeprate$: isSeriesSeprate$,
     event$: subject.event$,
   })
 

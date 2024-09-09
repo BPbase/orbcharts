@@ -15,8 +15,10 @@ export const BarsDiverging = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)((
   const unsubscribeBaseBars = createBaseBars(pluginName, {
     selection,
     computedData$: observer.computedData$,
+    computedLayoutData$: observer.computedLayoutData$,
     visibleComputedData$: observer.visibleComputedData$,
-    existSeriesLabels$: observer.existSeriesLabels$,
+    visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
+    seriesLabels$: observer.seriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,
@@ -26,9 +28,9 @@ export const BarsDiverging = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)((
     gridGraphicReverseScale$: observer.gridGraphicReverseScale$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
-    gridContainer$: observer.gridContainer$,
-    // isSeriesPositionSeprate$: observer.isSeriesPositionSeprate$,
-    isSeriesPositionSeprate$: of(true), // hack: 永遠為true，可以強制讓每組series的bars的x位置都是一樣的
+    gridContainerPosition$: observer.gridContainerPosition$,
+    // isSeriesSeprate$: observer.isSeriesSeprate$,
+    isSeriesSeprate$: of(true), // hack: 永遠為true，可以強制讓每組series的bars的x位置都是一樣的
     event$: subject.event$,
   })
 

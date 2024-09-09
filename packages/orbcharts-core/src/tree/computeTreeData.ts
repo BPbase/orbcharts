@@ -85,7 +85,6 @@ export const computeTreeData: ComputedDataFn<'tree'> = (context) => {
     
     const formatBranchData = (branch: DataTreeObj, level: number, seq: number): ComputedDataTree => {
       const childLayer = level + 1
-      const visible = dataFormatter.visibleFilter(branch, level, seq, context)
       const categoryLabel: string | null = branch.categoryLabel ?? null
       let categoryIndex = 0
       if (categoryLabel != null) {
@@ -97,7 +96,7 @@ export const computeTreeData: ComputedDataFn<'tree'> = (context) => {
 
       const currentIndex = index
       index++
-      return {
+      const formattedBranchData: ComputedDataTree = {
         id: branch.id,
         index: currentIndex,
         level,
@@ -110,12 +109,16 @@ export const computeTreeData: ComputedDataFn<'tree'> = (context) => {
         data: branch.data ?? {},
         // tooltipContent: branch.tooltipContent ? branch.tooltipContent : dataFormatter.tooltipContentFormat(branch, level, seq, context),
         value: branch.value,
-        visible,
+        visible: true, // 先給預設值
         children: (branch.children ?? []).map((d, i) => {
           // 遞迴
           return formatBranchData(d, childLayer, i)
         })
       }
+
+      formattedBranchData.visible = dataFormatter.visibleFilter(formattedBranchData, context)
+
+      return formattedBranchData
     }
     computedBranchData = formatBranchData(dataTreeObj, 0, 0)
   } catch (e) {

@@ -28,7 +28,7 @@ export const computeRelationshipData: ComputedDataFn<'relationship'> = (context)
 
     // -- nodes --
     computedNodes = nodes.map((node, i) => {
-      return {
+      const computedNode: ComputedNode = {
         id: node.id,
         index: i,
         label: node.label ?? '',
@@ -43,15 +43,16 @@ export const computeRelationshipData: ComputedDataFn<'relationship'> = (context)
         startNodeIds: [], // 後面再取得資料
         endNodes: [], // 後面再取得資料
         endNodeIds: [], // 後面再取得資料
-        visible: dataFormatter.visibleFilter(node, 0, i, context) // 0代表node
+        visible: true // 後面再取得資料
       }
+      return computedNode
     })
 
     const NodesMap: Map<string, ComputedNode> = new Map(computedNodes.map(d => [d.id, d]))
 
     // -- edges --
     computedEdges = edges.map((edge, i) => {
-      return {
+      const computedEdge: ComputedEdge = {
         id: edge.id,
         index: i,
         label: edge.label ?? '',
@@ -63,8 +64,10 @@ export const computeRelationshipData: ComputedDataFn<'relationship'> = (context)
         startNodeId: edge.start,
         endNode: NodesMap.get(edge.end),
         endNodeId: edge.end,
-        visible: dataFormatter.visibleFilter(edge, 1, i, context) // 1代表edge
+        visible: true // 先給預設值
       }
+
+      return computedEdge
     })
 
     const StartNodesMap: Map<string, ComputedNode[]> = (function () {
@@ -93,6 +96,15 @@ export const computeRelationshipData: ComputedDataFn<'relationship'> = (context)
       node.startNodeIds = node.startNodes.map(d => d.id)
       node.endNodes = EndNodesMap.get(nodeId)
       node.endNodeIds = node.endNodes.map(d => d.id)
+      node.visible = dataFormatter.visibleFilter(node, context)
+    })
+
+    // -- 補齊edges資料 --
+    computedEdges = computedEdges.map(edge => {
+      edge.visible = edge.startNode.visible && edge.endNode.visible
+        ? true
+        : false
+      return edge
     })
   } catch (e) {
     // console.error(e)

@@ -15,7 +15,7 @@ import type {
   DataFormatterGrid,
   ChartParams,
   ComputedDatumGrid,
-  ContainerPosition,
+  GridContainerPosition,
   TransformData,
   EventGrid,
   ColorType } from '@orbcharts/core'
@@ -50,8 +50,8 @@ interface BaseLinesContext {
     width: number;
     height: number;
   }>
-  gridContainer$: Observable<ContainerPosition[]>
-  isSeriesPositionSeprate$: Observable<boolean>
+  gridContainerPosition$: Observable<GridContainerPosition[]>
+  isSeriesSeprate$: Observable<boolean>
 }
 
 interface TextAlign {
@@ -175,8 +175,8 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   gridAxesTransform$,
   gridAxesReverseTransform$,
   gridAxesSize$,
-  gridContainer$,
-  isSeriesPositionSeprate$,
+  gridContainerPosition$,
+  isSeriesSeprate$,
 }) => {
   
   const destroy$ = new Subject()
@@ -193,12 +193,12 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
         return a.length === b.length
       }),
     ),
-    isSeriesPositionSeprate: isSeriesPositionSeprate$
+    isSeriesSeprate: isSeriesSeprate$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      return data.isSeriesPositionSeprate
+      return data.isSeriesSeprate
         // series分開的時候顯示各別axis
         ? data.computedData
         // series合併的時候只顯示第一個axis
@@ -226,16 +226,16 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
 
   combineLatest({
     containerSelection: containerSelection$,
-    gridContainer: gridContainer$
+    gridContainerPosition: gridContainerPosition$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
   ).subscribe(data => {
     data.containerSelection
       .attr('transform', (d, i) => {
-        const gridContainer = data.gridContainer[i] ?? data.gridContainer[0]
-        const translate = gridContainer.translate
-        const scale = gridContainer.scale
+        const gridContainerPosition = data.gridContainerPosition[i] ?? data.gridContainerPosition[0]
+        const translate = gridContainerPosition.translate
+        const scale = gridContainerPosition.scale
         return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
       })
       // .attr('opacity', 0)
@@ -308,14 +308,14 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     fullParams: fullParams$,
     fullDataFormatter: fullDataFormatter$,
     gridAxesReverseTransform: gridAxesReverseTransform$,
-    gridContainer: gridContainer$
+    gridContainerPosition: gridContainerPosition$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
       const axisReverseTranslateValue = `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px)`
       const axisReverseRotateValue = `rotate(${data.gridAxesReverseTransform.rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
-      const containerScaleReverseScaleValue = `scale(${1 / data.gridContainer[0].scale[0]}, ${1 / data.gridContainer[0].scale[1]})`
+      const containerScaleReverseScaleValue = `scale(${1 / data.gridContainerPosition[0].scale[0]}, ${1 / data.gridContainerPosition[0].scale[1]})`
       const tickTextRotateDeg = (data.fullDataFormatter.grid.groupAxis.position === 'left' && data.fullDataFormatter.grid.valueAxis.position === 'top')
         || (data.fullDataFormatter.grid.groupAxis.position === 'right' && data.fullDataFormatter.grid.valueAxis.position === 'bottom')
           ? data.fullParams.tickTextRotate + 180 // 修正文字倒轉
@@ -354,7 +354,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       })
     
       const filteredMinAndMax = getMinAndMaxValue(filteredData.flat())
-
+      
       subscriber.next(filteredMinAndMax)
     })
   })
@@ -366,7 +366,6 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       minAndMax: minAndMax$
     }).pipe(
       takeUntil(destroy$),
-      // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
       switchMap(async (d) => d),
     ).subscribe(data => {
     

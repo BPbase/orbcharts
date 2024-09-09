@@ -11,9 +11,10 @@ import type { BasePluginFn } from './types'
 import type {
   ComputedDatumGrid,
   ComputedDataGrid,
+  ComputedLayoutDataGrid,
   EventGrid,
   ChartParams, 
-  ContainerPosition,
+  GridContainerPosition,
   Layout,
   TransformData,
   ColorType } from '@orbcharts/core'
@@ -31,8 +32,10 @@ export interface BaseDotsParams {
 interface BaseDotsContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
+  computedLayoutData$: Observable<ComputedLayoutDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
-  existSeriesLabels$: Observable<string[]>
+  visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
+  seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullParams$: Observable<BaseDotsParams>
@@ -45,7 +48,7 @@ interface BaseDotsContext {
     height: number;
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
-  gridContainer$: Observable<ContainerPosition[]>
+  gridContainerPosition$: Observable<GridContainerPosition[]>
   event$: Subject<EventGrid>
 }
 
@@ -62,11 +65,11 @@ type ClipPathDatum = {
 // const circleGClassName = getClassName(pluginName, 'circleG')
 // const circleClassName = getClassName(pluginName, 'circle')
 
-function renderDots ({ graphicGSelection, circleGClassName, circleClassName, data, fullParams, fullChartParams, graphicReverseScale }: {
+function renderDots ({ graphicGSelection, circleGClassName, circleClassName, visibleComputedLayoutData, fullParams, fullChartParams, graphicReverseScale }: {
   graphicGSelection: d3.Selection<SVGGElement, any, any, any>
   circleGClassName: string
   circleClassName: string
-  data: ComputedDatumGrid[][]
+  visibleComputedLayoutData: ComputedLayoutDataGrid
   fullParams: BaseDotsParams
   fullChartParams: ChartParams
   graphicReverseScale: [number, number][]
@@ -83,7 +86,7 @@ function renderDots ({ graphicGSelection, circleGClassName, circleClassName, dat
     .each((seriesData, seriesIndex, g) => {
       d3.select(g[seriesIndex])
         .selectAll<SVGGElement, ComputedDatumGrid>('g')
-        .data(data[seriesIndex], d => d.id)
+        .data(visibleComputedLayoutData[seriesIndex], d => d.id)
         .join(
           enter => {
             // enterDuration
@@ -256,8 +259,10 @@ function renderClipPath ({ defsSelection, clipPathData }: {
 export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string, {
   selection,
   computedData$,
+  computedLayoutData$,
   visibleComputedData$,
-  existSeriesLabels$,
+  visibleComputedLayoutData$,
+  seriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
   fullParams$,
@@ -267,7 +272,7 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
   gridGraphicReverseScale$,
   gridAxesSize$,
   gridHighlight$,
-  gridContainer$,
+  gridContainerPosition$,
   event$
 }) => {
 
@@ -282,130 +287,7 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
   //   .attr('clip-path', `url(#${clipPathID})`)
   // const defsSelection: d3.Selection<SVGDefsElement, any, any, any> = axisSelection.append('defs')
   // const dataAreaSelection: d3.Selection<SVGGElement, any, any, any> = axisSelection.append('g')
-  const graphicSelection$: Subject<d3.Selection<SVGGElement, ComputedDatumGrid, any, any>> = new Subject()
-
-  // gridAxesTransform$
-  //   .pipe(
-  //     takeUntil(destroy$),
-  //     map(d => d.value),
-  //     distinctUntilChanged()
-  //   ).subscribe(d => {
-  //     axisSelection
-  //       .style('transform', d)
-  //   })
-
-  // gridGraphicTransform$
-  //   .pipe(
-  //     takeUntil(destroy$),
-  //     switchMap(async d => d.value),
-  //     distinctUntilChanged()
-  //   ).subscribe(d => {
-  //     dataAreaSelection
-  //       .transition()
-  //       .duration(50)
-  //       .style('transform', d)
-  //   })
-
-  // const seriesSelection$ = computedData$.pipe(
-  //   takeUntil(destroy$),
-  //   distinctUntilChanged((a, b) => {
-  //     // 只有當series的數量改變時，才重新計算
-  //     return a.length === b.length
-  //   }),
-  //   map((computedData, i) => {
-  //     return selection
-  //       .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${seriesClassName}`)
-  //       .data(computedData, d => d[0] ? d[0].seriesIndex : i)
-  //       .join(
-  //         enter => {
-  //           return enter
-  //             .append('g')
-  //             .classed(seriesClassName, true)
-  //             .each((d, i, g) => {
-  //               const axesSelection = d3.select(g[i])
-  //                 .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${axesClassName}`)
-  //                 .data([i])
-  //                 .join(
-  //                   enter => {
-  //                     return enter
-  //                       .append('g')
-  //                       .classed(axesClassName, true)
-  //                       .attr('clip-path', `url(#${clipPathID})`)
-  //                       .each((d, i, g) => {
-  //                         const defsSelection = d3.select(g[i])
-  //                           .selectAll<SVGDefsElement, any>('defs')
-  //                           .data([i])
-  //                           .join('defs')
-            
-  //                         const graphicGSelection = d3.select(g[i])
-  //                           .selectAll<SVGGElement, any>('g')
-  //                           .data([i])
-  //                           .join('g')
-  //                           .classed(graphicClassName, true)
-  //                       })
-  //                   },
-  //                   update => update,
-  //                   exit => exit.remove()
-  //                 )
-  //             })
-  //         },
-  //         update => update,
-  //         exit => exit.remove()
-  //       )
-  //   })
-  // )
-
-  // combineLatest({
-  //   seriesSelection: seriesSelection$,
-  //   gridContainer: gridContainer$                                                                                                                                                                                       
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async d => d)
-  // ).subscribe(data => {
-  //   data.seriesSelection
-  //     .transition()
-  //     .attr('transform', (d, i) => {
-  //       const translate = data.gridContainer[i].translate
-  //       const scale = data.gridContainer[i].scale
-  //       return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
-  //     })
-  // })
-
-
-  // const axesSelection$ = combineLatest({
-  //   seriesSelection: seriesSelection$,
-  //   gridAxesTransform: gridAxesTransform$
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async d => d),
-  //   map(data => {
-  //     return data.seriesSelection
-  //       .select<SVGGElement>(`g.${axesClassName}`)
-  //       .style('transform', data.gridAxesTransform.value)
-  //   })
-  // )
-  // const defsSelection$ = axesSelection$.pipe(
-  //   takeUntil(destroy$),
-  //   map(axesSelection => {
-  //     return axesSelection.select<SVGDefsElement>('defs')
-  //   })
-  // )
-  // const graphicGSelection$ = combineLatest({
-  //   axesSelection: axesSelection$,
-  //   gridGraphicTransform: gridGraphicTransform$
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async d => d),
-  //   map(data => {
-  //     const graphicGSelection = data.axesSelection
-  //       .select<SVGGElement>(`g.${graphicClassName}`)
-  //     graphicGSelection
-  //       .transition()
-  //       .duration(50)
-  //       .style('transform', data.gridGraphicTransform.value)
-  //     return graphicGSelection
-  //   })
-  // )
+  // const graphicSelection$: Subject<d3.Selection<SVGGElement, ComputedDatumGrid, any, any>> = new Subject()
 
   const { 
     seriesSelection$,
@@ -416,15 +298,15 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
     selection,
     pluginName,
     clipPathID,
-    existSeriesLabels$,
-    gridContainer$,
+    seriesLabels$,
+    gridContainerPosition$,
     gridAxesTransform$,
     gridGraphicTransform$
   })
 
   const graphicReverseScale$: Observable<[number, number][]> = combineLatest({
     // gridGraphicTransform: gridGraphicTransform$,
-    // gridContainer: gridContainer$,
+    // gridContainerPosition: gridContainerPosition$,
     // gridAxesTransform: gridAxesTransform$
     computedData: computedData$,
     gridGraphicReverseScale: gridGraphicReverseScale$
@@ -457,63 +339,46 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
     })
   })
 
-  // const visibleComputedData$ = computedData$.pipe(
-  //   map(computedData => {
-  //     return computedData
-  //       .map(d => {
-  //         return d.filter(_d => _d.visible == true)      
-  //       })
-  //   })
-  // )
-
-  // const SeriesDataMap$ = visibleComputedData$.pipe(
-  //   map(d => makeGridSeriesDataMap(d))
-  // )
-
-  // const GroupDataMap$ = visibleComputedData$.pipe(
-  //   map(d => makeGridGroupDataMap(d))
-  // )
-
-  // const DataMap$ = computedData$.pipe(
-  //   map(d => {
-  //     const DataMap: Map<string, ComputedDatumGrid> = new Map()
-  //     d.flat().forEach(_d => DataMap.set(_d.id, _d))
-  //     return DataMap
-  //   })
-  // )
-
   const highlightTarget$ = fullChartParams$.pipe(
     takeUntil(destroy$),
     map(d => d.highlightTarget),
     distinctUntilChanged()
   )
   
-  combineLatest({
+  const graphicSelection$ = combineLatest({
     graphicGSelection: graphicGSelection$,
-    computedData: computedData$,
-    visibleComputedData: visibleComputedData$,
-    SeriesDataMap: SeriesDataMap$,
-    GroupDataMap: GroupDataMap$,
+    visibleComputedLayoutData: visibleComputedLayoutData$,
     graphicReverseScale: graphicReverseScale$,
     fullChartParams: fullChartParams$,
     fullParams: fullParams$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      return renderDots({
+        graphicGSelection: data.graphicGSelection,
+        circleGClassName,
+        circleClassName,
+        visibleComputedLayoutData: data.visibleComputedLayoutData,
+        fullParams: data.fullParams,
+        fullChartParams: data.fullChartParams,
+        graphicReverseScale: data.graphicReverseScale
+      })
+    })
+  )
+
+  combineLatest({
+    graphicSelection: graphicSelection$,
+    computedData: computedData$,
+    SeriesDataMap: SeriesDataMap$,
+    GroupDataMap: GroupDataMap$,
     highlightTarget: highlightTarget$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
   ).subscribe(data => {
 
-    const graphicSelection = renderDots({
-      graphicGSelection: data.graphicGSelection,
-      circleGClassName,
-      circleClassName,
-      data: data.visibleComputedData,
-      fullParams: data.fullParams,
-      fullChartParams: data.fullChartParams,
-      graphicReverseScale: data.graphicReverseScale
-    })
-
-    graphicSelection
+    data.graphicSelection
       .on('mouseover', (event, datum) => {
         event.stopPropagation()
   
@@ -594,8 +459,6 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
           data: data.computedData
         })
       })
-
-    graphicSelection$.next(graphicSelection)
 
   })
 

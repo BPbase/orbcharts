@@ -14,7 +14,10 @@ export const LineAreas = defineGridPlugin(pluginName, DEFAULT_LINE_AREAS_PARAMS)
   const unsubscribeBaseBars = createBaseLineAreas(pluginName, {
     selection,
     computedData$: observer.computedData$,
-    existSeriesLabels$: observer.existSeriesLabels$,
+    visibleComputedData$: observer.visibleComputedData$,
+    computedLayoutData$: observer.computedLayoutData$,
+    visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
+    seriesLabels$: observer.seriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,
@@ -24,7 +27,7 @@ export const LineAreas = defineGridPlugin(pluginName, DEFAULT_LINE_AREAS_PARAMS)
     gridGraphicTransform$: observer.gridGraphicTransform$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
-    gridContainer$: observer.gridContainer$,
+    gridContainerPosition$: observer.gridContainerPosition$,
     layout$: observer.layout$,
     event$: subject.event$,
   })

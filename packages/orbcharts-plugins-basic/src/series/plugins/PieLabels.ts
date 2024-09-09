@@ -5,11 +5,15 @@ import {
   first,
   map,
   takeUntil,
+  Observable,
   Subject,
   BehaviorSubject } from 'rxjs'
 import {
   defineSeriesPlugin } from '@orbcharts/core'
 import type {
+  ComputedDatumSeries,
+  SeriesContainerPosition,
+  EventSeries,
   ChartParams } from '@orbcharts/core'
 import type { PieLabelsParams } from '../types'
 import type { PieDatum } from '../seriesUtils'
@@ -17,6 +21,7 @@ import { DEFAULT_PIE_LABELS_PARAMS } from '../defaults'
 import { makePieData } from '../seriesUtils'
 import { makeD3Arc } from '../../utils/d3Utils'
 import { getDatumColor, getClassName } from '../../utils/orbchartsUtils'
+import { seriesCenterSelectionObservable } from '../seriesObservables'
 
 interface RenderDatum {
   pieDatum: PieDatum
@@ -152,52 +157,42 @@ function highlight ({ labelSelection, ids, fullChartParams }: {
 }
 
 
-// function removeHighlight ({ labelSelection }: {
-//   labelSelection: (d3.Selection<SVGPathElement, RenderDatum, any, any> | undefined)
-// }) {
-//   if (!labelSelection) {
-//     return
-//   }
-  
-//   // 取消放大
-//   labelSelection
-//     .transition()
-//     .duration(200)
-//     .attr('transform', (d) => {
-//       return 'translate(' + d.x + ',' + d.y + ')'
-//     })
-//     .style('opacity', 1)
-
-// }
-
-
-export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAMS)(({ selection, observer, subject }) => {
-  
+function createEachPieLabel (pluginName: string, context: {
+  containerSelection: d3.Selection<SVGGElement, any, any, unknown>
+  // computedData$: Observable<ComputedDatumSeries[][]>
+  containerComputedLayoutData$: Observable<ComputedDatumSeries[]>
+  // SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
+  fullParams$: Observable<PieLabelsParams>
+  fullChartParams$: Observable<ChartParams>
+  seriesHighlight$: Observable<ComputedDatumSeries[]>
+  seriesContainerPosition$: Observable<SeriesContainerPosition>
+  event$: Subject<EventSeries>
+}) {
   const destroy$ = new Subject()
 
-  const graphicSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
+  // const graphicSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
   let labelSelection$: Subject<d3.Selection<SVGPathElement, RenderDatum, any, any>> = new Subject()
   let renderData: RenderDatum[] = []
   // let highlightTarget: HighlightTarget | undefined
   // let fullChartParams: ChartParams | undefined
 
-  observer.layout$
-    .pipe(
-      first()
-    )
-    .subscribe(size => {
-      selection
-        .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-      observer.layout$
-        .pipe(
-          takeUntil(destroy$)
-        )
-        .subscribe(size => {
-          selection
-            .transition()
-            .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-        })
-    })
+  // observer.layout$
+  //   .pipe(
+  //     first()
+  //   )
+  //   .subscribe(size => {
+  //     selection
+  //       .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
+  //     observer.layout$
+  //       .pipe(
+  //         takeUntil(destroy$)
+  //       )
+  //       .subscribe(size => {
+  //         selection
+  //           .transition()
+  //           .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
+  //       })
+  //   })
 
   
 
@@ -222,13 +217,12 @@ export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAM
   // })
 
   combineLatest({
-    layout: observer.layout$,
-    computedData: observer.computedData$,
-    fullParams: observer.fullParams$,
-    fullChartParams: observer.fullChartParams$
+    layout: context.seriesContainerPosition$,
+    containerComputedLayoutData: context.containerComputedLayoutData$,
+    fullParams: context.fullParams$,
+    fullChartParams: context.fullChartParams$
   }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
     switchMap(async (d) => d),
   ).subscribe(data => {
 
@@ -252,14 +246,14 @@ export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAM
     })
 
     const pieData = makePieData({
-      computedDataSeries: data.computedData,
+      data: data.containerComputedLayoutData,
       startAngle: data.fullParams.startAngle,
       endAngle: data.fullParams.endAngle
     })
 
     renderData = makeRenderData(pieData, arc, arcMouseover, data.fullParams.labelCentroid)
 
-    const labelSelection = renderLabel(graphicSelection, renderData, data.fullParams, data.fullChartParams)
+    const labelSelection = renderLabel(context.containerSelection, renderData, data.fullParams, data.fullChartParams)
 
     labelSelection$.next(labelSelection)
 
@@ -267,10 +261,10 @@ export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAM
   
   combineLatest({
     labelSelection: labelSelection$,
-    highlight: observer.seriesHighlight$.pipe(
+    highlight: context.seriesHighlight$.pipe(
       map(data => data.map(d => d.id))
     ),
-    fullChartParams: observer.fullChartParams$,
+    fullChartParams: context.fullChartParams$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
@@ -279,6 +273,59 @@ export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAM
       labelSelection: data.labelSelection,
       ids: data.highlight,
       fullChartParams: data.fullChartParams,
+    })
+  })
+
+  return () => {
+    destroy$.next(undefined)
+  }
+}
+
+
+export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAMS)(({ selection, observer, subject }) => {
+  
+  const destroy$ = new Subject()
+
+  const { seriesCenterSelection$ } = seriesCenterSelectionObservable({
+    selection: selection,
+    pluginName,
+    seriesSeparate$: observer.seriesSeparate$,
+    seriesLabels$: observer.seriesLabels$,
+    seriesContainerPosition$: observer.seriesContainerPosition$
+  })
+
+  const unsubscribeFnArr: (() => void)[] = []
+
+  seriesCenterSelection$.subscribe(seriesCenterSelection => {
+    // 每次重新計算時，清除之前的訂閱
+    unsubscribeFnArr.forEach(fn => fn())
+
+    seriesCenterSelection.each((d, containerIndex, g) => { 
+      
+      const containerSelection = d3.select(g[containerIndex])
+
+      const containerComputedLayoutData$ = observer.computedLayoutData$.pipe(
+        takeUntil(destroy$),
+        map(data => data[containerIndex] ?? data[0])
+      )
+
+      const containerPosition$ = observer.seriesContainerPosition$.pipe(
+        takeUntil(destroy$),
+        map(data => data[containerIndex] ?? data[0])
+      )
+
+      unsubscribeFnArr[containerIndex] = createEachPieLabel(pluginName, {
+        containerSelection: containerSelection,
+        // computedData$: observer.computedData$,
+        containerComputedLayoutData$: containerComputedLayoutData$,
+        // SeriesDataMap$: observer.SeriesDataMap$,
+        fullParams$: observer.fullParams$,
+        fullChartParams$: observer.fullChartParams$,
+        seriesHighlight$: observer.seriesHighlight$,
+        seriesContainerPosition$: containerPosition$,
+        event$: subject.event$,
+      })
+
     })
   })
 

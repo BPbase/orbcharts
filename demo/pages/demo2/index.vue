@@ -40,12 +40,7 @@ onMounted(() => {
   const multiValueAxis = new MultiValueAxis()
   const overlappingValueAxes = new OverlappingValueAxes()
   const tooltip = new Tooltip()
-  chart!.plugins$.next([ multiGroupAxis, overlappingValueAxes, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
-
-  multiGridLegend.params$.next({
-    position: 'bottom',
-    justify: 'center'
-  })
+  // chart!.plugins$.next([ multiGroupAxis, overlappingValueAxes, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
 
   chart.chartParams$.next({
     padding: {
@@ -53,22 +48,27 @@ onMounted(() => {
     },
     highlightTarget: 'series'
   })
-
-  chart.dataFormatter$.next({
+  chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
+  chart!.dataFormatter$.next({
+    container: {
+      rowAmount: 1,
+      columnAmount: 1
+    },
     gridList: [
       {
-        gridData: {
-          rowLabels: ['收入', '支出'],
-          columnLabels: ['1月', '2月', '3月', '4月', '5月']
-        }
+        rowLabels: ['收入', '支出'],
+        columnLabels: ['1月', '2月', '3月', '4月', '5月']
       },
       {
-        gridData: {
-          rowLabels: ['午餐來客數', '晚餐來客數'],
-          columnLabels: ['1月', '2月', '3月', '4月', '5月']
-        }
+        rowLabels: ['午餐來客數', '晚餐來客數'],
+        columnLabels: ['1月', '2月', '3月', '4月', '5月']
       }
-    ]
+    ],
+    // separateGrid: true
+  })
+  multiGroupAxis.params$.next({
+    gridIndexes: [0, 1],
+    // tickTextRotate: -30
   })
 
   multiValueAxis.params$.next({
@@ -198,20 +198,15 @@ onMounted(() => {
         },
         gridList: [
           {
-            gridData: {
-              rowLabels: ['收入', '支出'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            slotIndex: 0
+            rowLabels: ['收入', '支出'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月']
           },
           {
-            gridData: {
-              rowLabels: ['午餐來客數', '晚餐來客數'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            slotIndex: 1
+            rowLabels: ['午餐來客數', '晚餐來客數'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月']
           }
-        ]
+        ],
+        separateGrid: true
       })
       multiGroupAxis.params$.next({
         gridIndexes: [0, 1],
@@ -230,26 +225,22 @@ onMounted(() => {
       })
       chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
       chart!.dataFormatter$.next({
-        container: {
-          rowAmount: 1,
-          columnAmount: 3
-        },
+        // container: {
+        //   rowAmount: 1,
+        //   columnAmount: 3
+        // },
         gridList: [
           {
-            gridData: {
-              rowLabels: ['收入', '支出'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            seriesSlotIndexes: [0, 1]
+            rowLabels: ['收入', '支出'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月'],
+            separateSeries: true
           },
           {
-            gridData: {
-              rowLabels: ['午餐來客數', '晚餐來客數'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            slotIndex: 2
+            rowLabels: ['午餐來客數', '晚餐來客數'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月'],
           }
-        ]
+        ],
+        separateGrid: true
       })
       multiGroupAxis.params$.next({
         gridIndexes: [0, 1],
@@ -274,18 +265,14 @@ onMounted(() => {
         },
         gridList: [
           {
-            gridData: {
-              rowLabels: ['收入', '支出'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            seriesSlotIndexes: [0, 1]
+            rowLabels: ['收入', '支出'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月'],
+            separateSeries: true
           },
           {
-            gridData: {
-              rowLabels: ['午餐來客數', '晚餐來客數'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            seriesSlotIndexes: [2, 3]
+            rowLabels: ['午餐來客數', '晚餐來客數'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月'],
+            separateSeries: true
           }
         ]
       })
@@ -312,22 +299,15 @@ onMounted(() => {
         },
         gridList: [
           {
-            gridData: {
-              seriesDirection: 'column',
-              rowLabels: ['收入', '支出'],
+            rowLabels: ['收入', '支出'],
               columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            slotIndex: 0
           },
           {
-            gridData: {
-              seriesDirection: 'column',
-              rowLabels: ['午餐來客數', '晚餐來客數'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            slotIndex: 1
+            rowLabels: ['午餐來客數', '晚餐來客數'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月']
           }
-        ]
+        ],
+        separateGrid: true
       })
       multiGroupAxis.params$.next({
         gridIndexes: [0, 1],
@@ -345,22 +325,18 @@ onMounted(() => {
         },
         gridList: [
           {
-            gridData: {
-              seriesDirection: 'column',
-              rowLabels: ['收入', '支出'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            seriesSlotIndexes: [0, 1, 2, 3, 4]
+            seriesDirection: 'column',
+            rowLabels: ['收入', '支出'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月'],
+            separateSeries: true
           },
           {
-            gridData: {
-              seriesDirection: 'column',
-              rowLabels: ['午餐來客數', '晚餐來客數'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            slotIndex: 5
+            seriesDirection: 'column',
+            rowLabels: ['午餐來客數', '晚餐來客數'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月']
           }
-        ]
+        ],
+        separateGrid: true
       })
       multiGroupAxis.params$.next({
         gridIndexes: [0, 1],
@@ -384,12 +360,10 @@ onMounted(() => {
         },
         gridList: [
           {
-            gridData: {
-              seriesDirection: 'column',
-              rowLabels: ['收入', '支出'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            seriesSlotIndexes: [0, 1, 2, 3, 4],
+            seriesDirection: 'column',
+            rowLabels: ['收入', '支出'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月'],
+            separateSeries: true,
             groupAxis: {
               position: 'left'
             },
@@ -398,12 +372,9 @@ onMounted(() => {
             }
           },
           {
-            gridData: {
-              seriesDirection: 'column',
-              rowLabels: ['午餐來客數', '晚餐來客數'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            slotIndex: 5,
+            seriesDirection: 'column',
+            rowLabels: ['午餐來客數', '晚餐來客數'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月'],
             groupAxis: {
               position: 'left'
             },
@@ -411,7 +382,8 @@ onMounted(() => {
               position: 'bottom'
             }
           }
-        ]
+        ],
+        separateGrid: true
       })
       multiGroupAxis.params$.next({
         gridIndexes: [0, 1],
@@ -435,11 +407,9 @@ onMounted(() => {
         },
         gridList: [
           {
-            gridData: {
-              seriesDirection: 'column',
-              rowLabels: ['收入', '支出'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
+            seriesDirection: 'column',
+            rowLabels: ['收入', '支出'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月'],
             groupAxis: {
               position: 'left'
             },
@@ -448,14 +418,12 @@ onMounted(() => {
             }
           },
           {
-            gridData: {
-              seriesDirection: 'column',
-              rowLabels: ['午餐來客數', '晚餐來客數'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            slotIndex: 1
+            seriesDirection: 'column',
+            rowLabels: ['午餐來客數', '晚餐來客數'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月'],
           }
-        ]
+        ],
+        separateGrid: true
       })
       multiGroupAxis.params$.next({
         gridIndexes: [0, 1],
@@ -479,11 +447,9 @@ onMounted(() => {
         },
         gridList: [
           {
-            gridData: {
-              seriesDirection: 'column',
-              rowLabels: ['收入', '支出'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
+            seriesDirection: 'column',
+            rowLabels: ['收入', '支出'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月'],
             groupAxis: {
               position: 'left'
             },
@@ -492,14 +458,12 @@ onMounted(() => {
             }
           },
           {
-            gridData: {
-              seriesDirection: 'column',
-              rowLabels: ['午餐來客數', '晚餐來客數'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            slotIndex: 1
+            seriesDirection: 'column',
+            rowLabels: ['午餐來客數', '晚餐來客數'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月']
           }
-        ]
+        ],
+        separateGrid: true
       })
       multiGroupAxis.params$.next({
         gridIndexes: [0, 1],
@@ -543,20 +507,15 @@ onMounted(() => {
         },
         gridList: [
           {
-            gridData: {
-              rowLabels: ['收入', '支出'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            slotIndex: 0
+            rowLabels: ['收入', '支出'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月'],
           },
           {
-            gridData: {
-              rowLabels: ['午餐來客數', '晚餐來客數'],
-              columnLabels: ['1月', '2月', '3月', '4月', '5月']
-            },
-            slotIndex: 0
+            rowLabels: ['午餐來客數', '晚餐來客數'],
+            columnLabels: ['1月', '2月', '3月', '4月', '5月']
           }
-        ]
+        ],
+        separateGrid: false
       })
       multiGroupAxis.params$.next({
         gridIndexes: [0]

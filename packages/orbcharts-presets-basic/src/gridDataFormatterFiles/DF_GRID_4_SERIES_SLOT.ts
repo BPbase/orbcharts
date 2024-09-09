@@ -6,7 +6,8 @@ export const DF_GRID_4_SERIES_SLOT: DataFormatterFile<'grid'> = {
   description: '4個Series Slot',
   data: {
     grid: {
-      seriesSlotIndexes: [0, 1, 2, 3],
+      // seriesSlotIndexes: [0, 1, 2, 3],
+      separateSeries: true,
     },
     container: {
       rowAmount: 2,

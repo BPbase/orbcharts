@@ -1,13 +1,13 @@
 import * as d3 from 'd3'
-import { DATA_FORMATTER_VALUE_AXIS } from '../defaults'
+import { DATA_FORMATTER_VALUE_AXIS_DEFAULT } from '../defaults'
 
 // scaleLinear - 連續資料對應到比較尺座標上
 export const createAxisLinearScale = ({
   maxValue = 1,
   minValue = 0,
   axisWidth,
-  scaleDomain = DATA_FORMATTER_VALUE_AXIS.scaleDomain,
-  scaleRange = DATA_FORMATTER_VALUE_AXIS.scaleRange,
+  scaleDomain = DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain,
+  scaleRange = DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange,
 }: {
   maxValue: number
   minValue: number
@@ -16,10 +16,10 @@ export const createAxisLinearScale = ({
   scaleRange: [number, number] // 0-1
 }) => {
   // -- 無值補上預設值 --
-  const domainMin: number | 'auto' = scaleDomain[0] ?? DATA_FORMATTER_VALUE_AXIS.scaleDomain[0]
-  const domainMax: number | 'auto' = scaleDomain[1] ?? DATA_FORMATTER_VALUE_AXIS.scaleDomain[1]
-  const rangeMin: number = scaleRange[0] ?? DATA_FORMATTER_VALUE_AXIS.scaleRange[0]
-  const rangeMax: number = scaleRange[1] ?? DATA_FORMATTER_VALUE_AXIS.scaleRange[1]
+  const domainMin: number | 'auto' = scaleDomain[0] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[0]
+  const domainMax: number | 'auto' = scaleDomain[1] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[1]
+  const rangeMin: number = scaleRange[0] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange[0]
+  const rangeMax: number = scaleRange[1] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange[1]
 
   // -- 'auto'提換成實際值 --
   const domainMinValue = domainMin === 'auto' ? minValue : domainMin

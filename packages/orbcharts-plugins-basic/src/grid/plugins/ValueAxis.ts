@@ -1,5 +1,10 @@
 import {
-  Subject } from 'rxjs'
+  Subject,
+  takeUntil,
+  map,
+  distinctUntilChanged,
+  shareReplay
+} from 'rxjs'
 import {
   defineGridPlugin } from '@orbcharts/core'
 import { DEFAULT_VALUE_AXIS_PARAMS } from '../defaults'
@@ -12,6 +17,13 @@ export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)
   
   const destroy$ = new Subject()
 
+  const isSeriesSeprate$ = observer.fullDataFormatter$.pipe(
+    takeUntil(destroy$),
+    map(d => d.grid.separateSeries),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
+
   const unsubscribeBaseValueAxis = createBaseValueAxis(pluginName, {
     selection,
     computedData$: observer.computedData$,
@@ -21,8 +33,8 @@ export const ValueAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_AXIS_PARAMS)
     gridAxesTransform$: observer.gridAxesTransform$,
     gridAxesReverseTransform$: observer.gridAxesReverseTransform$,
     gridAxesSize$: observer.gridAxesSize$,
-    gridContainer$: observer.gridContainer$,
-    isSeriesPositionSeprate$: observer.isSeriesPositionSeprate$,
+    gridContainerPosition$: observer.gridContainerPosition$,
+    isSeriesSeprate$,
   })
 
   return () => {

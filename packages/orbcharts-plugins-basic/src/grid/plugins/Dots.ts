@@ -14,8 +14,10 @@ export const Dots = defineGridPlugin(pluginName, DEFAULT_DOTS_PARAMS)(({ selecti
   const unsubscribeBaseBars = createBaseDots(pluginName, {
     selection,
     computedData$: observer.computedData$,
+    computedLayoutData$: observer.computedLayoutData$,
     visibleComputedData$: observer.visibleComputedData$,
-    existSeriesLabels$: observer.existSeriesLabels$,
+    visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
+    seriesLabels$: observer.seriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,
@@ -25,7 +27,7 @@ export const Dots = defineGridPlugin(pluginName, DEFAULT_DOTS_PARAMS)(({ selecti
     gridGraphicReverseScale$: observer.gridGraphicReverseScale$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
-    gridContainer$: observer.gridContainer$,
+    gridContainerPosition$: observer.gridContainerPosition$,
     event$: subject.event$,
   })
 

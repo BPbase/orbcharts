@@ -14,7 +14,8 @@ import type {
   DataSeries,
   EventName,
   ComputedDataSeries,
-  ComputedDatumSeries } from '@orbcharts/core'
+  ComputedDatumSeries,
+  SeriesContainerPosition } from '@orbcharts/core'
 import {
   defineSeriesPlugin } from '@orbcharts/core'
 import type { BubblesParams, BubbleScaleType } from '../types'
@@ -27,6 +28,8 @@ interface BubblesDatum extends ComputedDatumSeries {
   r: number
   _originR: number // 紀錄變化前的r
 }
+
+type BubblesSimulationDatum = BubblesDatum & d3.SimulationNodeDatum
 
 let force: d3.Simulation<d3.SimulationNodeDatum, undefined> | undefined
 
@@ -81,11 +84,12 @@ function getMaxR ({ data, bubbleGroupR, maxValue, avgValue }: {
   return maxR * modifier
 }
 
-function createBubblesData ({ data, LastBubbleDataMap, graphicWidth, graphicHeight, scaleType }: {
+function createBubblesData ({ data, LastBubbleDataMap, graphicWidth, graphicHeight, SeriesContainerPositionMap, scaleType }: {
   data: ComputedDataSeries
   LastBubbleDataMap: Map<string, BubblesDatum>
   graphicWidth: number
   graphicHeight: number
+  SeriesContainerPositionMap: Map<string, SeriesContainerPosition>
   scaleType: BubbleScaleType
   // highlightIds: string[]
 }) {
@@ -124,8 +128,9 @@ function createBubblesData ({ data, LastBubbleDataMap, graphicWidth, graphicHeig
       d.x = existDatum.x
       d.y = existDatum.y
     } else {
-      d.x = Math.random() * graphicWidth
-      d.y = Math.random() * graphicHeight
+      const seriesContainerPosition = SeriesContainerPositionMap.get(d.seriesLabel)!
+      d.x = Math.random() * seriesContainerPosition.width
+      d.y = Math.random() * seriesContainerPosition.height
     }
     const r = scaleBubbleR!(d.value ?? 0)!
     d.r = r
@@ -253,16 +258,22 @@ function drag (): d3.DragBehavior<Element, unknown, unknown> {
 //   return typeCenter ? typeCenter.x : 0
 // }
 
-function groupBubbles ({ fullParams, graphicWidth, graphicHeight }: {
+function groupBubbles ({ fullParams, SeriesContainerPositionMap }: {
   fullParams: BubblesParams
-  graphicWidth: number
-  graphicHeight: number
+  // graphicWidth: number
+  // graphicHeight: number
+  SeriesContainerPositionMap: Map<string, SeriesContainerPosition>
 }) {
+  // console.log('groupBubbles')
   force!
     // .force('x', d3.forceX().strength(fullParams.force.strength).x(graphicWidth / 2))
     // .force('y', d3.forceY().strength(fullParams.force.strength).y(graphicHeight / 2))
-    .force('x', d3.forceX().strength(fullParams.force.strength).x(0))
-    .force('y', d3.forceY().strength(fullParams.force.strength).y(0))
+    .force('x', d3.forceX().strength(fullParams.force.strength).x((data: BubblesSimulationDatum) => {
+      return SeriesContainerPositionMap.get(data.seriesLabel)!.centerX
+    }))
+    .force('y', d3.forceY().strength(fullParams.force.strength).y((data: BubblesSimulationDatum) => {
+      return SeriesContainerPositionMap.get(data.seriesLabel)!.centerY
+    }))
 
   force!.alpha(1).restart();
 }
@@ -312,23 +323,27 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
   //   force = makeForce(bubblesSelection, d)
   // })
 
-  observer.layout$
-    .pipe(
-      first()
-    )
-    .subscribe(size => {
-      selection
-        .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-      observer.layout$
-        .pipe(
-          takeUntil(destroy$)
-        )
-        .subscribe(size => {
-          selection
-            .transition()
-            .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-        })
-    })
+  // observer.seriesContainerPosition$.subscribe(d => {
+  //   console.log(d)
+  // })
+
+  // observer.layout$
+  //   .pipe(
+  //     first()
+  //   )
+  //   .subscribe(size => {
+  //     selection
+  //       .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
+  //     observer.layout$
+  //       .pipe(
+  //         takeUntil(destroy$)
+  //       )
+  //       .subscribe(size => {
+  //         selection
+  //           .transition()
+  //           .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
+  //       })
+  //   })
 
   // const bubbleGroupR$ = layout$.pipe(
   //   map(d => {
@@ -370,18 +385,20 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
   const bubblesData$ = new Observable<BubblesDatum[]>(subscriber => {
     combineLatest({
       layout: observer.layout$,
-      computedData: observer.computedData$,
+      SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
+      visibleComputedLayoutData: observer.visibleComputedLayoutData$,
       scaleType: scaleType$
     }).pipe(
       takeUntil(destroy$),
-      // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
       switchMap(async (d) => d),
     ).subscribe(data => {
+      // console.log(data.visibleComputedLayoutData)
       const bubblesData = createBubblesData({
-        data: data.computedData,
+        data: data.visibleComputedLayoutData,
         LastBubbleDataMap,
         graphicWidth: data.layout.width,
         graphicHeight: data.layout.height,
+        SeriesContainerPositionMap: data.SeriesContainerPositionMap,
         scaleType: data.scaleType
       })
       subscriber.next(bubblesData)
@@ -405,12 +422,12 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
     bubblesData: bubblesData$,
     SeriesDataMap: observer.SeriesDataMap$,
     fullParams: observer.fullParams$,
-    highlightTarget: highlightTarget$
+    highlightTarget: highlightTarget$,
+    SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
     // fullChartParams: fullChartParams$
     // highlight: highlight$
   }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
     switchMap(async (d) => d),
   ).subscribe(data => {
 
@@ -499,8 +516,9 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
 
     groupBubbles({
       fullParams: data.fullParams,
-      graphicWidth: data.layout.width,
-      graphicHeight: data.layout.height
+      SeriesContainerPositionMap: data.SeriesContainerPositionMap
+      // graphicWidth: data.layout.width,
+      // graphicHeight: data.layout.height
     })
 
     bubblesSelection$.next(bubblesSelection)
@@ -514,7 +532,8 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
     ),
     fullChartParams: observer.fullChartParams$,
     fullParams: observer.fullParams$,
-    layout: observer.layout$
+    // layout: observer.layout$,
+    SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
@@ -540,8 +559,9 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
     
     groupBubbles({
       fullParams: data.fullParams,
-      graphicWidth: data.layout.width,
-      graphicHeight: data.layout.height
+      SeriesContainerPositionMap: data.SeriesContainerPositionMap
+      // graphicWidth: data.layout.width,
+      // graphicHeight: data.layout.height
     })
     force!.nodes(data.bubblesData);
   })

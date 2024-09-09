@@ -1,9 +1,11 @@
-import { shareReplay } from 'rxjs'
+import { map, shareReplay } from 'rxjs'
 import type { ContextObserverFn } from '../types'
 import {
   seriesDataMapObservable,
   groupDataMapObservable } from '../utils/observables'
 import { highlightObservable, textSizePxObservable } from '../utils/observables'
+
+import { seriesSeparateObservable, visibleComputedDataObservable, computedLayoutDataObservable, seriesLabelsObservable, seriesContainerPositionObservable, seriesContainerPositionMapObservable } from './seriesObservables'
 
 export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subject, observer }) => {
 
@@ -11,16 +13,62 @@ export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subje
     shareReplay(1)
   )
 
+  const seriesSeparate$ = seriesSeparateObservable({
+    fullDataFormatter$: observer.fullDataFormatter$
+  })
+
+  const visibleComputedData$ = visibleComputedDataObservable({
+    computedData$: observer.computedData$,
+  })
+
+  const computedLayoutData$ = computedLayoutDataObservable({
+    computedData$: observer.computedData$,
+    fullDataFormatter$: observer.fullDataFormatter$
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const visibleComputedLayoutData$ = visibleComputedDataObservable({
+    computedData$: computedLayoutData$,
+  })
+
+  const datumList$ = observer.computedData$.pipe(
+    map(d => d.flat())
+  ).pipe(
+    shareReplay(1)
+  )
+
   const seriesHighlight$ = highlightObservable({
-    datumList$: observer.computedData$,
+    datumList$,
     fullChartParams$: observer.fullChartParams$,
     event$: subject.event$
   }).pipe(
     shareReplay(1)
   )
 
+  const seriesLabels$ = seriesLabelsObservable({
+    computedData$: observer.computedData$,
+  })
+
+
   const SeriesDataMap$ = seriesDataMapObservable({
-    datumList$: observer.computedData$
+    datumList$
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const seriesContainerPosition$ = seriesContainerPositionObservable({
+    computedData$: observer.computedData$,
+    fullDataFormatter$: observer.fullDataFormatter$,
+    layout$: observer.layout$,
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const SeriesContainerPositionMap$ = seriesContainerPositionMapObservable({
+    seriesContainerPosition$: seriesContainerPosition$,
+    seriesLabels$: seriesLabels$,
+    seriesSeparate$: seriesSeparate$,
   }).pipe(
     shareReplay(1)
   )
@@ -32,7 +80,14 @@ export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subje
     computedData$: observer.computedData$,
     layout$: observer.layout$,
     textSizePx$,
+    visibleComputedData$,
+    visibleComputedLayoutData$,
+    seriesSeparate$,
+    computedLayoutData$,
     seriesHighlight$,
-    SeriesDataMap$
+    seriesLabels$,
+    SeriesDataMap$,
+    seriesContainerPosition$,
+    SeriesContainerPositionMap$,
   }
 }

@@ -5,18 +5,19 @@ import {
   switchMap,
   combineLatest,
   takeUntil,
+  distinctUntilChanged,
+  shareReplay,
   iif,
   Observable,
   Subject } from 'rxjs'
-import type { ContextObserverMultiGrid, DataFormatterGrid } from '@orbcharts/core'
+import type { ContextObserverMultiGrid, DataFormatterGrid, DataFormatterTypeMap, Layout } from '@orbcharts/core'
 import {
   defineMultiGridPlugin } from '@orbcharts/core'
 import { DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS } from '../defaults'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
-import { multiGridDetailObservables } from '../multiGridObservables'
+import { multiGridPluginObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
-// @Q@
-import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerObservable } from '@orbcharts/core/src/grid/gridObservables'
+import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '@orbcharts/core/src/grid/gridObservables'
 
 const pluginName = 'OverlappingValueAxes'
 
@@ -40,43 +41,41 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
   // 為了要反轉第二個valueAxis的位置所以要重新計算
   const secondGridDataFormatter$: Observable<DataFormatterGrid> = combineLatest({
     firstGridIndex: firstGridIndex$,
-    secondGridIndex: secondGridIndex$
+    secondGridIndex: secondGridIndex$,
+    fullDataFormatter: observer.fullDataFormatter$,
   }).pipe(
     takeUntil(destroy$),
-    switchMap(data => {
-      return observer.fullDataFormatter$.pipe(
-        takeUntil(destroy$),
-        map(fullDataFormatter => {
-          if (!fullDataFormatter.gridList[data.secondGridIndex]) {
-            fullDataFormatter.gridList[data.secondGridIndex] = Object.assign({}, fullDataFormatter.gridList[data.firstGridIndex])
+    switchMap(async (d) => d),
+    map(data => {
+      if (!data.fullDataFormatter.gridList[data.secondGridIndex]) {
+        data.fullDataFormatter.gridList[data.secondGridIndex] = Object.assign({}, data.fullDataFormatter.gridList[data.firstGridIndex])
+      }
+      // 反轉第二個valueAxis的位置
+      let reversePosition = ''
+      if (data.fullDataFormatter.gridList[data.firstGridIndex].valueAxis.position === 'left') {
+        reversePosition = 'right'
+      } else if (data.fullDataFormatter.gridList[data.firstGridIndex].valueAxis.position === 'bottom') {
+        reversePosition = 'top'
+      } else if (data.fullDataFormatter.gridList[data.firstGridIndex].valueAxis.position === 'top') {
+        reversePosition = 'bottom'
+      } else if (data.fullDataFormatter.gridList[data.firstGridIndex].valueAxis.position === 'right') {
+        reversePosition = 'left'
+      }
+      return <DataFormatterGrid>{
+        type: 'grid',
+        visibleFilter: data.fullDataFormatter.visibleFilter as any,
+        grid: {
+          ...data.fullDataFormatter.gridList[data.secondGridIndex],
+          valueAxis: {
+            ...data.fullDataFormatter.gridList[data.secondGridIndex].valueAxis,
+            position: reversePosition
           }
-          // 反轉第二個valueAxis的位置
-          let reversePosition = ''
-          if (fullDataFormatter.gridList[data.firstGridIndex].valueAxis.position === 'left') {
-            reversePosition = 'right'
-          } else if (fullDataFormatter.gridList[data.firstGridIndex].valueAxis.position === 'bottom') {
-            reversePosition = 'top'
-          } else if (fullDataFormatter.gridList[data.firstGridIndex].valueAxis.position === 'top') {
-            reversePosition = 'bottom'
-          } else if (fullDataFormatter.gridList[data.firstGridIndex].valueAxis.position === 'right') {
-            reversePosition = 'left'
-          }
-          return <DataFormatterGrid>{
-            type: 'grid',
-            grid: {
-              ...fullDataFormatter.gridList[data.secondGridIndex],
-              valueAxis: {
-                ...fullDataFormatter.gridList[data.secondGridIndex].valueAxis,
-                position: reversePosition
-              }
-            },
-            container: {
-              ...fullDataFormatter.container
-            }
-          }
-        })
-      )
-    }),
+        },
+        container: {
+          ...data.fullDataFormatter.container
+        }
+      }
+    })
   )
 
   const multiGridPlugin$ = of(observer).pipe(
@@ -95,7 +94,7 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
         )
       }
     }),
-    switchMap(observer => multiGridDetailObservables(observer)),
+    switchMap(observer => multiGridPluginObservables(observer)),
     map(data => {
       return data.map((observables, index) => {
         if (index === 0) {
@@ -109,17 +108,16 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
         const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({
           gridAxesTransform$
         })
-        const gridContainer$ = gridContainerObservable({
-          computedData$: observables.gridComputedData$,
+        const gridContainerPosition$ = gridContainerPositionObservable({
+          computedData$: observables.computedData$,
           fullDataFormatter$: secondGridDataFormatter$,
-          fullChartParams$: observer.fullChartParams$,
           layout$: observer.layout$
         })
         return {
           ...observables,
           gridAxesTransform$,
           gridAxesReverseTransform$,
-          gridContainer$,
+          gridContainerPosition$,
         }
       })
     })
@@ -140,19 +138,26 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
 
         const gridSelection = d3.select(g[i])
 
+        const isSeriesSeprate$ = d.dataFormatter$.pipe(
+          takeUntil(destroy$),
+          map(d => d.grid.separateSeries),
+          distinctUntilChanged(),
+          shareReplay(1)
+        )
+
         unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
           selection: gridSelection,
-          computedData$: d.gridComputedData$,
+          computedData$: d.computedData$,
           fullParams$: observer.fullParams$.pipe(
             map(fullParams => i === 0 ? fullParams.firstAxis : fullParams.secondAxis)
           ),
-          fullDataFormatter$: d.gridDataFormatter$,
+          fullDataFormatter$: d.dataFormatter$,
           fullChartParams$: observer.fullChartParams$,  
           gridAxesTransform$: d.gridAxesTransform$,
           gridAxesReverseTransform$: d.gridAxesReverseTransform$,
           gridAxesSize$: d.gridAxesSize$,
-          gridContainer$: d.gridContainer$,
-          isSeriesPositionSeprate$: d.isSeriesPositionSeprate$,
+          gridContainerPosition$: d.gridContainerPosition$,
+          isSeriesSeprate$,
         })
       })
   })

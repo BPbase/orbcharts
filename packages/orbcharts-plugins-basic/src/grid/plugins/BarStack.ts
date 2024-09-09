@@ -1,4 +1,8 @@
 import {
+  map,
+  distinctUntilChanged,
+  shareReplay,
+  takeUntil,
   Subject,
   Observable } from 'rxjs'
 import { defineGridPlugin } from '@orbcharts/core'
@@ -11,11 +15,20 @@ const pluginName = 'BarStack'
 export const BarStack = defineGridPlugin(pluginName, DEFAULT_BAR_STACK_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
+  const isSeriesSeprate$ = observer.fullDataFormatter$.pipe(
+    takeUntil(destroy$),
+    map(d => d.grid.separateSeries),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
+
   const unsubscribeBaseBars = createBaseBarStack(pluginName, {
     selection,
     computedData$: observer.computedData$,
+    computedLayoutData$: observer.computedLayoutData$,
     visibleComputedData$: observer.visibleComputedData$,
-    existSeriesLabels$: observer.existSeriesLabels$,
+    visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
+    seriesLabels$: observer.seriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,
     fullParams$: observer.fullParams$,
@@ -26,8 +39,8 @@ export const BarStack = defineGridPlugin(pluginName, DEFAULT_BAR_STACK_PARAMS)((
     gridGraphicReverseScale$: observer.gridGraphicReverseScale$,
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
-    gridContainer$: observer.gridContainer$,
-    isSeriesPositionSeprate$: observer.isSeriesPositionSeprate$,
+    gridContainerPosition$: observer.gridContainerPosition$,
+    isSeriesSeprate$,
     event$: subject.event$,
   })
 

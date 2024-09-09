@@ -6,12 +6,15 @@ import type { DataSeries, DataSeriesDatum, DataSeriesValue } from '../types/Data
 import type { DataGrid, DataGridDatum, DataGridValue } from '../types/DataGrid'
 import type { DataMultiGrid } from '../types/DataMultiGrid'
 import type { DataMultiValue, DataMultiValueDatum, DataMultiValueValue } from '../types/DataMultiValue'
-import type { SeriesDirection, DataFormatterGrid, DataFormatterGridContainer } from '../types/DataFormatterGrid'
+import type { DataFormatterContainer } from '../types/DataFormatter'
+import type { SeriesDirection, DataFormatterGrid, DataFormatterGridGrid } from '../types/DataFormatterGrid'
 import type { DataFormatterMultiGrid } from '../types/DataFormatterMultiGrid'
 import type { ComputedDatumSeriesValue } from '../types/ComputedData'
 import type { ComputedDatumSeries } from '../types/ComputedDataSeries'
 import type { ComputedDatumGrid, ComputedDataGrid } from '../types/ComputedDataGrid'
 import type { ComputedDataMultiGrid } from '../types/ComputedDataMultiGrid'
+import type { SeriesContainerPosition } from '../types/ContextObserverSeries'
+import type { GridContainerPosition } from '../types/ContextObserverGrid'
 import type { Layout } from '../types/Layout'
 // import type { ComputedDatumMultiGrid } from '../types/ComputedDataMultiGrid'
 import { isPlainObject } from './commonUtils'
@@ -39,14 +42,14 @@ export function createDefaultGroupLabel (chartTypeOrPrefix: string, groupIndex: 
   return `${chartTypeOrPrefix}_group${groupIndex}`
 }
 
-export function createGridSeriesLabels ({ transposedDataGrid, dataFormatter, chartType = 'grid' }: {
+export function createGridSeriesLabels ({ transposedDataGrid, dataFormatterGrid, chartType = 'grid' }: {
   transposedDataGrid: DataGridDatum[][],
-  dataFormatter: DataFormatterGrid
+  dataFormatterGrid: DataFormatterGridGrid
   chartType?: ChartType
 }) {
-  const labels = dataFormatter.grid.gridData.seriesDirection === 'row'
-    ? dataFormatter.grid.gridData.rowLabels
-    : dataFormatter.grid.gridData.columnLabels
+  const labels = dataFormatterGrid.seriesDirection === 'row'
+    ? dataFormatterGrid.rowLabels
+    : dataFormatterGrid.columnLabels
   return transposedDataGrid.map((_, rowIndex) => {
     return labels[rowIndex] != null
       ? labels[rowIndex]
@@ -54,15 +57,15 @@ export function createGridSeriesLabels ({ transposedDataGrid, dataFormatter, cha
   })
 }
 
-export function createMultiGridSeriesLabels ({ transposedDataGrid, dataFormatter, chartType = 'multiGrid', gridIndex = 0 }: {
+export function createMultiGridSeriesLabels ({ transposedDataGrid, dataFormatterGrid, chartType = 'multiGrid', gridIndex = 0 }: {
   transposedDataGrid: DataGridDatum[][],
-  dataFormatter: DataFormatterGrid
+  dataFormatterGrid: DataFormatterGridGrid
   chartType?: ChartType
   gridIndex?: number
 }) {
-  const labels = dataFormatter.grid.gridData.seriesDirection === 'row'
-    ? dataFormatter.grid.gridData.rowLabels
-    : dataFormatter.grid.gridData.columnLabels
+  const labels = dataFormatterGrid.seriesDirection === 'row'
+    ? dataFormatterGrid.rowLabels
+    : dataFormatterGrid.columnLabels
   return transposedDataGrid.map((_, rowIndex) => {
     return labels[rowIndex] != null
       ? labels[rowIndex]
@@ -70,17 +73,17 @@ export function createMultiGridSeriesLabels ({ transposedDataGrid, dataFormatter
   })
 }
 
-export function createGridGroupLabels ({ transposedDataGrid, dataFormatter, chartType = 'grid' }: {
+export function createGridGroupLabels ({ transposedDataGrid, dataFormatterGrid, chartType = 'grid' }: {
   transposedDataGrid: DataGridDatum[][],
-  dataFormatter: DataFormatterGrid
+  dataFormatterGrid: DataFormatterGridGrid
   chartType?: ChartType
 }) {
   if (transposedDataGrid[0] == null) {
     return []
   }
-  const labels = dataFormatter.grid.gridData.seriesDirection === 'row'
-    ? dataFormatter.grid.gridData.columnLabels
-    : dataFormatter.grid.gridData.rowLabels
+  const labels = dataFormatterGrid.seriesDirection === 'row'
+    ? dataFormatterGrid.columnLabels
+    : dataFormatterGrid.rowLabels
   return transposedDataGrid[0].map((_, columnLabels) => {
     return labels[columnLabels] != null
       ? labels[columnLabels]
@@ -88,18 +91,18 @@ export function createGridGroupLabels ({ transposedDataGrid, dataFormatter, char
   })
 }
 
-export function createMultiGridGroupLabels ({ transposedDataGrid, dataFormatter, chartType = 'multiGrid', gridIndex = 0 }: {
+export function createMultiGridGroupLabels ({ transposedDataGrid, dataFormatterGrid, chartType = 'multiGrid', gridIndex = 0 }: {
   transposedDataGrid: DataGridDatum[][],
-  dataFormatter: DataFormatterGrid
+  dataFormatterGrid: DataFormatterGridGrid
   chartType?: ChartType
   gridIndex?: number
 }) {
   if (transposedDataGrid[0] == null) {
     return []
   }
-  const labels = dataFormatter.grid.gridData.seriesDirection === 'row'
-    ? dataFormatter.grid.gridData.columnLabels
-    : dataFormatter.grid.gridData.rowLabels
+  const labels = dataFormatterGrid.seriesDirection === 'row'
+    ? dataFormatterGrid.columnLabels
+    : dataFormatterGrid.rowLabels
   return transposedDataGrid[0].map((_, columnLabels) => {
     return labels[columnLabels] != null
       ? labels[columnLabels]
@@ -214,19 +217,112 @@ export function seriesColorPredicate (seriesIndex: number, chartParams: ChartPar
     ]
 }
 
-export function calcGridContainerPosition (layout: Layout, container: DataFormatterGridContainer, rowIndex: number, columnIndex: number) {
-  const { gap, rowAmount, columnAmount } = container
-  const width = (layout.width - (gap * (columnAmount - 1))) / columnAmount
-  const height = (layout.height - (gap * (rowAmount - 1))) / rowAmount
-  const x = columnIndex * width + (columnIndex * gap)
-  const y = rowIndex * height + (rowIndex * gap)
-  const translate: [number, number] = [x, y]
-  const scale: [number, number] = [width / layout.width, height / layout.height]
+// export function calcSeriesContainerPosition (layout: Layout, container: DataFormatterContainer, rowIndex: number, columnIndex: number) {
+//   const { gap, rowAmount, columnAmount } = container
+//   const width = (layout.width - (gap * (columnAmount - 1))) / columnAmount
+//   const height = (layout.height - (gap * (rowAmount - 1))) / rowAmount
+//   const x = columnIndex * width + (columnIndex * gap)
+//   const y = rowIndex * height + (rowIndex * gap)
+//   // const translate: [number, number] = [x, y]
+  
+//   return {
+//     // translate,
+//     startX: x,
+//     startY: y,
+//     centerX: x + width / 2,
+//     centerY: y + height / 2,
+//     width,
+//     height
+//   }
+// }
 
-  return {
-    translate,
-    scale
+// 計算預設欄列數量
+// 規則1.rowAmount*columnAmount要大於或等於amount，並且數字要盡可能小
+// 規則2.columnAmount要大於或等於rowAmount，並且數字要盡可能小
+function calcGridDimensions (amount: number): { rowAmount: number; columnAmount: number } {
+  let rowAmount = Math.floor(Math.sqrt(amount))
+  let columnAmount = Math.ceil(amount / rowAmount)
+  while (rowAmount * columnAmount < amount) {
+    columnAmount++
   }
+  return { rowAmount, columnAmount }
+}
+
+export function calcSeriesContainerLayout (layout: Layout, container: DataFormatterContainer, amount: number): SeriesContainerPosition[] {
+  const { gap } = container
+  const { rowAmount, columnAmount } = (container.rowAmount * container.columnAmount) >= amount
+    // 如果container設定的rowAmount和columnAmount的乘積大於或等於amount，則使用目前設定
+    ? container
+    // 否則計算一個合適的預設值
+    : calcGridDimensions(amount)
+
+  return new Array(amount).fill(null).map((_, index) => {
+    const columnIndex = index % columnAmount
+    const rowIndex = Math.floor(index / columnAmount)
+
+    const width = (layout.width - (gap * (columnAmount - 1))) / columnAmount
+    const height = (layout.height - (gap * (rowAmount - 1))) / rowAmount
+    const x = columnIndex * width + (columnIndex * gap)
+    const y = rowIndex * height + (rowIndex * gap)
+    // const translate: [number, number] = [x, y]
+    
+    return {
+      slotIndex: index,
+      rowIndex,
+      columnIndex,
+      // translate,
+      startX: x,
+      startY: y,
+      centerX: x + width / 2,
+      centerY: y + height / 2,
+      width,
+      height
+    }
+  })
+}
+
+// export function calcGridContainerPosition (layout: Layout, container: DataFormatterContainer, rowIndex: number, columnIndex: number) {
+//   const { gap, rowAmount, columnAmount } = container
+//   const width = (layout.width - (gap * (columnAmount - 1))) / columnAmount
+//   const height = (layout.height - (gap * (rowAmount - 1))) / rowAmount
+//   const x = columnIndex * width + (columnIndex * gap)
+//   const y = rowIndex * height + (rowIndex * gap)
+//   const translate: [number, number] = [x, y]
+//   const scale: [number, number] = [width / layout.width, height / layout.height]
+
+//   return {
+//     translate,
+//     scale
+//   }
+// }
+
+export function calcGridContainerLayout (layout: Layout, container: DataFormatterContainer, amount: number): GridContainerPosition[] {
+  const { gap } = container
+  const { rowAmount, columnAmount } = (container.rowAmount * container.columnAmount) >= amount
+    // 如果container設定的rowAmount和columnAmount的乘積大於或等於amount，則使用目前設定
+    ? container
+    // 否則計算一個合適的預設值
+    : calcGridDimensions(amount)
+
+  return new Array(amount).fill(null).map((_, index) => {
+    const columnIndex = index % columnAmount
+    const rowIndex = Math.floor(index / columnAmount)
+    
+    const width = (layout.width - (gap * (columnAmount - 1))) / columnAmount
+    const height = (layout.height - (gap * (rowAmount - 1))) / rowAmount
+    const x = columnIndex * width + (columnIndex * gap)
+    const y = rowIndex * height + (rowIndex * gap)
+    const translate: [number, number] = [x, y]
+    const scale: [number, number] = [width / layout.width, height / layout.height]
+
+    return {
+      slotIndex: index,
+      rowIndex,
+      columnIndex,
+      translate,
+      scale
+    }
+  })
 }
 
 // // multiGrid datum color

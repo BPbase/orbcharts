@@ -1,37 +1,49 @@
-import type { DataGridDatum, DataGridValue } from './DataGrid'
-import type { DataFormatterBase, DataFormatterBasePartial, DataFormatterValueAxis, DataFormatterGroupAxis, VisibleFilter } from './DataFormatter'
-// import type { AxisPosition } from './Axis'
+import type { 
+  DataFormatterBase, 
+  DataFormatterBasePartial, 
+  DataFormatterValueAxis, 
+  DataFormatterGroupAxis, 
+  VisibleFilter,
+  DataFormatterContainer
+} from './DataFormatter'
+
 
 export type SeriesDirection = 'row' | 'column' // default: 'row'
 
 export interface DataFormatterGrid extends DataFormatterBase<'grid'> {
+  visibleFilter: VisibleFilter<'grid'>
   grid: DataFormatterGridGrid
-  container: DataFormatterGridContainer
-  // visibleGroupRange: [number, number] | null
-  // colorsPredicate: (datum: DataGridDatum | DataGridValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'grid'>) => string
+  container: DataFormatterContainer
 }
 
 export interface DataFormatterGridPartial extends DataFormatterBasePartial<'grid'> {
+  visibleFilter?: VisibleFilter<'grid'>
   grid?: DataFormatterGridGridPartial
-  container?: Partial<DataFormatterGridContainer>
+  container?: Partial<DataFormatterContainer>
 }
 
 export interface DataFormatterGridGrid {
-  visibleFilter: VisibleFilter<'grid'>
-  gridData: DataFormatterGridGridData
+  // gridData: DataFormatterGridGridData
+  // slotIndex: number | null
+  // seriesSlotIndexes: number[] | null
+  seriesDirection: SeriesDirection
+  rowLabels: string[]
+  columnLabels: string[]
   valueAxis: DataFormatterValueAxis
   groupAxis: DataFormatterGroupAxis
-  slotIndex: number | null
-  seriesSlotIndexes: number[] | null
+  separateSeries: boolean
 }
 
 export interface DataFormatterGridGridPartial {
-  visibleFilter?: VisibleFilter<'grid'>
-  gridData?: Partial<DataFormatterGridGridData>
+  // gridData?: Partial<DataFormatterGridGridData>
+  // slotIndex?: number | null
+  // seriesSlotIndexes?: number[] | null
+  seriesDirection?: SeriesDirection
+  rowLabels?: string[]
+  columnLabels?: string[]
   valueAxis?: Partial<DataFormatterValueAxis>
   groupAxis?: Partial<DataFormatterGroupAxis>
-  slotIndex?: number | null
-  seriesSlotIndexes?: number[] | null
+  separateSeries?: boolean
 }
 
 export interface DataFormatterGridContainer {
@@ -41,11 +53,11 @@ export interface DataFormatterGridContainer {
 }
 
 // grid欄位
-export interface DataFormatterGridGridData {
-  seriesDirection: SeriesDirection
-  rowLabels: string[]
-  columnLabels: string[]
-}
+// export interface DataFormatterGridGridData {
+//   seriesDirection: SeriesDirection
+//   rowLabels: string[]
+//   columnLabels: string[]
+// }
 
 // const test: DataFormatterGridPartial = {
 //   type: 'grid',

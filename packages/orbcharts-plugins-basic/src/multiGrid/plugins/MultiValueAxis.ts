@@ -1,11 +1,16 @@
 import * as d3 from 'd3'
 import {
-  Subject } from 'rxjs'
+  Subject,
+  map,
+  distinctUntilChanged,
+  shareReplay,
+  takeUntil
+} from 'rxjs'
 import {
   defineMultiGridPlugin } from '@orbcharts/core'
 import { DEFAULT_MULTI_VALUE_AXIS_PARAMS } from '../defaults'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
-import { multiGridDetailObservables } from '../multiGridObservables'
+import { multiGridPluginObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 
 const pluginName = 'MultiValueAxis'
@@ -17,7 +22,7 @@ export const MultiValueAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_VA
 
   const unsubscribeFnArr: (() => void)[] = []
 
-  const multiGridPlugin$ = multiGridDetailObservables(observer)
+  const multiGridPlugin$ = multiGridPluginObservables(observer)
 
   multiGridPlugin$.subscribe(data => {
     // 每次重新計算時，清除之前的訂閱
@@ -31,17 +36,24 @@ export const MultiValueAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_VA
 
         const gridSelection = d3.select(g[i])
 
+        const isSeriesSeprate$ = d.dataFormatter$.pipe(
+          takeUntil(destroy$),
+          map(d => d.grid.separateSeries),
+          distinctUntilChanged(),
+          shareReplay(1)
+        )
+
         unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
           selection: gridSelection,
-          computedData$: d.gridComputedData$,
+          computedData$: d.computedData$,
           fullParams$: observer.fullParams$,
-          fullDataFormatter$: d.gridDataFormatter$,
+          fullDataFormatter$: d.dataFormatter$,
           fullChartParams$: observer.fullChartParams$,  
           gridAxesTransform$: d.gridAxesTransform$,
           gridAxesReverseTransform$: d.gridAxesReverseTransform$,
           gridAxesSize$: d.gridAxesSize$,
-          gridContainer$: d.gridContainer$,
-          isSeriesPositionSeprate$: d.isSeriesPositionSeprate$,
+          gridContainerPosition$: d.gridContainerPosition$,
+          isSeriesSeprate$,
         })
       })
   })

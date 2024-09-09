@@ -1,30 +1,20 @@
 import { DataSeriesDatum, DataSeriesValue, DataSeries } from './DataSeries'
-import { DataFormatterBase, DataFormatterBasePartial, VisibleFilter } from './DataFormatter'
-// import { ComputedDatumSeries } from './ComputedDataSeries'
+import { DataFormatterBase, DataFormatterBasePartial, VisibleFilter, DataFormatterContainer } from './DataFormatter'
 
 export interface DataFormatterSeries extends DataFormatterBase<'series'> {
   visibleFilter: VisibleFilter<'series'>
-  // series: DataFormatterSeriesSeries
-  // unitLabel: string
-  seriesLabels: string[]
-  // labelFormat: (datum: DataSeriesDatum) => string
-  // mapSeries: (datum: DataSeriesDatum | DataSeriesValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'series'>) => string
-  // colorsPredicate: (datum: DataSeriesDatum | DataSeriesValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'series'>) => string
   sort: ((a: DataSeriesDatum | DataSeriesValue, b: DataSeriesDatum | number) => number) | null
-  // colors: Colors
+  seriesLabels: string[]
+  container: DataFormatterContainer
+  separateSeries: boolean
+  sumSeries: boolean
 }
 
 export interface DataFormatterSeriesPartial extends DataFormatterBasePartial<'series'> {
-  // series: Partial<DataFormatterSeriesSeries>
-  // unitLabel?: string
-  seriesLabels?: string[]
-  // colorsPredicate?: (datum: DataSeriesDatum | DataSeriesValue, rowIndex: number, columnIndex: number, context: DataFormatterContext<'series'>) => string
+  visibleFilter?: VisibleFilter<'series'>
   sort?: ((a: DataSeriesDatum | DataSeriesValue, b: DataSeriesDatum | number) => number) | null
+  seriesLabels?: string[]
+  container?: Partial<DataFormatterContainer>
+  separateSeries?: boolean
+  sumSeries?: boolean
 }
-
-// export interface DataFormatterSeriesSeries {
-//   unitLabel: string
-//   seriesLabels: string[]
-//   // labelFormat: (datum: DataSeriesDatum) => string
-//   sort: ((computedDatum: ComputedDatumSeries) => number) | null
-// }

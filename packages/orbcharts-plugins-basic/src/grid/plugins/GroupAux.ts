@@ -336,7 +336,7 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
         ? data.computedData[0].length
         : 0
 
-      let _labels = data.fullDataFormatter.grid.gridData.seriesDirection === 'row'
+      let _labels = data.fullDataFormatter.grid.seriesDirection === 'row'
         // ? data.fullDataFormatter.grid.columnLabels
         // : data.fullDataFormatter.grid.rowLabels
         ? (data.computedData[0] ?? []).map(d => d.groupLabel)
@@ -391,7 +391,6 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
     groupScale: groupScale$,
   }).pipe(
     takeUntil(destroy$),
-    // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
     switchMap(async (d) => d),
   ).subscribe(data => {
     

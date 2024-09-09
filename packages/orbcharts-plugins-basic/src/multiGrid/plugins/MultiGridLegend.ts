@@ -35,7 +35,7 @@ export const MultiGridLegend = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_G
 
   const seriesList$ = combineLatest({
     fullParams: observer.fullParams$,
-    multiGrid: observer.multiGridEachDetail$,
+    // multiGrid: observer.multiGridEachDetail$,
     computedData: observer.computedData$,
   }).pipe(
     takeUntil(destroy$),

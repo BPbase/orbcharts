@@ -1,6 +1,8 @@
 import {
   takeUntil,
   map,
+  distinctUntilChanged,
+  shareReplay,
   switchMap,
   iif,
   Subject } from 'rxjs'
@@ -47,11 +49,18 @@ export const ValueStackAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_STACK_A
     }),
   )
 
+  const isSeriesSeprate$ = observer.fullDataFormatter$.pipe(
+    takeUntil(destroy$),
+    map(d => d.grid.separateSeries),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
+
   const unsubscribeBaseValueAxis = createBaseValueAxis(pluginName, {
     selection,
-    computedData$: observer.isSeriesPositionSeprate$.pipe(
-      switchMap(isSeriesPositionSeprate => {
-        return iif(() => isSeriesPositionSeprate, observer.computedData$, stackedData$)
+    computedData$: isSeriesSeprate$.pipe(
+      switchMap(isSeriesSeprate => {
+        return iif(() => isSeriesSeprate, observer.computedData$, stackedData$)
       })
     ),
     fullParams$: observer.fullParams$,
@@ -60,8 +69,8 @@ export const ValueStackAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_STACK_A
     gridAxesTransform$: observer.gridAxesTransform$,
     gridAxesReverseTransform$: observer.gridAxesReverseTransform$,
     gridAxesSize$: observer.gridAxesSize$,
-    gridContainer$: observer.gridContainer$,
-    isSeriesPositionSeprate$: observer.isSeriesPositionSeprate$,
+    gridContainerPosition$: observer.gridContainerPosition$,
+    isSeriesSeprate$,
   })
 
   return () => {

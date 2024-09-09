@@ -7,9 +7,15 @@ import { createAxisLinearScale, createAxisPointScale } from '../utils/d3Utils'
 import { getMinAndMaxValue } from '../utils/orbchartsUtils'
 
 export const computeMultiValueData: ComputedDataFn<'multiValue'> = (context) => {
-  const { data, dataFormatter, chartParams, layout } = context
+  const { data, dataFormatter, chartParams } = context
   if (!data.length) {
     return []
+  }
+
+  // @Q@ 假資料待改寫
+  const layout = {
+    width: 1000,
+    height: 1000
   }
 
   let computedDataMultiValue: ComputedDatumMultiValue[][] = []
@@ -85,18 +91,18 @@ export const computeMultiValueData: ComputedDataFn<'multiValue'> = (context) => 
       dataFormatter.yAxis.scaleDomain[1] === 'auto' ? yMaxValue : dataFormatter.yAxis.scaleDomain[1]
     ]
     
-    // 篩選顯示狀態
-    const visibleFilter = (datum: DataMultiValueDatum, rowIndex: number, columnIndex: number, context: DataFormatterContext<"multiValue">) => {
-      // 如果不在scale的範圍內則為false，不再做visibleFilter的判斷
-      if (columnIndex === 0 && datum.value != null && ((datum.value as number) < _xScaleDoamin[0] || datum.value > _xScaleDoamin[1])) {
-        return false
-      }
-      if (columnIndex === 1 && datum.value != null && (datum.value < _yScaleDoamin[0] || datum.value > _yScaleDoamin[1])) {
-        return false
-      }
+    // // 篩選顯示狀態
+    // const visibleFilter = (datum: DataMultiValueDatum, rowIndex: number, columnIndex: number, context: DataFormatterContext<"multiValue">) => {
+    //   // 如果不在scale的範圍內則為false，不再做visibleFilter的判斷
+    //   if (columnIndex === 0 && datum.value != null && ((datum.value as number) < _xScaleDoamin[0] || datum.value > _xScaleDoamin[1])) {
+    //     return false
+    //   }
+    //   if (columnIndex === 1 && datum.value != null && (datum.value < _yScaleDoamin[0] || datum.value > _yScaleDoamin[1])) {
+    //     return false
+    //   }
       
-      return dataFormatter.visibleFilter(datum, rowIndex, columnIndex, context)
-    }
+    //   return dataFormatter.visibleFilter(datum, rowIndex, columnIndex, context)
+    // }
   
     let index = 0
   
@@ -106,8 +112,6 @@ export const computeMultiValueData: ComputedDataFn<'multiValue'> = (context) => 
         index++
   
         const defaultId = createDefaultDatumId(dataFormatter.type, i, _i)
-        // const visible = dataFormatter.visibleFilter(_d, i, _i, context)
-        const visible = visibleFilter(_d, i, _i, context)
   
         const computedDatum: ComputedDatumMultiValue = {
           id: _d.id ? _d.id : defaultId,
@@ -121,9 +125,12 @@ export const computeMultiValueData: ComputedDataFn<'multiValue'> = (context) => 
           categoryLabel: '', // @Q@ 未完成
           // valueLabel: formatValueToLabel(_d.value, dataFormatter.multiValue[_i].valueFormat),
           axis: _i == 0 ? xScale(_d.value) : yScale(_d.value),
-          visible,
+          visible: true, // 先給預設值
           color: '' // @Q@ 未完成
         }
+
+        computedDatum.visible = dataFormatter.visibleFilter(computedDatum, context)
+
         return computedDatum
       })
     })

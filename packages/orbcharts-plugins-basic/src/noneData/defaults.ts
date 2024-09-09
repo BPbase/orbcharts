@@ -27,6 +27,7 @@ export const TOOLTIP_PARAMS: TooltipParams = {
     } else if (eventData.highlightTarget === 'series') {
       const label = (eventData as EventBaseSeriesValue<any, any>).seriesLabel
       const valueArr = (eventData as EventBaseSeriesValue<any, any>).series
+        .filter(d => d.visible == true)
         .map(d => {
           return d.value
         })
@@ -37,6 +38,7 @@ export const TOOLTIP_PARAMS: TooltipParams = {
     } else if (eventData.highlightTarget === 'group') {
       const label = (eventData as EventBaseGridValue<any, any>).groupLabel
       const valueArr = (eventData as EventBaseGridValue<any, any>).series
+        .filter(d => d.visible == true)
         .map(d => {
           return d.value
         })
@@ -47,6 +49,7 @@ export const TOOLTIP_PARAMS: TooltipParams = {
     } else if (eventData.highlightTarget === 'category') {
       const label = (eventData as EventBaseCategoryValue<any, any>).categoryLabel
       const valueArr = (eventData as EventBaseCategoryValue<any, any>).category
+        .filter(d => d.visible == true)
         .map(d => {
           return d.value
         })

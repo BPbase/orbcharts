@@ -1,5 +1,5 @@
-import type { VisibleFilter } from './DataFormatter'
-import type { DataFormatterGridGrid, DataFormatterGridGridPartial, DataFormatterGridContainer } from './DataFormatterGrid'
+import type { VisibleFilter, DataFormatterContainer } from './DataFormatter'
+import type { DataFormatterGridGrid, DataFormatterGridGridPartial } from './DataFormatterGrid'
 import type {
   DataFormatterBase,
   DataFormatterBasePartial,
@@ -9,15 +9,17 @@ import type {
 import type { AxisPosition } from './Axis'
 
 export interface DataFormatterMultiGrid extends DataFormatterBase<'multiGrid'> {
-  // visibleFilter: VisibleFilter<'multiGrid'>
+  visibleFilter: VisibleFilter<'multiGrid'>
   gridList: Array<DataFormatterGridGrid>
   container: DataFormatterMultiGridContainer
+  separateGrid: boolean
 }
 
 export interface DataFormatterMultiGridPartial extends DataFormatterBasePartial<'multiGrid'> {
   // visibleFilter?: VisibleFilter<'multiGrid'>
   gridList?: Array<DataFormatterGridGridPartial>
   container?: Partial<DataFormatterMultiGridContainer>
+  separateGrid?: boolean
 }
 
 export interface DataFormatterMultiGridGrid extends DataFormatterGridGrid {
@@ -29,7 +31,7 @@ export interface DataFormatterMultiGridGridPartial extends DataFormatterGridGrid
 }
 
 // container
-export interface DataFormatterMultiGridContainer extends DataFormatterGridContainer {
+export interface DataFormatterMultiGridContainer extends DataFormatterContainer {
 
 }
 

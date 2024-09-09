@@ -19,18 +19,19 @@ import type {
   ComputedDataGrid,
   ComputedDatumGrid,
   TransformData,
-  ContainerPosition,
+  GridContainerPosition,
   Layout } from '@orbcharts/core'
 import { createAxisQuantizeScale } from '@orbcharts/core'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 
-export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, existSeriesLabels$, gridContainer$, gridAxesTransform$, gridGraphicTransform$ }: {
+// grid選取器
+export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, seriesLabels$, gridContainerPosition$, gridAxesTransform$, gridGraphicTransform$ }: {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
   clipPathID: string
   // computedData$: Observable<ComputedDataGrid>
-  existSeriesLabels$: Observable<string[]>
-  gridContainer$: Observable<ContainerPosition[]>
+  seriesLabels$: Observable<string[]>
+  gridContainerPosition$: Observable<GridContainerPosition[]>
   gridAxesTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>
 }) => {
@@ -38,7 +39,7 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, ex
   const axesClassName = getClassName(pluginName, 'axes')
   const graphicClassName = getClassName(pluginName, 'graphic')
 
-  const seriesSelection$ = existSeriesLabels$.pipe(
+  const seriesSelection$ = seriesLabels$.pipe(
     map((existSeriesLabels, i) => {
       return selection
         .selectAll<SVGGElement, string>(`g.${seriesClassName}`)
@@ -80,39 +81,24 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, ex
           exit => exit.remove()
         )
     }),
-    switchMap(selection => combineLatest({
-      seriesSelection: of(selection),
-      gridContainer: gridContainer$                                                                                                                                                                                       
-    })),
-    map(data => {
-      data.seriesSelection
-        .transition()
-        .attr('transform', (d, i) => {
-          const gridContainer = data.gridContainer[i] ?? data.gridContainer[0]
-          const translate = gridContainer.translate
-          const scale = gridContainer.scale
-          return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
-        })
-      return data.seriesSelection
-    }),
     shareReplay(1)
   )
 
-  // combineLatest({
-  //   seriesSelection: seriesSelection$,
-  //   gridContainer: gridContainer$                                                                                                                                                                                       
-  // }).pipe(
-  //   switchMap(async d => d)
-  // ).subscribe(data => {
-  //   data.seriesSelection
-  //     .transition()
-  //     .attr('transform', (d, i) => {
-  //       const translate = data.gridContainer[i].translate
-  //       const scale = data.gridContainer[i].scale
-  //       return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
-  //     })
-  // })
-
+  combineLatest({
+    seriesSelection: seriesSelection$,
+    gridContainerPosition: gridContainerPosition$                                                                                                                                                                                       
+  }).pipe(
+    switchMap(async d => d)
+  ).subscribe(data => {
+    data.seriesSelection
+      .transition()
+      .attr('transform', (d, i) => {
+        const gridContainerPosition = data.gridContainerPosition[i] ?? data.gridContainerPosition[0]
+        const translate = gridContainerPosition.translate
+        const scale = gridContainerPosition.scale
+        return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+      })
+  })
 
   const axesSelection$ = combineLatest({
     seriesSelection: seriesSelection$,
@@ -177,7 +163,6 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
       computedData: computedData$
     }).pipe(
       takeUntil(destroy$),
-      // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
       switchMap(async (d) => d),
     ).subscribe(data => {
       const groupMin = 0
@@ -193,7 +178,7 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
       //   ? data.computedData[0].length
       //   : 0
 
-      let _labels = data.dataFormatter.grid.gridData.seriesDirection === 'row'
+      let _labels = data.dataFormatter.grid.seriesDirection === 'row'
         ? (data.computedData[0] ?? []).map(d => d.groupLabel)
         : data.computedData.map(d => d[0].groupLabel)
 
@@ -220,7 +205,6 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
       scaleRangeGroupLabels: scaleRangeGroupLabels$
     }).pipe(
       takeUntil(destroy$),
-      // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
       switchMap(async (d) => d),
     ).subscribe(data => {
       
