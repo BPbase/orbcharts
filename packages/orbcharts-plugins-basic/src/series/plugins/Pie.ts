@@ -29,18 +29,18 @@ import { seriesCenterSelectionObservable } from '../seriesObservables'
 const pluginName = 'Pie'
 
 
-function makeTweenPieRenderDataFn ({ enter, exit, data, lastData, fullParams }: {
+function makeTweenPieRenderDataFn ({ enter, exit, data, lastTweenData, fullParams }: {
   enter: d3.Selection<d3.EnterElement, PieDatum, any, any>
   exit: d3.Selection<SVGPathElement, unknown, any, any>
   data: PieDatum[]
-  lastData: PieDatum[]
+  lastTweenData: PieDatum[]
   fullParams: PieParams
 }): (t: number) => PieDatum[] {
   // 無更新資料項目則只計算資料變化 (新資料 * t + 舊資料 * (1 - t))
   if (!enter.size() && !exit.size()) {
     return (t: number) => {
       const tweenData: PieDatum[] = data.map((_d, _i) => {
-        const lastDatum = lastData[_i] ?? {
+        const lastDatum = lastTweenData[_i] ?? {
           startAngle: 0,
           endAngle: 0,
           value: 0
@@ -85,32 +85,23 @@ function makePieRenderData (data: PieDatum[], startAngle: number, endAngle: numb
   })
 }
 
-function renderPie ({ selection, renderData, arc, pathClassName }: {
+function renderPie ({ selection, data, arc, pathClassName }: {
   selection: d3.Selection<SVGGElement, unknown, any, unknown>
-  renderData: PieDatum[]
+  data: PieDatum[]
   arc: d3.Arc<any, d3.DefaultArcObject>
   pathClassName: string
 }): d3.Selection<SVGPathElement, PieDatum, any, any> {
-  let update: d3.Selection<SVGPathElement, PieDatum, any, any> = selection
+  // console.log('data', data)
+  const pathSelection: d3.Selection<SVGPathElement, PieDatum, any, any> = selection
     .selectAll<SVGPathElement, PieDatum>('path')
-    .data(renderData, d => d.id)
-  let enter = update.enter()
-    .append<SVGPathElement>('path')
+    .data(data, d => d.id)
+    .join('path')
     .classed(pathClassName, true)
-  let exit = update.exit()
-
-  enter
-    .append('path')
-    
-  const pathSelection = update.merge(enter)
-  pathSelection
     .style('cursor', 'pointer')
     .attr('fill', (d, i) => d.data.color)
-    // .transition()
     .attr('d', (d, i) => {
       return arc!(d as any)
     })
-  exit.remove()
 
   return pathSelection
 }
@@ -181,8 +172,8 @@ function createEachPie (pluginName: string, context: {
 
   const pathClassName = getClassName(pluginName, 'path')
 
-  let lastData: PieDatum[] = []
-  let renderData: PieDatum[] = []
+  let lastTweenData: PieDatum[] = [] // 紀錄補間動畫前次的資料
+  let tweenData: PieDatum[] = [] // 紀錄補間動畫用的資料
   // let originHighlight: Highlight | null = null
 
   // context.layout$
@@ -223,6 +214,7 @@ function createEachPie (pluginName: string, context: {
         startAngle: data.fullParams.startAngle,
         endAngle: data.fullParams.endAngle
       })
+      // console.log('pieData', pieData)
       subscriber.next(pieData)
     })
   })
@@ -292,7 +284,7 @@ function createEachPie (pluginName: string, context: {
       // console.log('graphic', data)
       let update: d3.Selection<SVGPathElement, PieDatum, any, any> = context.containerSelection
         .selectAll<SVGPathElement, PieDatum>('path')
-        .data(data.pieData, d => d.data.id)
+        .data(data.pieData, d => d.id)
       let enter = update.enter()
       let exit = update.exit()
       
@@ -300,19 +292,25 @@ function createEachPie (pluginName: string, context: {
         enter,
         exit,
         data: data.pieData,
-        lastData,
+        lastTweenData,
         fullParams: data.fullParams
       })
   
+      // -- enter資料使用補間動畫 --
       enter
         .transition('graphicMove')
         .duration(data.fullChartParams.transitionDuration)
         .ease(getD3TransitionEase(data.fullChartParams.transitionEase))
         .tween('move', (self, t) => {
           return (t) => {
-            renderData = makeTweenPieRenderData(t)
+            tweenData = makeTweenPieRenderData(t)
   
-            const pathSelection = renderPie({ selection: context.containerSelection, renderData, arc: data.arc, pathClassName })
+            const pathSelection = renderPie({
+              selection: context.containerSelection,
+              data: tweenData,
+              arc: data.arc,
+              pathClassName
+            })
   
             context.event$.next({
               type: 'series',
@@ -331,14 +329,19 @@ function createEachPie (pluginName: string, context: {
           }
         })
         .on('end', (self, t) => {
-          renderData = makePieRenderData(
+          tweenData = makePieRenderData(
             data.pieData,
             data.fullParams.startAngle,
             data.fullParams.endAngle,
             1
           )
-          // console.log('renderData', renderData)
-          const pathSelection = renderPie({ selection: context.containerSelection, renderData, arc: data.arc, pathClassName })
+          // console.log('tweenData', tweenData)
+          const pathSelection = renderPie({
+            selection: context.containerSelection,
+            data: tweenData,
+            arc: data.arc,
+            pathClassName
+          })
   
           // if (data.fullParams.highlightTarget && data.fullParams.highlightTarget != 'none') {
           // if (data.fullChartParams.highlightTarget && data.fullChartParams.highlightTarget != 'none') {
@@ -359,7 +362,7 @@ function createEachPie (pluginName: string, context: {
           // })
   
           // 渲染完後紀錄為前次的資料
-          lastData = Object.assign([], data.pieData)
+          lastTweenData = Object.assign([], data.pieData)
   
           context.event$.next({
             type: 'series',
@@ -376,6 +379,18 @@ function createEachPie (pluginName: string, context: {
   
           
         })
+
+      // -- 更新資料 --
+      if (!enter.size() && update.size() > 0) {
+        // console.log('test')
+        const pathSelection = renderPie({
+          selection: context.containerSelection,
+          data: data.pieData,
+          arc: data.arc,
+          pathClassName
+        })
+        subscriber.next(pathSelection)
+      }
     })
   })
 

@@ -17,8 +17,7 @@ import { DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS } from '../defaults'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
 import { multiGridPluginObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
-// import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '@orbcharts/core/src/grid/gridObservables'
-import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '../../../../orbcharts-core/src/grid/gridObservables'
+import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '@orbcharts/core/src/grid/gridObservables'
 
 const pluginName = 'OverlappingValueAxes'
 

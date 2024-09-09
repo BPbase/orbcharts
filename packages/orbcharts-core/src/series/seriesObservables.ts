@@ -40,28 +40,58 @@ export const seriesLabelsObservable = ({ computedData$ }: { computedData$: Obser
   )
 }
 
-export const computedLayoutDataObservable = ({ computedData$, fullDataFormatter$ }: { computedData$: Observable<ComputedDataTypeMap<'series'>>, fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>> }) => {
+export const visibleComputedDataObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'series'>> }) => {
+  return computedData$.pipe(
+    map(data => {
+      return data.map(series => {
+        return series.filter(datum => datum.visible != false)
+      })
+    })
+  )
+}
+
+export const computedLayoutDataObservable = ({ computedData$, fullDataFormatter$ }: {
+  computedData$: Observable<ComputedDataTypeMap<'series'>>,
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>>
+}) => {
   return combineLatest({
     computedData: computedData$,
     fullDataFormatter: fullDataFormatter$
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-      return data.fullDataFormatter.separateSeries
+      const sumData: ComputedDatumSeries[][] = data.fullDataFormatter.sumSeries == true
+        ? data.computedData.map(d => {
+            return [
+              // 加總為一筆資料
+              d.reduce((acc, current) => {
+                if (acc == null) {
+                  return current // 取得第一筆資料
+                }
+                acc.value = acc.value + current.value
+                return acc
+              }, null)
+            ]
+          })
+        : data.computedData
+      
+      return data.fullDataFormatter.separateSeries == true
         // 有拆分的話每個series為一組
-        ? data.computedData
+        ? sumData
           .map(series => {
             return series.sort((a, b) => a.seq - b.seq)
           })
         // 無拆分的話所有資料為一組
         : [
-          data.computedData
+          sumData
             .flat()
             .sort((a, b) => a.seq - b.seq)
         ]
     })
   )
 }
+
+
 // 所有container位置（對應series）
 export const seriesContainerPositionObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'series'>>
@@ -120,4 +150,27 @@ export const seriesContainerPositionObservable = ({ computedData$, fullDataForma
   )
 
   return gridContainerPosition$
+}
+
+export const seriesContainerPositionMapObservable = ({ seriesContainerPosition$, seriesLabels$, seriesSeparate$ }: {
+  seriesContainerPosition$: Observable<SeriesContainerPosition[]>
+  seriesLabels$: Observable<string[]>
+  seriesSeparate$: Observable<boolean>
+}) => {
+  return combineLatest({
+    seriesContainerPosition: seriesContainerPosition$,
+    seriesLabels: seriesLabels$,
+    seriesSeparate: seriesSeparate$,
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      return data.seriesSeparate
+        ? new Map<string, SeriesContainerPosition>(data.seriesLabels.map((seriesLabel, seriesIndex) => {
+          return [seriesLabel, data.seriesContainerPosition[seriesIndex] ?? data.seriesContainerPosition[0]]
+        }))
+        : new Map<string, SeriesContainerPosition>(data.seriesLabels.map((seriesLabel, seriesIndex) => {
+          return [seriesLabel, data.seriesContainerPosition[0]]
+        }))
+    })
+  )
 }

@@ -65,23 +65,29 @@ export const seriesStartSelectionObservable = ({ selection, pluginName, seriesSe
     seriesContainerPosition: seriesContainerPosition$                                                                                                                                                                                       
   }).pipe(
     switchMap(async d => d),
-    first() // 第一次執行不加transition，避免一開始會有偏移的效果
+    // selection數量相同的時候才執行
+    distinctUntilChanged((a, b) => a.seriesContainerPosition.length === b.seriesContainerPosition.length)
   ).subscribe(data => {
+    // 無transition動畫
     data.seriesStartSelection
       .attr('transform', (d, i) => {
         const seriesContainerPosition = data.seriesContainerPosition[i] ?? data.seriesContainerPosition[0]
-        // const translate = seriesContainerPosition.translate
         return `translate(${seriesContainerPosition.startX}, ${seriesContainerPosition.startY})`
       })
+  })
 
-      seriesContainerPosition$.subscribe(seriesContainerPosition => {
-        data.seriesStartSelection
-          .transition()
-          .attr('transform', (d, i) => {
-            const _seriesContainerPosition = seriesContainerPosition[i] ?? seriesContainerPosition[0]
-            // const translate = seriesContainerPosition.translate
-            return `translate(${_seriesContainerPosition.startX}, ${_seriesContainerPosition.startY})`
-          })
+  combineLatest({
+    seriesStartSelection: seriesStartSelection$,
+    seriesContainerPosition: seriesContainerPosition$                                                                                                                                                                                       
+  }).pipe(
+    switchMap(async d => d),
+  ).subscribe(data => {
+    // 有transition動畫
+    data.seriesStartSelection
+      .transition()
+      .attr('transform', (d, i) => {
+        const seriesContainerPosition = data.seriesContainerPosition[i] ?? data.seriesContainerPosition[0]
+        return `translate(${seriesContainerPosition.startX}, ${seriesContainerPosition.startY})`
       })
   })
 
@@ -106,23 +112,29 @@ export const seriesCenterSelectionObservable = ({ selection, pluginName, seriesS
     seriesContainerPosition: seriesContainerPosition$                                                                                                                                                                                       
   }).pipe(
     switchMap(async d => d),
-    first() // 第一次執行不加transition，避免一開始會有偏移的效果
+    // selection數量相同的時候才執行
+    distinctUntilChanged((a, b) => a.seriesContainerPosition.length === b.seriesContainerPosition.length)
   ).subscribe(data => {
+    // 無transition動畫
     data.seriesCenterSelection
       .attr('transform', (d, i) => {
         const seriesContainerPosition = data.seriesContainerPosition[i] ?? data.seriesContainerPosition[0]
-        // const translate = seriesContainerPosition.translate
         return `translate(${seriesContainerPosition.centerX}, ${seriesContainerPosition.centerY})`
       })
+  })
 
-      seriesContainerPosition$.subscribe(seriesContainerPosition => {
-        data.seriesCenterSelection
-          .transition()
-          .attr('transform', (d, i) => {
-            const _seriesContainerPosition = seriesContainerPosition[i] ?? seriesContainerPosition[0]
-            // const translate = seriesContainerPosition.translate
-            return `translate(${_seriesContainerPosition.centerX}, ${_seriesContainerPosition.centerY})`
-          })
+  combineLatest({
+    seriesCenterSelection: seriesCenterSelection$,
+    seriesContainerPosition: seriesContainerPosition$                                                                                                                                                                                       
+  }).pipe(
+    switchMap(async d => d),
+  ).subscribe(data => {
+    // 有transition動畫
+    data.seriesCenterSelection
+      .transition()
+      .attr('transform', (d, i) => {
+        const seriesContainerPosition = data.seriesContainerPosition[i] ?? data.seriesContainerPosition[0]
+        return `translate(${seriesContainerPosition.centerX}, ${seriesContainerPosition.centerY})`
       })
   })
 

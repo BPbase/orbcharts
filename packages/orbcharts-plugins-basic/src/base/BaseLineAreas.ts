@@ -20,7 +20,6 @@ import type {
   ChartParams, 
   Layout,
   TransformData } from '@orbcharts/core'
-import { DATA_FORMATTER_VALUE_AXIS } from '@orbcharts/core/src/defaults'
 import { createAxisLinearScale } from '@orbcharts/core'
 import { getD3TransitionEase } from '../utils/d3Utils'
 import { getClassName, getUniID, getMinAndMaxValue } from '../utils/orbchartsUtils'

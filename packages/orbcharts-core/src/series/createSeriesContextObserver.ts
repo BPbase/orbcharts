@@ -4,7 +4,8 @@ import {
   seriesDataMapObservable,
   groupDataMapObservable } from '../utils/observables'
 import { highlightObservable, textSizePxObservable } from '../utils/observables'
-import { seriesSeparateObservable, computedLayoutDataObservable, seriesLabelsObservable, seriesContainerPositionObservable } from './seriesObservables'
+
+import { seriesSeparateObservable, visibleComputedDataObservable, computedLayoutDataObservable, seriesLabelsObservable, seriesContainerPositionObservable, seriesContainerPositionMapObservable } from './seriesObservables'
 
 export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subject, observer }) => {
 
@@ -16,12 +17,20 @@ export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subje
     fullDataFormatter$: observer.fullDataFormatter$
   })
 
+  const visibleComputedData$ = visibleComputedDataObservable({
+    computedData$: observer.computedData$,
+  })
+
   const computedLayoutData$ = computedLayoutDataObservable({
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$
   }).pipe(
     shareReplay(1)
   )
+
+  const visibleComputedLayoutData$ = visibleComputedDataObservable({
+    computedData$: computedLayoutData$,
+  })
 
   const datumList$ = observer.computedData$.pipe(
     map(d => d.flat())
@@ -56,6 +65,14 @@ export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subje
     shareReplay(1)
   )
 
+  const SeriesContainerPositionMap$ = seriesContainerPositionMapObservable({
+    seriesContainerPosition$: seriesContainerPosition$,
+    seriesLabels$: seriesLabels$,
+    seriesSeparate$: seriesSeparate$,
+  }).pipe(
+    shareReplay(1)
+  )
+
   return {
     fullParams$: observer.fullParams$,
     fullChartParams$: observer.fullChartParams$,
@@ -63,11 +80,14 @@ export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subje
     computedData$: observer.computedData$,
     layout$: observer.layout$,
     textSizePx$,
+    visibleComputedData$,
+    visibleComputedLayoutData$,
     seriesSeparate$,
     computedLayoutData$,
     seriesHighlight$,
     seriesLabels$,
     SeriesDataMap$,
-    seriesContainerPosition$
+    seriesContainerPosition$,
+    SeriesContainerPositionMap$,
   }
 }
