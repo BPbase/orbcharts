@@ -81,39 +81,24 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, se
           exit => exit.remove()
         )
     }),
-    switchMap(selection => combineLatest({
-      seriesSelection: of(selection),
-      gridContainerPosition: gridContainerPosition$                                                                                                                                                                                       
-    })),
-    map(data => {
-      data.seriesSelection
-        .transition()
-        .attr('transform', (d, i) => {
-          const gridContainerPosition = data.gridContainerPosition[i] ?? data.gridContainerPosition[0]
-          const translate = gridContainerPosition.translate
-          const scale = gridContainerPosition.scale
-          return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
-        })
-      return data.seriesSelection
-    }),
     shareReplay(1)
   )
 
-  // combineLatest({
-  //   seriesSelection: seriesSelection$,
-  //   gridContainerPosition: gridContainerPosition$                                                                                                                                                                                       
-  // }).pipe(
-  //   switchMap(async d => d)
-  // ).subscribe(data => {
-  //   data.seriesSelection
-  //     .transition()
-  //     .attr('transform', (d, i) => {
-  //       const translate = data.gridContainerPosition[i].translate
-  //       const scale = data.gridContainerPosition[i].scale
-  //       return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
-  //     })
-  // })
-
+  combineLatest({
+    seriesSelection: seriesSelection$,
+    gridContainerPosition: gridContainerPosition$                                                                                                                                                                                       
+  }).pipe(
+    switchMap(async d => d)
+  ).subscribe(data => {
+    data.seriesSelection
+      .transition()
+      .attr('transform', (d, i) => {
+        const gridContainerPosition = data.gridContainerPosition[i] ?? data.gridContainerPosition[0]
+        const translate = gridContainerPosition.translate
+        const scale = gridContainerPosition.scale
+        return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+      })
+  })
 
   const axesSelection$ = combineLatest({
     seriesSelection: seriesSelection$,

@@ -6,16 +6,23 @@ import {
   takeUntil,
   map,
   distinctUntilChanged,
+  Observable,
   Subject } from 'rxjs'
 import type { Subscription } from 'rxjs'
 import {
   defineSeriesPlugin} from '@orbcharts/core'
 import type {
+  ComputedDatumSeries,
+  ChartParams,
+  SeriesContainerPosition,
   EventName,
   EventSeries } from '@orbcharts/core'
+import type { PieEventTextsParams } from '../types'
 import { DEFAULT_PIE_EVENT_TEXTS_PARAMS } from '../defaults'
 import { getD3TransitionEase } from '../../utils/d3Utils'
 import { getClassName } from '../../utils/orbchartsUtils'
+import { seriesCenterSelectionObservable } from '../seriesObservables'
+
 
 type TextDatum = {
   text: string
@@ -74,61 +81,67 @@ function makeTextData ({ eventData, eventName, t, eventFn, textAttrs, textStyles
   })
 }
 
-
-
-export const PieEventTexts = defineSeriesPlugin(pluginName, DEFAULT_PIE_EVENT_TEXTS_PARAMS)(({ selection, name, observer, subject }) => {
-  
+function createEachPieEventTexts (pluginName: string, context: {
+  containerSelection: d3.Selection<SVGGElement, any, any, unknown>
+  computedData$: Observable<ComputedDatumSeries[][]>
+  containerComputedLayoutData$: Observable<ComputedDatumSeries[]>
+  SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
+  fullParams$: Observable<PieEventTextsParams>
+  fullChartParams$: Observable<ChartParams>
+  seriesHighlight$: Observable<ComputedDatumSeries[]>
+  seriesContainerPosition$: Observable<SeriesContainerPosition>
+  event$: Subject<EventSeries>
+}) {
   const destroy$ = new Subject()
 
-  const graphicSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
+  // const graphicSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
   let centerTextSelection: d3.Selection<SVGTextElement, TextDatum, SVGGElement, unknown> | undefined
   let storeEventSubscription: Subscription | undefined
 
-  observer.layout$
-    .pipe(
-      first()
-    )
-    .subscribe(size => {
-      selection
-        .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-      observer.layout$
-        .pipe(
-          takeUntil(destroy$)
-        )
-        .subscribe(size => {
-          selection
-            .transition()
-            .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-        })
-    })
+  // context.layout$
+  //   .pipe(
+  //     first()
+  //   )
+  //   .subscribe(size => {
+  //     selection
+  //       .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
+  //     context.layout$
+  //       .pipe(
+  //         takeUntil(destroy$)
+  //       )
+  //       .subscribe(size => {
+  //         selection
+  //           .transition()
+  //           .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
+  //       })
+  //   })
 
-
-  const highlightTarget$ = observer.fullChartParams$.pipe(
+  const highlightTarget$ = context.fullChartParams$.pipe(
     takeUntil(destroy$),
     map(d => d.highlightTarget),
     distinctUntilChanged()
   )
 
   combineLatest({
-    computedData: observer.computedData$,
-    fullParams: observer.fullParams$,
-    fullChartParams: observer.fullChartParams$,
-    highlightTarget: highlightTarget$
+    computedData: context.computedData$,
+    fullParams: context.fullParams$,
+    fullChartParams: context.fullChartParams$,
+    highlightTarget: highlightTarget$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
   ).subscribe(data => {
 
-    graphicSelection
-      .transition()
+    context.containerSelection
+      .transition('move')
       .duration(data.fullChartParams.transitionDuration!)
-      .ease(getD3TransitionEase(data.fullChartParams.transitionEase!))
+      // .ease(getD3TransitionEase(data.fullChartParams.transitionEase!))
       .tween('move', (event, datum) => {
         return (t) => {
           const renderData = makeTextData({
             eventData: {
               type: 'series',
-              pluginName: name,
+              pluginName,
               eventName: 'transitionMove',
               event,
               highlightTarget: data.highlightTarget,
@@ -144,14 +157,14 @@ export const PieEventTexts = defineSeriesPlugin(pluginName, DEFAULT_PIE_EVENT_TE
             textAttrs: data.fullParams.textAttrs!,
             textStyles: data.fullParams.textStyles!
           })
-          centerTextSelection = renderText(graphicSelection, renderData)
+          centerTextSelection = renderText(context.containerSelection, renderData)
         }
       })
       .on('end', (event, datum) => {
         const renderData = makeTextData({
           eventData: {
             type: 'series',
-            pluginName: name,
+            pluginName,
             eventName: 'transitionEnd',
             event,
             highlightTarget: data.highlightTarget,
@@ -167,12 +180,12 @@ export const PieEventTexts = defineSeriesPlugin(pluginName, DEFAULT_PIE_EVENT_TE
           textAttrs: data.fullParams.textAttrs!,
           textStyles: data.fullParams.textStyles!
         })
-        centerTextSelection = renderText(graphicSelection, renderData)
+        centerTextSelection = renderText(context.containerSelection, renderData)
 
         if (storeEventSubscription) {
           storeEventSubscription.unsubscribe()
         }
-        storeEventSubscription = subject.event$
+        storeEventSubscription = context.event$
           .subscribe(eventData => {
             const renderData = makeTextData({
               eventData,
@@ -182,12 +195,64 @@ export const PieEventTexts = defineSeriesPlugin(pluginName, DEFAULT_PIE_EVENT_TE
               textAttrs: data.fullParams.textAttrs!,
               textStyles: data.fullParams.textStyles!
             })
-            centerTextSelection = renderText(graphicSelection, renderData)
+            centerTextSelection = renderText(context.containerSelection, renderData)
           })
       })
   })
 
   return () => {
     destroy$.next(undefined)
+  }
+}
+
+export const PieEventTexts = defineSeriesPlugin(pluginName, DEFAULT_PIE_EVENT_TEXTS_PARAMS)(({ selection, name, observer, subject }) => {
+  const destroy$ = new Subject()
+
+  const { seriesCenterSelection$ } = seriesCenterSelectionObservable({
+    selection: selection,
+    pluginName,
+    seriesSeparate$: observer.seriesSeparate$,
+    seriesLabels$: observer.seriesLabels$,
+    seriesContainerPosition$: observer.seriesContainerPosition$
+  })
+
+  const unsubscribeFnArr: (() => void)[] = []
+
+  seriesCenterSelection$.subscribe(seriesCenterSelection => {
+    // 每次重新計算時，清除之前的訂閱
+    unsubscribeFnArr.forEach(fn => fn())
+
+    seriesCenterSelection.each((d, containerIndex, g) => { 
+      
+      const containerSelection = d3.select(g[containerIndex])
+
+      const containerComputedLayoutData$ = observer.computedLayoutData$.pipe(
+        takeUntil(destroy$),
+        map(data => data[containerIndex] ?? data[0])
+      )
+
+      const containerPosition$ = observer.seriesContainerPosition$.pipe(
+        takeUntil(destroy$),
+        map(data => data[containerIndex] ?? data[0])
+      )
+
+      unsubscribeFnArr[containerIndex] = createEachPieEventTexts(pluginName, {
+        containerSelection: containerSelection,
+        computedData$: observer.computedData$,
+        containerComputedLayoutData$: containerComputedLayoutData$,
+        SeriesDataMap$: observer.SeriesDataMap$,
+        fullParams$: observer.fullParams$,
+        fullChartParams$: observer.fullChartParams$,
+        seriesHighlight$: observer.seriesHighlight$,
+        seriesContainerPosition$: containerPosition$,
+        event$: subject.event$,
+      })
+
+    })
+  })
+
+  return () => {
+    destroy$.next(undefined)
+    unsubscribeFnArr.forEach(fn => fn())
   }
 })

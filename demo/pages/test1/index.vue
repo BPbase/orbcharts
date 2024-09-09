@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { SeriesChart } from '../../../packages/orbcharts-core/src'
-import { Pie, Bubbles, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { Pie, PieLabels, Bubbles, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
 import { seriesData2 } from '../../const/data/seriesData2'
 
@@ -36,6 +36,8 @@ onMounted(() => {
 
   const pie = new Pie()
 
+  const pieLabels = new PieLabels()
+
   const bubbles = new Bubbles()
 
 
@@ -56,6 +58,18 @@ onMounted(() => {
     //   return true
     // }
   })
+
+  setTimeout(() => {
+    chart.dataFormatter$.next({
+      separateSeries: false
+    })
+    setTimeout(() => {
+      chart.dataFormatter$.next({
+        separateSeries: true
+      })
+    }, 2000)
+  }, 2000)
+
   chart.chartParams$.subscribe(data => {
     console.log(data)
   })
@@ -65,7 +79,7 @@ onMounted(() => {
     // highlightTarget: 'series'
   })
   
-  chart.plugins$.next([pie, new Tooltip()])
+  chart.plugins$.next([pie, pieLabels, new Tooltip()])
   
   chart.data$.next(seriesData2)
   

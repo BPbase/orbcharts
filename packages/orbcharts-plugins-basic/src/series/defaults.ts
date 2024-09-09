@@ -45,11 +45,21 @@ export const DEFAULT_PIE_PARAMS: PieParams = {
 }
 
 export const DEFAULT_PIE_EVENT_TEXTS_PARAMS: PieEventTextsParams = {
-  eventFn: (d: EventSeries, eventName: EventName, t: number) => {
+  eventFn: (eventData: EventSeries, eventName: EventName, t: number) => {
     if (eventName === 'mouseover' || eventName === 'mousemove') {
-      return [String(d.datum!.value)]
+      return [String(eventData.datum!.value)]
     }
-    return [String(Math.round(d.data.reduce((previous,current)=>previous+(current.value??0),0)*t))]
+    return [
+      String(
+        Math.round(
+          eventData.data.reduce((acc, seriesData) => {
+            return acc + seriesData.reduce((_acc, data) => {
+              return _acc + (data.value ?? 0)
+            }, 0)
+          }, 0) * t
+        )
+      )
+    ]
   },
   textAttrs: [
     {
