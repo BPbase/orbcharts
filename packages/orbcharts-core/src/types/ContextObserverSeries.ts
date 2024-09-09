@@ -4,6 +4,8 @@ import type { ComputedDatumSeries } from './ComputedDataSeries'
 
 export interface ContextObserverSeries<PluginParams> extends ContextObserverBase<'series', PluginParams> {
   textSizePx$: Observable<number>
+  seriesSeparate$: Observable<boolean>
+  computedLayoutData$: Observable<ComputedDatumSeries[][]>
   seriesHighlight$: Observable<ComputedDatumSeries[]>
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>

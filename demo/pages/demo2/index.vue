@@ -225,10 +225,10 @@ onMounted(() => {
       })
       chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
       chart!.dataFormatter$.next({
-        container: {
-          rowAmount: 1,
-          columnAmount: 3
-        },
+        // container: {
+        //   rowAmount: 1,
+        //   columnAmount: 3
+        // },
         gridList: [
           {
             rowLabels: ['收入', '支出'],

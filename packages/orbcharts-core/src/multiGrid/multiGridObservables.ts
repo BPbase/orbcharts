@@ -43,7 +43,7 @@ import {
   // isSeriesSeprateObservable,
   gridContainerPositionObservable } from '../grid/gridObservables'
 import { DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT } from '../defaults'
-import { calcGridContainerPosition } from '../utils/orbchartsUtils'
+import { calcGridContainerLayout } from '../utils/orbchartsUtils'
 
 // 每一個grid計算出來的所有Observable
 export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData$, layout$, fullChartParams$, event$ }: {
@@ -274,49 +274,76 @@ export const multiGridContainerObservable = ({ computedData$, fullDataFormatter$
     map(data => {
 
       const defaultGrid = data.fullDataFormatter.gridList[0] ?? DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT
-      
+      const slotAmount = data.computedData.reduce((acc, gridData, gridIndex) => {
+        const grid = data.fullDataFormatter.gridList[gridIndex] ?? defaultGrid
+        const gridSlotAmount = grid.separateSeries
+          ? gridData.length
+          : data.fullDataFormatter.separateGrid
+            ? 1
+            : 0 // 如果grid和series都不分開，則slotAmount不增加（在相同的slot）
+        return acc + gridSlotAmount
+      }, 0) || 1
+
+      const gridContainerLayout = calcGridContainerLayout(data.layout, data.fullDataFormatter.container, slotAmount)
+
       let accGridSlotIndex = 0
-      
       const gridContainerPositionArr = data.computedData.map((gridData, gridIndex) => {
         const grid = data.fullDataFormatter.gridList[gridIndex] ?? defaultGrid
-        
-        if (grid.separateSeries) {
-          // -- 依seriesSlotIndexes計算 --
-          const seriesContainerArr = gridData.map((seriesData, seriesIndex) => {
-            const currentSlotIndex = accGridSlotIndex + seriesIndex
-            const columnIndex = currentSlotIndex % data.fullDataFormatter.container.columnAmount
-            const rowIndex = Math.floor(currentSlotIndex / data.fullDataFormatter.container.columnAmount)
-            const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
-            return {
-              slotIndex: currentSlotIndex,
-              rowIndex,
-              columnIndex,
-              translate,
-              scale,
-            }
-          })
-          accGridSlotIndex += seriesContainerArr.length
-          return seriesContainerArr
-        } else {
-          // -- 依grid的slotIndex計算 --
-          const columnIndex = accGridSlotIndex % data.fullDataFormatter.container.columnAmount
-          const rowIndex = Math.floor(accGridSlotIndex / data.fullDataFormatter.container.columnAmount)
-          const seriesContainerArr = gridData.map((seriesData, seriesIndex) => {
-            const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
-            return {
-              slotIndex: accGridSlotIndex,
-              rowIndex,
-              columnIndex,
-              translate,
-              scale,
-            }
-          })
-          if (data.fullDataFormatter.separateGrid) {
+        const seriesContainerArr = gridData.map((seriesData, seriesIndex) => {
+          const container = gridContainerLayout[accGridSlotIndex]
+          if (grid.separateSeries) {
             accGridSlotIndex += 1
           }
-          return seriesContainerArr
+          return container
+        })
+        if (!grid.separateSeries && data.fullDataFormatter.separateGrid) {
+          accGridSlotIndex += 1
         }
+        return seriesContainerArr
       })
+
+      // let accGridSlotIndex = 0
+
+      // const gridContainerPositionArr = data.computedData.map((gridData, gridIndex) => {
+      //   const grid = data.fullDataFormatter.gridList[gridIndex] ?? defaultGrid
+        
+      //   if (grid.separateSeries) {
+      //     // -- 依seriesSlotIndexes計算 --
+      //     const seriesContainerArr = gridData.map((seriesData, seriesIndex) => {
+      //       const currentSlotIndex = accGridSlotIndex + seriesIndex
+      //       const columnIndex = currentSlotIndex % data.fullDataFormatter.container.columnAmount
+      //       const rowIndex = Math.floor(currentSlotIndex / data.fullDataFormatter.container.columnAmount)
+      //       const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
+      //       return {
+      //         slotIndex: currentSlotIndex,
+      //         rowIndex,
+      //         columnIndex,
+      //         translate,
+      //         scale,
+      //       }
+      //     })
+      //     accGridSlotIndex += seriesContainerArr.length
+      //     return seriesContainerArr
+      //   } else {
+      //     // -- 依grid的slotIndex計算 --
+      //     const columnIndex = accGridSlotIndex % data.fullDataFormatter.container.columnAmount
+      //     const rowIndex = Math.floor(accGridSlotIndex / data.fullDataFormatter.container.columnAmount)
+      //     const seriesContainerArr = gridData.map((seriesData, seriesIndex) => {
+      //       const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
+      //       return {
+      //         slotIndex: accGridSlotIndex,
+      //         rowIndex,
+      //         columnIndex,
+      //         translate,
+      //         scale,
+      //       }
+      //     })
+      //     if (data.fullDataFormatter.separateGrid) {
+      //       accGridSlotIndex += 1
+      //     }
+      //     return seriesContainerArr
+      //   }
+      // })
 
       return gridContainerPositionArr
     }),

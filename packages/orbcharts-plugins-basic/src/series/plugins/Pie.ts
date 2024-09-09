@@ -1,32 +1,33 @@
 import * as d3 from 'd3'
 import {
-  of,
   combineLatest,
   map,
-  merge,
-  take,
-  filter,
   switchMap,
-  first,
   takeUntil,
   distinctUntilChanged,
-  BehaviorSubject,
-  Subject,
-  Observable } from 'rxjs'
+  shareReplay,
+  Observable,
+  Subject } from 'rxjs'
+import type {
+  ComputedDataSeries,
+  ComputedDatumSeries,
+  SeriesContainerPosition,
+  ChartParams,
+  EventSeries,
+  Layout } from '@orbcharts/core'
+import type { PieDatum } from '../seriesUtils'
+import type { PieParams } from '../types'
 import {
   defineSeriesPlugin } from '@orbcharts/core'
-import type {
-  ChartParams } from '@orbcharts/core'
-import type { PieParams } from '../types'
-import type { PieDatum } from '../seriesUtils'
 import { DEFAULT_PIE_PARAMS } from '../defaults'
 import { makePieData } from '../seriesUtils'
 import { getD3TransitionEase, makeD3Arc } from '../../utils/d3Utils'
 import { getClassName } from '../../utils/orbchartsUtils'
 import { seriesCenterSelectionObservable } from '../seriesObservables'
 
+
 const pluginName = 'Pie'
-const pathClassName = getClassName(pluginName, 'path')
+
 
 function makeTweenPieRenderDataFn ({ enter, exit, data, lastData, fullParams }: {
   enter: d3.Selection<d3.EnterElement, PieDatum, any, any>
@@ -84,10 +85,11 @@ function makePieRenderData (data: PieDatum[], startAngle: number, endAngle: numb
   })
 }
 
-function renderPie ({ selection, renderData, arc }: {
+function renderPie ({ selection, renderData, arc, pathClassName }: {
   selection: d3.Selection<SVGGElement, unknown, any, unknown>
   renderData: PieDatum[]
   arc: d3.Arc<any, d3.DefaultArcObject>
+  pathClassName: string
 }): d3.Selection<SVGPathElement, PieDatum, any, any> {
   let update: d3.Selection<SVGPathElement, PieDatum, any, any> = selection
     .selectAll<SVGPathElement, PieDatum>('path')
@@ -163,32 +165,37 @@ function highlight ({ pathSelection, ids, fullChartParams, arc, arcMouseover }: 
   })
 }
 
+// 各別的pie
+function createEachPie (pluginName: string, context: {
+  containerSelection: d3.Selection<any, unknown, any, unknown>
+  computedData$: Observable<ComputedDatumSeries[][]>
+  containerComputedLayoutData$: Observable<ComputedDatumSeries[]>
+  SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
+  fullParams$: Observable<PieParams>
+  fullChartParams$: Observable<ChartParams>
+  seriesHighlight$: Observable<ComputedDatumSeries[]>
+  seriesContainerPosition$: Observable<SeriesContainerPosition>
+  // layout$: Observable<Layout>
+  event$: Subject<EventSeries>
+}) {
 
-export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PARAMS)(({ selection, name, observer, subject }) => {
-  
+  const pathClassName = getClassName(pluginName, 'path')
+
   const destroy$ = new Subject()
 
-  // const graphicGSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
-  // // let pathSelection: d3.Selection<SVGPathElement, PieDatum, any, any> | undefined
-  // // const pathSelection$: Subject<d3.Selection<SVGPathElement, PieDatum, any, any>> = new Subject()
-  const { seriesCenterSelection$ } = seriesCenterSelectionObservable({
-    selection,
-    pluginName,
-    seriesLabels$: observer.seriesLabels$,
-    seriesContainerPosition$: observer.seriesContainerPosition$
-  })
-  let lastDataArr: PieDatum[][] = []
-  let renderDataArr: PieDatum[][] = []
+
+  let lastData: PieDatum[] = []
+  let renderData: PieDatum[] = []
   // let originHighlight: Highlight | null = null
 
-  // observer.layout$
+  // context.layout$
   //   .pipe(
   //     first()
   //   )
   //   .subscribe(size => {
   //     selection
   //       .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-  //     observer.layout$
+  //     context.layout$
   //       .pipe(
   //         takeUntil(destroy$)
   //       )
@@ -199,35 +206,31 @@ export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PARAMS)(({ selecti
   //       })
   //   })
 
-  const shorterSideWith$ = observer.layout$.pipe(
+
+  const shorterSideWith$ = context.seriesContainerPosition$.pipe(
     takeUntil(destroy$),
     map(d => d.width < d.height ? d.width : d.height)
   )
 
-  const pieDataArr$: Observable<PieDatum[][]> = new Observable(subscriber => {
+  const pieData$: Observable<PieDatum[]> = new Observable(subscriber => {
     combineLatest({
-      computedData: observer.computedData$,
-      fullParams: observer.fullParams$,
-      fullDataFormatter: observer.fullDataFormatter$
+      containerComputedLayoutData: context.containerComputedLayoutData$,
+      fullParams: context.fullParams$,
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
-      const seriesDataArr = data.fullDataFormatter.separateSeries
-        ? data.computedData
-        : [data.computedData.flat()]
-      const pieDataArr = seriesDataArr.map(d => {
-        return makePieData({
-          data: d,
-          startAngle: data.fullParams.startAngle,
-          endAngle: data.fullParams.endAngle
-        })
+      // console.log('pieData', data)
+      const pieData: PieDatum[] = makePieData({
+        data: data.containerComputedLayoutData,
+        startAngle: data.fullParams.startAngle,
+        endAngle: data.fullParams.endAngle
       })
-      subscriber.next(pieDataArr)
+      subscriber.next(pieData)
     })
   })
 
-  // const SeriesDataMap$ = observer.computedData$.pipe(
+  // const SeriesDataMap$ = context.computedData$.pipe(
   //   takeUntil(destroy$),
   //   map(d => makeSeriesDataMap(d))
   // )
@@ -235,7 +238,7 @@ export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PARAMS)(({ selecti
   const arc$: Observable<d3.Arc<any, d3.DefaultArcObject>> = new Observable(subscriber => {
     combineLatest({
       shorterSideWith: shorterSideWith$,
-      fullParams: observer.fullParams$,
+      fullParams: context.fullParams$,
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
@@ -254,7 +257,7 @@ export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PARAMS)(({ selecti
   const arcMouseover$: Observable<d3.Arc<any, d3.DefaultArcObject>> = new Observable(subscriber => {
     combineLatest({
       shorterSideWith: shorterSideWith$,
-      fullParams: observer.fullParams$,
+      fullParams: context.fullParams$,
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
@@ -291,357 +294,261 @@ export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PARAMS)(({ selecti
   //     fullChartParams: fullChartParams$
   //   })),
   //   take(1)
-  const highlightTarget$ = observer.fullChartParams$.pipe(
+  const highlightTarget$ = context.fullChartParams$.pipe(
     takeUntil(destroy$),
     map(d => d.highlightTarget),
     distinctUntilChanged()
   )
 
-  const pathSelectionArr$: Observable<d3.Selection<SVGPathElement, PieDatum, any, any>[]> = new Observable(subscriber => {
-    combineLatest({
-      seriesCenterSelection: seriesCenterSelection$,
-      pieDataArr: pieDataArr$,
-      arc: arc$,
-      arcMouseover: arcMouseover$,
-      computedData: observer.computedData$,
-      fullParams: observer.fullParams$,
-      fullChartParams: observer.fullChartParams$,
-      highlightTarget: highlightTarget$
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async d => d)
-    ).subscribe(data => {
-      let pathSelectionArr: d3.Selection<SVGPathElement, PieDatum, any, any>[] = []
-
-      data.seriesCenterSelection
-        .each((seriesData, seriesIndex, g) => {
-          const graphicGSelection = d3.select(g[seriesIndex])
-          graphicGSelection.interrupt('graphicMove')
-          // console.log('graphic', data)
-          let update: d3.Selection<SVGPathElement, PieDatum, any, any> = selection
-            .selectAll<SVGPathElement, PieDatum>('path')
-            .data(data.pieDataArr[seriesIndex], d => d.data.id)
-          let enter = update.enter()
-          let exit = update.exit()
-          
-          const makeTweenPieRenderData = makeTweenPieRenderDataFn({
-            enter,
-            exit,
-            data: data.pieDataArr[seriesIndex],
-            lastData: lastDataArr[seriesIndex],
-            fullParams: data.fullParams
-          })
-
-          graphicGSelection
-            .transition('graphicMove')
-            .duration(data.fullChartParams.transitionDuration)
-            .ease(getD3TransitionEase(data.fullChartParams.transitionEase))
-            .tween('move', (self, t) => {
-              return (t) => {
-                renderDataArr[seriesIndex] = makeTweenPieRenderData(t)
-      
-                const pathSelection = renderPie({
-                  selection: graphicGSelection,
-                  renderData: renderDataArr[seriesIndex],
-                  arc:
-                  data.arc
-                })
-      
-                subject.event$.next({
-                  type: 'series',
-                  pluginName: name,
-                  eventName: 'transitionMove',
-                  event: undefined,
-                  highlightTarget: data.highlightTarget,
-                  datum: null,
-                  series: [],
-                  seriesIndex: -1,
-                  seriesLabel: '',
-                  data: data.computedData
-                })
-                // const callbackData = makeEnterDurationCallbackData(data.computedData, )
-                // enterDurationCallback(callbackData, t)
-
-              }
-            })
-            .on('end', (self, t) => {
-              renderDataArr[seriesIndex] = makePieRenderData(
-                data.pieDataArr[seriesIndex],
-                data.fullParams.startAngle,
-                data.fullParams.endAngle,
-                1
-              )
-              // console.log('renderData', renderData)
-              const pathSelection = renderPie({
-                selection: graphicGSelection,
-                renderData: renderDataArr[seriesIndex],
-                arc: data.arc
-              })
-      
-              // if (data.fullParams.highlightTarget && data.fullParams.highlightTarget != 'none') {
-              // if (data.fullChartParams.highlightTarget && data.fullChartParams.highlightTarget != 'none') {
-              //   pathSelection!.style('cursor', 'pointer')
-              // }
-              pathSelectionArr[seriesIndex] = pathSelection
-              if (seriesIndex === data.computedData.length - 1) {
-                subscriber.next(pathSelectionArr)
-              }
-      
-              // pathSelection && setPathEvent({
-              //   pathSelection,
-              //   pluginName: name,
-              //   data: data.computedData,
-              //   fullChartParams: data.fullChartParams,
-              //   arc: data.arc,
-              //   arcMouseover: data.arcMouseover,
-              //   SeriesDataMap: data.SeriesDataMap,
-              //   event$: store.event$
-              // })
-      
-              // 渲染完後紀錄為前次的資料
-              lastDataArr[seriesIndex] = Object.assign([], data.pieDataArr[seriesIndex])
-      
-              subject.event$.next({
-                type: 'series',
-                pluginName: name,
-                eventName: 'transitionEnd',
-                event: undefined,
-                highlightTarget: data.highlightTarget,
-                datum: null,
-                series: [],
-                seriesIndex: -1,
-                seriesLabel: '',
-                data: data.computedData
-              })
-      
-              
-            })
-        })
-    })
-  })
+  const pathSelection$ = new Subject<d3.Selection<SVGPathElement, PieDatum, any, any>>()
 
   combineLatest({
-    pathSelectionArr: pathSelectionArr$,
-    SeriesDataMap: observer.SeriesDataMap$,
-    computedData: observer.computedData$,
+    pieData: pieData$,
+    SeriesDataMap: context.SeriesDataMap$,
+    arc: arc$,
+    arcMouseover: arcMouseover$,
+    computedData: context.computedData$,
+    fullParams: context.fullParams$,
+    fullChartParams: context.fullChartParams$,
     highlightTarget: highlightTarget$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
   ).subscribe(data => {
-    data.pathSelectionArr.forEach(pathSelection => {
-      pathSelection
-        .on('mouseover', (event, pieDatum) => {
-          event.stopPropagation()
+    context.containerSelection.interrupt('graphicMove')
+    // console.log('graphic', data)
+    let update: d3.Selection<SVGPathElement, PieDatum, any, any> = context.containerSelection
+      .selectAll<SVGPathElement, PieDatum>('path')
+      .data(data.pieData, d => d.data.id)
+    let enter = update.enter()
+    let exit = update.exit()
+    
+    const makeTweenPieRenderData = makeTweenPieRenderDataFn({
+      enter,
+      exit,
+      data: data.pieData,
+      lastData,
+      fullParams: data.fullParams
+    })
 
-          subject.event$.next({
+    enter
+      .transition('graphicMove')
+      .duration(data.fullChartParams.transitionDuration)
+      .ease(getD3TransitionEase(data.fullChartParams.transitionEase))
+      .tween('move', (self, t) => {
+        return (t) => {
+          renderData = makeTweenPieRenderData(t)
+
+          const pathSelection = renderPie({ selection: context.containerSelection, renderData, arc: data.arc, pathClassName })
+
+          context.event$.next({
             type: 'series',
-            eventName: 'mouseover',
-            pluginName: name,
+            pluginName,
+            eventName: 'transitionMove',
+            event: undefined,
             highlightTarget: data.highlightTarget,
-            datum: pieDatum.data,
-            series: data.SeriesDataMap.get(pieDatum.data.seriesLabel)!,
-            seriesIndex: pieDatum.data.seriesIndex,
-            seriesLabel: pieDatum.data.seriesLabel,
-            event,
+            datum: null,
+            series: [],
+            seriesIndex: -1,
+            seriesLabel: '',
             data: data.computedData
           })
-        })
-        .on('mousemove', (event, pieDatum) => {
-          event.stopPropagation()
+          // const callbackData = makeEnterDurationCallbackData(data.computedData, )
+          // enterDurationCallback(callbackData, t)
+        }
+      })
+      .on('end', (self, t) => {
+        renderData = makePieRenderData(
+          data.pieData,
+          data.fullParams.startAngle,
+          data.fullParams.endAngle,
+          1
+        )
+        // console.log('renderData', renderData)
+        const pathSelection = renderPie({ selection: context.containerSelection, renderData, arc: data.arc, pathClassName })
 
-          subject.event$.next({
-            type: 'series',
-            eventName: 'mousemove',
-            pluginName: name,
-            highlightTarget: data.highlightTarget,
-            datum: pieDatum.data,
-            series: data.SeriesDataMap.get(pieDatum.data.seriesLabel)!,
-            seriesIndex: pieDatum.data.seriesIndex,
-            seriesLabel: pieDatum.data.seriesLabel,
-            event,
-            data: data.computedData,
-          })
-        })
-        .on('mouseout', (event, pieDatum) => {
-          event.stopPropagation()
+        // if (data.fullParams.highlightTarget && data.fullParams.highlightTarget != 'none') {
+        // if (data.fullChartParams.highlightTarget && data.fullChartParams.highlightTarget != 'none') {
+        //   pathSelection!.style('cursor', 'pointer')
+        // }
 
-          subject.event$.next({
-            type: 'series',
-            eventName: 'mouseout',
-            pluginName: name,
-            highlightTarget: data.highlightTarget,
-            datum: pieDatum.data,
-            series: data.SeriesDataMap.get(pieDatum.data.seriesLabel)!,
-            seriesIndex: pieDatum.data.seriesIndex,
-            seriesLabel: pieDatum.data.seriesLabel,
-            event,
-            data: data.computedData,
-          })
-        })
-        .on('click', (event, pieDatum) => {
-          event.stopPropagation()
+        pathSelection$.next(pathSelection)
 
-          subject.event$.next({
-            type: 'series',
-            eventName: 'click',
-            pluginName: name,
-            highlightTarget: data.highlightTarget,
-            datum: pieDatum.data,
-            series: data.SeriesDataMap.get(pieDatum.data.seriesLabel)!,
-            seriesIndex: pieDatum.data.seriesIndex,
-            seriesLabel: pieDatum.data.seriesLabel,
-            event,
-            data: data.computedData,
-          })
+        // pathSelection && setPathEvent({
+        //   pathSelection,
+        //   pluginName: name,
+        //   data: data.computedData,
+        //   fullChartParams: data.fullChartParams,
+        //   arc: data.arc,
+        //   arcMouseover: data.arcMouseover,
+        //   SeriesDataMap: data.SeriesDataMap,
+        //   event$: store.event$
+        // })
+
+        // 渲染完後紀錄為前次的資料
+        lastData = Object.assign([], data.pieData)
+
+        context.event$.next({
+          type: 'series',
+          pluginName,
+          eventName: 'transitionEnd',
+          event: undefined,
+          highlightTarget: data.highlightTarget,
+          datum: null,
+          series: [],
+          seriesIndex: -1,
+          seriesLabel: '',
+          data: data.computedData
         })
-    })
+
+        pathSelection!
+          .on('mouseover', (event, pieDatum) => {
+            event.stopPropagation()
+
+            context.event$.next({
+              type: 'series',
+              eventName: 'mouseover',
+              pluginName,
+              highlightTarget: data.highlightTarget,
+              datum: pieDatum.data,
+              series: data.SeriesDataMap.get(pieDatum.data.seriesLabel)!,
+              seriesIndex: pieDatum.data.seriesIndex,
+              seriesLabel: pieDatum.data.seriesLabel,
+              event,
+              data: data.computedData
+            })
+          })
+          .on('mousemove', (event, pieDatum) => {
+            event.stopPropagation()
+
+            context.event$.next({
+              type: 'series',
+              eventName: 'mousemove',
+              pluginName,
+              highlightTarget: data.highlightTarget,
+              datum: pieDatum.data,
+              series: data.SeriesDataMap.get(pieDatum.data.seriesLabel)!,
+              seriesIndex: pieDatum.data.seriesIndex,
+              seriesLabel: pieDatum.data.seriesLabel,
+              event,
+              data: data.computedData,
+            })
+          })
+          .on('mouseout', (event, pieDatum) => {
+            event.stopPropagation()
+
+            context.event$.next({
+              type: 'series',
+              eventName: 'mouseout',
+              pluginName,
+              highlightTarget: data.highlightTarget,
+              datum: pieDatum.data,
+              series: data.SeriesDataMap.get(pieDatum.data.seriesLabel)!,
+              seriesIndex: pieDatum.data.seriesIndex,
+              seriesLabel: pieDatum.data.seriesLabel,
+              event,
+              data: data.computedData,
+            })
+          })
+          .on('click', (event, pieDatum) => {
+            event.stopPropagation()
+
+            context.event$.next({
+              type: 'series',
+              eventName: 'click',
+              pluginName,
+              highlightTarget: data.highlightTarget,
+              datum: pieDatum.data,
+              series: data.SeriesDataMap.get(pieDatum.data.seriesLabel)!,
+              seriesIndex: pieDatum.data.seriesIndex,
+              seriesLabel: pieDatum.data.seriesLabel,
+              event,
+              data: data.computedData,
+            })
+          })
+      })
   })
 
-  // 事件觸發的highlight
-  // const highlightMouseover$ = store.event$.pipe(
-  //   takeUntil(destroy$),
-  //   filter(d => d.eventName === 'mouseover'),
-  //   // distinctUntilChanged((prev, current) => prev.eventName === current.eventName)
-  //   map(d => {
-  //     return d.datum
-  //       ? { id: d.datum?.id, label: d.datum.label }
-  //       : { id: '', label: '' }
-  //   })
-  // )
-  // const highlightMouseout$ = store.event$.pipe(
-  //   takeUntil(destroy$),
-  //   filter(d => d.eventName === 'mouseout'),
-  //   // distinctUntilChanged((prev, current) => prev.eventName === current.eventName)
-  //   map(d => {
-  //     return { id: '', label: '' }
-  //   })
-  // )
-
-  // // 預設的highlight
-  // const highlightDefault$ = fullChartParams$.pipe(
-  //   takeUntil(destroy$),
-  //   map(d => {
-  //     return { id: d.highlightDefault, label: d.highlightDefault }
-  //   })
-  // )
-
-  // combineLatest({
-  //   target: merge(highlightMouseover$, highlightMouseout$, highlightDefault$),
-  //   pathSelection: pathSelection$,
-  //   computedData: computedData$,
-  //   fullChartParams: fullChartParams$,
-  //   arc: arc$,
-  //   arcMouseover: arcMouseover$
-  // }).pipe(
-  //   takeUntil(destroy$)
-  // ).subscribe(data => {
-  //   // console.log('target', data.target)
-  //   const ids = getSeriesHighlightIds({
-  //     id: data.target.id,
-  //     label: data.target.label,
-  //     trigger: data.fullChartParams.highlightDefault.trigger,
-  //     data: data.computedData
-  //   })
-  //   // console.log('ids', ids)
-  //   highlight({
-  //     pathSelection: data.pathSelection,
-  //     ids: ids,
-  //     fullChartParams: data.fullChartParams,
-  //     arc: data.arc,
-  //     arcMouseover: data.arcMouseover
-  //   })
-  // })
+  
   
   combineLatest({
-    pathSelectionArr: pathSelectionArr$,
-    highlight: observer.seriesHighlight$.pipe(
+    pathSelection: pathSelection$,
+    highlight: context.seriesHighlight$.pipe(
       map(data => data.map(d => d.id))
     ),
-    fullChartParams: observer.fullChartParams$,
+    fullChartParams: context.fullChartParams$,
     arc: arc$,
     arcMouseover: arcMouseover$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
   ).subscribe(data => {
-    data.pathSelectionArr.forEach(pathSelection => {
-      highlight({
-        pathSelection: pathSelection,
-        ids: data.highlight,
-        fullChartParams: data.fullChartParams,
-        arc: data.arc,
-        arcMouseover: data.arcMouseover
+    highlight({
+      pathSelection: data.pathSelection,
+      ids: data.highlight,
+      fullChartParams: data.fullChartParams,
+      arc: data.arc,
+      arcMouseover: data.arcMouseover
+    })
+  })
+
+
+  return () => {
+    destroy$.next(undefined)
+  }
+}
+
+export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PARAMS)(({ selection, name, subject, observer }) => {
+  const destroy$ = new Subject()
+
+  const unsubscribeFnArr: (() => void)[] = []
+
+  // const graphicGSelection: d3.Selection<SVGGElement, any, any, any> = context.selection.append('g')
+  // let pathSelection: d3.Selection<SVGPathElement, PieDatum, any, any> | undefined
+  // const pathSelection$: Subject<d3.Selection<SVGPathElement, PieDatum, any, any>> = new Subject()
+  const { seriesCenterSelection$ } = seriesCenterSelectionObservable({
+    selection: selection,
+    pluginName,
+    seriesSeparate$: observer.seriesSeparate$,
+    seriesLabels$: observer.seriesLabels$,
+    seriesContainerPosition$: observer.seriesContainerPosition$
+  })
+
+  seriesCenterSelection$.subscribe(seriesCenterSelection => {
+    // 每次重新計算時，清除之前的訂閱
+    unsubscribeFnArr.forEach(fn => fn())
+
+    seriesCenterSelection.each((d, containerIndex, g) => { 
+      // console.log(d, containerIndex, g)
+      const containerSelection = d3.select(g[containerIndex])
+
+      const containerComputedLayoutData$ = observer.computedLayoutData$.pipe(
+        takeUntil(destroy$),
+        map(data => data[containerIndex])
+      )
+
+      const containerPosition$ = observer.seriesContainerPosition$.pipe(
+        takeUntil(destroy$),
+        map(data => data[containerIndex])
+      )
+
+      createEachPie(pluginName, {
+        containerSelection: containerSelection,
+        computedData$: observer.computedData$,
+        containerComputedLayoutData$: containerComputedLayoutData$,
+        SeriesDataMap$: observer.SeriesDataMap$,
+        fullParams$: observer.fullParams$,
+        fullChartParams$: observer.fullChartParams$,
+        seriesHighlight$: observer.seriesHighlight$,
+        seriesContainerPosition$: containerPosition$,
+        // layout$: context.layout$,
+        event$: subject.event$
       })
     })
   })
 
-  // d.fullParams
-
-  // console.log('selection', selection)
-
-  // fullChartParams$
-  //   .subscribe(d => {
-  //     console.log('fullChartParams', d)
-  //   })
-
-  // computedData$
-  //   .subscribe(d => {
-  //     console.log('computedData', d)
-  //   })
-  // console.log('-- defineSeriesPlugin --')
-  // console.log('selector', selector)
-  // // data$.subscribe(d => {
-  // //   console.log('data$', d)
-  // // })
-
-  // store.dataFormatter$.subscribe(d => {
-  //   console.log('store.dataFormatter$', d)
-  // })
-
-  // computedData$.subscribe(d => {
-  //   console.log('computedData$', d)
-  // })
-
-  // event$.subscribe(d => {
-  //   console.log('event$', d)
-  // })
-
-  // fullParams$.subscribe(d => {
-  //   console.log('fullParams$', d)
-  // })
-
-  // store.data$.subscribe(d => {
-  //   console.log('store.data$', d)
-  // })
-
-  // store.dataFormatter$.subscribe(d => {
-  //   console.log('store.dataFormatter$', d)
-  // })
-
-  // store.event$.subscribe(d => {
-  //   console.log('store.event$', d)
-  // })
-
-  // store.fullParams$.subscribe(d => {
-  //   console.log('store.fullParams$', d)
-  // })
-
-  // layout$.subscribe(d => {
-  //   console.log('layout$', d)
-  // })
-
-  // console.log('-- end --')
-  // // const newData = data.map(d => d.map(_d => {
-  // //   return {
-  // //     ..._d as any,
-  // //     value: (_d as any).value + 10
-  // //   }
-  // // }))
-
-  // // data$.next(newData)
-
   return () => {
     destroy$.next(undefined)
+    unsubscribeFnArr.forEach(fn => fn())
   }
 })

@@ -32,7 +32,7 @@ import type {
 import { getMinAndMaxGrid } from '../utils/orbchartsUtils'
 import { createAxisLinearScale, createAxisPointScale, createAxisQuantizeScale } from '../utils/d3Utils'
 import { highlightObservable } from '../utils/observables'
-import { calcGridContainerPosition } from '../utils/orbchartsUtils'
+import { calcGridContainerLayout } from '../utils/orbchartsUtils'
 import { DATA_FORMATTER_GRID_GRID_DEFAULT } from '../defaults'
 import { getMinAndMaxValue, transposeData, createGridSeriesLabels, createGridGroupLabels, seriesColorPredicate } from '../utils/orbchartsUtils'
 
@@ -538,32 +538,34 @@ export const gridContainerPositionObservable = ({ computedData$, fullDataFormatt
       
       if (data.fullDataFormatter.grid.separateSeries) {
         // -- 依slotIndexes計算 --
-        return data.computedData.map((seriesData, seriesIndex) => {
-          const columnIndex = seriesIndex % data.fullDataFormatter.container.columnAmount
-          const rowIndex = Math.floor(seriesIndex / data.fullDataFormatter.container.columnAmount)
-          const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
-          return {
-            slotIndex: seriesIndex,
-            rowIndex,
-            columnIndex,
-            translate,
-            scale,
-          }
-        })
+        return calcGridContainerLayout(data.layout, data.fullDataFormatter.container, data.computedData.length)
+        // return data.computedData.map((seriesData, seriesIndex) => {
+        //   const columnIndex = seriesIndex % data.fullDataFormatter.container.columnAmount
+        //   const rowIndex = Math.floor(seriesIndex / data.fullDataFormatter.container.columnAmount)
+        //   const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
+        //   return {
+        //     slotIndex: seriesIndex,
+        //     rowIndex,
+        //     columnIndex,
+        //     translate,
+        //     scale,
+        //   }
+        // })
       } else {
         // -- 無拆分 --
-        const columnIndex = 0
-        const rowIndex = 0
-        return data.computedData.map((seriesData, seriesIndex) => {
-          const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
-          return {
-            slotIndex: 0,
-            rowIndex,
-            columnIndex,
-            translate,
-            scale,
-          }
-        })
+        return calcGridContainerLayout(data.layout, data.fullDataFormatter.container, 1)
+        // const columnIndex = 0
+        // const rowIndex = 0
+        // return data.computedData.map((seriesData, seriesIndex) => {
+        //   const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
+        //   return {
+        //     slotIndex: 0,
+        //     rowIndex,
+        //     columnIndex,
+        //     translate,
+        //     scale,
+        //   }
+        // })
       }
     })
   )

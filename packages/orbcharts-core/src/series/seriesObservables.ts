@@ -16,7 +16,14 @@ import type {
   DataFormatterTypeMap,
   SeriesContainerPosition,
   Layout } from '../types'
-import { calcSeriesContainerPosition } from '../utils/orbchartsUtils'
+import { calcSeriesContainerLayout } from '../utils/orbchartsUtils'
+
+export const seriesSeparateObservable = ({ fullDataFormatter$ }: { fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>> }) => {
+  return fullDataFormatter$.pipe(
+    map(data => data.separateSeries),
+    distinctUntilChanged(),
+  )
+}
 
 export const seriesLabelsObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'series'>> }) => {
   return computedData$.pipe(
@@ -72,40 +79,42 @@ export const seriesContainerPositionObservable = ({ computedData$, fullDataForma
       
       if (data.fullDataFormatter.separateSeries) {
         // -- 依slotIndexes計算 --
-        return data.computedData.map((seriesData, seriesIndex) => {
-          const columnIndex = seriesIndex % data.fullDataFormatter.container.columnAmount
-          const rowIndex = Math.floor(seriesIndex / data.fullDataFormatter.container.columnAmount)
-          const { startX, startY, centerX, centerY, width, height } = calcSeriesContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
-          return {
-            slotIndex: seriesIndex,
-            rowIndex,
-            columnIndex,
-            startX,
-            startY,
-            centerX,
-            centerY,
-            width,
-            height,
-          }
-        })
+        return calcSeriesContainerLayout(data.layout, data.fullDataFormatter.container, data.computedData.length)
+        // return data.computedData.map((seriesData, seriesIndex) => {
+        //   const columnIndex = seriesIndex % data.fullDataFormatter.container.columnAmount
+        //   const rowIndex = Math.floor(seriesIndex / data.fullDataFormatter.container.columnAmount)
+        //   const { startX, startY, centerX, centerY, width, height } = calcSeriesContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
+        //   return {
+        //     slotIndex: seriesIndex,
+        //     rowIndex,
+        //     columnIndex,
+        //     startX,
+        //     startY,
+        //     centerX,
+        //     centerY,
+        //     width,
+        //     height,
+        //   }
+        // })
       } else {
         // -- 無拆分 --
-        const columnIndex = 0
-        const rowIndex = 0
-        return data.computedData.map((seriesData, seriesIndex) => {
-          const { startX, startY, centerX, centerY, width, height } = calcSeriesContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
-          return {
-            slotIndex: 0,
-            rowIndex,
-            columnIndex,
-            startX,
-            startY,
-            centerX,
-            centerY,
-            width,
-            height,
-          }
-        })
+        return calcSeriesContainerLayout(data.layout, data.fullDataFormatter.container, 1)
+        // const columnIndex = 0
+        // const rowIndex = 0
+        // return data.computedData.map((seriesData, seriesIndex) => {
+        //   const { startX, startY, centerX, centerY, width, height } = calcSeriesContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
+        //   return {
+        //     slotIndex: 0,
+        //     rowIndex,
+        //     columnIndex,
+        //     startX,
+        //     startY,
+        //     centerX,
+        //     centerY,
+        //     width,
+        //     height,
+        //   }
+        // })
       }
     })
   )

@@ -63,19 +63,24 @@ export const seriesStartSelectionObservable = ({ selection, pluginName, seriesLa
 }
 
 // series選取器，以中心座標位置為基準
-export const seriesCenterSelectionObservable = ({ selection, pluginName, seriesLabels$, seriesContainerPosition$ }: {
+export const seriesCenterSelectionObservable = ({ selection, pluginName, seriesSeparate$, seriesLabels$, seriesContainerPosition$ }: {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
+  seriesSeparate$: Observable<boolean>
   seriesLabels$: Observable<string[]>
   seriesContainerPosition$: Observable<SeriesContainerPosition[]>
 }) => {
   const seriesClassName = getClassName(pluginName, 'series')
 
-  const seriesCenterSelection$ = seriesLabels$.pipe(
-    map((existSeriesLabels, i) => {
+  const seriesCenterSelection$ = combineLatest({
+    seriesLabels: seriesLabels$,
+    seriesSeparate: seriesSeparate$
+  }).pipe(
+    map((data, i) => {
+      const selectionData = data.seriesSeparate ? data.seriesLabels : [data.seriesLabels.join('')]
       return selection
         .selectAll<SVGGElement, string>(`g.${seriesClassName}`)
-        .data(existSeriesLabels, d => d)
+        .data(selectionData, d => d)
         .join(
           enter => {
             return enter
@@ -86,10 +91,14 @@ export const seriesCenterSelectionObservable = ({ selection, pluginName, seriesL
           exit => exit.remove()
         )
     }),
-    switchMap(selection => combineLatest({
-      seriesSelection: of(selection),
-      seriesContainerPosition: seriesContainerPosition$                                                                                                                                                                                       
-    })),
+    switchMap(selection => {
+      return combineLatest({
+        seriesSelection: of(selection),
+        seriesContainerPosition: seriesContainerPosition$                                                                                                                                                                                       
+      }).pipe(
+        switchMap(async d => d)
+      )
+    }),
     map(data => {
       data.seriesSelection
         .transition()

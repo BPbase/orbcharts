@@ -6,7 +6,7 @@
 import { SeriesChart } from '../../../packages/orbcharts-core/src'
 import { Pie, Bubbles, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
-import { seriesData1 } from '../../const/data/seriesData1'
+import { seriesData2 } from '../../const/data/seriesData2'
 
 // import { GridChart, PRESET_GRID_HORIZONTAL, MultiBars } from 'orbcharts'
 
@@ -43,26 +43,31 @@ onMounted(() => {
     
   // })
 
-  // chart.dataFormatter$.next({
-  //   visibleFilter: (datum, context) => {
-  //     if (datum.id === 'series_0_0') {
-  //       return false
-  //     }
-  //     return true
-  //   }
-  // })
+  chart.dataFormatter$.next({
+    separateSeries: true,
+    // container: {
+    //   rowAmount: 1,
+    //   columnAmount: 3
+    // }
+    // visibleFilter: (datum, context) => {
+    //   if (datum.id === 'series_0_0') {
+    //     return false
+    //   }
+    //   return true
+    // }
+  })
   chart.chartParams$.subscribe(data => {
     console.log(data)
   })
 
 
   chart.chartParams$.next({
-    highlightTarget: 'series'
+    // highlightTarget: 'series'
   })
   
   chart.plugins$.next([pie, new Tooltip()])
   
-  chart.data$.next(seriesData1)
+  chart.data$.next(seriesData2)
   
   
 

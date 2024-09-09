@@ -251,7 +251,7 @@ export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAM
     })
 
     const pieData = makePieData({
-      computedDataSeries: data.computedData,
+      data: data.computedData,
       startAngle: data.fullParams.startAngle,
       endAngle: data.fullParams.endAngle
     })

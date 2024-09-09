@@ -4,11 +4,22 @@ import {
   seriesDataMapObservable,
   groupDataMapObservable } from '../utils/observables'
 import { highlightObservable, textSizePxObservable } from '../utils/observables'
-import { seriesLabelsObservable, seriesContainerPositionObservable } from './seriesObservables'
+import { seriesSeparateObservable, computedLayoutDataObservable, seriesLabelsObservable, seriesContainerPositionObservable } from './seriesObservables'
 
 export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subject, observer }) => {
 
   const textSizePx$ = textSizePxObservable(observer.fullChartParams$).pipe(
+    shareReplay(1)
+  )
+
+  const seriesSeparate$ = seriesSeparateObservable({
+    fullDataFormatter$: observer.fullDataFormatter$
+  })
+
+  const computedLayoutData$ = computedLayoutDataObservable({
+    computedData$: observer.computedData$,
+    fullDataFormatter$: observer.fullDataFormatter$
+  }).pipe(
     shareReplay(1)
   )
 
@@ -52,6 +63,8 @@ export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subje
     computedData$: observer.computedData$,
     layout$: observer.layout$,
     textSizePx$,
+    seriesSeparate$,
+    computedLayoutData$,
     seriesHighlight$,
     seriesLabels$,
     SeriesDataMap$,
