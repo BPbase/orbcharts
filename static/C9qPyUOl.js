@@ -1,1 +1,0 @@
-import{u as t}from"./CZ8AH7EA.js";import{c as o,a as s,o as a}from"./Da1R4kaj.js";const r={style:{padding:"2rem"}},p={__name:"index",setup(i){return t({title:"Home"}),(m,e)=>(a(),o("div",r,e[0]||(e[0]=[s("a",{href:"https://github.com/BPbase/orbcharts/"},"Github",-1)])))}};export{p as default};
