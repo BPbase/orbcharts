@@ -211,7 +211,7 @@ export const PieEventTexts = defineSeriesPlugin(pluginName, DEFAULT_PIE_EVENT_TE
   const { seriesCenterSelection$ } = seriesCenterSelectionObservable({
     selection: selection,
     pluginName,
-    seriesSeparate$: observer.seriesSeparate$,
+    separateSeries$: observer.separateSeries$,
     seriesLabels$: observer.seriesLabels$,
     seriesContainerPosition$: observer.seriesContainerPosition$
   })

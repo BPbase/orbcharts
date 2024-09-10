@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { SeriesChart } from '../../../packages/orbcharts-core/src'
-import { Pie, PieLabels, Bubbles, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { Pie, PieLabels, PieEventTexts, Bubbles, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 import { seriesData3 } from '../../const/data/seriesData3'
 
@@ -20,6 +20,7 @@ onMounted(() => {
 
   const pie = new Pie()
   const pieLabels = new PieLabels()
+  const pieEventTexts = new PieEventTexts()
   const bubbles = new Bubbles()
   const tooltip = new Tooltip()
   // chart!.plugins$.next([ multiGroupAxis, overlappingValueAxes, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
@@ -42,34 +43,48 @@ onMounted(() => {
   const iMax = 4 // 4
   const jMax = 1 // 1
   intervalId = setInterval(() => {
-    console.log('i:', i, ',j:', j)
+    // console.log('i:', i, ',j:', j)
     if (i == 0) {
+      if (j == 1) {
+        chart!.plugins$.next([ pie, pieLabels, tooltip])
+        pie.params$.next({
+          innerRadius: 0
+        })
+      }
       chart.dataFormatter$.next({
         sumSeries: false,
-        separateSeries: true
+        separateSeries: true,
+        seriesLabels: ['關鍵字', '組織團體', '地點', '人物', '企業品牌']
       })
     } else if (i == 1) {
       chart.dataFormatter$.next({
         sumSeries: true,
-        separateSeries: true
+        separateSeries: true,
+        seriesLabels: ['關鍵字', '組織團體', '地點', '人物', '企業品牌']
       })
     } else if (i == 2)  {
       chart.dataFormatter$.next({
         sumSeries: true,
-        separateSeries: false
+        separateSeries: false,
+        seriesLabels: ['關鍵字', '組織團體', '地點', '人物', '企業品牌']
       })
     } else if (i == 3)  {
       chart.dataFormatter$.next({
         sumSeries: false,
-        separateSeries: false
+        separateSeries: false,
+        seriesLabels: ['關鍵字', '組織團體', '地點', '人物', '企業品牌']
       })
     } else if (i == 4)  {
       chart.dataFormatter$.next({
         sumSeries: false,
-        separateSeries: false
+        separateSeries: false,
+        seriesLabels: ['關鍵字', '組織團體', '地點', '人物', '企業品牌']
       })
       if (j == 0) {
-        chart!.plugins$.next([ pie, pieLabels, tooltip])
+        chart!.plugins$.next([ pie, pieLabels, pieEventTexts, tooltip])
+        pie.params$.next({
+          innerRadius: 0.5
+        })
       } else if (j == 1) {
         chart!.plugins$.next([ bubbles, tooltip])
       }

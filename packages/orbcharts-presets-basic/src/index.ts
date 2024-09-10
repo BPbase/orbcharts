@@ -13,6 +13,36 @@ export const PRESET_SERIES_BASIC = createSeriesPreset({
   allPluginParamsIds: [],
   description: '基本Series參數'
 })
+export const PRESET_SERIES_DESC = createSeriesPreset({
+  // chartParamsId: 'CP_RIGHT_PADDING',
+  dataFormatterId: 'DF_SERIES_DESC',
+  allPluginParamsIds: [],
+  description: '資料由大到小排序'
+})
+export const PRESET_SERIES_SEPARATE_SERIES = createSeriesPreset({
+  // chartParamsId: 'CP_RIGHT_PADDING',
+  dataFormatterId: 'DF_SERIES_SEPARATE_SERIES',
+  allPluginParamsIds: [],
+  description: '分開顯示Series'
+})
+// export const PRESET_SERIES_SEPARATE_SERIES_AND_DESC = createSeriesPreset({
+//   // chartParamsId: 'CP_RIGHT_PADDING',
+//   dataFormatterId: 'DF_SERIES_SEPARATE_SERIES_AND_DESC',
+//   allPluginParamsIds: [],
+//   description: '分開顯示Series並排序'
+// })
+export const PRESET_SERIES_SUM_SERIES = createSeriesPreset({
+  // chartParamsId: 'CP_RIGHT_PADDING',
+  dataFormatterId: 'DF_SERIES_SUM_SERIES',
+  allPluginParamsIds: [],
+  description: '合併Series資料'
+})
+// export const PRESET_SERIES_SUM_SERIES_AND_DESC = createSeriesPreset({
+//   // chartParamsId: 'CP_RIGHT_PADDING',
+//   dataFormatterId: 'DF_SERIES_SUM_SERIES_AND_DESC',
+//   allPluginParamsIds: [],
+//   description: '合併Series資料並排序'
+// })
 // Bubbles - PRESET_BUBBLES_[name]
 export const PRESET_BUBBLES_BASIC = createSeriesPreset({
   // chartParamsId: 'CP_RIGHT_PADDING',
@@ -23,6 +53,12 @@ export const PRESET_BUBBLES_SCALING_BY_RADIUS = createSeriesPreset({
   // chartParamsId: 'CP_RIGHT_PADDING',
   allPluginParamsIds: ['PP_BUBBLES_SCALING_BY_RADIUS', 'PP_SERIES_LEGEND_ROUND'],
   description: '以半徑尺寸為比例的泡泡圖'
+})
+export const PRESET_BUBBLES_SEPARATE_SERIES = createSeriesPreset({
+  chartParamsId: 'CP_LONG_PADDING',
+  dataFormatterId: 'DF_SERIES_SEPARATE_SERIES',
+  allPluginParamsIds: [],
+  description: '分開顯示Series泡泡'
 })
 // Pie - PRESET_PIE_[name]
 export const PRESET_PIE_BASIC = createSeriesPreset({
@@ -70,23 +106,29 @@ export const PRESET_GRID_DIVERGING_SCALE = createGridPreset({
   allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
   description: '正負值分向圖'
 })
-export const PRESET_GRID_2_SERIES_SLOT = createGridPreset({
+// export const PRESET_GRID_2_SERIES_SLOT = createGridPreset({
+//   chartParamsId:  'CP_BOTTOM_LONG_PADDING',
+//   dataFormatterId: 'DF_GRID_SEPARATE_SERIES',
+//   allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
+//   description: '2組Series圖表'
+// })
+// export const PRESET_GRID_3_SERIES_SLOT = createGridPreset({
+//   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
+//   dataFormatterId: 'DF_GRID_SEPARATE_SERIES',
+//   allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM', 'PP_GROUP_AXIS_ROTATE_LABEL'],
+//   description: '3組Series圖表'
+// })
+// export const PRESET_GRID_4_SERIES_SLOT = createGridPreset({
+//   chartParamsId:  'CP_BOTTOM_LONG_PADDING',
+//   dataFormatterId: 'DF_GRID_SEPARATE_SERIES',
+//   allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
+//   description: '4組Series圖表'
+// })
+export const PRESET_GRID_SEPARATE_SERIES = createGridPreset({
   chartParamsId:  'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_GRID_2_SERIES_SLOT',
+  dataFormatterId: 'DF_GRID_SEPARATE_SERIES',
   allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
-  description: '2組Series圖表'
-})
-export const PRESET_GRID_3_SERIES_SLOT = createGridPreset({
-  chartParamsId: 'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_GRID_3_SERIES_SLOT',
-  allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM', 'PP_GROUP_AXIS_ROTATE_LABEL'],
-  description: '3組Series圖表'
-})
-export const PRESET_GRID_4_SERIES_SLOT = createGridPreset({
-  chartParamsId:  'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_GRID_4_SERIES_SLOT',
-  allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
-  description: '4組Series圖表'
+  description: '分開顯示Series'
 })
 // Bars - PRESET_BARS_[name]
 export const PRESET_BARS_ROUND = createGridPreset({
@@ -128,11 +170,11 @@ export const PRESET_LINES_HORIZONTAL = createGridPreset({
   allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
   description: '橫向折線圖'
 })
-// export const PRESET_LINES_WITH_SOLID_DOTS = createGridPreset({
-//   chartParamsId: 'CP_BOTTOM_PADDING_WITH_SERIES_HIGHLIGHT',
-//   allPluginParamsIds: ['PP_DOTS_SOLID', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
-//   description: '折線圖及實心圓點'
-// })
+export const PRESET_LINES_WITH_SOLID_DOTS = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_PADDING_WITH_SERIES_HIGHLIGHT',
+  allPluginParamsIds: ['PP_DOTS_SOLID', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
+  description: '折線圖及實心圓點'
+})
 export const PRESET_LINES_CURVE = createGridPreset({
   chartParamsId: 'CP_BOTTOM_PADDING_WITH_SERIES_HIGHLIGHT',
   allPluginParamsIds: ['PP_LINES_CURVE', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
@@ -179,23 +221,29 @@ export const PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS = createGridPreset({
   allPluginParamsIds: ['PP_DOTS_ONLY_SHOW_HIGHLIGHTED', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
   description: '折線圖及Highlight Group圓點'
 })
-export const PRESET_LINE_AREAS_2_SERIES_SLOT = createGridPreset({
+// export const PRESET_LINE_AREAS_2_SERIES_SLOT = createGridPreset({
+//   chartParamsId:  'CP_BOTTOM_LONG_PADDING',
+//   dataFormatterId: 'DF_LINE_AREAS_SEPARATE_SERIES',
+//   allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
+//   description: '2組Series圖表'
+// })
+// export const PRESET_LINE_AREAS_3_SERIES_SLOT = createGridPreset({
+//   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
+//   dataFormatterId: 'DF_LINE_AREAS_SEPARATE_SERIES',
+//   allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM', 'PP_GROUP_AXIS_ROTATE_LABEL'],
+//   description: '3組Series圖表'
+// })
+// export const PRESET_LINE_AREAS_4_SERIES_SLOT = createGridPreset({
+//   chartParamsId:  'CP_BOTTOM_LONG_PADDING',
+//   dataFormatterId: 'DF_LINE_AREAS_SEPARATE_SERIES',
+//   allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
+//   description: '4組Series圖表'
+// })
+export const PRESET_LINE_AREAS_SEPARATE_GRID = createGridPreset({
   chartParamsId:  'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_LINE_AREAS_2_SERIES_SLOT',
+  dataFormatterId: 'DF_LINE_AREAS_SEPARATE_SERIES',
   allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
-  description: '2組Series圖表'
-})
-export const PRESET_LINE_AREAS_3_SERIES_SLOT = createGridPreset({
-  chartParamsId: 'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_LINE_AREAS_3_SERIES_SLOT',
-  allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM', 'PP_GROUP_AXIS_ROTATE_LABEL'],
-  description: '3組Series圖表'
-})
-export const PRESET_LINE_AREAS_4_SERIES_SLOT = createGridPreset({
-  chartParamsId:  'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_LINE_AREAS_4_SERIES_SLOT',
-  allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM'],
-  description: '4組Series圖表'
+  description: 'LineAreas 分開顯示Series'
 })
 
 // -- multi-grid --
@@ -212,22 +260,28 @@ export const PRESET_MULTI_GRID_ROUND_STYLE = createMultiGridPreset({
 })
 export const PRESET_MULTI_GRID_2_GRID_SLOT = createMultiGridPreset({
   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_MULTI_GRID_2_GRID_SLOT',
+  dataFormatterId: 'DF_MULTI_GRID_SEPARATE_GRID',
   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM', 'PP_MULTI_GROUP_AXIS_2_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_2_GRID_SLOT', 'PP_MULTI_BARS_2_GRID_SLOT', 'PP_MULTI_BAR_STACK_2_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_2_GRID_SLOT', 'PP_MULTI_LINES_2_GRID_SLOT', 'PP_MULTI_LINE_AREAS_2_GRID_SLOT', 'PP_MULTI_DOTS_2_GRID_SLOT'],
   description: '2組Grid圖表'
 })
 export const PRESET_MULTI_GRID_3_GRID_SLOT = createMultiGridPreset({
   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_MULTI_GRID_3_GRID_SLOT',
+  dataFormatterId: 'DF_MULTI_GRID_SEPARATE_GRID',
   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM', 'PP_MULTI_GROUP_AXIS_3_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_3_GRID_SLOT', 'PP_MULTI_BARS_3_GRID_SLOT', 'PP_MULTI_BAR_STACK_3_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_3_GRID_SLOT', 'PP_MULTI_LINES_3_GRID_SLOT', 'PP_MULTI_LINE_AREAS_3_GRID_SLOT', 'PP_MULTI_DOTS_3_GRID_SLOT'],
   description: '3組Grid圖表'
 })
 export const PRESET_MULTI_GRID_4_GRID_SLOT = createMultiGridPreset({
   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_MULTI_GRID_4_GRID_SLOT',
+  dataFormatterId: 'DF_MULTI_GRID_SEPARATE_GRID',
   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM', 'PP_MULTI_GROUP_AXIS_4_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_4_GRID_SLOT', 'PP_MULTI_BARS_4_GRID_SLOT', 'PP_MULTI_BAR_STACK_4_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_4_GRID_SLOT', 'PP_MULTI_LINES_4_GRID_SLOT', 'PP_MULTI_LINE_AREAS_4_GRID_SLOT', 'PP_MULTI_DOTS_4_GRID_SLOT'],
   description: '4組Grid圖表'
 })
+// export const PRESET_MULTI_GRID_SEPARATE_GRID = createMultiGridPreset({
+//   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
+//   dataFormatterId: 'DF_MULTI_GRID_SEPARATE_GRID',
+//   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM', 'PP_MULTI_GROUP_AXIS_2_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_2_GRID_SLOT', 'PP_MULTI_BARS_2_GRID_SLOT', 'PP_MULTI_BAR_STACK_2_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_2_GRID_SLOT', 'PP_MULTI_LINES_2_GRID_SLOT', 'PP_MULTI_LINE_AREAS_2_GRID_SLOT', 'PP_MULTI_DOTS_2_GRID_SLOT'],
+//   description: '分開顯示Grid'
+// })
 // // MultiBars, MultiLines - PRESET_MULTI_BARS_MULTI_LINES_[name]
 // export const PRESET_MULTI_BARS_MULTI_LINES_BASIC = createMultiGridPreset({
 //   chartParamsId: 'CP_BOTTOM_PADDING_WITH_SERIES_HIGHLIGHT',
@@ -242,41 +296,53 @@ export const PRESET_MULTI_GRID_4_GRID_SLOT = createMultiGridPreset({
 // })
 export const PRESET_MULTI_LINES_2_GRID_SLOT = createMultiGridPreset({
   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_MULTI_GRID_2_GRID_SLOT',
+  dataFormatterId: 'DF_MULTI_GRID_SEPARATE_GRID',
   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_LINE_LIST', 'PP_MULTI_GROUP_AXIS_2_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_2_GRID_SLOT', 'PP_MULTI_BARS_2_GRID_SLOT', 'PP_MULTI_BAR_STACK_2_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_2_GRID_SLOT', 'PP_MULTI_LINES_2_GRID_SLOT', 'PP_MULTI_LINE_AREAS_2_GRID_SLOT', 'PP_MULTI_DOTS_2_GRID_SLOT'],
   description: '2組折線圖表'
 })
 export const PRESET_MULTI_LINES_3_GRID_SLOT = createMultiGridPreset({
   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_MULTI_GRID_3_GRID_SLOT',
+  dataFormatterId: 'DF_MULTI_GRID_SEPARATE_GRID',
   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_LINE_LIST', 'PP_MULTI_GROUP_AXIS_3_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_3_GRID_SLOT', 'PP_MULTI_BARS_3_GRID_SLOT', 'PP_MULTI_BAR_STACK_3_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_3_GRID_SLOT', 'PP_MULTI_LINES_3_GRID_SLOT', 'PP_MULTI_LINE_AREAS_3_GRID_SLOT', 'PP_MULTI_DOTS_3_GRID_SLOT'],
   description: '3組折線圖表'
 })
 export const PRESET_MULTI_LINES_4_GRID_SLOT = createMultiGridPreset({
   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_MULTI_GRID_4_GRID_SLOT',
+  dataFormatterId: 'DF_MULTI_GRID_SEPARATE_GRID',
   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_LINE_LIST', 'PP_MULTI_GROUP_AXIS_4_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_4_GRID_SLOT', 'PP_MULTI_BARS_4_GRID_SLOT', 'PP_MULTI_BAR_STACK_4_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_4_GRID_SLOT', 'PP_MULTI_LINES_4_GRID_SLOT', 'PP_MULTI_LINE_AREAS_4_GRID_SLOT', 'PP_MULTI_DOTS_4_GRID_SLOT'],
   description: '4組折線圖表'
 })
+// export const PRESET_MULTI_LINES_SEPARATE_GRID = createMultiGridPreset({
+//   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
+//   dataFormatterId: 'DF_MULTI_GRID_SEPARATE_GRID',
+//   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_LINE_LIST', 'PP_MULTI_GROUP_AXIS_4_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_4_GRID_SLOT', 'PP_MULTI_BARS_4_GRID_SLOT', 'PP_MULTI_BAR_STACK_4_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_4_GRID_SLOT', 'PP_MULTI_LINES_4_GRID_SLOT', 'PP_MULTI_LINE_AREAS_4_GRID_SLOT', 'PP_MULTI_DOTS_4_GRID_SLOT'],
+//   description: '折線圖表分開顯示Grid'
+// })
 // MultiLineAreas - PRESET_MULTI_LINE_AREAS_[name]
 export const PRESET_MULTI_LINE_AREAS_2_GRID_SLOT = createMultiGridPreset({
   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_MULTI_LINE_AREAS_2_GRID_SLOT',
+  dataFormatterId: 'DF_MULTI_LINE_AREAS_SEPARATE_GRID',
   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_LINE_LIST', 'PP_MULTI_GROUP_AXIS_2_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_2_GRID_SLOT', 'PP_MULTI_BARS_2_GRID_SLOT', 'PP_MULTI_BAR_STACK_2_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_2_GRID_SLOT', 'PP_MULTI_LINES_2_GRID_SLOT', 'PP_MULTI_LINE_AREAS_2_GRID_SLOT', 'PP_MULTI_DOTS_2_GRID_SLOT'],
   description: '2組折線圖表'
 })
 export const PRESET_MULTI_LINE_AREAS_3_GRID_SLOT = createMultiGridPreset({
   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_MULTI_LINE_AREAS_3_GRID_SLOT',
+  dataFormatterId: 'DF_MULTI_LINE_AREAS_SEPARATE_GRID',
   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_LINE_LIST', 'PP_MULTI_GROUP_AXIS_3_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_3_GRID_SLOT', 'PP_MULTI_BARS_3_GRID_SLOT', 'PP_MULTI_BAR_STACK_3_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_3_GRID_SLOT', 'PP_MULTI_LINES_3_GRID_SLOT', 'PP_MULTI_LINE_AREAS_3_GRID_SLOT', 'PP_MULTI_DOTS_3_GRID_SLOT'],
   description: '3組折線圖表'
 })
 export const PRESET_MULTI_LINE_AREAS_4_GRID_SLOT = createMultiGridPreset({
   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
-  dataFormatterId: 'DF_MULTI_LINE_AREAS_4_GRID_SLOT',
+  dataFormatterId: 'DF_MULTI_LINE_AREAS_SEPARATE_GRID',
   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_LINE_LIST', 'PP_MULTI_GROUP_AXIS_4_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_4_GRID_SLOT', 'PP_MULTI_BARS_4_GRID_SLOT', 'PP_MULTI_BAR_STACK_4_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_4_GRID_SLOT', 'PP_MULTI_LINES_4_GRID_SLOT', 'PP_MULTI_LINE_AREAS_4_GRID_SLOT', 'PP_MULTI_DOTS_4_GRID_SLOT'],
   description: '4組折線圖表'
 })
+// export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID = createMultiGridPreset({
+//   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
+//   dataFormatterId: 'DF_MULTI_LINE_AREAS_SEPARATE_GRID',
+//   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_LINE_LIST', 'PP_MULTI_GROUP_AXIS_4_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_4_GRID_SLOT', 'PP_MULTI_BARS_4_GRID_SLOT', 'PP_MULTI_BAR_STACK_4_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_4_GRID_SLOT', 'PP_MULTI_LINES_4_GRID_SLOT', 'PP_MULTI_LINE_AREAS_4_GRID_SLOT', 'PP_MULTI_DOTS_4_GRID_SLOT'],
+//   description: '折線區域圖表分開顯示Grid'
+// })
 
 // -- multi-value --
 

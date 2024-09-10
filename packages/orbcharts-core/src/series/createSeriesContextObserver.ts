@@ -5,7 +5,7 @@ import {
   groupDataMapObservable } from '../utils/observables'
 import { highlightObservable, textSizePxObservable } from '../utils/observables'
 
-import { seriesSeparateObservable, visibleComputedDataObservable, computedLayoutDataObservable, seriesLabelsObservable, seriesContainerPositionObservable, seriesContainerPositionMapObservable } from './seriesObservables'
+import { separateSeriesObservable, visibleComputedDataObservable, computedLayoutDataObservable, seriesLabelsObservable, seriesContainerPositionObservable, seriesContainerPositionMapObservable } from './seriesObservables'
 
 export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subject, observer }) => {
 
@@ -13,7 +13,7 @@ export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subje
     shareReplay(1)
   )
 
-  const seriesSeparate$ = seriesSeparateObservable({
+  const separateSeries$ = separateSeriesObservable({
     fullDataFormatter$: observer.fullDataFormatter$
   })
 
@@ -68,7 +68,7 @@ export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subje
   const SeriesContainerPositionMap$ = seriesContainerPositionMapObservable({
     seriesContainerPosition$: seriesContainerPosition$,
     seriesLabels$: seriesLabels$,
-    seriesSeparate$: seriesSeparate$,
+    separateSeries$: separateSeries$,
   }).pipe(
     shareReplay(1)
   )
@@ -82,7 +82,7 @@ export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subje
     textSizePx$,
     visibleComputedData$,
     visibleComputedLayoutData$,
-    seriesSeparate$,
+    separateSeries$,
     computedLayoutData$,
     seriesHighlight$,
     seriesLabels$,

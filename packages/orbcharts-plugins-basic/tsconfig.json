@@ -9,9 +9,6 @@
     "allowJs": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports" : true,
-    "esModuleInterop" : true,
-    "paths":{
-      "@orbcharts/core": ["./../orbcharts-core/src"]
-    }
+    "esModuleInterop" : true
   }
 }

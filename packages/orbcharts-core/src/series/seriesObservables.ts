@@ -18,7 +18,7 @@ import type {
   Layout } from '../types'
 import { calcSeriesContainerLayout } from '../utils/orbchartsUtils'
 
-export const seriesSeparateObservable = ({ fullDataFormatter$ }: { fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>> }) => {
+export const separateSeriesObservable = ({ fullDataFormatter$ }: { fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>> }) => {
   return fullDataFormatter$.pipe(
     map(data => data.separateSeries),
     distinctUntilChanged(),
@@ -152,19 +152,19 @@ export const seriesContainerPositionObservable = ({ computedData$, fullDataForma
   return gridContainerPosition$
 }
 
-export const seriesContainerPositionMapObservable = ({ seriesContainerPosition$, seriesLabels$, seriesSeparate$ }: {
+export const seriesContainerPositionMapObservable = ({ seriesContainerPosition$, seriesLabels$, separateSeries$ }: {
   seriesContainerPosition$: Observable<SeriesContainerPosition[]>
   seriesLabels$: Observable<string[]>
-  seriesSeparate$: Observable<boolean>
+  separateSeries$: Observable<boolean>
 }) => {
   return combineLatest({
     seriesContainerPosition: seriesContainerPosition$,
     seriesLabels: seriesLabels$,
-    seriesSeparate: seriesSeparate$,
+    separateSeries: separateSeries$,
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-      return data.seriesSeparate
+      return data.separateSeries
         ? new Map<string, SeriesContainerPosition>(data.seriesLabels.map((seriesLabel, seriesIndex) => {
           return [seriesLabel, data.seriesContainerPosition[seriesIndex] ?? data.seriesContainerPosition[0]]
         }))

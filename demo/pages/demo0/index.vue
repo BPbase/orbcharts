@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { GridChart } from '../../../packages/orbcharts-core/src'
 import { GroupAxis, ValueAxis, Bars, ScalingArea, Tooltip, GridLegend } from '../../../packages/orbcharts-plugins-basic/src'
-import { PRESET_GRID_4_SERIES_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
+import { PRESET_GRID_SEPARATE_SERIES } from '../../../packages/orbcharts-presets-basic/src/index'
 import { gridData3 } from '../../const/data/gridData3'
 
 let intervalId: any
@@ -15,7 +15,7 @@ onMounted(() => {
   const el = document.querySelector('#chart')
 
   const chart = new GridChart(el!, {
-    preset: PRESET_GRID_4_SERIES_SLOT
+    preset: PRESET_GRID_SEPARATE_SERIES
   })
 
   // chart!.dataFormatter$.next({

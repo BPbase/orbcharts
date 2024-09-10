@@ -142,46 +142,55 @@ function createBubblesData ({ data, LastBubbleDataMap, graphicWidth, graphicHeig
   return bubbleData
 }
 
-function renderBubbles ({ graphicSelection, bubblesData, fullParams }: {
+function renderBubbles ({ graphicSelection, bubblesData, fullParams, sumSeries }: {
   graphicSelection: d3.Selection<SVGGElement, any, any, any>
   bubblesData: BubblesDatum[]
   fullParams: BubblesParams
+  sumSeries: boolean
 }) {
-  let update = graphicSelection.selectAll<SVGGElement, BubblesDatum>("g")
+  const bubblesSelection = graphicSelection.selectAll<SVGGElement, BubblesDatum>("g")
     .data(bubblesData, (d) => d.id)
-  let enter = update.enter()
-    .append<SVGGElement>("g")
-    .attr('cursor', 'pointer')
-  enter
-    .attr('font-size', 12)
-    .style('fill', '#ffffff')
-    .attr("text-anchor", "middle")
+    .join(
+      enter => {
+        const enterSelection = enter
+          .append('g')
+          .attr('cursor', 'pointer')
+          .attr('font-size', 12)
+          .style('fill', '#ffffff')
+          .attr("text-anchor", "middle")
+        
+        enterSelection
+          .append("circle")
+          .attr("class", "node")
+          .attr("cx", 0)
+          .attr("cy", 0)
+          // .attr("r", 1e-6)
+          .attr('fill', (d) => d.color)
+          // .transition()
+          // .duration(500)
+            
+        enterSelection
+          .append('text')
+          .style('opacity', 0.8)
+          .attr('pointer-events', 'none')
+
+        return enterSelection
+      },
+      update => {
+        return update
+      },
+      exit => {
+        return exit
+          .remove()
+      }
+    )
     .attr("transform", (d) => {
       return `translate(${d.x},${d.y})`
     })
-    // .attr("cx", (d) => d.x)
-    // .attr("cy", (d) => d.y)
 
-  enter
-      .append("circle")
-      .attr("class", "node")
-// update.merge(enter)
-      .attr("cx", 0)
-      .attr("cy", 0)
-      // .attr("r", 1e-6)
-      .attr('fill', (d) => d.color)
-      // .transition()
-      // .duration(500)
-      
-  enter
-    .append('text')
-    .style('opacity', 0.8)
-    .attr('pointer-events', 'none')
-
-  update.exit().remove()
-
-  const bubblesSelection = update.merge(enter)
-
+  // 泡泡文字要使用的的資料欄位
+  const textDataColumn = sumSeries ? 'seriesLabel' : 'label'// 如果有合併series則使用seriesLabel
+    
   bubblesSelection.select('circle')
     .transition()
     .duration(200)
@@ -191,11 +200,11 @@ function renderBubbles ({ graphicSelection, bubblesData, fullParams }: {
     .each((d,i,g) => {
       const gSelection = d3.select(g[i])
       let breakAll = true
-      if (d.label.length <= fullParams.bubbleText.lineLengthMin) {
+      if (d[textDataColumn].length <= fullParams.bubbleText.lineLengthMin) {
         breakAll = false
       }
       gSelection.call(renderCircleText, {
-        text: d.label,
+        text: d[textDataColumn],
         radius: d.r * fullParams.bubbleText.fillRate,
         lineHeight: fullParams.bubbleText.lineHeight,
         isBreakAll: breakAll
@@ -314,7 +323,7 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
   const destroy$ = new Subject()
 
   const graphicSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
-  const bubblesSelection$: Subject<d3.Selection<SVGGElement, BubblesDatum, any, any>> = new Subject()
+  // const bubblesSelection$: Subject<d3.Selection<SVGGElement, BubblesDatum, any, any>> = new Subject()
   // 紀錄前一次bubble data
   let LastBubbleDataMap: Map<string, BubblesDatum> = new Map()
 
@@ -376,6 +385,11 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
   //   map(d => makeSeriesDataMap(d))
   // )
 
+  const sumSeries$ = observer.fullDataFormatter$.pipe(
+    map(d => d.sumSeries),
+    distinctUntilChanged()
+  )
+
   const scaleType$ = observer.fullParams$.pipe(
     takeUntil(destroy$),
     map(d => d.bubbleScaleType),
@@ -416,7 +430,39 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
     distinctUntilChanged()
   )
 
+  const bubblesSelection$ = combineLatest({
+    bubblesData: bubblesData$,
+    fullParams: observer.fullParams$,
+    SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
+    sumSeries: sumSeries$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      const bubblesSelection = renderBubbles({
+        graphicSelection,
+        bubblesData: data.bubblesData,
+        fullParams: data.fullParams,
+        sumSeries: data.sumSeries
+      })
+      
+      force = makeForce(bubblesSelection, data.fullParams)
+
+      force.nodes(data.bubblesData)
+
+      groupBubbles({
+        fullParams: data.fullParams,
+        SeriesContainerPositionMap: data.SeriesContainerPositionMap
+        // graphicWidth: data.layout.width,
+        // graphicHeight: data.layout.height
+      })
+
+      return bubblesSelection
+    })
+  )
+  
   combineLatest({
+    bubblesSelection: bubblesSelection$,
     layout: observer.layout$,
     computedData: observer.computedData$,
     bubblesData: bubblesData$,
@@ -428,18 +474,10 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
     // highlight: highlight$
   }).pipe(
     takeUntil(destroy$),
-    switchMap(async (d) => d),
+    switchMap(async (d) => d)
   ).subscribe(data => {
 
-    const bubblesSelection = renderBubbles({
-      graphicSelection,
-      bubblesData: data.bubblesData,
-      fullParams: data.fullParams
-    })
-    
-    force = makeForce(bubblesSelection, data.fullParams)
-
-    bubblesSelection
+    data.bubblesSelection
       .on('mouseover', (event, datum) => {
         // this.tooltip!.setDatum({
         //   data: d,
@@ -512,16 +550,7 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
       })
       .call(drag() as any)
 
-    force!.nodes(data.bubblesData);
-
-    groupBubbles({
-      fullParams: data.fullParams,
-      SeriesContainerPositionMap: data.SeriesContainerPositionMap
-      // graphicWidth: data.layout.width,
-      // graphicHeight: data.layout.height
-    })
-
-    bubblesSelection$.next(bubblesSelection)
+    
   })
 
   combineLatest({
@@ -532,6 +561,7 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
     ),
     fullChartParams: observer.fullChartParams$,
     fullParams: observer.fullParams$,
+    sumSeries: sumSeries$,
     // layout: observer.layout$,
     SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
   }).pipe(
@@ -553,7 +583,8 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
       renderBubbles({
         graphicSelection,
         bubblesData: data.bubblesData,
-        fullParams: data.fullParams
+        fullParams: data.fullParams,
+        sumSeries: data.sumSeries
       })
     }
     

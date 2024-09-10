@@ -52,6 +52,16 @@ export const demoList: DemoChartTypeItem[] = [
             pluginName: 'Bubbles',
             presetName: 'PRESET_BUBBLES_SCALING_BY_RADIUS'
           },
+          {
+            chartType: 'series',
+            pluginName: 'Bubbles',
+            presetName: 'PRESET_BUBBLES_SEPARATE_SERIES'
+          },
+          {
+            chartType: 'series',
+            pluginName: 'Bubbles',
+            presetName: 'PRESET_SERIES_SUM_SERIES'
+          },
         ]
       },
       {
@@ -76,6 +86,21 @@ export const demoList: DemoChartTypeItem[] = [
             chartType: 'series',
             pluginName: 'Pie',
             presetName: 'PRESET_PIE_HALF_DONUT'
+          },
+          {
+            chartType: 'series',
+            pluginName: 'Pie',
+            presetName: 'PRESET_SERIES_DESC'
+          },
+          {
+            chartType: 'series',
+            pluginName: 'Pie',
+            presetName: 'PRESET_SERIES_SEPARATE_SERIES'
+          },
+          {
+            chartType: 'series',
+            pluginName: 'Pie',
+            presetName: 'PRESET_SERIES_SUM_SERIES'
           },
         ]
       },
@@ -122,20 +147,25 @@ export const demoList: DemoChartTypeItem[] = [
             pluginName: 'Bars',
             presetName: 'PRESET_BARS_HORIZONTAL_AND_THIN'
           },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'Bars',
+          //   presetName: 'PRESET_GRID_2_SERIES_SLOT'
+          // },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'Bars',
+          //   presetName: 'PRESET_GRID_3_SERIES_SLOT'
+          // },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'Bars',
+          //   presetName: 'PRESET_GRID_4_SERIES_SLOT'
+          // },
           {
             chartType: 'grid',
             pluginName: 'Bars',
-            presetName: 'PRESET_GRID_2_SERIES_SLOT'
-          },
-          {
-            chartType: 'grid',
-            pluginName: 'Bars',
-            presetName: 'PRESET_GRID_3_SERIES_SLOT'
-          },
-          {
-            chartType: 'grid',
-            pluginName: 'Bars',
-            presetName: 'PRESET_GRID_4_SERIES_SLOT'
+            presetName: 'PRESET_GRID_SEPARATE_SERIES'
           },
         ]
       },
@@ -167,20 +197,25 @@ export const demoList: DemoChartTypeItem[] = [
             pluginName: 'BarStack',
             presetName: 'PRESET_GRID_HORIZONTAL'
           },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'BarStack',
+          //   presetName: 'PRESET_GRID_2_SERIES_SLOT'
+          // },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'BarStack',
+          //   presetName: 'PRESET_GRID_3_SERIES_SLOT'
+          // },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'BarStack',
+          //   presetName: 'PRESET_GRID_4_SERIES_SLOT'
+          // },
           {
             chartType: 'grid',
             pluginName: 'BarStack',
-            presetName: 'PRESET_GRID_2_SERIES_SLOT'
-          },
-          {
-            chartType: 'grid',
-            pluginName: 'BarStack',
-            presetName: 'PRESET_GRID_3_SERIES_SLOT'
-          },
-          {
-            chartType: 'grid',
-            pluginName: 'BarStack',
-            presetName: 'PRESET_GRID_4_SERIES_SLOT'
+            presetName: 'PRESET_GRID_SEPARATE_SERIES'
           },
         ]
       },
@@ -202,20 +237,25 @@ export const demoList: DemoChartTypeItem[] = [
             pluginName: 'BarsTriangle',
             presetName: 'PRESET_GRID_HORIZONTAL'
           },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'BarsTriangle',
+          //   presetName: 'PRESET_GRID_2_SERIES_SLOT'
+          // },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'BarsTriangle',
+          //   presetName: 'PRESET_GRID_3_SERIES_SLOT'
+          // },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'BarsTriangle',
+          //   presetName: 'PRESET_GRID_4_SERIES_SLOT'
+          // },
           {
             chartType: 'grid',
             pluginName: 'BarsTriangle',
-            presetName: 'PRESET_GRID_2_SERIES_SLOT'
-          },
-          {
-            chartType: 'grid',
-            pluginName: 'BarsTriangle',
-            presetName: 'PRESET_GRID_3_SERIES_SLOT'
-          },
-          {
-            chartType: 'grid',
-            pluginName: 'BarsTriangle',
-            presetName: 'PRESET_GRID_4_SERIES_SLOT'
+            presetName: 'PRESET_GRID_SEPARATE_SERIES'
           },
         ]
       },
@@ -247,20 +287,25 @@ export const demoList: DemoChartTypeItem[] = [
             pluginName: 'Lines',
             presetName: 'PRESET_LINES_HIGHLIGHT_GROUP_DOTS'
           },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'Lines',
+          //   presetName: 'PRESET_GRID_2_SERIES_SLOT'
+          // },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'Lines',
+          //   presetName: 'PRESET_GRID_3_SERIES_SLOT'
+          // },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'Lines',
+          //   presetName: 'PRESET_GRID_4_SERIES_SLOT'
+          // },
           {
             chartType: 'grid',
             pluginName: 'Lines',
-            presetName: 'PRESET_GRID_2_SERIES_SLOT'
-          },
-          {
-            chartType: 'grid',
-            pluginName: 'Lines',
-            presetName: 'PRESET_GRID_3_SERIES_SLOT'
-          },
-          {
-            chartType: 'grid',
-            pluginName: 'Lines',
-            presetName: 'PRESET_GRID_4_SERIES_SLOT'
+            presetName: 'PRESET_GRID_SEPARATE_SERIES'
           },
         ]
       },
@@ -292,20 +337,25 @@ export const demoList: DemoChartTypeItem[] = [
             pluginName: 'LineAreas',
             presetName: 'PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS'
           },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'LineAreas',
+          //   presetName: 'PRESET_LINE_AREAS_2_SERIES_SLOT'
+          // },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'LineAreas',
+          //   presetName: 'PRESET_LINE_AREAS_3_SERIES_SLOT'
+          // },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'LineAreas',
+          //   presetName: 'PRESET_LINE_AREAS_4_SERIES_SLOT'
+          // },
           {
             chartType: 'grid',
             pluginName: 'LineAreas',
-            presetName: 'PRESET_LINE_AREAS_2_SERIES_SLOT'
-          },
-          {
-            chartType: 'grid',
-            pluginName: 'LineAreas',
-            presetName: 'PRESET_LINE_AREAS_3_SERIES_SLOT'
-          },
-          {
-            chartType: 'grid',
-            pluginName: 'LineAreas',
-            presetName: 'PRESET_LINE_AREAS_4_SERIES_SLOT'
+            presetName: 'PRESET_LINE_AREAS_SEPARATE_GRID'
           },
         ]
       }

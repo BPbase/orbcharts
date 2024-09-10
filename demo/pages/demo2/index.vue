@@ -182,7 +182,7 @@ onMounted(() => {
   const iMax = 8 // 8
   const jMax = 1 // 1
   intervalId = setInterval(() => {
-    console.log('i:', i, ',j:', j)
+    // console.log('i:', i, ',j:', j)
     if (i == 0) {
       chart.chartParams$.next({
         padding: {

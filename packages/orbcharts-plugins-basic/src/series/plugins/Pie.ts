@@ -502,19 +502,26 @@ export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PARAMS)(({ selecti
   const { seriesCenterSelection$ } = seriesCenterSelectionObservable({
     selection: selection,
     pluginName,
-    seriesSeparate$: observer.seriesSeparate$,
+    separateSeries$: observer.separateSeries$,
     seriesLabels$: observer.seriesLabels$,
     seriesContainerPosition$: observer.seriesContainerPosition$
   })
 
   const unsubscribeFnArr: (() => void)[] = []
 
+  // @Q@ 在seriesCenterSelection$之後才訂閱會造成fullParams$訂閱不到最初次的值，還需找時間研究先workaround
+  observer.fullParams$.subscribe()
+
   seriesCenterSelection$.subscribe(seriesCenterSelection => {
     // 每次重新計算時，清除之前的訂閱
     unsubscribeFnArr.forEach(fn => fn())
 
+    // observer.fullParams$.subscribe(data => {
+    //   console.log('observer.fullParams$', data)
+    // })
+
     seriesCenterSelection.each((d, containerIndex, g) => { 
-      
+      // console.log('containerIndex', containerIndex)
       const containerSelection = d3.select(g[containerIndex])
 
       const containerComputedLayoutData$ = observer.computedLayoutData$.pipe(
