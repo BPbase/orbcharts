@@ -296,38 +296,42 @@ export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAM
 
   const unsubscribeFnArr: (() => void)[] = []
 
-  seriesCenterSelection$.subscribe(seriesCenterSelection => {
-    // 每次重新計算時，清除之前的訂閱
-    unsubscribeFnArr.forEach(fn => fn())
+  seriesCenterSelection$
+    .pipe(
+      takeUntil(destroy$)
+    )
+    .subscribe(seriesCenterSelection => {
+      // 每次重新計算時，清除之前的訂閱
+      unsubscribeFnArr.forEach(fn => fn())
 
-    seriesCenterSelection.each((d, containerIndex, g) => { 
-      
-      const containerSelection = d3.select(g[containerIndex])
+      seriesCenterSelection.each((d, containerIndex, g) => { 
+        
+        const containerSelection = d3.select(g[containerIndex])
 
-      const containerComputedLayoutData$ = observer.computedLayoutData$.pipe(
-        takeUntil(destroy$),
-        map(data => data[containerIndex] ?? data[0])
-      )
+        const containerComputedLayoutData$ = observer.computedLayoutData$.pipe(
+          takeUntil(destroy$),
+          map(data => data[containerIndex] ?? data[0])
+        )
 
-      const containerPosition$ = observer.seriesContainerPosition$.pipe(
-        takeUntil(destroy$),
-        map(data => data[containerIndex] ?? data[0])
-      )
+        const containerPosition$ = observer.seriesContainerPosition$.pipe(
+          takeUntil(destroy$),
+          map(data => data[containerIndex] ?? data[0])
+        )
 
-      unsubscribeFnArr[containerIndex] = createEachPieLabel(pluginName, {
-        containerSelection: containerSelection,
-        // computedData$: observer.computedData$,
-        containerComputedLayoutData$: containerComputedLayoutData$,
-        // SeriesDataMap$: observer.SeriesDataMap$,
-        fullParams$: observer.fullParams$,
-        fullChartParams$: observer.fullChartParams$,
-        seriesHighlight$: observer.seriesHighlight$,
-        seriesContainerPosition$: containerPosition$,
-        event$: subject.event$,
+        unsubscribeFnArr[containerIndex] = createEachPieLabel(pluginName, {
+          containerSelection: containerSelection,
+          // computedData$: observer.computedData$,
+          containerComputedLayoutData$: containerComputedLayoutData$,
+          // SeriesDataMap$: observer.SeriesDataMap$,
+          fullParams$: observer.fullParams$,
+          fullChartParams$: observer.fullChartParams$,
+          seriesHighlight$: observer.seriesHighlight$,
+          seriesContainerPosition$: containerPosition$,
+          event$: subject.event$,
+        })
+
       })
-
     })
-  })
 
   return () => {
     destroy$.next(undefined)

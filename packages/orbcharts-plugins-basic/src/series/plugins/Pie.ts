@@ -38,6 +38,7 @@ function makeTweenPieRenderDataFn ({ enter, exit, data, lastTweenData, fullParam
 }): (t: number) => PieDatum[] {
   // 無更新資料項目則只計算資料變化 (新資料 * t + 舊資料 * (1 - t))
   if (!enter.size() && !exit.size()) {
+    // console.log('case1')
     return (t: number) => {
       const tweenData: PieDatum[] = data.map((_d, _i) => {
         const lastDatum = lastTweenData[_i] ?? {
@@ -62,6 +63,7 @@ function makeTweenPieRenderDataFn ({ enter, exit, data, lastTweenData, fullParam
     }
   // 有更新資料則重新繪圖
   } else {
+    // console.log('case2')
     return (t: number) => {
       return makePieRenderData(
         data,
@@ -282,12 +284,12 @@ function createEachPie (pluginName: string, context: {
     ).subscribe(data => {
       context.containerSelection.interrupt('graphicMove')
       // console.log('graphic', data)
-      let update: d3.Selection<SVGPathElement, PieDatum, any, any> = context.containerSelection
+      const update: d3.Selection<SVGPathElement, PieDatum, any, any> = context.containerSelection
         .selectAll<SVGPathElement, PieDatum>('path')
         .data(data.pieData, d => d.id)
-      let enter = update.enter()
-      let exit = update.exit()
-      
+      const enter = update.enter()
+      const exit = update.exit()
+
       const makeTweenPieRenderData = makeTweenPieRenderDataFn({
         enter,
         exit,
@@ -296,11 +298,11 @@ function createEachPie (pluginName: string, context: {
         fullParams: data.fullParams
       })
   
-      // -- enter資料使用補間動畫 --
-      enter
+      // -- 使用補間動畫 --
+      context.containerSelection
         .transition('graphicMove')
         .duration(data.fullChartParams.transitionDuration)
-        .ease(getD3TransitionEase(data.fullChartParams.transitionEase))
+        // .ease(getD3TransitionEase(data.fullChartParams.transitionEase))
         .tween('move', (self, t) => {
           return (t) => {
             tweenData = makeTweenPieRenderData(t)
@@ -312,18 +314,20 @@ function createEachPie (pluginName: string, context: {
               pathClassName
             })
   
-            context.event$.next({
-              type: 'series',
-              pluginName,
-              eventName: 'transitionMove',
-              event: undefined,
-              highlightTarget: data.highlightTarget,
-              datum: null,
-              series: [],
-              seriesIndex: -1,
-              seriesLabel: '',
-              data: data.computedData
-            })
+            // @Q@ 想盡量減清效能負擔所以取消掉
+            // context.event$.next({
+            //   type: 'series',
+            //   pluginName,
+            //   eventName: 'transitionMove',
+            //   event: undefined,
+            //   highlightTarget: data.highlightTarget,
+            //   datum: null,
+            //   series: [],
+            //   seriesIndex: -1,
+            //   seriesLabel: '',
+            //   data: data.computedData
+            // })
+
             // const callbackData = makeEnterDurationCallbackData(data.computedData, )
             // enterDurationCallback(callbackData, t)
           }
@@ -512,42 +516,46 @@ export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PARAMS)(({ selecti
   // @Q@ 在seriesCenterSelection$之後才訂閱會造成fullParams$訂閱不到最初次的值，還需找時間研究先workaround
   observer.fullParams$.subscribe()
 
-  seriesCenterSelection$.subscribe(seriesCenterSelection => {
-    // 每次重新計算時，清除之前的訂閱
-    unsubscribeFnArr.forEach(fn => fn())
+  seriesCenterSelection$
+    .pipe(
+      takeUntil(destroy$)
+    )
+    .subscribe(seriesCenterSelection => {
+      // 每次重新計算時，清除之前的訂閱
+      unsubscribeFnArr.forEach(fn => fn())
 
-    // observer.fullParams$.subscribe(data => {
-    //   console.log('observer.fullParams$', data)
-    // })
+      // observer.fullParams$.subscribe(data => {
+      //   console.log('observer.fullParams$', data)
+      // })
 
-    seriesCenterSelection.each((d, containerIndex, g) => { 
-      // console.log('containerIndex', containerIndex)
-      const containerSelection = d3.select(g[containerIndex])
+      seriesCenterSelection.each((d, containerIndex, g) => { 
+        // console.log('containerIndex', containerIndex)
+        const containerSelection = d3.select(g[containerIndex])
 
-      const containerComputedLayoutData$ = observer.computedLayoutData$.pipe(
-        takeUntil(destroy$),
-        map(data => data[containerIndex] ?? data[0])
-      )
+        const containerComputedLayoutData$ = observer.computedLayoutData$.pipe(
+          takeUntil(destroy$),
+          map(data => data[containerIndex] ?? data[0])
+        )
 
-      const containerPosition$ = observer.seriesContainerPosition$.pipe(
-        takeUntil(destroy$),
-        map(data => data[containerIndex] ?? data[0])
-      )
+        const containerPosition$ = observer.seriesContainerPosition$.pipe(
+          takeUntil(destroy$),
+          map(data => data[containerIndex] ?? data[0])
+        )
 
-      unsubscribeFnArr[containerIndex] = createEachPie(pluginName, {
-        containerSelection: containerSelection,
-        computedData$: observer.computedData$,
-        containerComputedLayoutData$: containerComputedLayoutData$,
-        SeriesDataMap$: observer.SeriesDataMap$,
-        fullParams$: observer.fullParams$,
-        fullChartParams$: observer.fullChartParams$,
-        seriesHighlight$: observer.seriesHighlight$,
-        seriesContainerPosition$: containerPosition$,
-        event$: subject.event$,
+        unsubscribeFnArr[containerIndex] = createEachPie(pluginName, {
+          containerSelection: containerSelection,
+          computedData$: observer.computedData$,
+          containerComputedLayoutData$: containerComputedLayoutData$,
+          SeriesDataMap$: observer.SeriesDataMap$,
+          fullParams$: observer.fullParams$,
+          fullChartParams$: observer.fullChartParams$,
+          seriesHighlight$: observer.seriesHighlight$,
+          seriesContainerPosition$: containerPosition$,
+          event$: subject.event$,
+        })
+
       })
-
     })
-  })
 
   return () => {
     destroy$.next(undefined)

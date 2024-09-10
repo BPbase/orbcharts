@@ -1,5 +1,5 @@
 <template>
-  <div id="chart" style="width:100%;height:100vh"></div>
+  <div id="chart" style="width:100%;height:100%"></div>
 </template>
 
 <script setup lang="ts">
@@ -7,6 +7,14 @@ import { MultiGridChart } from '../../../packages/orbcharts-core/src'
 import { MultiBars, MultiLines, MultiDots, MultiGridLegend, MultiGroupAxis, MultiValueAxis, OverlappingValueAxes, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 import { multiGridData1 } from '../../const/data/multiGridData1'
+
+useHead({
+  title: 'Demo 2',
+  // meta: [{
+  //   name: 'description',
+  //   content: 'description'
+  // }]
+})
 
 let intervalId: any
 
@@ -39,8 +47,8 @@ onMounted(() => {
   const multiGroupAxis = new MultiGroupAxis()
   const multiValueAxis = new MultiValueAxis()
   const overlappingValueAxes = new OverlappingValueAxes()
-  const tooltip = new Tooltip()
-  // chart!.plugins$.next([ multiGroupAxis, overlappingValueAxes, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
+  // const tooltip = new Tooltip()
+  // chart!.plugins$.next([ multiGroupAxis, overlappingValueAxes, multiBars, multiLines, multiDots, multiGridLegend])
 
   chart.chartParams$.next({
     padding: {
@@ -48,7 +56,7 @@ onMounted(() => {
     },
     highlightTarget: 'series'
   })
-  chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
+  chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend])
   chart!.dataFormatter$.next({
     container: {
       rowAmount: 1,
@@ -190,7 +198,7 @@ onMounted(() => {
         },
         highlightTarget: 'series'
       })
-      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
+      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend])
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 1,
@@ -223,7 +231,7 @@ onMounted(() => {
         },
         highlightTarget: 'series'
       })
-      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
+      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend])
       chart!.dataFormatter$.next({
         // container: {
         //   rowAmount: 1,
@@ -257,7 +265,7 @@ onMounted(() => {
         },
         highlightTarget: 'series'
       })
-      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
+      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend])
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 2,
@@ -291,7 +299,7 @@ onMounted(() => {
         },
         highlightTarget: 'series'
       })
-      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
+      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend])
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 2,
@@ -317,7 +325,7 @@ onMounted(() => {
         gridIndexes: [0, 1]
       })
     } else if (i == 4)  {
-      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
+      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend])
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 2,
@@ -393,7 +401,7 @@ onMounted(() => {
         gridIndexes: [0, 1]
       })
     } else if (i == 6)  {
-      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
+      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend])
       chart.chartParams$.next({
         padding: {
           left: 60,
@@ -433,7 +441,7 @@ onMounted(() => {
         gridIndexes: [0, 1]
       })
     } else if (i == 7)  {
-      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
+      chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend])
       chart.chartParams$.next({
         padding: {
           left: 60,
@@ -493,7 +501,7 @@ onMounted(() => {
       }
       
     } else if (i == 8)  {
-      chart!.plugins$.next([ multiGroupAxis, overlappingValueAxes, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
+      chart!.plugins$.next([ multiGroupAxis, overlappingValueAxes, multiBars, multiLines, multiDots, multiGridLegend])
       chart.chartParams$.next({
         padding: {
           left: 60,

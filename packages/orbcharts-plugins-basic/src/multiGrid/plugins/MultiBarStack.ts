@@ -24,48 +24,52 @@ export const MultiBarStack = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_BAR
 
   const multiGridPlugin$ = multiGridPluginObservables(observer)
 
-  multiGridPlugin$.subscribe(data => {
-    // 每次重新計算時，清除之前的訂閱
-    unsubscribeFnArr.forEach(fn => fn())
+  multiGridPlugin$
+    .pipe(
+      takeUntil(destroy$)
+    )
+    .subscribe(data => {
+      // 每次重新計算時，清除之前的訂閱
+      unsubscribeFnArr.forEach(fn => fn())
 
-    selection.selectAll(`g.${gridClassName}`)
-      .data(data)
-      .join('g')
-      .attr('class', gridClassName)
-      .each((d, i, g) => {
+      selection.selectAll(`g.${gridClassName}`)
+        .data(data)
+        .join('g')
+        .attr('class', gridClassName)
+        .each((d, i, g) => {
 
-        const gridSelection = d3.select(g[i])
+          const gridSelection = d3.select(g[i])
 
-        const isSeriesSeprate$ = d.dataFormatter$.pipe(
-          takeUntil(destroy$),
-          map(d => d.grid.separateSeries),
-          distinctUntilChanged(),
-          shareReplay(1)
-        )
+          const isSeriesSeprate$ = d.dataFormatter$.pipe(
+            takeUntil(destroy$),
+            map(d => d.grid.separateSeries),
+            distinctUntilChanged(),
+            shareReplay(1)
+          )
 
-        unsubscribeFnArr[i] = createBaseBarStack(pluginName, {
-          selection: gridSelection,
-          computedData$: d.computedData$,
-          visibleComputedData$: d.visibleComputedData$,
-          computedLayoutData$: d.computedLayoutData$,
-          visibleComputedLayoutData$: d.visibleComputedLayoutData$,
-          seriesLabels$: d.seriesLabels$,
-          SeriesDataMap$: d.SeriesDataMap$,
-          GroupDataMap$: d.GroupDataMap$,
-          fullParams$: observer.fullParams$,
-          fullDataFormatter$: d.dataFormatter$,
-          fullChartParams$: observer.fullChartParams$,
-          gridAxesTransform$: d.gridAxesTransform$,
-          gridGraphicTransform$: d.gridGraphicTransform$,
-          gridGraphicReverseScale$: d.gridGraphicReverseScale$,
-          gridAxesSize$: d.gridAxesSize$,
-          gridHighlight$: d.gridHighlight$,
-          gridContainerPosition$: d.gridContainerPosition$,
-          isSeriesSeprate$,
-          event$: subject.event$ as Subject<any>,
+          unsubscribeFnArr[i] = createBaseBarStack(pluginName, {
+            selection: gridSelection,
+            computedData$: d.computedData$,
+            visibleComputedData$: d.visibleComputedData$,
+            computedLayoutData$: d.computedLayoutData$,
+            visibleComputedLayoutData$: d.visibleComputedLayoutData$,
+            seriesLabels$: d.seriesLabels$,
+            SeriesDataMap$: d.SeriesDataMap$,
+            GroupDataMap$: d.GroupDataMap$,
+            fullParams$: observer.fullParams$,
+            fullDataFormatter$: d.dataFormatter$,
+            fullChartParams$: observer.fullChartParams$,
+            gridAxesTransform$: d.gridAxesTransform$,
+            gridGraphicTransform$: d.gridGraphicTransform$,
+            gridGraphicReverseScale$: d.gridGraphicReverseScale$,
+            gridAxesSize$: d.gridAxesSize$,
+            gridHighlight$: d.gridHighlight$,
+            gridContainerPosition$: d.gridContainerPosition$,
+            isSeriesSeprate$,
+            event$: subject.event$ as Subject<any>,
+          })
         })
-      })
-  })
+    })
 
   return () => {
     destroy$.next(undefined)

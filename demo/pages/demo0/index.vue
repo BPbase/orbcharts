@@ -1,5 +1,5 @@
 <template>
-  <div id="chart" style="width:100%;height:100vh"></div>
+  <div id="chart" style="width:100%;height:100%"></div>
 </template>
 
 <script setup lang="ts">
@@ -7,6 +7,14 @@ import { GridChart } from '../../../packages/orbcharts-core/src'
 import { GroupAxis, ValueAxis, Bars, ScalingArea, Tooltip, GridLegend } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_SEPARATE_SERIES } from '../../../packages/orbcharts-presets-basic/src/index'
 import { gridData3 } from '../../const/data/gridData3'
+
+useHead({
+  title: 'Demo 0',
+  // meta: [{
+  //   name: 'description',
+  //   content: 'description'
+  // }]
+})
 
 let intervalId: any
 
