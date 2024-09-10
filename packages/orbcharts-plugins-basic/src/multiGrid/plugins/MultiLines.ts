@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 import {
+  takeUntil,
   Subject } from 'rxjs'
 import {
   defineMultiGridPlugin } from '@orbcharts/core'
@@ -20,39 +21,43 @@ export const MultiLines = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_LINES_
 
   const multiGridPlugin$ = multiGridPluginObservables(observer)
 
-  multiGridPlugin$.subscribe(data => {
-    // 每次重新計算時，清除之前的訂閱
-    unsubscribeFnArr.forEach(fn => fn())
+  multiGridPlugin$
+    .pipe(
+      takeUntil(destroy$)
+    )
+    .subscribe(data => {
+      // 每次重新計算時，清除之前的訂閱
+      unsubscribeFnArr.forEach(fn => fn())
 
-    selection.selectAll(`g.${gridClassName}`)
-      .data(data)
-      .join('g')
-      .attr('class', gridClassName)
-      .each((d, i, g) => {
+      selection.selectAll(`g.${gridClassName}`)
+        .data(data)
+        .join('g')
+        .attr('class', gridClassName)
+        .each((d, i, g) => {
 
-        const gridSelection = d3.select(g[i])
+          const gridSelection = d3.select(g[i])
 
-        unsubscribeFnArr[i] = createBaseLines(pluginName, {
-          selection: gridSelection,
-          computedData$: d.computedData$,
-          computedLayoutData$: d.computedLayoutData$,
-          visibleComputedData$: d.visibleComputedData$,
-          visibleComputedLayoutData$: d.visibleComputedLayoutData$,
-          seriesLabels$: d.seriesLabels$,
-          SeriesDataMap$: d.SeriesDataMap$,
-          GroupDataMap$: d.GroupDataMap$,
-          fullDataFormatter$: d.dataFormatter$,
-          fullParams$: observer.fullParams$,
-          fullChartParams$: observer.fullChartParams$,
-          gridAxesTransform$: d.gridAxesTransform$,
-          gridGraphicTransform$: d.gridGraphicTransform$,
-          gridAxesSize$: d.gridAxesSize$,
-          gridHighlight$: d.gridHighlight$,
-          gridContainerPosition$: d.gridContainerPosition$,
-          event$: subject.event$ as Subject<any>,
+          unsubscribeFnArr[i] = createBaseLines(pluginName, {
+            selection: gridSelection,
+            computedData$: d.computedData$,
+            computedLayoutData$: d.computedLayoutData$,
+            visibleComputedData$: d.visibleComputedData$,
+            visibleComputedLayoutData$: d.visibleComputedLayoutData$,
+            seriesLabels$: d.seriesLabels$,
+            SeriesDataMap$: d.SeriesDataMap$,
+            GroupDataMap$: d.GroupDataMap$,
+            fullDataFormatter$: d.dataFormatter$,
+            fullParams$: observer.fullParams$,
+            fullChartParams$: observer.fullChartParams$,
+            gridAxesTransform$: d.gridAxesTransform$,
+            gridGraphicTransform$: d.gridGraphicTransform$,
+            gridAxesSize$: d.gridAxesSize$,
+            gridHighlight$: d.gridHighlight$,
+            gridContainerPosition$: d.gridContainerPosition$,
+            event$: subject.event$ as Subject<any>,
+          })
         })
-      })
-  })
+    })
 
   return () => {
     destroy$.next(undefined)

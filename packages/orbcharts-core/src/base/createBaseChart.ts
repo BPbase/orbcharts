@@ -313,6 +313,7 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
       exit.each((plugin: PluginEntity<T, unknown, unknown>, i, n) => {
         if (pluginEntityMap[plugin.name as string]) {
           pluginEntityMap[plugin.name as string].destroy()
+          pluginEntityMap[plugin.name as string] = undefined
         }
       })
 

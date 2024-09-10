@@ -123,44 +123,48 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
     })
   )
 
-  multiGridPlugin$.subscribe(data => {
-    // 每次重新計算時，清除之前的訂閱
-    unsubscribeFnArr.forEach(fn => fn())
+  multiGridPlugin$
+    .pipe(
+      takeUntil(destroy$)
+    )
+    .subscribe(data => {
+      // 每次重新計算時，清除之前的訂閱
+      unsubscribeFnArr.forEach(fn => fn())
 
-    selection.selectAll(`g.${gridClassName}`)
-      .data(data)
-      .join('g')
-      .attr('class', gridClassName)
-      .each((d, i, g) => {
-        if (i > 1) {
-          return
-        }
+      selection.selectAll(`g.${gridClassName}`)
+        .data(data)
+        .join('g')
+        .attr('class', gridClassName)
+        .each((d, i, g) => {
+          if (i > 1) {
+            return
+          }
 
-        const gridSelection = d3.select(g[i])
+          const gridSelection = d3.select(g[i])
 
-        const isSeriesSeprate$ = d.dataFormatter$.pipe(
-          takeUntil(destroy$),
-          map(d => d.grid.separateSeries),
-          distinctUntilChanged(),
-          shareReplay(1)
-        )
+          const isSeriesSeprate$ = d.dataFormatter$.pipe(
+            takeUntil(destroy$),
+            map(d => d.grid.separateSeries),
+            distinctUntilChanged(),
+            shareReplay(1)
+          )
 
-        unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
-          selection: gridSelection,
-          computedData$: d.computedData$,
-          fullParams$: observer.fullParams$.pipe(
-            map(fullParams => i === 0 ? fullParams.firstAxis : fullParams.secondAxis)
-          ),
-          fullDataFormatter$: d.dataFormatter$,
-          fullChartParams$: observer.fullChartParams$,  
-          gridAxesTransform$: d.gridAxesTransform$,
-          gridAxesReverseTransform$: d.gridAxesReverseTransform$,
-          gridAxesSize$: d.gridAxesSize$,
-          gridContainerPosition$: d.gridContainerPosition$,
-          isSeriesSeprate$,
+          unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
+            selection: gridSelection,
+            computedData$: d.computedData$,
+            fullParams$: observer.fullParams$.pipe(
+              map(fullParams => i === 0 ? fullParams.firstAxis : fullParams.secondAxis)
+            ),
+            fullDataFormatter$: d.dataFormatter$,
+            fullChartParams$: observer.fullChartParams$,  
+            gridAxesTransform$: d.gridAxesTransform$,
+            gridAxesReverseTransform$: d.gridAxesReverseTransform$,
+            gridAxesSize$: d.gridAxesSize$,
+            gridContainerPosition$: d.gridContainerPosition$,
+            isSeriesSeprate$,
+          })
         })
-      })
-  })
+    })
 
   return () => {
     destroy$.next(undefined)

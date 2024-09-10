@@ -24,39 +24,43 @@ export const MultiValueAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_VA
 
   const multiGridPlugin$ = multiGridPluginObservables(observer)
 
-  multiGridPlugin$.subscribe(data => {
-    // 每次重新計算時，清除之前的訂閱
-    unsubscribeFnArr.forEach(fn => fn())
+  multiGridPlugin$
+    .pipe(
+      takeUntil(destroy$)
+    )
+    .subscribe(data => {
+      // 每次重新計算時，清除之前的訂閱
+      unsubscribeFnArr.forEach(fn => fn())
 
-    selection.selectAll(`g.${gridClassName}`)
-      .data(data)
-      .join('g')
-      .attr('class', gridClassName)
-      .each((d, i, g) => {
+      selection.selectAll(`g.${gridClassName}`)
+        .data(data)
+        .join('g')
+        .attr('class', gridClassName)
+        .each((d, i, g) => {
 
-        const gridSelection = d3.select(g[i])
+          const gridSelection = d3.select(g[i])
 
-        const isSeriesSeprate$ = d.dataFormatter$.pipe(
-          takeUntil(destroy$),
-          map(d => d.grid.separateSeries),
-          distinctUntilChanged(),
-          shareReplay(1)
-        )
+          const isSeriesSeprate$ = d.dataFormatter$.pipe(
+            takeUntil(destroy$),
+            map(d => d.grid.separateSeries),
+            distinctUntilChanged(),
+            shareReplay(1)
+          )
 
-        unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
-          selection: gridSelection,
-          computedData$: d.computedData$,
-          fullParams$: observer.fullParams$,
-          fullDataFormatter$: d.dataFormatter$,
-          fullChartParams$: observer.fullChartParams$,  
-          gridAxesTransform$: d.gridAxesTransform$,
-          gridAxesReverseTransform$: d.gridAxesReverseTransform$,
-          gridAxesSize$: d.gridAxesSize$,
-          gridContainerPosition$: d.gridContainerPosition$,
-          isSeriesSeprate$,
+          unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
+            selection: gridSelection,
+            computedData$: d.computedData$,
+            fullParams$: observer.fullParams$,
+            fullDataFormatter$: d.dataFormatter$,
+            fullChartParams$: observer.fullChartParams$,  
+            gridAxesTransform$: d.gridAxesTransform$,
+            gridAxesReverseTransform$: d.gridAxesReverseTransform$,
+            gridAxesSize$: d.gridAxesSize$,
+            gridContainerPosition$: d.gridContainerPosition$,
+            isSeriesSeprate$,
+          })
         })
-      })
-  })
+    })
 
   return () => {
     destroy$.next(undefined)
