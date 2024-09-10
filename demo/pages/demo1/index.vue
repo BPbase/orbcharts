@@ -1,12 +1,20 @@
 <template>
-  <div id="chart" style="width:100%;height:100vh"></div>
+  <div id="chart" style="width:100%;height:100%"></div>
 </template>
 
 <script setup lang="ts">
 import { SeriesChart } from '../../../packages/orbcharts-core/src'
-import { Pie, PieLabels, PieEventTexts, Bubbles, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { Pie, PieLabels, PieEventTexts, Bubbles, SeriesLegend } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 import { seriesData3 } from '../../const/data/seriesData3'
+
+useHead({
+  title: 'Demo 1',
+  // meta: [{
+  //   name: 'description',
+  //   content: 'description'
+  // }]
+})
 
 let intervalId: any
 
@@ -22,8 +30,8 @@ onMounted(() => {
   const pieLabels = new PieLabels()
   const pieEventTexts = new PieEventTexts()
   const bubbles = new Bubbles()
-  const tooltip = new Tooltip()
-  // chart!.plugins$.next([ multiGroupAxis, overlappingValueAxes, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
+  const seriesLegend = new SeriesLegend()
+  // chart!.plugins$.next([ multiGroupAxis, overlappingValueAxes, multiBars, multiLines, multiDots, multiGridLegend])
 
   chart.chartParams$.next({
     padding: {
@@ -32,9 +40,14 @@ onMounted(() => {
       bottom: 200,
       left: 200
     },
-    highlightTarget: 'series'
+    // highlightTarget: 'series'
   })
-  chart!.plugins$.next([ bubbles, tooltip])
+  chart!.plugins$.next([ bubbles, seriesLegend ])
+  chart.dataFormatter$.next({
+    sumSeries: false,
+    separateSeries: false,
+    seriesLabels: ['關鍵字', '組織團體', '地點', '人物', '企業品牌']
+  })
 
 
   const play = true
@@ -46,7 +59,7 @@ onMounted(() => {
     // console.log('i:', i, ',j:', j)
     if (i == 0) {
       if (j == 1) {
-        chart!.plugins$.next([ pie, pieLabels, tooltip])
+        chart!.plugins$.next([ pie, pieLabels, seriesLegend ])
         pie.params$.next({
           innerRadius: 0
         })
@@ -81,12 +94,12 @@ onMounted(() => {
         seriesLabels: ['關鍵字', '組織團體', '地點', '人物', '企業品牌']
       })
       if (j == 0) {
-        chart!.plugins$.next([ pie, pieLabels, pieEventTexts, tooltip])
+        chart!.plugins$.next([ pie, pieLabels, pieEventTexts, seriesLegend ])
         pie.params$.next({
           innerRadius: 0.5
         })
       } else if (j == 1) {
-        chart!.plugins$.next([ bubbles, tooltip])
+        chart!.plugins$.next([ bubbles, seriesLegend ])
       }
     }
 

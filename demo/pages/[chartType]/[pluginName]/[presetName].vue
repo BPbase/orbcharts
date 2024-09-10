@@ -1,5 +1,5 @@
 <template>
-  <div id="chart" style="width:100%;height:100vh"></div>
+  <div id="chart" style="width:100%;height:100%"></div>
 </template>
 
 <script setup lang="ts">
@@ -25,6 +25,13 @@ const detail: DemoDetailItem<any> | null = demoDetail[pageParams.chartType]
     ? demoDetail[pageParams.chartType]![pageParams.pluginName]![pageParams.presetName]!
     : null
 
+useHead({
+  title: pageParams.pluginName,
+  // meta: [{
+  //   name: 'description',
+  //   content: 'description'
+  // }]
+})
 
 onMounted(() => {
   if (!detail) {

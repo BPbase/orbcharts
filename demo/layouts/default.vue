@@ -58,8 +58,10 @@ body {
 }
 .container {
   display: flex;
+  width: 100vw;
+  height:100vh;
   .menu {
-    width: 380px;
+    max-width: 380px;
     height: 100vh;
     overflow: auto;
     border-right: 1px solid #dddddd;
@@ -81,8 +83,27 @@ body {
     }
   }
   .main {
-    width: calc(100vw - 380px);
+    width: 100%;
+    max-width: calc(100vw - 380px);
     height: 100vh;
+  }
+
+  
+}
+
+@media screen and (max-width: 1023px) {
+  .container {
+    flex-direction: column;
+    .menu {
+      /* width: 100%; */
+      max-width: 100%;
+      height: 40vh;
+    }
+    .main {
+      /* width: 100%; */
+      max-width: 100%;
+      height: 60vh;
+    }
   }
 }
 </style>
