@@ -40,7 +40,7 @@ onMounted(() => {
 
   const bubbles = new Bubbles()
 
-
+  
   // bars.params$.next({
     
   // })
@@ -60,11 +60,13 @@ onMounted(() => {
   //   // }
   // })
 
+  
+
   setTimeout(() => {
-    chart.dataFormatter$.next({
-      sumSeries: true,
-      separateSeries: false
-    })
+    // chart.dataFormatter$.next({
+    //   sumSeries: true,
+    //   separateSeries: false
+    // })
     // chart.dataFormatter$.next({
     //   sumSeries: false,
     //   separateSeries: true
@@ -99,6 +101,12 @@ onMounted(() => {
   })
   
   chart.plugins$.next([pie, pieLabels, new Tooltip()])
+
+  // setTimeout(() => {
+    pie.params$.next({
+      innerRadius: 0.5
+    })
+  // })
   
   chart.data$.next(seriesData3)
   

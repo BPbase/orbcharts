@@ -289,7 +289,7 @@ export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAM
   const { seriesCenterSelection$ } = seriesCenterSelectionObservable({
     selection: selection,
     pluginName,
-    seriesSeparate$: observer.seriesSeparate$,
+    separateSeries$: observer.separateSeries$,
     seriesLabels$: observer.seriesLabels$,
     seriesContainerPosition$: observer.seriesContainerPosition$
   })

@@ -17,21 +17,21 @@ import type {
   SeriesContainerPosition } from '@orbcharts/core'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 
-function createSeriesSelection ({ selection, pluginName, seriesSeparate$, seriesLabels$ }: {
+function createSeriesSelection ({ selection, pluginName, separateSeries$, seriesLabels$ }: {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
-  seriesSeparate$: Observable<boolean>
+  separateSeries$: Observable<boolean>
   seriesLabels$: Observable<string[]>
 }) {
   const seriesClassName = getClassName(pluginName, 'series')
   
   return combineLatest({
     seriesLabels: seriesLabels$,
-    seriesSeparate: seriesSeparate$
+    separateSeries: separateSeries$
   }).pipe(
     switchMap(async d => d),
     map((data, i) => {
-      const selectionData = data.seriesSeparate ? data.seriesLabels : [data.seriesLabels.join('')]
+      const selectionData = data.separateSeries ? data.seriesLabels : [data.seriesLabels.join('')]
       return selection
         .selectAll<SVGGElement, string>(`g.${seriesClassName}`)
         .data(selectionData, d => d)
@@ -50,15 +50,15 @@ function createSeriesSelection ({ selection, pluginName, seriesSeparate$, series
 }
 
 // series選取器，以起始座標位置為基準
-export const seriesStartSelectionObservable = ({ selection, pluginName, seriesSeparate$, seriesLabels$, seriesContainerPosition$ }: {
+export const seriesStartSelectionObservable = ({ selection, pluginName, separateSeries$, seriesLabels$, seriesContainerPosition$ }: {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
-  seriesSeparate$: Observable<boolean>
+  separateSeries$: Observable<boolean>
   seriesLabels$: Observable<string[]>
   seriesContainerPosition$: Observable<SeriesContainerPosition[]>
 }) => {
   
-  const seriesStartSelection$ = createSeriesSelection({ selection, pluginName, seriesSeparate$, seriesLabels$ })
+  const seriesStartSelection$ = createSeriesSelection({ selection, pluginName, separateSeries$, seriesLabels$ })
 
   combineLatest({
     seriesStartSelection: seriesStartSelection$,
@@ -97,15 +97,15 @@ export const seriesStartSelectionObservable = ({ selection, pluginName, seriesSe
 }
 
 // series選取器，以中心座標位置為基準
-export const seriesCenterSelectionObservable = ({ selection, pluginName, seriesSeparate$, seriesLabels$, seriesContainerPosition$ }: {
+export const seriesCenterSelectionObservable = ({ selection, pluginName, separateSeries$, seriesLabels$, seriesContainerPosition$ }: {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
-  seriesSeparate$: Observable<boolean>
+  separateSeries$: Observable<boolean>
   seriesLabels$: Observable<string[]>
   seriesContainerPosition$: Observable<SeriesContainerPosition[]>
 }) => {
   
-  const seriesCenterSelection$ = createSeriesSelection({ selection, pluginName, seriesSeparate$, seriesLabels$ })
+  const seriesCenterSelection$ = createSeriesSelection({ selection, pluginName, separateSeries$, seriesLabels$ })
 
   combineLatest({
     seriesCenterSelection: seriesCenterSelection$,
