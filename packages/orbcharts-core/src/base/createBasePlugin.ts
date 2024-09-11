@@ -1,4 +1,4 @@
-import { takeUntil, map, shareReplay, startWith, Subject, Observable } from 'rxjs'
+import { of, takeUntil, map, switchMap, shareReplay, startWith, Subject, BehaviorSubject, Observable } from 'rxjs'
 import type { ChartType, CreateBasePlugin, PluginInitFn, PluginContext } from '../types'
 import { mergeOptionsWithDefault } from '../utils'
 
@@ -10,14 +10,23 @@ function createPlugin <T extends ChartType, PluginName, PluginParams>({ name, de
 }) {
         
   const destroy$ = new Subject()
-  const params$: Subject<Partial<typeof defaultParams>> = new Subject()
-  const StoreMap = new WeakMap() // 避免memory leak
+  const EntityWeakMap = new WeakMap() // <selection, pluginEntity> 避免只移除selection而沒回收pluginEntity的memory leak
   let pluginDestroyFn = () => {}
   let pluginContext: PluginContext<T, PluginName, PluginParams> | undefined
-  let mergedDefaultParams: PluginParams = defaultParams
+  const mergedDefaultParams$ = new BehaviorSubject(defaultParams)
+  const params$: Subject<Partial<typeof defaultParams>> = new BehaviorSubject({})
+  const fullParams$ = mergedDefaultParams$.pipe(
+    switchMap(mergedDefaultParams => {
+      return params$.pipe(
+        takeUntil(destroy$),
+        map(d => mergeOptionsWithDefault(d, mergedDefaultParams)),
+      )
+    }),
+    shareReplay(1)
+  )
 
   // 建立plugin實例
-  return {
+  const pluginEntity = {
     params$,
     name,
     defaultParams,
@@ -27,7 +36,7 @@ function createPlugin <T extends ChartType, PluginName, PluginParams>({ name, de
       }
       // 執行
       pluginDestroyFn = (initFn(pluginContext) ?? (() => {})) // plugin執行會回傳destroy函式
-      StoreMap.set(pluginContext.selection, pluginContext)
+      EntityWeakMap.set(pluginContext.selection, pluginContext)
     },
     destroy () {
       pluginDestroyFn()
@@ -38,19 +47,16 @@ function createPlugin <T extends ChartType, PluginName, PluginParams>({ name, de
       destroy$.next(undefined)
     },
     setPresetParams: (presetParams: Partial<PluginParams>) => {
-      mergedDefaultParams = mergeOptionsWithDefault(presetParams, defaultParams)
+      mergedDefaultParams$.next(mergeOptionsWithDefault(presetParams, defaultParams))
+      
     },
     setContext: (_pluginContext: PluginContext<T, PluginName, PluginParams>) => {
       pluginContext = _pluginContext
-      pluginContext.observer.fullParams$ = params$
-        .pipe(
-          takeUntil(destroy$),
-          startWith({}),
-          map(d => mergeOptionsWithDefault(d, mergedDefaultParams)),
-          shareReplay(1),
-        )
+      pluginContext.observer.fullParams$ = fullParams$
     }
   }
+
+  return pluginEntity
 }
 
 // 建立plugin類別

@@ -94,10 +94,11 @@ onMounted(() => {
         seriesLabels: ['關鍵字', '組織團體', '地點', '人物', '企業品牌']
       })
       if (j == 0) {
-        chart!.plugins$.next([ pie, pieLabels, pieEventTexts, seriesLegend ])
         pie.params$.next({
           innerRadius: 0.5
         })
+        chart!.plugins$.next([ pie, pieLabels, pieEventTexts, seriesLegend ])
+        
       } else if (j == 1) {
         chart!.plugins$.next([ bubbles, seriesLegend ])
       }
