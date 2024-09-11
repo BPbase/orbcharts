@@ -396,7 +396,22 @@ function createEachPie (pluginName: string, context: {
         subscriber.next(pathSelection)
       }
     })
-  })
+  }).pipe(
+    shareReplay(1)
+  )
+
+  // pathSelection$.subscribe(data => {
+  //   console.log('pathSelection', data)
+  // })
+  // context.SeriesDataMap$.subscribe(data => {
+  //   console.log('SeriesDataMap', data)
+  // })
+  // context.computedData$.subscribe(data => {
+  //   console.log('computedData', data)
+  // })
+  // highlightTarget$.subscribe(data => {
+  //   console.log('highlightTarget', data)
+  // })
 
   combineLatest({
     pathSelection: pathSelection$,
@@ -512,9 +527,6 @@ export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PARAMS)(({ selecti
   })
 
   const unsubscribeFnArr: (() => void)[] = []
-
-  // @Q@ 在seriesCenterSelection$之後才訂閱會造成fullParams$訂閱不到最初次的值，還需找時間研究先workaround
-  observer.fullParams$.subscribe()
 
   seriesCenterSelection$
     .pipe(
