@@ -18,7 +18,7 @@ import type {
   SeriesContainerPosition } from '@orbcharts/core'
 import {
   defineSeriesPlugin } from '@orbcharts/core'
-import type { BubblesParams, BubbleScaleType } from '../types'
+import type { BubblesParams, ArcScaleType } from '../types'
 import { DEFAULT_BUBBLES_PARAMS } from '../defaults'
 import { renderCircleText } from '../../utils/d3Graphics'
 
@@ -80,7 +80,7 @@ function getMaxR ({ data, bubbleGroupR, maxValue, avgValue }: {
   const maxSize = maxValue * sizeRate
   const maxR = Math.pow(maxSize / Math.PI, 0.5)
 
-  const modifier = 0.75 // @Q@ 因為以下公式是假設泡泡是正方型來計算，所以畫出來的圖會偏大一些，這個數值是用來修正用的
+  const modifier = 0.785 // @Q@ 因為以下公式是假設泡泡是正方型來計算，所以畫出來的圖會偏大一些，這個數值是用來修正用的
   return maxR * modifier
 }
 
@@ -90,7 +90,7 @@ function createBubblesData ({ data, LastBubbleDataMap, graphicWidth, graphicHeig
   graphicWidth: number
   graphicHeight: number
   SeriesContainerPositionMap: Map<string, SeriesContainerPosition>
-  scaleType: BubbleScaleType
+  scaleType: ArcScaleType
   // highlightIds: string[]
 }) {
   const bubbleGroupR = Math.min(...[graphicWidth, graphicHeight]) / 2
@@ -392,7 +392,7 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
 
   const scaleType$ = observer.fullParams$.pipe(
     takeUntil(destroy$),
-    map(d => d.bubbleScaleType),
+    map(d => d.arcScaleType),
     distinctUntilChanged()
   )
 

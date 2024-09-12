@@ -41,6 +41,14 @@ onMounted(() => {
   const tooltip = new Tooltip()
   chart!.plugins$.next([ multiGroupAxis, multiValueAxis, multiBars, multiLines, multiDots, multiGridLegend, tooltip])
 
+
+  chart.chartParams$.next({
+    colorScheme: 'dark',
+    colors: {
+      
+    }
+  })
+
   // chart.chartParams$.next({
   //   highlightTarget: 'series'
   // })

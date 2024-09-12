@@ -7,6 +7,6 @@ export const PP_BUBBLES_SCALING_BY_RADIUS: PluginParamsFile<BubblesParams> = {
   pluginName: 'Bubbles',
   description: '以半徑尺寸為比例的泡泡圖',
   data: {
-    bubbleScaleType: 'radius'
+    arcScaleType: 'radius'
   }
 }

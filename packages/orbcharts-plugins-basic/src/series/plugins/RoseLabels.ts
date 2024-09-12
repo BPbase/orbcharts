@@ -6,6 +6,7 @@ import {
   map,
   takeUntil,
   Observable,
+  distinctUntilChanged,
   Subject,
   BehaviorSubject } from 'rxjs'
 import {
@@ -15,10 +16,10 @@ import type {
   SeriesContainerPosition,
   EventSeries,
   ChartParams } from '@orbcharts/core'
-import type { PieLabelsParams } from '../types'
+import type { RoseLabelsParams } from '../types'
 import type { PieDatum } from '../seriesUtils'
-import { DEFAULT_PIE_LABELS_PARAMS } from '../defaults'
-import { makePieData } from '../seriesUtils'
+import { DEFAULT_ROSE_LABELS_PARAMS } from '../defaults'
+// import { makePieData } from '../seriesUtils'
 import { makeD3Arc } from '../../utils/d3Utils'
 import { getDatumColor, getClassName } from '../../utils/orbchartsUtils'
 import { seriesCenterSelectionObservable } from '../seriesObservables'
@@ -33,29 +34,58 @@ interface RenderDatum {
   mouseoverY: number
 }
 
-const pluginName = 'PieLabels'
+const pluginName = 'RoseLabels'
 const textClassName = getClassName(pluginName, 'text')
 
-function makeRenderData (pieData: PieDatum[], arc: d3.Arc<any, d3.DefaultArcObject>, mouseoverArc: d3.Arc<any, d3.DefaultArcObject>, centroid: number): RenderDatum[] {
+function makeRenderData ({ pieData, centroid, arcScaleType, maxValue, axisWidth, outerRadius }: {
+  pieData: PieDatum[]
+  // arc: d3.Arc<any, d3.DefaultArcObject>
+  centroid: number
+  arcScaleType: 'area' | 'radius'
+  maxValue: number
+  axisWidth: number
+  outerRadius: number
+}): RenderDatum[] {
+
+  const outerRadiusWidth = (axisWidth / 2) * outerRadius
+
+  const exponent = arcScaleType === 'area'
+    ? 0.5 // 比例映射面積（0.5為取平方根）
+    : 1 // 比例映射半徑
+
+  const arcScale = d3.scalePow()
+    .domain([0, maxValue])
+    .range([0, outerRadiusWidth])
+    .exponent(exponent)
+
   return pieData
     .map((d, i) => {
+      const eachOuterRadius = arcScale(d.value)
+
+      const arc = d3.arc()
+        .innerRadius(0)
+        .outerRadius(eachOuterRadius)
+        .padAngle(0)
+        .padRadius(eachOuterRadius)
+        .cornerRadius(0)
+
       const [_x, _y] = arc!.centroid(d as any)
-      const [_mouseoverX, _mouseoverY] = mouseoverArc!.centroid(d as any)
+      const [_mouseoverX, _mouseoverY] = [_x, _y]
       return {
         pieDatum: d,
         arcIndex: i,
         arcLabel: d.data.label,
-        x: _x * centroid!,
-        y: _y * centroid!,
-        mouseoverX: _mouseoverX * centroid!,
-        mouseoverY: _mouseoverY * centroid!
+        x: _x * centroid! * 2,
+        y: _y * centroid! * 2,
+        mouseoverX: _mouseoverX * centroid! * 2,
+        mouseoverY: _mouseoverY * centroid! * 2
       }
     })
     .filter(d => d.pieDatum.data.visible)
 }
 
 // 繪製圓餅圖
-function renderLabel (selection: d3.Selection<SVGGElement, undefined, any, any>, data: RenderDatum[], pluginParams: PieLabelsParams, fullChartParams: ChartParams) {
+function renderLabel (selection: d3.Selection<SVGGElement, undefined, any, any>, data: RenderDatum[], pluginParams: RoseLabelsParams, fullChartParams: ChartParams) {
   // console.log(data)
   // let update = this.gSelection.selectAll('g').data(pieData)
   let update: d3.Selection<SVGPathElement, RenderDatum, any, any> = selection
@@ -84,7 +114,6 @@ function renderLabel (selection: d3.Selection<SVGGElement, undefined, any, any>,
     .attr('fill', (d, i) => getDatumColor({ datum: d.pieDatum.data, colorType: pluginParams.labelColorType, fullChartParams }))
     .transition()
     .attr('transform', (d) => {
-      // console.log('transform', d)
       return 'translate(' + d.x + ',' + d.y + ')'
     })
     // .on('end', () => initHighlight({ labelSelection, data, fullChartParams }))
@@ -132,11 +161,11 @@ function highlight ({ labelSelection, ids, fullChartParams }: {
       .style('opacity', 1)
     return
   }
-  
+
   labelSelection.each((d, i, n) => {
     const segment = d3.select<SVGPathElement, RenderDatum>(n[i])
 
-    if (ids.includes(d.pieDatum.id)) {
+    if (ids.includes(d.pieDatum.data.id)) {
       segment
         .style('opacity', 1)
         .transition()
@@ -160,9 +189,10 @@ function highlight ({ labelSelection, ids, fullChartParams }: {
 function createEachPieLabel (pluginName: string, context: {
   containerSelection: d3.Selection<SVGGElement, any, any, unknown>
   // computedData$: Observable<ComputedDatumSeries[][]>
+  visibleComputedLayoutData$: Observable<ComputedDatumSeries[][]>
   containerVisibleComputedLayoutData$: Observable<ComputedDatumSeries[]>
   // SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
-  fullParams$: Observable<PieLabelsParams>
+  fullParams$: Observable<RoseLabelsParams>
   fullChartParams$: Observable<ChartParams>
   seriesHighlight$: Observable<ComputedDatumSeries[]>
   seriesContainerPosition$: Observable<SeriesContainerPosition>
@@ -216,6 +246,11 @@ function createEachPieLabel (pluginName: string, context: {
   //   }
   // })
 
+  const maxValue$ = context.visibleComputedLayoutData$.pipe(
+    map(data => Math.max(...data.flat().map(d => d.value))),
+    distinctUntilChanged()
+  )
+
   combineLatest({
     layout: context.seriesContainerPosition$,
     containerVisibleComputedLayoutData: context.containerVisibleComputedLayoutData$,
@@ -228,30 +263,51 @@ function createEachPieLabel (pluginName: string, context: {
 
     const shorterSideWith = data.layout.width < data.layout.height ? data.layout.width : data.layout.height
 
-    // 弧產生器 (d3.arc())
-    const arc = makeD3Arc({
+    // // 弧產生器 (d3.arc())
+    // const arc = makeD3Arc({
+    //   axisWidth: shorterSideWith,
+    //   innerRadius: 0,
+    //   outerRadius: data.fullParams.outerRadius,
+    //   padAngle: 0,
+    //   cornerRadius: 0
+    // })
+
+    // const arcMouseover = makeD3Arc({
+    //   axisWidth: shorterSideWith,
+    //   innerRadius: 0,
+    //   outerRadius: data.fullParams.mouseoverOuterRadius, // 外半徑變化
+    //   padAngle: 0,
+    //   cornerRadius: 0
+    // })
+
+    // const pieData = makePieData({
+    //   data: data.containerVisibleComputedLayoutData,
+    //   startAngle: data.fullParams.startAngle,
+    //   endAngle: data.fullParams.endAngle
+    // })
+
+    const eachAngle = Math.PI * 2 / data.containerVisibleComputedLayoutData.length
+
+    const pieData = data.containerVisibleComputedLayoutData.map((d, i) => {
+      return <PieDatum>{
+        data: d,
+        index: i,
+        value: d.value,
+        startAngle: eachAngle * i,
+        endAngle: eachAngle * (i + 1),
+        padAngle: 0, 
+        // prevValue: lastPieData[i] ? lastPieData[i].value : 0
+      }
+    })
+
+    renderData = makeRenderData({
+      pieData,
+      centroid: data.fullParams.labelCentroid,
+      arcScaleType: data.fullParams.arcScaleType,
+      maxValue: data.containerVisibleComputedLayoutData.reduce((acc, d) => acc + d.value, 0),
       axisWidth: shorterSideWith,
-      innerRadius: 0,
-      outerRadius: data.fullParams.outerRadius,
-      padAngle: 0,
-      cornerRadius: 0
+      outerRadius: data.fullParams.outerRadius
     })
-
-    const arcMouseover = makeD3Arc({
-      axisWidth: shorterSideWith,
-      innerRadius: 0,
-      outerRadius: data.fullParams.mouseoverOuterRadius, // 外半徑變化
-      padAngle: 0,
-      cornerRadius: 0
-    })
-
-    const pieData = makePieData({
-      data: data.containerVisibleComputedLayoutData,
-      startAngle: data.fullParams.startAngle,
-      endAngle: data.fullParams.endAngle
-    })
-
-    renderData = makeRenderData(pieData, arc, arcMouseover, data.fullParams.labelCentroid)
 
     const labelSelection = renderLabel(context.containerSelection, renderData, data.fullParams, data.fullChartParams)
 
@@ -282,7 +338,7 @@ function createEachPieLabel (pluginName: string, context: {
 }
 
 
-export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAMS)(({ selection, observer, subject }) => {
+export const RoseLabels = defineSeriesPlugin(pluginName, DEFAULT_ROSE_LABELS_PARAMS)(({ selection, observer, subject }) => {
   
   const destroy$ = new Subject()
 
@@ -321,6 +377,7 @@ export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAM
         unsubscribeFnArr[containerIndex] = createEachPieLabel(pluginName, {
           containerSelection: containerSelection,
           // computedData$: observer.computedData$,
+          visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
           containerVisibleComputedLayoutData$: containerVisibleComputedLayoutData$,
           // SeriesDataMap$: observer.SeriesDataMap$,
           fullParams$: observer.fullParams$,

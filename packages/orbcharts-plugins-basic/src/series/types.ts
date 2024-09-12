@@ -1,7 +1,7 @@
 import type { ComputedDatumSeries, EventSeries, EventName, ColorType } from '@orbcharts/core'
 // import type { BaseLegendParams } from '../base/BaseLegend'
 
-export type BubbleScaleType = 'area' | 'radius'
+export type ArcScaleType = 'area' | 'radius'
 
 export interface BubblesParams {
   force: {
@@ -15,16 +15,16 @@ export interface BubblesParams {
     lineLengthMin: number
   }
   highlightRIncrease: number
-  bubbleScaleType: BubbleScaleType
+  arcScaleType: ArcScaleType
 }
 
 export interface PieParams {
   // padding: Padding
   outerRadius: number;
   innerRadius: number;
-  outerMouseoverRadius: number;
+  mouseoverOuterRadius: number;
   // label?: LabelStyle
-  enterDuration: number
+  // enterDuration: number
   startAngle: number
   endAngle: number
   padAngle: number
@@ -42,7 +42,7 @@ export interface PieLabelsParams {
   // solidColor?: string;
   // colors?: string[];
   outerRadius: number
-  outerMouseoverRadius: number
+  mouseoverOuterRadius: number
   // innerRadius?: number;
   // enterDuration?: number
   startAngle: number
@@ -51,6 +51,22 @@ export interface PieLabelsParams {
   // fontSize?: number
   labelFn: ((d: ComputedDatumSeries) => string)
   labelColorType: ColorType
+}
+
+export interface RoseParams {
+  outerRadius: number
+  // padAngle: number
+  cornerRadius: number
+  arcScaleType: ArcScaleType
+  mouseoverAngleIncrease: number
+}
+
+export interface RoseLabelsParams {
+  outerRadius: number
+  labelCentroid: number
+  labelFn: ((d: ComputedDatumSeries) => string)
+  labelColorType: ColorType
+  arcScaleType: ArcScaleType
 }
 
 export interface SeriesLegendParams {

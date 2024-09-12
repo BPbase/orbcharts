@@ -4,9 +4,9 @@
 
 <script setup lang="ts">
 import { SeriesChart } from '../../../packages/orbcharts-core/src'
-import { Pie, PieLabels, Bubbles, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { Rose, RoseLabels, Pie, PieLabels, Bubbles, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
-import { seriesData3 } from '../../const/data/seriesData3'
+import { seriesData2 } from '../../const/data/seriesData2'
 
 // import { GridChart, PRESET_GRID_HORIZONTAL, MultiBars } from 'orbcharts'
 
@@ -40,25 +40,31 @@ onMounted(() => {
 
   const bubbles = new Bubbles()
 
+  const rose = new Rose()
   
+  const roseLabels = new RoseLabels()
+
+  rose.params$.next({
+    arcScaleType: 'area'
+  })
   // bars.params$.next({
     
   // })
 
-  // chart.dataFormatter$.next({
-  //   sumSeries: false,
-  //     separateSeries: true
-  //   // container: {
-  //   //   rowAmount: 1,
-  //   //   columnAmount: 3
-  //   // }
-  //   // visibleFilter: (datum, context) => {
-  //   //   if (datum.id === 'series_0_0') {
-  //   //     return false
-  //   //   }
-  //   //   return true
-  //   // }
-  // })
+  chart.dataFormatter$.next({
+    // sumSeries: true,
+    // separateSeries: true
+    // container: {
+    //   rowAmount: 1,
+    //   columnAmount: 3
+    // }
+    // visibleFilter: (datum, context) => {
+    //   if (datum.id === 'series_0_0') {
+    //     return false
+    //   }
+    //   return true
+    // }
+  })
 
   
 
@@ -100,7 +106,7 @@ onMounted(() => {
     // highlightTarget: 'series'
   })
   
-  chart.plugins$.next([pie, pieLabels, new Tooltip()])
+  chart.plugins$.next([rose, roseLabels, new Tooltip()])
 
   // setTimeout(() => {
     pie.params$.next({
@@ -108,7 +114,7 @@ onMounted(() => {
     })
   // })
   
-  chart.data$.next(seriesData3)
+  chart.data$.next(seriesData2)
   
   
 

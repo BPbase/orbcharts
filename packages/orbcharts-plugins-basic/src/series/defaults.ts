@@ -4,6 +4,8 @@ import type {
   PieParams,
   PieEventTextsParams,
   PieLabelsParams,
+  RoseParams,
+  RoseLabelsParams,
   SeriesLegendParams } from './types'
 
   
@@ -19,7 +21,7 @@ export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
     lineLengthMin: 4
   },
   highlightRIncrease: 0,
-  bubbleScaleType: 'area'
+  arcScaleType: 'area'
 }
 
 export const DEFAULT_PIE_PARAMS: PieParams = {
@@ -31,9 +33,9 @@ export const DEFAULT_PIE_PARAMS: PieParams = {
   // },
   outerRadius: 0.95,
   innerRadius: 0,
-  outerMouseoverRadius: 1,
+  mouseoverOuterRadius: 1,
   // label?: LabelStyle
-  enterDuration: 800,
+  // enterDuration: 800,
   startAngle: 0,
   endAngle: Math.PI * 2,
   padAngle: 0.02,
@@ -82,7 +84,7 @@ export const DEFAULT_PIE_LABELS_PARAMS: PieLabelsParams = {
   // solidColor: undefined,
   // colors: DEFAULT_COLORS,
   outerRadius: 0.95,
-  outerMouseoverRadius: 1,
+  mouseoverOuterRadius: 1,
   // innerRadius: 0,
   // enterDuration: 800,
   startAngle: 0,
@@ -90,7 +92,22 @@ export const DEFAULT_PIE_LABELS_PARAMS: PieLabelsParams = {
   labelCentroid: 2.3,
   // fontSize: 12,
   labelColorType: 'series',
-  labelFn: d => String(d.value),
+  labelFn: d => String(d.label),
+}
+
+export const DEFAULT_ROSE_PARAMS: RoseParams = {
+  outerRadius: 0.95,
+  cornerRadius: 0,
+  arcScaleType: 'area',
+  mouseoverAngleIncrease: 0.05
+}
+
+export const DEFAULT_ROSE_LABELS_PARAMS: RoseLabelsParams = {
+  outerRadius: 0.95,
+  labelCentroid: 2.3,
+  labelFn: d => String(d.label),
+  labelColorType: 'series',
+  arcScaleType: 'area'
 }
 
 export const DEFAULT_SERIES_LEGEND_PARAMS: SeriesLegendParams = {

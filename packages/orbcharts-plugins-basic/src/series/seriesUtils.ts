@@ -28,7 +28,8 @@ export function makePieData ({ data, startAngle, endAngle }: {
     .startAngle(startAngle)
     // .endAngle(startAngle + (endAngle - startAngle) * t)
     .endAngle(endAngle)
-    .value((d) => d.visible == false ? 0 : d.value)
+    .value(d => d.value)
+    // .value((d) => d.visible == false ? 0 : d.value)
     // .sort(null) // 不要排序
     .sort((a, b) => a.seq - b.seq)
     // .sort((a: any, b: any) => {

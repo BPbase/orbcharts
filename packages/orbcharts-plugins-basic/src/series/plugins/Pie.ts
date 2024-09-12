@@ -162,7 +162,7 @@ function highlight ({ pathSelection, ids, fullChartParams, arc, arcMouseover }: 
 function createEachPie (pluginName: string, context: {
   containerSelection: d3.Selection<SVGGElement, any, any, unknown>
   computedData$: Observable<ComputedDatumSeries[][]>
-  containerComputedLayoutData$: Observable<ComputedDatumSeries[]>
+  containerVisibleComputedLayoutData$: Observable<ComputedDatumSeries[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
   fullParams$: Observable<PieParams>
   fullChartParams$: Observable<ChartParams>
@@ -204,7 +204,7 @@ function createEachPie (pluginName: string, context: {
 
   const pieData$: Observable<PieDatum[]> = new Observable(subscriber => {
     combineLatest({
-      containerComputedLayoutData: context.containerComputedLayoutData$,
+      containerVisibleComputedLayoutData: context.containerVisibleComputedLayoutData$,
       fullParams: context.fullParams$,
     }).pipe(
       takeUntil(destroy$),
@@ -212,7 +212,7 @@ function createEachPie (pluginName: string, context: {
     ).subscribe(data => {
       // console.log('pieData', data)
       const pieData: PieDatum[] = makePieData({
-        data: data.containerComputedLayoutData,
+        data: data.containerVisibleComputedLayoutData,
         startAngle: data.fullParams.startAngle,
         endAngle: data.fullParams.endAngle
       })
@@ -256,7 +256,7 @@ function createEachPie (pluginName: string, context: {
       const arcMouseover = makeD3Arc({
         axisWidth: data.shorterSideWith,
         innerRadius: data.fullParams.innerRadius,
-        outerRadius: data.fullParams.outerMouseoverRadius, // 外半徑變化
+        outerRadius: data.fullParams.mouseoverOuterRadius, // 外半徑變化
         padAngle: data.fullParams.padAngle,
         cornerRadius: data.fullParams.cornerRadius
       })
@@ -385,16 +385,16 @@ function createEachPie (pluginName: string, context: {
         })
 
       // -- 更新資料 --
-      if (!enter.size() && update.size() > 0) {
-        // console.log('test')
-        const pathSelection = renderPie({
-          selection: context.containerSelection,
-          data: data.pieData,
-          arc: data.arc,
-          pathClassName
-        })
-        subscriber.next(pathSelection)
-      }
+      // if (!enter.size() && update.size() > 0) {
+      //   // console.log('test')
+      //   const pathSelection = renderPie({
+      //     selection: context.containerSelection,
+      //     data: data.pieData,
+      //     arc: data.arc,
+      //     pathClassName
+      //   })
+      //   subscriber.next(pathSelection)
+      // }
     })
   }).pipe(
     shareReplay(1)
@@ -544,7 +544,7 @@ export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PARAMS)(({ selecti
         // console.log('containerIndex', containerIndex)
         const containerSelection = d3.select(g[containerIndex])
 
-        const containerComputedLayoutData$ = observer.computedLayoutData$.pipe(
+        const containerVisibleComputedLayoutData$ = observer.visibleComputedLayoutData$.pipe(
           takeUntil(destroy$),
           map(data => data[containerIndex] ?? data[0])
         )
@@ -557,7 +557,7 @@ export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PARAMS)(({ selecti
         unsubscribeFnArr[containerIndex] = createEachPie(pluginName, {
           containerSelection: containerSelection,
           computedData$: observer.computedData$,
-          containerComputedLayoutData$: containerComputedLayoutData$,
+          containerVisibleComputedLayoutData$: containerVisibleComputedLayoutData$,
           SeriesDataMap$: observer.SeriesDataMap$,
           fullParams$: observer.fullParams$,
           fullChartParams$: observer.fullChartParams$,
