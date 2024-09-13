@@ -75,10 +75,10 @@ function makeRenderData ({ pieData, centroid, arcScaleType, maxValue, axisWidth,
         pieDatum: d,
         arcIndex: i,
         arcLabel: d.data.label,
-        x: _x * centroid! * 2,
-        y: _y * centroid! * 2,
-        mouseoverX: _mouseoverX * centroid! * 2,
-        mouseoverY: _mouseoverY * centroid! * 2
+        x: _x * centroid!,
+        y: _y * centroid!,
+        mouseoverX: _mouseoverX * centroid!,
+        mouseoverY: _mouseoverY * centroid!
       }
     })
     .filter(d => d.pieDatum.data.visible)
@@ -200,51 +200,14 @@ function createEachPieLabel (pluginName: string, context: {
 }) {
   const destroy$ = new Subject()
 
-  // const graphicSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
   let labelSelection$: Subject<d3.Selection<SVGPathElement, RenderDatum, any, any>> = new Subject()
   let renderData: RenderDatum[] = []
-  // let highlightTarget: HighlightTarget | undefined
-  // let fullChartParams: ChartParams | undefined
-
-  // observer.layout$
-  //   .pipe(
-  //     first()
-  //   )
-  //   .subscribe(size => {
-  //     selection
-  //       .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-  //     observer.layout$
-  //       .pipe(
-  //         takeUntil(destroy$)
-  //       )
-  //       .subscribe(size => {
-  //         selection
-  //           .transition()
-  //           .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-  //       })
-  //   })
-
   
-
-  // combineLatest({
-  //   event: store.event$,
-  //   fullChartParams: fullChartParams$
-  // }).pipe(
-  //   // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
-  //   switchMap(async (d) => d),
-  // ).subscribe(d => {
-  //   if (d.event.eventName === 'mouseover' && d.event.datum) {
-  //     highlight({
-  //       labelSelection,
-  //       data: renderData,
-  //       id: d.fullChartParams.highlightTarget === 'datum' ? d.event.datum!.id : undefined,
-  //       label: d.fullChartParams.highlightTarget === 'series' ? d.event.datum!.label : undefined,
-  //       fullChartParams: d.fullChartParams
-  //     })
-  //   } else if (d.event.eventName === 'mouseout') {
-  //     removeHighlight({ labelSelection })
-  //   }
-  // })
+  const shorterSideWith$ = context.seriesContainerPosition$.pipe(
+    takeUntil(destroy$),
+    map(d => d.width < d.height ? d.width : d.height),
+    distinctUntilChanged()
+  )
 
   const maxValue$ = context.visibleComputedLayoutData$.pipe(
     map(data => Math.max(...data.flat().map(d => d.value))),
@@ -252,16 +215,18 @@ function createEachPieLabel (pluginName: string, context: {
   )
 
   combineLatest({
-    layout: context.seriesContainerPosition$,
+    // layout: context.seriesContainerPosition$,
+    shorterSideWith: shorterSideWith$,
     containerVisibleComputedLayoutData: context.containerVisibleComputedLayoutData$,
+    maxValue: maxValue$,
     fullParams: context.fullParams$,
-    fullChartParams: context.fullChartParams$
+    fullChartParams: context.fullChartParams$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
   ).subscribe(data => {
 
-    const shorterSideWith = data.layout.width < data.layout.height ? data.layout.width : data.layout.height
+    // const shorterSideWith = data.layout.width < data.layout.height ? data.layout.width : data.layout.height
 
     // // 弧產生器 (d3.arc())
     // const arc = makeD3Arc({
@@ -289,7 +254,8 @@ function createEachPieLabel (pluginName: string, context: {
     const eachAngle = Math.PI * 2 / data.containerVisibleComputedLayoutData.length
 
     const pieData = data.containerVisibleComputedLayoutData.map((d, i) => {
-      return <PieDatum>{
+      return {
+        id: d.id,
         data: d,
         index: i,
         value: d.value,
@@ -304,8 +270,8 @@ function createEachPieLabel (pluginName: string, context: {
       pieData,
       centroid: data.fullParams.labelCentroid,
       arcScaleType: data.fullParams.arcScaleType,
-      maxValue: data.containerVisibleComputedLayoutData.reduce((acc, d) => acc + d.value, 0),
-      axisWidth: shorterSideWith,
+      maxValue: data.maxValue,
+      axisWidth: data.shorterSideWith,
       outerRadius: data.fullParams.outerRadius
     })
 
@@ -366,12 +332,12 @@ export const RoseLabels = defineSeriesPlugin(pluginName, DEFAULT_ROSE_LABELS_PAR
 
         const containerVisibleComputedLayoutData$ = observer.visibleComputedLayoutData$.pipe(
           takeUntil(destroy$),
-          map(data => data[containerIndex] ?? data[0])
+          map(data => JSON.parse(JSON.stringify(data[containerIndex] ?? data[0])))
         )
 
         const containerPosition$ = observer.seriesContainerPosition$.pipe(
           takeUntil(destroy$),
-          map(data => data[containerIndex] ?? data[0])
+          map(data => JSON.parse(JSON.stringify(data[containerIndex] ?? data[0])))
         )
 
         unsubscribeFnArr[containerIndex] = createEachPieLabel(pluginName, {

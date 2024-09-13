@@ -104,6 +104,41 @@ export const demoList: DemoChartTypeItem[] = [
           },
         ]
       },
+      {
+        title: 'Rose',
+        list: [
+          {
+            chartType: 'series',
+            pluginName: 'Rose',
+            presetName: 'PRESET_SERIES_BASIC'
+          },
+          {
+            chartType: 'series',
+            pluginName: 'Rose',
+            presetName: 'PRESET_ROSE_SCALING_BY_RADIUS'
+          },
+          {
+            chartType: 'series',
+            pluginName: 'Rose',
+            presetName: 'PRESET_SERIES_DESC'
+          },
+          {
+            chartType: 'series',
+            pluginName: 'Rose',
+            presetName: 'PRESET_SERIES_SEPARATE_SERIES'
+          },
+          {
+            chartType: 'series',
+            pluginName: 'Rose',
+            presetName: 'PRESET_SERIES_SUM_SERIES'
+          },
+          {
+            chartType: 'series',
+            pluginName: 'Rose',
+            presetName: 'PRESET_SERIES_SEPARATE_SERIES_AND_SUM_SERIES'
+          },
+        ]
+      }
     ]
   },
   {

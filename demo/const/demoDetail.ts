@@ -47,10 +47,10 @@ export interface ChartConstructor<T extends core.ChartType> {
 export const demoDetail: DemoDetail = {
   series: {
     'Bubbles': {
-      'PRESET_BUBBLES_BASIC': {
+      'PRESET_SERIES_BASIC': {
         chart: core.SeriesChart,
         plugins: [pluginsBasic.Bubbles, pluginsBasic.SeriesLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_BUBBLES_BASIC,
+        preset: presetsBasic.PRESET_SERIES_BASIC,
         data: seriesData3
       },
       'PRESET_BUBBLES_SCALING_BY_RADIUS': {
@@ -73,10 +73,10 @@ export const demoDetail: DemoDetail = {
       },
     },
     'Pie': {
-      'PRESET_PIE_BASIC': {
+      'PRESET_SERIES_BASIC': {
         chart: core.SeriesChart,
         plugins: [pluginsBasic.Pie, pluginsBasic.PieLabels, pluginsBasic.SeriesLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_PIE_BASIC,
+        preset: presetsBasic.PRESET_SERIES_BASIC,
         data: seriesData2
       },
       'PRESET_PIE_WITH_INNER_LABELS': {
@@ -115,7 +115,45 @@ export const demoDetail: DemoDetail = {
         preset: presetsBasic.PRESET_SERIES_SUM_SERIES,
         data: seriesData2
       },
-    }
+    },
+    'Rose': {
+      'PRESET_SERIES_BASIC': {
+        chart: core.SeriesChart,
+        plugins: [pluginsBasic.Rose, pluginsBasic.RoseLabels, pluginsBasic.SeriesLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_SERIES_BASIC,
+        data: seriesData2
+      },
+      'PRESET_ROSE_SCALING_BY_RADIUS': {
+        chart: core.SeriesChart,
+        plugins: [pluginsBasic.Rose, pluginsBasic.RoseLabels, pluginsBasic.SeriesLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_ROSE_SCALING_BY_RADIUS,
+        data: seriesData2
+      },
+      'PRESET_SERIES_DESC': {
+        chart: core.SeriesChart,
+        plugins: [pluginsBasic.Rose, pluginsBasic.RoseLabels, pluginsBasic.SeriesLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_SERIES_DESC,
+        data: seriesData2
+      },
+      'PRESET_SERIES_SEPARATE_SERIES': {
+        chart: core.SeriesChart,
+        plugins: [pluginsBasic.Rose, pluginsBasic.RoseLabels, pluginsBasic.SeriesLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_SERIES_SEPARATE_SERIES,
+        data: seriesData2
+      },
+      'PRESET_SERIES_SUM_SERIES': {
+        chart: core.SeriesChart,
+        plugins: [pluginsBasic.Rose, pluginsBasic.RoseLabels, pluginsBasic.SeriesLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_SERIES_SUM_SERIES,
+        data: seriesData2
+      },
+      'PRESET_SERIES_SEPARATE_SERIES_AND_SUM_SERIES': {
+        chart: core.SeriesChart,
+        plugins: [pluginsBasic.Rose, pluginsBasic.RoseLabels, pluginsBasic.SeriesLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_SERIES_SEPARATE_SERIES_AND_SUM_SERIES,
+        data: seriesData2
+      },
+    },
   },
   grid: {
     'Bars': {

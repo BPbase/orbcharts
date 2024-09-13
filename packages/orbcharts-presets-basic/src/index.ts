@@ -10,7 +10,7 @@ import {
 // 通用 - PRESET_SERIES_[name]
 export const PRESET_SERIES_BASIC = createSeriesPreset({
   // chartParamsId: 'CP_RIGHT_PADDING',
-  allPluginParamsIds: [],
+  allPluginParamsIds: ['PP_SERIES_LEGEND_ROUND'],
   description: '基本Series參數'
 })
 export const PRESET_SERIES_DESC = createSeriesPreset({
@@ -37,6 +37,12 @@ export const PRESET_SERIES_SUM_SERIES = createSeriesPreset({
   allPluginParamsIds: [],
   description: '合併Series資料'
 })
+export const PRESET_SERIES_SEPARATE_SERIES_AND_SUM_SERIES = createSeriesPreset({
+  // chartParamsId: 'CP_RIGHT_PADDING',
+  dataFormatterId: 'DF_SERIES_SEPARATE_SERIES_AND_SUM_SERIES',
+  allPluginParamsIds: [],
+  description: '分開顯示Series並合併Series資料'
+})
 // export const PRESET_SERIES_SUM_SERIES_AND_DESC = createSeriesPreset({
 //   // chartParamsId: 'CP_RIGHT_PADDING',
 //   dataFormatterId: 'DF_SERIES_SUM_SERIES_AND_DESC',
@@ -44,11 +50,11 @@ export const PRESET_SERIES_SUM_SERIES = createSeriesPreset({
 //   description: '合併Series資料並排序'
 // })
 // Bubbles - PRESET_BUBBLES_[name]
-export const PRESET_BUBBLES_BASIC = createSeriesPreset({
-  // chartParamsId: 'CP_RIGHT_PADDING',
-  allPluginParamsIds: ['PP_SERIES_LEGEND_ROUND'],
-  description: '基本泡泡圖'
-})
+// export const PRESET_BUBBLES_BASIC = createSeriesPreset({
+//   // chartParamsId: 'CP_RIGHT_PADDING',
+//   allPluginParamsIds: ['PP_SERIES_LEGEND_ROUND'],
+//   description: '基本泡泡圖'
+// })
 export const PRESET_BUBBLES_SCALING_BY_RADIUS = createSeriesPreset({
   // chartParamsId: 'CP_RIGHT_PADDING',
   allPluginParamsIds: ['PP_BUBBLES_SCALING_BY_RADIUS', 'PP_SERIES_LEGEND_ROUND'],
@@ -61,11 +67,11 @@ export const PRESET_BUBBLES_SEPARATE_SERIES = createSeriesPreset({
   description: '分開顯示Series泡泡'
 })
 // Pie - PRESET_PIE_[name]
-export const PRESET_PIE_BASIC = createSeriesPreset({
-  // chartParamsId: 'CP_RIGHT_PADDING',
-  allPluginParamsIds: ['PP_SERIES_LEGEND_ROUND'],
-  description: '基本圓餅圖'
-})
+// export const PRESET_PIE_BASIC = createSeriesPreset({
+//   // chartParamsId: 'CP_RIGHT_PADDING',
+//   allPluginParamsIds: ['PP_SERIES_LEGEND_ROUND'],
+//   description: '基本圓餅圖'
+// })
 export const PRESET_PIE_WITH_INNER_LABELS = createSeriesPreset({
   // chartParamsId: 'CP_RIGHT_PADDING',
   allPluginParamsIds: ['PP_PIE_LABELS_INNER', 'PP_SERIES_LEGEND_ROUND'],
@@ -80,6 +86,12 @@ export const PRESET_PIE_HALF_DONUT = createSeriesPreset({
   chartParamsId: 'CP_TOP_AND_NO_BOTTOM_PADDING',
   allPluginParamsIds: ['PP_PIE_HALF_DONUT', 'PP_PIE_LABELS_HALF_ANGLE', 'PP_SERIES_LEGEND_ROUND'],
   description: '半圓甜甜圈圖'
+})
+// Rose - PRESET_ROSE_[name]
+export const PRESET_ROSE_SCALING_BY_RADIUS = createSeriesPreset({
+  chartParamsId: 'CP_RIGHT_PADDING',
+  allPluginParamsIds: ['PP_ROSE_SCALING_BY_RADIUS', 'PP_ROSE_LABELS_SCALING_BY_RADIUS', 'PP_SERIES_LEGEND_ROUND'],
+  description: '以半徑尺寸為比例的玫瑰圖'
 })
 
 // -- grid --

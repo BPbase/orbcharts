@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { SeriesChart } from '../../../packages/orbcharts-core/src'
-import { Pie, PieLabels, PieEventTexts, Bubbles, SeriesLegend } from '../../../packages/orbcharts-plugins-basic/src'
+import { Pie, PieLabels, Rose, RoseLabels, PieEventTexts, Bubbles, SeriesLegend } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 import { seriesData3 } from '../../const/data/seriesData3'
 
@@ -28,10 +28,19 @@ onMounted(() => {
 
   const pie = new Pie()
   const pieLabels = new PieLabels()
+  const rose = new Rose()
+  const roseLabels = new RoseLabels()
   const pieEventTexts = new PieEventTexts()
   const bubbles = new Bubbles()
   const seriesLegend = new SeriesLegend()
   // chart!.plugins$.next([ multiGroupAxis, overlappingValueAxes, multiBars, multiLines, multiDots, multiGridLegend])
+
+  pieLabels.params$.next({
+    outerRadius: 1.2
+  })
+  roseLabels.params$.next({
+    outerRadius: 1.2
+  })
 
   chart.chartParams$.next({
     padding: {
@@ -70,17 +79,23 @@ onMounted(() => {
         seriesLabels: ['關鍵字', '組織團體', '地點', '人物', '企業品牌']
       })
     } else if (i == 1) {
-      chart.dataFormatter$.next({
-        sumSeries: true,
-        separateSeries: true,
-        seriesLabels: ['關鍵字', '組織團體', '地點', '人物', '企業品牌']
-      })
+      if (j == 1) {
+        chart!.plugins$.next([ rose, roseLabels, seriesLegend ])
+      } else {
+        chart.dataFormatter$.next({
+          sumSeries: true,
+          separateSeries: true,
+          seriesLabels: ['關鍵字', '組織團體', '地點', '人物', '企業品牌']
+        })
+      }
+      
     } else if (i == 2)  {
       chart.dataFormatter$.next({
         sumSeries: true,
         separateSeries: false,
         seriesLabels: ['關鍵字', '組織團體', '地點', '人物', '企業品牌']
       })
+      
     } else if (i == 3)  {
       chart.dataFormatter$.next({
         sumSeries: false,

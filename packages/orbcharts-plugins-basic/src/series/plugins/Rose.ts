@@ -2,6 +2,7 @@ import * as d3 from 'd3'
 import {
   combineLatest,
   map,
+  filter,
   switchMap,
   takeUntil,
   distinctUntilChanged,
@@ -65,7 +66,6 @@ function makeTweenArcFn ({ cornerRadius, outerRadius, axisWidth, maxValue, arcSc
     .exponent(exponent)
 
   return (d: PieDatum) => {
-
     const prevEachOuterRadius = arcScale(d.prevValue)!
     const eachOuterRadius = arcScale(d.value)!
   
@@ -195,7 +195,8 @@ function createEachRose (pluginName: string, context: {
 
   const shorterSideWith$ = context.seriesContainerPosition$.pipe(
     takeUntil(destroy$),
-    map(d => d.width < d.height ? d.width : d.height)
+    map(d => d.width < d.height ? d.width : d.height),
+    distinctUntilChanged()
   )
 
   const pieData$: Observable<PieDatum[]> = combineLatest({
@@ -206,16 +207,16 @@ function createEachRose (pluginName: string, context: {
     switchMap(async (d) => d),
     map(data => {
       const eachAngle = roseEndAngle / data.containerVisibleComputedLayoutData.length
-
       return data.containerVisibleComputedLayoutData.map((d, i) => {
-        return <PieDatum>{
+        return {
+          id: d.id,
           data: d,
           index: i,
           value: d.value,
           startAngle: eachAngle * i,
           endAngle: eachAngle * (i + 1),
           padAngle: rosePadAngle, 
-          prevValue: lastPieData[i] ? lastPieData[i].value : 0
+          prevValue: (lastPieData[i] && lastPieData[i].id === d.id) ? lastPieData[i].value : 0
         }
       })
     })
@@ -231,6 +232,10 @@ function createEachRose (pluginName: string, context: {
     map(data => Math.max(...data.flat().map(d => d.value))),
     distinctUntilChanged()
   )
+
+  // context.visibleComputedLayoutData$.subscribe(data => {
+  //   console.log('visibleComputedLayoutData$', data)
+  // })
 
   const tweenArc$ = combineLatest({
     fullParams: context.fullParams$,
@@ -256,44 +261,50 @@ function createEachRose (pluginName: string, context: {
     distinctUntilChanged()
   )
 
+  // 是否在transition中
+  const isTransitionMoving$ = new BehaviorSubject<boolean>(false)
+
   const pathSelection$ = new Observable<d3.Selection<SVGPathElement, PieDatum, any, any>>(subscriber => {
     combineLatest({
       pieData: pieData$,
-      // arc: arc$,
       tweenArc: tweenArc$,
-      computedData: context.computedData$,
-      fullParams: context.fullParams$,
-      fullChartParams: context.fullChartParams$,
       transitionDuration: transitionDuration$,
-      highlightTarget: highlightTarget$
     }).pipe(
       takeUntil(destroy$),
       switchMap(async d => d)
     ).subscribe(data => {
+      const pieData = data.pieData.map((d, i) => {
+        d.prevValue = (lastPieData[i] && lastPieData[i].id === d.id) ? lastPieData[i].value : 0
+        return d
+      })
+
+      isTransitionMoving$.next(true)
 
       const pathSelection: d3.Selection<SVGPathElement, PieDatum, any, any> = context.containerSelection
         .selectAll<SVGPathElement, PieDatum>('path')
-        .data(data.pieData, d => d.id)
+        .data(pieData, d => d.id)
         .join('path')
         .classed(pathClassName, true)
         .style('cursor', 'pointer')
         .attr('fill', (d, i) => d.data.color)
+      pathSelection.interrupt('graphicMove')
       pathSelection
         .transition('graphicMove')
         .duration(data.transitionDuration)
         .attrTween('d', data.tweenArc)
         .on('end', () => {
-          
           subscriber.next(pathSelection)
 
-          lastPieData = Object.assign([], data.pieData)
+          isTransitionMoving$.next(false)
+          // lastPieData = Object.assign([], data.pieData)
+          // console.log('lastPieData', lastPieData)
         })
+      lastPieData = Object.assign([], pieData)
 
     })
   }).pipe(
     shareReplay(1)
   )
-
 
   combineLatest({
     pathSelection: pathSelection$,
@@ -380,9 +391,11 @@ function createEachRose (pluginName: string, context: {
     fullChartParams: context.fullChartParams$,
     // arc: arc$,
     tweenArc: tweenArc$,
+    isTransitionMoving: isTransitionMoving$
   }).pipe(
     takeUntil(destroy$),
-    switchMap(async d => d)
+    switchMap(async d => d),
+    filter(d => !d.isTransitionMoving) // 避免資料變更時的動畫和highlight的動畫重覆執行
   ).subscribe(data => {
     highlight({
       pathSelection: data.pathSelection,
@@ -393,6 +406,9 @@ function createEachRose (pluginName: string, context: {
       // arcMouseover: data.arcMouseover
     })
   })
+
+
+  
 
   return () => {
     destroy$.next(undefined)
@@ -421,17 +437,16 @@ export const Rose = defineSeriesPlugin(pluginName, DEFAULT_ROSE_PARAMS)(({ selec
       unsubscribeFnArr.forEach(fn => fn())
 
       seriesCenterSelection.each((d, containerIndex, g) => { 
-        // console.log('containerIndex', containerIndex)
         const containerSelection = d3.select(g[containerIndex])
 
         const containerVisibleComputedLayoutData$ = observer.visibleComputedLayoutData$.pipe(
           takeUntil(destroy$),
-          map(data => data[containerIndex] ?? data[0])
+          map(data => JSON.parse(JSON.stringify(data[containerIndex] ?? data[0])))
         )
 
         const containerPosition$ = observer.seriesContainerPosition$.pipe(
           takeUntil(destroy$),
-          map(data => data[containerIndex] ?? data[0])
+          map(data => JSON.parse(JSON.stringify(data[containerIndex] ?? data[0])))
         )
 
         unsubscribeFnArr[containerIndex] = createEachRose(pluginName, {

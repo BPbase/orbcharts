@@ -6,6 +6,7 @@ import {
   map,
   takeUntil,
   Observable,
+  distinctUntilChanged,
   Subject,
   BehaviorSubject } from 'rxjs'
 import {
@@ -173,51 +174,15 @@ function createEachPieLabel (pluginName: string, context: {
   // const graphicSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
   let labelSelection$: Subject<d3.Selection<SVGPathElement, RenderDatum, any, any>> = new Subject()
   let renderData: RenderDatum[] = []
-  // let highlightTarget: HighlightTarget | undefined
-  // let fullChartParams: ChartParams | undefined
-
-  // observer.layout$
-  //   .pipe(
-  //     first()
-  //   )
-  //   .subscribe(size => {
-  //     selection
-  //       .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-  //     observer.layout$
-  //       .pipe(
-  //         takeUntil(destroy$)
-  //       )
-  //       .subscribe(size => {
-  //         selection
-  //           .transition()
-  //           .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-  //       })
-  //   })
-
   
-
-  // combineLatest({
-  //   event: store.event$,
-  //   fullChartParams: fullChartParams$
-  // }).pipe(
-  //   // 轉換後會退訂前一個未完成的訂閱事件，因此可以取到「同時間」最後一次的訂閱事件
-  //   switchMap(async (d) => d),
-  // ).subscribe(d => {
-  //   if (d.event.eventName === 'mouseover' && d.event.datum) {
-  //     highlight({
-  //       labelSelection,
-  //       data: renderData,
-  //       id: d.fullChartParams.highlightTarget === 'datum' ? d.event.datum!.id : undefined,
-  //       label: d.fullChartParams.highlightTarget === 'series' ? d.event.datum!.label : undefined,
-  //       fullChartParams: d.fullChartParams
-  //     })
-  //   } else if (d.event.eventName === 'mouseout') {
-  //     removeHighlight({ labelSelection })
-  //   }
-  // })
+  const shorterSideWith$ = context.seriesContainerPosition$.pipe(
+    takeUntil(destroy$),
+    map(d => d.width < d.height ? d.width : d.height),
+    distinctUntilChanged()
+  )
 
   combineLatest({
-    layout: context.seriesContainerPosition$,
+    shorterSideWith: shorterSideWith$,
     containerVisibleComputedLayoutData: context.containerVisibleComputedLayoutData$,
     fullParams: context.fullParams$,
     fullChartParams: context.fullChartParams$
@@ -226,11 +191,11 @@ function createEachPieLabel (pluginName: string, context: {
     switchMap(async (d) => d),
   ).subscribe(data => {
 
-    const shorterSideWith = data.layout.width < data.layout.height ? data.layout.width : data.layout.height
+    // const shorterSideWith = data.layout.width < data.layout.height ? data.layout.width : data.layout.height
 
     // 弧產生器 (d3.arc())
     const arc = makeD3Arc({
-      axisWidth: shorterSideWith,
+      axisWidth: data.shorterSideWith,
       innerRadius: 0,
       outerRadius: data.fullParams.outerRadius,
       padAngle: 0,
@@ -238,7 +203,7 @@ function createEachPieLabel (pluginName: string, context: {
     })
 
     const arcMouseover = makeD3Arc({
-      axisWidth: shorterSideWith,
+      axisWidth: data.shorterSideWith,
       innerRadius: 0,
       outerRadius: data.fullParams.mouseoverOuterRadius, // 外半徑變化
       padAngle: 0,

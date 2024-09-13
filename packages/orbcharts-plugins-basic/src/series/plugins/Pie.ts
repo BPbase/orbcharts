@@ -199,7 +199,8 @@ function createEachPie (pluginName: string, context: {
 
   const shorterSideWith$ = context.seriesContainerPosition$.pipe(
     takeUntil(destroy$),
-    map(d => d.width < d.height ? d.width : d.height)
+    map(d => d.width < d.height ? d.width : d.height),
+    distinctUntilChanged()
   )
 
   const pieData$: Observable<PieDatum[]> = new Observable(subscriber => {

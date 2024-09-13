@@ -69,10 +69,10 @@ onMounted(() => {
   
 
   setTimeout(() => {
-    // chart.dataFormatter$.next({
-    //   sumSeries: true,
-    //   separateSeries: false
-    // })
+    chart.dataFormatter$.next({
+      sumSeries: true,
+      separateSeries: false
+    })
     // chart.dataFormatter$.next({
     //   sumSeries: false,
     //   separateSeries: true
