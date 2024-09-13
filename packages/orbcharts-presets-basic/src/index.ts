@@ -112,6 +112,7 @@ export const PRESET_GRID_HORIZONTAL = createGridPreset({
   allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
   description: '橫向圖'
 })
+// @Q@ legacy 待刪
 export const PRESET_GRID_DIVERGING_SCALE = createGridPreset({
   chartParamsId: 'CP_BOTTOM_PADDING',
   dataFormatterId: 'DF_GRID_DIVERGING_SCALE',
@@ -300,6 +301,19 @@ export const PRESET_MULTI_GRID_4_GRID_SLOT = createMultiGridPreset({
 //   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM_WITH_RECT_AND_LINE_LIST'],
 //   description: '基本MultiGrid參數'
 // })
+// MultiBars - PRESET_MULTI_BARS_[name]
+// export const PRESET_MULTI_BARS_PN = createMultiGridPreset({
+//   chartParamsId: 'CP_BOTTOM_LONG_PADDING',
+//   dataFormatterId: 'DF_MULTI_GRID_SEPARATE_GRID',
+//   allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM', 'PP_MULTI_GROUP_AXIS_2_GRID_SLOT', 'PP_MULTI_VALUE_AXIS_2_GRID_SLOT', 'PP_MULTI_BARS_2_GRID_SLOT', 'PP_MULTI_BAR_STACK_2_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_2_GRID_SLOT', 'PP_MULTI_LINES_2_GRID_SLOT', 'PP_MULTI_LINE_AREAS_2_GRID_SLOT', 'PP_MULTI_DOTS_2_GRID_SLOT'],
+//   description: '正負值折線圖'
+// })
+export const PRESET_MULTI_BARS_DIVERGING = createMultiGridPreset({
+  chartParamsId: 'CP_BOTTOM_LONG_PADDING',
+  dataFormatterId: 'DF_MULTI_GRID_DIVERGING',
+  allPluginParamsIds: ['PP_MULTI_GRID_LEGEND_BOTTOM', 'PP_MULTI_GROUP_AXIS_DIVERGING', 'PP_MULTI_VALUE_AXIS_2_GRID_SLOT', 'PP_MULTI_BARS_2_GRID_SLOT', 'PP_MULTI_BAR_STACK_2_GRID_SLOT', 'PP_MULTI_BARS_TRIANGLE_2_GRID_SLOT', 'PP_MULTI_LINES_2_GRID_SLOT', 'PP_MULTI_LINE_AREAS_2_GRID_SLOT', 'PP_MULTI_DOTS_2_GRID_SLOT'],
+  description: '正負值折線圖'
+})
 // MultiLines - PRESET_MULTI_LINES_[name]
 // export const PRESET_MULTI_LINES_BASIC = createMultiGridPreset({
 //   chartParamsId: 'CP_BOTTOM_PADDING',

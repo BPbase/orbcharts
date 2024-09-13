@@ -8,6 +8,7 @@ import { gridData1 } from './data/gridData1'
 import { gridData2 } from './data/gridData2'
 import { gridData3 } from './data/gridData3'
 import { gridData4 } from './data/gridData4'
+import { multiGridData0 } from './data/multiGridData0'
 import { multiGridData1 } from './data/multiGridData1'
 import { multiGridData2 } from './data/multiGridData2'
 import { multiGridData3 } from './data/multiGridData3'
@@ -441,6 +442,12 @@ export const demoDetail: DemoDetail = {
       //   preset: presetsBasic.PRESET_MULTI_GRID_BASIC,
       //   data: multiGridData1
       // },
+      'PRESET_MULTI_BARS_DIVERGING': {
+        chart: core.MultiGridChart,
+        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBars, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_MULTI_BARS_DIVERGING,
+        data: multiGridData0
+      },
       'PRESET_MULTI_GRID_2_GRID_SLOT': {
         chart: core.MultiGridChart,
         plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBars, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
