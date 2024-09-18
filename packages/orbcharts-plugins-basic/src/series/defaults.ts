@@ -104,7 +104,7 @@ export const DEFAULT_ROSE_PARAMS: RoseParams = {
 
 export const DEFAULT_ROSE_LABELS_PARAMS: RoseLabelsParams = {
   outerRadius: 0.95,
-  labelCentroid: 2.3,
+  labelCentroid: 2.5,
   labelFn: d => String(d.label),
   labelColorType: 'series',
   arcScaleType: 'area'

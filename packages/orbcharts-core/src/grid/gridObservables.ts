@@ -553,7 +553,8 @@ export const gridContainerPositionObservable = ({ computedData$, fullDataFormatt
         // })
       } else {
         // -- 無拆分 --
-        return calcGridContainerLayout(data.layout, data.fullDataFormatter.container, 1)
+        const gridContainerPositionArr = calcGridContainerLayout(data.layout, data.fullDataFormatter.container, 1)
+        return data.computedData.map((d, i) => gridContainerPositionArr[0]) // 每個series相同位置
         // const columnIndex = 0
         // const rowIndex = 0
         // return data.computedData.map((seriesData, seriesIndex) => {

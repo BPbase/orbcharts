@@ -45,7 +45,7 @@ export const demoList: DemoChartTypeItem[] = [
           {
             chartType: 'series',
             pluginName: 'Bubbles',
-            presetName: 'PRESET_BUBBLES_BASIC'
+            presetName: 'PRESET_SERIES_BASIC'
           },
           {
             chartType: 'series',
@@ -70,7 +70,7 @@ export const demoList: DemoChartTypeItem[] = [
           {
             chartType: 'series',
             pluginName: 'Pie',
-            presetName: 'PRESET_PIE_BASIC'
+            presetName: 'PRESET_SERIES_BASIC'
           },
           {
             chartType: 'series',
