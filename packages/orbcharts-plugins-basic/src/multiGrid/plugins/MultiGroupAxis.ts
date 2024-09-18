@@ -10,7 +10,7 @@ import {
   defineMultiGridPlugin } from '@orbcharts/core'
 import { DEFAULT_MULTI_GROUP_AXIS_PARAMS } from '../defaults'
 import { createBaseGroupAxis } from '../../base/BaseGroupAxis'
-import { multiGridPluginObservables } from '../multiGridObservables'
+import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 
 const pluginName = 'MultiGroupAxis'
@@ -22,9 +22,9 @@ export const MultiGroupAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GR
   
   const unsubscribeFnArr: (() => void)[] = []
 
-  const multiGridPlugin$ = multiGridPluginObservables(observer)
+  const multiGridPluginDetail$ = multiGridPluginDetailObservables(observer)
 
-  multiGridPlugin$
+  multiGridPluginDetail$
     .pipe(
       takeUntil(destroy$)
     )

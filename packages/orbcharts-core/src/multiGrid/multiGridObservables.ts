@@ -41,7 +41,7 @@ import {
   gridVisibleComputedDataObservable,
   gridVisibleComputedLayoutDataObservable,
   // isSeriesSeprateObservable,
-  gridContainerPositionObservable } from '../grid/gridObservables'
+  computedStackedDataObservables } from '../grid/gridObservables'
 import { DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT } from '../defaults'
 import { calcGridContainerLayout } from '../utils/orbchartsUtils'
 
@@ -131,6 +131,12 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
         //   shareReplay(1)
         // )
 
+        const isSeriesSeprate$ = gridDataFormatter$.pipe(
+          map(d => d.grid.separateSeries),
+          distinctUntilChanged(),
+          shareReplay(1)
+        )
+
         const gridContainerPosition$ = of(data.multiGridContainer[gridIndex]).pipe(
           takeUntil(destroy$),
           shareReplay(1)
@@ -217,7 +223,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           takeUntil(destroy$),
           shareReplay(1)
         )
-    
+
         const computedLayoutData$ = gridComputedLayoutDataObservable({
           computedData$: gridComputedData$,
           fullDataFormatter$: gridDataFormatter$,
@@ -234,7 +240,15 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           shareReplay(1)
         )
 
-        return <ContextObserverMultiGridDetail>{
+        const computedStackedData$ = computedStackedDataObservables({
+          computedData$: gridComputedData$,
+          isSeriesSeprate$: isSeriesSeprate$
+        }).pipe(
+          shareReplay(1)
+        )
+
+        return {
+          isSeriesSeprate$,
           gridContainerPosition$,
           gridAxesTransform$,
           gridAxesReverseTransform$,
@@ -250,7 +264,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           computedLayoutData$,
           visibleComputedData$,
           visibleComputedLayoutData$,
-          // isSeriesSeprate$
+          computedStackedData$
         }
       })
     })

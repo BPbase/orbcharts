@@ -16,13 +16,6 @@ const pluginName = 'Bars'
 export const Bars = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
-  const isSeriesSeprate$ = observer.fullDataFormatter$.pipe(
-    takeUntil(destroy$),
-    map(d => d.grid.separateSeries),
-    distinctUntilChanged(),
-    shareReplay(1)
-  )
-
   const unsubscribeBaseBars = createBaseBars(pluginName, {
     selection,
     computedData$: observer.computedData$,
@@ -40,7 +33,7 @@ export const Bars = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)(({ selecti
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
     gridContainerPosition$: observer.gridContainerPosition$,
-    isSeriesSeprate$: isSeriesSeprate$,
+    isSeriesSeprate$: observer.isSeriesSeprate$,
     event$: subject.event$,
   })
 

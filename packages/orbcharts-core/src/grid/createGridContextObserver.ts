@@ -1,4 +1,4 @@
-import { map, shareReplay } from 'rxjs'
+import { map, shareReplay, distinctUntilChanged } from 'rxjs'
 import type { ContextObserverFn } from '../types'
 import {
   highlightObservable,
@@ -16,7 +16,8 @@ import {
   gridVisibleComputedDataObservable,
   gridVisibleComputedLayoutDataObservable,
   // isSeriesSeprateObservable,
-  gridContainerPositionObservable } from './gridObservables'
+  gridContainerPositionObservable,
+  computedStackedDataObservables } from './gridObservables'
 
 export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, observer }) => {
   
@@ -24,12 +25,11 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     shareReplay(1)
   )
 
-  // const isSeriesSeprate$ = isSeriesSeprateObservable({
-  //   computedData$: observer.computedData$,
-  //   fullDataFormatter$: observer.fullDataFormatter$
-  // }).pipe(
-  //   shareReplay(1)
-  // )
+  const isSeriesSeprate$ = observer.fullDataFormatter$.pipe(
+    map(d => d.grid.separateSeries),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
   
   const gridContainerPosition$ = gridContainerPositionObservable({
     computedData$: observer.computedData$,
@@ -121,6 +121,13 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     shareReplay(1)
   )
 
+  const computedStackedData$ = computedStackedDataObservables({
+    computedData$: observer.computedData$,
+    isSeriesSeprate$: isSeriesSeprate$
+  }).pipe(
+    shareReplay(1)
+  )
+
 
   return {
     fullParams$: observer.fullParams$,
@@ -129,7 +136,7 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     computedData$: observer.computedData$,
     layout$: observer.layout$,
     textSizePx$,
-    // isSeriesSeprate$,
+    isSeriesSeprate$,
     gridContainerPosition$,
     gridAxesTransform$,
     gridAxesReverseTransform$,
@@ -143,5 +150,6 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     computedLayoutData$,
     visibleComputedData$,
     visibleComputedLayoutData$,
+    computedStackedData$,
   }
 }

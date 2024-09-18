@@ -6,7 +6,7 @@ import {
   defineMultiGridPlugin } from '@orbcharts/core'
 import { DEFAULT_MULTI_DOTS_PARAMS } from '../defaults'
 import { createBaseDots } from '../../base/BaseDots'
-import { multiGridPluginObservables } from '../multiGridObservables'
+import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 
 const pluginName = 'MultiDots'
@@ -18,9 +18,9 @@ export const MultiDots = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_DOTS_PA
 
   const unsubscribeFnArr: (() => void)[] = []
 
-  const multiGridPlugin$ = multiGridPluginObservables(observer)
+  const multiGridPluginDetail$ = multiGridPluginDetailObservables(observer)
 
-  multiGridPlugin$
+  multiGridPluginDetail$
     .pipe(
       takeUntil(destroy$)
     )

@@ -15,7 +15,7 @@ import {
   defineMultiGridPlugin } from '@orbcharts/core'
 import { DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS } from '../defaults'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
-import { multiGridPluginObservables } from '../multiGridObservables'
+import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '@orbcharts/core/src/grid/gridObservables'
 
@@ -78,7 +78,7 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
     })
   )
 
-  const multiGridPlugin$ = of(observer).pipe(
+  const multiGridPluginDetail$ = of(observer).pipe(
     takeUntil(destroy$),
     map(observer => {
       // 將observer的gridIndexes限制在2個
@@ -94,7 +94,7 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
         )
       }
     }),
-    switchMap(observer => multiGridPluginObservables(observer)),
+    switchMap(observer => multiGridPluginDetailObservables(observer)),
     map(data => {
       return data.map((observables, index) => {
         if (index === 0) {
@@ -123,7 +123,7 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
     })
   )
 
-  multiGridPlugin$
+  multiGridPluginDetail$
     .pipe(
       takeUntil(destroy$)
     )
@@ -142,13 +142,6 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
 
           const gridSelection = d3.select(g[i])
 
-          const isSeriesSeprate$ = d.dataFormatter$.pipe(
-            takeUntil(destroy$),
-            map(d => d.grid.separateSeries),
-            distinctUntilChanged(),
-            shareReplay(1)
-          )
-
           unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
             selection: gridSelection,
             computedData$: d.computedData$,
@@ -161,7 +154,7 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
             gridAxesReverseTransform$: d.gridAxesReverseTransform$,
             gridAxesSize$: d.gridAxesSize$,
             gridContainerPosition$: d.gridContainerPosition$,
-            isSeriesSeprate$,
+            isSeriesSeprate$: d.isSeriesSeprate$,
           })
         })
     })

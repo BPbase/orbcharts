@@ -1,6 +1,7 @@
 import {
   combineLatest,
   distinctUntilChanged,
+  iif,
   filter,
   map,
   merge,
@@ -15,6 +16,7 @@ import type {
   ChartParams,
   ComputedDataTypeMap,
   ComputedDatumTypeMap,
+  ComputedDataGrid,
   ContextObserverFn,
   DataTypeMap,
   DataGridDatum,
@@ -504,23 +506,6 @@ export const gridVisibleComputedLayoutDataObservable = ({ computedLayoutData$ }:
   )
 }
 
-// export const isSeriesSeprateObservable = ({ computedData$, fullDataFormatter$ }: {
-//   computedData$: Observable<ComputedDataTypeMap<'grid'>>
-//   fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
-// }) => {
-//   return combineLatest({
-//     computedData: computedData$,
-//     fullDataFormatter: fullDataFormatter$
-//   }).pipe(
-//     map(data => {
-//       return data.fullDataFormatter.grid.seriesSlotIndexes && data.fullDataFormatter.grid.seriesSlotIndexes.length === data.computedData.length
-//         ? true
-//         : false
-//     }),
-//     distinctUntilChanged()
-//   )
-// }
-
 // 所有container位置（對應series）
 export const gridContainerPositionObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'grid'>>
@@ -572,4 +557,45 @@ export const gridContainerPositionObservable = ({ computedData$, fullDataFormatt
   )
 
   return gridContainerPosition$
+}
+
+// 將原本的value全部替換成加總後的value
+export const computedStackedDataObservables = ({ isSeriesSeprate$, computedData$ }: {
+  isSeriesSeprate$: Observable<boolean>
+  computedData$: Observable<ComputedDataGrid>
+}): Observable<ComputedDataGrid> => {
+  const stackedData$: Observable<ComputedDataGrid> = computedData$.pipe(
+    map(data => {
+      // 將同一group的value加總起來
+      const stackedValue = new Array(data[0] ? data[0].length : 0)
+        .fill(null)
+        .map((_, i) => {
+          return data.reduce((prev, current) => {
+            if (current && current[i]) {
+              const currentValue = current[i].value == null || current[i].visible == false
+                ? 0
+                : current[i].value!
+              return prev + currentValue
+            }
+            return prev
+          }, 0)
+        })
+      // 將原本的value全部替換成加總後的value
+      const computedData = data.map((series, seriesIndex) => {
+        return series.map((d, i) => {
+          return {
+            ...d,
+            value: stackedValue[i],
+          }
+        })
+      })
+      return computedData
+    }),
+  )
+
+  return isSeriesSeprate$.pipe(
+    switchMap(isSeriesSeprate => {
+      return iif(() => isSeriesSeprate, computedData$, stackedData$)
+    })
+  )
 }

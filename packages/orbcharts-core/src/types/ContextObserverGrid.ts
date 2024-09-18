@@ -9,6 +9,7 @@ ContextObserverBase<'grid', PluginParams>, ContextObserverGridDetail {
 }
 
 export interface ContextObserverGridDetail {
+  isSeriesSeprate$: Observable<boolean>
   gridContainerPosition$: Observable<GridContainerPosition[]>
   gridAxesTransform$: Observable<TransformData>
   gridAxesReverseTransform$: Observable<TransformData>
@@ -22,7 +23,7 @@ export interface ContextObserverGridDetail {
   computedLayoutData$: Observable<ComputedLayoutDataGrid>
   visibleComputedData$: Observable<ComputedDataGrid>
   visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
-  // isSeriesSeprate$: Observable<boolean>
+  computedStackedData$: Observable<ComputedDataGrid>
 }
 
 export type ComputedLayoutDataGrid = ComputedLayoutDatumGrid[][]

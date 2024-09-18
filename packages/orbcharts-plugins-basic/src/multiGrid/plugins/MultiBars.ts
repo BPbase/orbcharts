@@ -10,7 +10,7 @@ import {
   defineMultiGridPlugin } from '@orbcharts/core'
 import { DEFAULT_MULTI_BARS_PARAMS } from '../defaults'
 import { createBaseBars } from '../../base/BaseBars'
-import { multiGridPluginObservables } from '../multiGridObservables'
+import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 
 const pluginName = 'MultiBars'
@@ -22,9 +22,9 @@ export const MultiBars = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_BARS_PA
 
   const unsubscribeFnArr: (() => void)[] = []
 
-  const multiGridPlugin$ = multiGridPluginObservables(observer)
+  const multiGridPluginDetail$ = multiGridPluginDetailObservables(observer)
 
-  multiGridPlugin$
+  multiGridPluginDetail$
     .pipe(
       takeUntil(destroy$)
     )
