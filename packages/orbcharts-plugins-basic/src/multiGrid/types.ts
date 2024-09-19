@@ -36,6 +36,10 @@ export interface MultiValueAxisParams extends BaseValueAxisParams {
   gridIndexes: number[]
 }
 
+export interface MultiValueStackAxisParams extends BaseValueAxisParams {
+  gridIndexes: number[]
+}
+
 export interface MultiBarsParams extends BaseBarsParams {
   gridIndexes: number[]
 }

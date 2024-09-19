@@ -23,7 +23,7 @@ interface MultiGridPluginParams {
 }
 
 // 對應grid資料的plugin所需Observable（必須有gridIndexes）
-export const multiGridPluginObservables = (observer: ContextObserverMultiGrid<MultiGridPluginParams>): Observable<ContextObserverMultiGridDetail[]> => {
+export const multiGridPluginDetailObservables = (observer: ContextObserverMultiGrid<MultiGridPluginParams>): Observable<ContextObserverMultiGridDetail[]> => {
   const gridIndexes$ = observer.fullParams$.pipe(
     map(fullParams => fullParams.gridIndexes),
     distinctUntilChanged(),
@@ -41,3 +41,4 @@ export const multiGridPluginObservables = (observer: ContextObserverMultiGrid<Mu
     })
   )
 }
+

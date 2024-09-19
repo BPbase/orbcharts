@@ -15,14 +15,6 @@ const pluginName = 'BarsTriangle'
 export const BarsTriangle = defineGridPlugin(pluginName, DEFAULT_BARS_TRIANGLE_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
-
-  const isSeriesSeprate$ = observer.fullDataFormatter$.pipe(
-    takeUntil(destroy$),
-    map(d => d.grid.separateSeries),
-    distinctUntilChanged(),
-    shareReplay(1)
-  )
-
   const unsubscribeBaseBars = createBaseBarsTriangle(pluginName, {
     selection,
     computedData$: observer.computedData$,
@@ -40,7 +32,7 @@ export const BarsTriangle = defineGridPlugin(pluginName, DEFAULT_BARS_TRIANGLE_P
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
     gridContainerPosition$: observer.gridContainerPosition$,
-    isSeriesSeprate$,
+    isSeriesSeprate$: observer.isSeriesSeprate$,
     event$: subject.event$,
   })
 

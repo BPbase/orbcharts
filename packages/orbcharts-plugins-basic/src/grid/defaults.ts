@@ -99,7 +99,9 @@ export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
   tickTextColorType: 'primary'
 }
 
-export const DEFAULT_VALUE_STACK_AXIS_PARAMS: ValueStackAxisParams = DEFAULT_VALUE_AXIS_PARAMS
+export const DEFAULT_VALUE_STACK_AXIS_PARAMS: ValueStackAxisParams = {
+  ...DEFAULT_VALUE_AXIS_PARAMS
+}
 
 export const DEFAULT_SCALING_AREA_PARAMS: ScalingAreaParams = {
 

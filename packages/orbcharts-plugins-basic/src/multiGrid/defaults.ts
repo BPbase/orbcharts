@@ -8,6 +8,7 @@ import type {
   MultiDotsParams,
   MultiGroupAxisParams,
   MultiValueAxisParams,
+  MultiValueStackAxisParams,
   OverlappingValueAxesParams
 } from './types'
 
@@ -64,6 +65,10 @@ export const DEFAULT_MULTI_VALUE_AXIS_PARAMS: MultiValueAxisParams = {
   tickTextRotate: 0,
   tickTextColorType: 'primary',
   gridIndexes: [0]
+}
+
+export const DEFAULT_MULTI_VALUE_STACK_AXIS_PARAMS: MultiValueStackAxisParams = {
+  ...DEFAULT_MULTI_VALUE_AXIS_PARAMS
 }
 
 export const DEFAULT_MULTI_BARS_PARAMS: MultiBarsParams = {

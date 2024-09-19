@@ -15,13 +15,6 @@ const pluginName = 'BarStack'
 export const BarStack = defineGridPlugin(pluginName, DEFAULT_BAR_STACK_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
-  const isSeriesSeprate$ = observer.fullDataFormatter$.pipe(
-    takeUntil(destroy$),
-    map(d => d.grid.separateSeries),
-    distinctUntilChanged(),
-    shareReplay(1)
-  )
-
   const unsubscribeBaseBars = createBaseBarStack(pluginName, {
     selection,
     computedData$: observer.computedData$,
@@ -40,7 +33,7 @@ export const BarStack = defineGridPlugin(pluginName, DEFAULT_BAR_STACK_PARAMS)((
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
     gridContainerPosition$: observer.gridContainerPosition$,
-    isSeriesSeprate$,
+    isSeriesSeprate$: observer.isSeriesSeprate$,
     event$: subject.event$,
   })
 

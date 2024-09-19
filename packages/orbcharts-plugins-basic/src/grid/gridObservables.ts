@@ -245,3 +245,4 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
     })
   })
 }
+

@@ -13,11 +13,11 @@ import { createBaseValueAxis } from '../../base/BaseValueAxis'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 
-const pluginName = 'MultiValueAxis'
+const pluginName = 'MultiValueStackAxis'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiValueAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_VALUE_AXIS_PARAMS)(({ selection, name, subject, observer }) => {
+export const MultiValueStackAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_VALUE_AXIS_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []
@@ -49,7 +49,7 @@ export const MultiValueAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_VA
 
           unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
             selection: gridSelection,
-            computedData$: d.computedData$,
+            computedData$: d.computedStackedData$, // 計算疊加value的資料
             fullParams$: observer.fullParams$,
             fullDataFormatter$: d.dataFormatter$,
             fullChartParams$: observer.fullChartParams$,  

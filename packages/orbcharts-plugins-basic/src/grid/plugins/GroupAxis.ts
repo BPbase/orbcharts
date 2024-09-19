@@ -16,13 +16,6 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUP_AXIS_PARAMS)
   
   const destroy$ = new Subject()
 
-  const isSeriesSeprate$ = observer.fullDataFormatter$.pipe(
-    takeUntil(destroy$),
-    map(d => d.grid.separateSeries),
-    distinctUntilChanged(),
-    shareReplay(1)
-  )
-
   const unsubscribeBaseGroupAxis = createBaseGroupAxis(pluginName, {
     selection,
     computedData$: observer.computedData$,
@@ -33,7 +26,7 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUP_AXIS_PARAMS)
     gridAxesReverseTransform$: observer.gridAxesReverseTransform$,
     gridAxesSize$: observer.gridAxesSize$,
     gridContainerPosition$: observer.gridContainerPosition$,
-    isSeriesSeprate$,
+    isSeriesSeprate$: observer.isSeriesSeprate$,
   })
 
   return () => {

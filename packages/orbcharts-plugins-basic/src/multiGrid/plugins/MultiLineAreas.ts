@@ -7,7 +7,7 @@ import {
 
 import { DEFAULT_MULTI_LINE_AREAS_PARAMS } from '../defaults'
 import { createBaseLineAreas } from '../../base/BaseLineAreas'
-import { multiGridPluginObservables } from '../multiGridObservables'
+import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 
 const pluginName = 'MultiLineAreas'
@@ -19,9 +19,9 @@ export const MultiLineAreas = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_LI
   
   const unsubscribeFnArr: (() => void)[] = []
 
-  const multiGridPlugin$ = multiGridPluginObservables(observer)
+  const multiGridPluginDetail$ = multiGridPluginDetailObservables(observer)
 
-  multiGridPlugin$
+  multiGridPluginDetail$
     .pipe(
       takeUntil(destroy$)
     )

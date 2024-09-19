@@ -19,11 +19,12 @@ import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '@orbcharts/core/src/grid/gridObservables'
 
-const pluginName = 'OverlappingValueAxes'
+const pluginName = 'OverlappingValueStackAxes'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS)(({ selection, name, subject, observer }) => {
+// 第一個圖軸使用堆疊的資料，第二個圖軸使用原始資料
+export const OverlappingValueStackAxes = defineMultiGridPlugin(pluginName, DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []
@@ -144,7 +145,7 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
 
           unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
             selection: gridSelection,
-            computedData$: d.computedData$,
+            computedData$: i === 0 ? d.computedStackedData$ : d.computedData$, // 第一個圖軸計算疊加value的資料
             fullParams$: observer.fullParams$.pipe(
               map(fullParams => i === 0 ? fullParams.firstAxis : fullParams.secondAxis)
             ),
