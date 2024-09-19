@@ -482,25 +482,25 @@ export const demoDetail: DemoDetail = {
     'MultiBarStack': {
       'PRESET_MULTI_GRID_2_GRID_SLOT': {
         chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBarStack, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueStackAxis, pluginsBasic.MultiBarStack, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_MULTI_GRID_2_GRID_SLOT,
         data: multiGridData1
       },
       'PRESET_MULTI_GRID_3_GRID_SLOT': {
         chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBarStack, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueStackAxis, pluginsBasic.MultiBarStack, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_MULTI_GRID_3_GRID_SLOT,
         data: multiGridData2
       },
       'PRESET_MULTI_GRID_4_GRID_SLOT': {
         chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBarStack, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueStackAxis, pluginsBasic.MultiBarStack, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_MULTI_GRID_4_GRID_SLOT,
         data: multiGridData3
       },
       'PRESET_MULTI_GRID_BASIC': {
         chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.OverlappingValueAxes, pluginsBasic.MultiBarStack, pluginsBasic.MultiLines, pluginsBasic.MultiDots, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.OverlappingValueStackAxes, pluginsBasic.MultiBarStack, pluginsBasic.MultiLines, pluginsBasic.MultiDots, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_MULTI_GRID_BASIC,
         data: multiGridData1
       },
