@@ -7,7 +7,8 @@ import {
   takeUntil,
   Subject, 
   Observable,
-  distinctUntilChanged} from 'rxjs'
+  distinctUntilChanged,
+  shareReplay} from 'rxjs'
 import type {
   ChartParams,
   DatumValue,
@@ -66,62 +67,65 @@ function makeForce (bubblesSelection: d3.Selection<SVGGElement, any, any, any>, 
 }
 
 
-// 計算最大泡泡的半徑
-function getMaxR ({ data, bubbleGroupR, maxValue, avgValue }: {
-  data: DatumValue[]
-  bubbleGroupR: number
-  maxValue: number
-  avgValue: number
-}) {
-  // 平均r（假想是正方型來計算的，比如說大正方型裡有4個正方型，則 r = width/Math.sqrt(4)/2）
-  const avgR = bubbleGroupR / Math.sqrt(data.length)
-  const avgSize = avgR * avgR * Math.PI
-  const sizeRate = avgSize / avgValue
-  const maxSize = maxValue * sizeRate
-  const maxR = Math.pow(maxSize / Math.PI, 0.5)
+// // 計算最大泡泡的半徑
+// function getMaxR ({ data, totalR, maxValue, avgValue }: {
+//   data: DatumValue[]
+//   totalR: number
+//   maxValue: number
+//   avgValue: number
+// }) {
+//   // 平均r（假想是正方型來計算的，比如說大正方型裡有4個正方型，則 r = width/Math.sqrt(4)/2）
+//   const avgR = totalR / Math.sqrt(data.length)
+//   const avgSize = avgR * avgR * Math.PI
+//   const sizeRate = avgSize / avgValue
+//   const maxSize = maxValue * sizeRate
+//   const maxR = Math.pow(maxSize / Math.PI, 0.5)
 
-  const modifier = 0.785 // @Q@ 因為以下公式是假設泡泡是正方型來計算，所以畫出來的圖會偏大一些，這個數值是用來修正用的
-  return maxR * modifier
-}
+//   const modifier = 0.785 // @Q@ 因為以下公式是假設泡泡是正方型來計算，所以畫出來的圖會偏大一些，這個數值是用來修正用的
+//   return maxR * modifier
+// }
 
-function createBubblesData ({ data, LastBubbleDataMap, graphicWidth, graphicHeight, SeriesContainerPositionMap, scaleType }: {
-  data: ComputedDataSeries
+function createBubblesData ({ visibleComputedLayoutData, LastBubbleDataMap, graphicWidth, graphicHeight, SeriesContainerPositionMap, scaleType }: {
+  visibleComputedLayoutData: ComputedDataSeries
   LastBubbleDataMap: Map<string, BubblesDatum>
   graphicWidth: number
   graphicHeight: number
   SeriesContainerPositionMap: Map<string, SeriesContainerPosition>
   scaleType: ArcScaleType
   // highlightIds: string[]
-}) {
-  const bubbleGroupR = Math.min(...[graphicWidth, graphicHeight]) / 2
+}): BubblesDatum[] {
+  // 虛擬大圓（所有小圓聚合起來的大圓）的半徑
+  const totalR = Math.min(...[graphicWidth, graphicHeight]) / 2
 
-  const filteredData = data
-    .flat()
-    .filter(_d => _d.value != null && _d.visible != false)
+  const data = visibleComputedLayoutData.flat()
 
-  const maxValue = Math.max(
-    ...filteredData.map(_d => _d.value!)
-  )
+  const totalValue = data.reduce((acc, current) => acc + current.value, 0)
 
-  const avgValue = (
-    filteredData.reduce((prev, current) => prev + (current.value ?? 0), 0)
-  ) / filteredData.length
-  
-  const maxR = getMaxR({ data: filteredData, bubbleGroupR, maxValue, avgValue })
-  
-  const exponent = scaleType === 'area'
-    ? 0.5 // 比例映射面積（0.5為取平方根）
-    : 1 // 比例映射半徑
+  // 半徑比例尺
+  const radiusScale = d3.scalePow()
+    .domain([0, totalValue])
+    .range([0, totalR])
+    .exponent(scaleType === 'area'
+      ? 0.5 // 數值映射面積（0.5為取平方根）
+      : 1 // 數值映射半徑
+    )
 
-  const scaleBubbleR = d3.scalePow()
-    .domain([0, maxValue])
-    .range([0, maxR])
-    .exponent(exponent)
+  // 縮放比例 - 確保多個小圓的總面積等於大圓的面積
+  const scaleFactor = scaleType === 'area'
+    ? 1
+    // 當數值映射半徑時，多個小圓的總面積會小於大圓的面積，所以要計算縮放比例
+    : (() => {
+      const totalArea = totalR * totalR * Math.PI
+      return Math.sqrt(totalArea / d3.sum(data, d => Math.PI * Math.pow(radiusScale(d.value), 2)))
+    })()
 
-  const bubbleData: BubblesDatum[] = filteredData.map((_d) => {
+  // 調整係數 - 因為圓和圓之間的空隙造成聚合起來的大圓會略大，所以稍作微調
+  const adjustmentFactor = 0.9
+
+  return data.map((_d) => {
     const d: BubblesDatum = _d as BubblesDatum
 
-    const existDatum = LastBubbleDataMap.get(_d.id)
+    const existDatum = LastBubbleDataMap.get(d.id)
 
     if (existDatum) {
       // 使用現有的座標
@@ -132,23 +136,21 @@ function createBubblesData ({ data, LastBubbleDataMap, graphicWidth, graphicHeig
       d.x = Math.random() * seriesContainerPosition.width
       d.y = Math.random() * seriesContainerPosition.height
     }
-    const r = scaleBubbleR!(d.value ?? 0)!
+    const r = radiusScale!(d.value ?? 0)! * scaleFactor * adjustmentFactor
     d.r = r
     d._originR = r
     
     return d
   })
-
-  return bubbleData
 }
 
-function renderBubbles ({ graphicSelection, bubblesData, fullParams, sumSeries }: {
-  graphicSelection: d3.Selection<SVGGElement, any, any, any>
+function renderBubbles ({ selection, bubblesData, fullParams, sumSeries }: {
+  selection: d3.Selection<SVGGElement, any, any, any>
   bubblesData: BubblesDatum[]
   fullParams: BubblesParams
   sumSeries: boolean
 }) {
-  const bubblesSelection = graphicSelection.selectAll<SVGGElement, BubblesDatum>("g")
+  const bubblesSelection = selection.selectAll<SVGGElement, BubblesDatum>("g")
     .data(bubblesData, (d) => d.id)
     .join(
       enter => {
@@ -241,7 +243,7 @@ function drag (): d3.DragBehavior<Element, unknown, unknown> {
   return d3.drag()
     .on("start", (event, d: any) => {
       if (!event.active) {
-        force!.alpha(1).restart();
+        force!.alpha(1).restart()
       }
       d.fx = d.x
       d.fy = d.y
@@ -284,7 +286,7 @@ function groupBubbles ({ fullParams, SeriesContainerPositionMap }: {
       return SeriesContainerPositionMap.get(data.seriesLabel)!.centerY
     }))
 
-  force!.alpha(1).restart();
+  force!.alpha(1).restart()
 }
 
 function highlight ({ bubblesSelection, highlightIds, fullChartParams }: {
@@ -322,69 +324,10 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
   
   const destroy$ = new Subject()
 
-  const graphicSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
-  // const bubblesSelection$: Subject<d3.Selection<SVGGElement, BubblesDatum, any, any>> = new Subject()
   // 紀錄前一次bubble data
   let LastBubbleDataMap: Map<string, BubblesDatum> = new Map()
 
   
-  // fullParams$.subscribe(d => {
-  //   force = makeForce(bubblesSelection, d)
-  // })
-
-  // observer.seriesContainerPosition$.subscribe(d => {
-  //   console.log(d)
-  // })
-
-  // observer.layout$
-  //   .pipe(
-  //     first()
-  //   )
-  //   .subscribe(size => {
-  //     selection
-  //       .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-  //     observer.layout$
-  //       .pipe(
-  //         takeUntil(destroy$)
-  //       )
-  //       .subscribe(size => {
-  //         selection
-  //           .transition()
-  //           .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-  //       })
-  //   })
-
-  // const bubbleGroupR$ = layout$.pipe(
-  //   map(d => {
-  //     const minWidth = Math.min(...[d.width, d.height])
-  //     return minWidth / 2
-  //   })
-  // )
-
-  // const maxValue$ = computedData$.pipe(
-  //   map(d => Math.max(
-  //       ...d
-  //       .flat()
-  //       .filter(_d => _d.value != null)
-  //       .map(_d => _d.value!)
-  //     )
-  //   )
-  // )
-
-  // const avgValue$ = computedData$.pipe(
-  //   map(d => {
-  //     const total = d
-  //       .flat()
-  //       .reduce((prev, current) => prev + (current.value ?? 0), 0)
-  //     return total / d.length
-  //   })
-  // )
-
-  // const SeriesDataMap$ = observer.computedData$.pipe(
-  //   takeUntil(destroy$),
-  //   map(d => makeSeriesDataMap(d))
-  // )
-
   const sumSeries$ = observer.fullDataFormatter$.pipe(
     map(d => d.sumSeries),
     distinctUntilChanged()
@@ -396,28 +339,27 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
     distinctUntilChanged()
   )
 
-  const bubblesData$ = new Observable<BubblesDatum[]>(subscriber => {
-    combineLatest({
-      layout: observer.layout$,
-      SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
-      visibleComputedLayoutData: observer.visibleComputedLayoutData$,
-      scaleType: scaleType$
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async (d) => d),
-    ).subscribe(data => {
+  const bubblesData$ = combineLatest({
+    layout: observer.layout$,
+    SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
+    visibleComputedLayoutData: observer.visibleComputedLayoutData$,
+    scaleType: scaleType$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
       // console.log(data.visibleComputedLayoutData)
-      const bubblesData = createBubblesData({
-        data: data.visibleComputedLayoutData,
+      return createBubblesData({
+        visibleComputedLayoutData: data.visibleComputedLayoutData,
         LastBubbleDataMap,
         graphicWidth: data.layout.width,
         graphicHeight: data.layout.height,
         SeriesContainerPositionMap: data.SeriesContainerPositionMap,
         scaleType: data.scaleType
       })
-      subscriber.next(bubblesData)
-    })
-  })
+    }),
+    shareReplay(1)
+  )
 
   // 紀錄前一次bubble data
   bubblesData$.subscribe(d => {
@@ -439,8 +381,12 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
+      if (force) {
+        force.stop()
+      }
+
       const bubblesSelection = renderBubbles({
-        graphicSelection,
+        selection,
         bubblesData: data.bubblesData,
         fullParams: data.fullParams,
         sumSeries: data.sumSeries
@@ -457,21 +403,20 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
         // graphicHeight: data.layout.height
       })
 
+      // setTimeout(() => {
+      //   force!.alphaTarget(0)
+      //   force!.alpha(1).restart()
+      // }, 2000)
+
       return bubblesSelection
     })
   )
   
   combineLatest({
     bubblesSelection: bubblesSelection$,
-    layout: observer.layout$,
     computedData: observer.computedData$,
-    bubblesData: bubblesData$,
     SeriesDataMap: observer.SeriesDataMap$,
-    fullParams: observer.fullParams$,
     highlightTarget: highlightTarget$,
-    SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
-    // fullChartParams: fullChartParams$
-    // highlight: highlight$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d)
@@ -574,27 +519,25 @@ export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ 
       fullChartParams: data.fullChartParams
     })
 
-    if (data.fullParams.highlightRIncrease) {
-      setHighlightData ({
-        data: data.bubblesData,
-        highlightRIncrease: data.fullParams.highlightRIncrease,
-        highlightIds: data.highlight
-      })
-      renderBubbles({
-        graphicSelection,
-        bubblesData: data.bubblesData,
-        fullParams: data.fullParams,
-        sumSeries: data.sumSeries
-      })
-    }
+    // if (data.fullParams.highlightRIncrease) {
+    //   setHighlightData ({
+    //     data: data.bubblesData,
+    //     highlightRIncrease: data.fullParams.highlightRIncrease,
+    //     highlightIds: data.highlight
+    //   })
+    //   data.bubblesSelection.select('circle')
+    //     // .transition()
+    //     // .duration(200)
+    //     .attr("r", (d) => d.r)
+
+    //     force!.nodes(data.bubblesData)
     
-    groupBubbles({
-      fullParams: data.fullParams,
-      SeriesContainerPositionMap: data.SeriesContainerPositionMap
-      // graphicWidth: data.layout.width,
-      // graphicHeight: data.layout.height
-    })
-    force!.nodes(data.bubblesData);
+    //     groupBubbles({
+    //       fullParams: data.fullParams,
+    //       SeriesContainerPositionMap: data.SeriesContainerPositionMap
+    //     })
+    // }
+
   })
   
   return () => {

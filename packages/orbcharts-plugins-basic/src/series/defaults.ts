@@ -11,8 +11,8 @@ import type {
   
 export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
   force: {
-    strength: 0.03, // 泡泡引力
-    velocityDecay: 0.2, // 衰減數
+    strength: 0.08, // 泡泡引力
+    velocityDecay: 0.3, // 衰減數
     collisionSpacing: 2 // 泡泡間距
   },
   bubbleText: {
@@ -20,7 +20,7 @@ export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
     lineHeight: 12,
     lineLengthMin: 4
   },
-  highlightRIncrease: 0,
+  // highlightRIncrease: 0,
   arcScaleType: 'area'
 }
 

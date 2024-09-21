@@ -14,7 +14,7 @@ export interface BubblesParams {
     lineHeight: number
     lineLengthMin: number
   }
-  highlightRIncrease: number
+  // highlightRIncrease: number
   arcScaleType: ArcScaleType
 }
 
