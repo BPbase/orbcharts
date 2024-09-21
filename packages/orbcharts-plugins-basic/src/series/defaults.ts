@@ -91,7 +91,7 @@ export const DEFAULT_PIE_LABELS_PARAMS: PieLabelsParams = {
   endAngle: Math.PI * 2,
   labelCentroid: 2.3,
   // fontSize: 12,
-  labelColorType: 'series',
+  labelColorType: 'primary',
   labelFn: d => String(d.label),
 }
 
@@ -106,7 +106,7 @@ export const DEFAULT_ROSE_LABELS_PARAMS: RoseLabelsParams = {
   outerRadius: 0.95,
   labelCentroid: 2.5,
   labelFn: d => String(d.label),
-  labelColorType: 'series',
+  labelColorType: 'primary',
   arcScaleType: 'area'
 }
 
