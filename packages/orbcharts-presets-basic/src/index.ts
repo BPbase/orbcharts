@@ -113,9 +113,9 @@ export const PRESET_GRID_HORIZONTAL = createGridPreset({
   description: '橫向圖'
 })
 // @Q@ legacy 待刪
-export const PRESET_GRID_DIVERGING_SCALE = createGridPreset({
+export const PRESET_GRID_PN_SCALE = createGridPreset({
   chartParamsId: 'CP_BOTTOM_PADDING',
-  dataFormatterId: 'DF_GRID_DIVERGING_SCALE',
+  dataFormatterId: 'DF_GRID_PN_SCALE',
   allPluginParamsIds: ['PP_GRID_LEGEND_BOTTOM'],
   description: '正負值分向圖'
 })

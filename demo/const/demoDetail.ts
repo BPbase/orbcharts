@@ -225,11 +225,11 @@ export const demoDetail: DemoDetail = {
         data: gridData1
       },
     },
-    'BarsDiverging': {
-      'PRESET_GRID_DIVERGING_SCALE': {
+    'BarsPN': {
+      'PRESET_GRID_PN_SCALE': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.BarsDiverging, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_GRID_DIVERGING_SCALE,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.BarsPN, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_PN_SCALE,
         data: gridData4
       }
     },

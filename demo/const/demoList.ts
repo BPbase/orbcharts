@@ -205,12 +205,12 @@ export const demoList: DemoChartTypeItem[] = [
         ]
       },
       {
-        title: 'BarsDiverging',
+        title: 'BarsPN',
         list: [
           {
             chartType: 'grid',
-            pluginName: 'BarsDiverging',
-            presetName: 'PRESET_GRID_DIVERGING_SCALE'
+            pluginName: 'BarsPN',
+            presetName: 'PRESET_GRID_PN_SCALE'
           },
         ]
       },
