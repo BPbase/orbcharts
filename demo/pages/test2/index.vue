@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { GridChart } from '../../../packages/orbcharts-core/src'
-import { Bars, BarStack, BarsTriangle, Lines, LineAreas, Dots, GroupAxis, ValueAxis, ValueStackAxis, ScalingArea, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { Bars, BarStack, BarsTriangle, Lines, LineAreas, Dots, GroupAux, GroupAxis, ValueAxis, ValueStackAxis, ScalingArea, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
 import { gridData1 } from '../../const/data/gridData1'
 
@@ -56,18 +56,31 @@ onMounted(() => {
   // })
 
   chart.dataFormatter$.next({
-    // grid: {
-    //   groupAxis: {
-    //     scalePadding: 0
-    //   }
-    // }
+    grid: {
+      groupAxis: {
+        scalePadding: 0
+      }
+    },
     visibleFilter: (datum, context) => {
       if (datum.id === 'grid_0_0_4') {
         // console.log('grid_0_1_4')
         return false
       }
       return true
-    }
+    },
+    // grid: {
+    //   groupAxis: {
+    //     position: 'left',
+    //   },
+    //   valueAxis: {
+    //     position: 'bottom',
+    //   },
+    //   separateSeries: true,
+    // },
+    // container: {
+    //   columnAmount: 1,
+    //   rowAmount: 2
+    // }
   })
   chart.chartParams$.subscribe(data => {
     console.log(data)
@@ -78,7 +91,7 @@ onMounted(() => {
     highlightTarget: 'series'
   })
   
-  chart.plugins$.next([lines, lineAreas, dots, new GroupAxis(), valueAxis, new ScalingArea(), new Tooltip()])
+  chart.plugins$.next([new GroupAxis(), valueAxis, new GroupAux(), lines, lineAreas, dots, new ScalingArea(), new Tooltip()])
   
   chart.data$.next(gridData1)
   

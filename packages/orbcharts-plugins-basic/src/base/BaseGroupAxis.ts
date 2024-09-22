@@ -122,11 +122,7 @@ function renderAxis ({ selection, xAxisClassName, groupingLabelClassName, params
 
   // 計算所有範圍內groupLabels數量（顯示所有刻度）
   const allTicksAmount = Math.floor(groupScaleDomain[1]) - Math.ceil(groupScaleDomain[0]) + 1
-console.log(params.ticks, params.ticks === 'all'
-  ? allTicksAmount
-  : params.ticks > allTicksAmount
-    ? allTicksAmount // 不顯示超過groupLabels數量的刻度
-    : params.ticks)
+
   // 設定X軸刻度
   // const xAxis = d3.axisBottom(groupScale)
   const xAxis = d3.axisTop(groupScale)
