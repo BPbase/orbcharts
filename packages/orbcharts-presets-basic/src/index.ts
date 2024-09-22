@@ -176,6 +176,16 @@ export const PRESET_LINES_ROTATE_AXIS_LABEL = createGridPreset({
   allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
   description: '傾斜標籤'
 })
+// export const PRESET_LINES_TENSE_TICKS = createGridPreset({
+//   chartParamsId: 'CP_BOTTOM_LONG_PADDING_WITH_SERIES_HIGHLIGHT',
+//   allPluginParamsIds: ['PP_GROUP_AXIS_TENSE_TICKS', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
+//   description: '密集標籤'
+// })
+export const PRESET_LINES_LOOSE_TICKS = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_LONG_PADDING_WITH_SERIES_HIGHLIGHT',
+  allPluginParamsIds: ['PP_GROUP_AXIS_LOOSE_TICKS', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
+  description: '寬鬆標籤'
+})
 export const PRESET_LINES_HORIZONTAL = createGridPreset({
   chartParamsId: 'CP_BOTTOM_AND_LEFT_PADDING_WITH_SERIES_HIGHLIGHT',
   dataFormatterId: 'DF_GRID_BOTTOM_VALUE_AXIS',
@@ -214,6 +224,18 @@ export const PRESET_LINE_AREAS_ROTATE_AXIS_LABEL = createGridPreset({
   dataFormatterId: 'DF_GRID_NONE_GROUP_SCALE_PADDING',
   allPluginParamsIds: ['PP_GROUP_AXIS_ROTATE_LABEL', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
   description: '傾斜標籤'
+})
+// export const PRESET_LINE_AREAS_TENSE_TICKS = createGridPreset({
+//   chartParamsId: 'CP_BOTTOM_LONG_PADDING_WITH_SERIES_HIGHLIGHT',
+//   dataFormatterId: 'DF_GRID_NONE_GROUP_SCALE_PADDING',
+//   allPluginParamsIds: ['PP_GROUP_AXIS_TENSE_TICKS', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
+//   description: '密集標籤'
+// })
+export const PRESET_LINE_AREAS_LOOSE_TICKS = createGridPreset({
+  chartParamsId: 'CP_BOTTOM_LONG_PADDING_WITH_SERIES_HIGHLIGHT',
+  dataFormatterId: 'DF_GRID_NONE_GROUP_SCALE_PADDING',
+  allPluginParamsIds: ['PP_GROUP_AXIS_LOOSE_TICKS', 'PP_GRID_LEGEND_BOTTOM_WITH_LINE_LIST'],
+  description: '寬鬆標籤'
 })
 export const PRESET_LINE_AREAS_HORIZONTAL = createGridPreset({
   chartParamsId: 'CP_BOTTOM_AND_LEFT_PADDING_WITH_SERIES_HIGHLIGHT',

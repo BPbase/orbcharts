@@ -240,7 +240,7 @@ function createEachPieLabel (pluginName: string, context: {
     // const arcMouseover = makeD3Arc({
     //   axisWidth: shorterSideWith,
     //   innerRadius: 0,
-    //   outerRadius: data.fullParams.mouseoverOuterRadius, // 外半徑變化
+    //   outerRadius: data.fullParams.outerRadiusWhileHighlight, // 外半徑變化
     //   padAngle: 0,
     //   cornerRadius: 0
     // })

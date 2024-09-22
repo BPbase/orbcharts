@@ -27,6 +27,7 @@ export const DEFAULT_DOTS_PARAMS: DotsParams = {
   fillColorType: 'white',
   strokeColorType: 'series',
   strokeWidth: 2,
+  // strokeWidthWhileHighlight: 3,
   onlyShowHighlighted: false
 }
 
@@ -72,6 +73,7 @@ export const DEFAULT_GROUP_AXIS_PARAMS: GroupAxisParams = {
   labelColorType: 'primary',
   axisLineVisible: true,
   axisLineColorType: 'primary',
+  ticks: 'all',
   tickFormat: text => text,
   tickLineVisible: true,
   tickPadding: 20,
@@ -79,7 +81,7 @@ export const DEFAULT_GROUP_AXIS_PARAMS: GroupAxisParams = {
   tickFullLineDasharray: 'none',
   tickColorType: 'secondary',
   tickTextRotate: 0,
-  tickTextColorType: 'primary'
+  tickTextColorType: 'primary',
 }
 
 export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
@@ -88,7 +90,7 @@ export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
   labelColorType: 'primary',
   axisLineVisible: false,
   axisLineColorType: 'primary',
-  ticks: 4,
+  ticks: null,
   tickFormat: ',.0f',
   tickLineVisible: true,
   tickPadding: 20,

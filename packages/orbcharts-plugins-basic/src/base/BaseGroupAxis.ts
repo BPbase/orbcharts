@@ -7,9 +7,10 @@ import {
   first,
   map,
   takeUntil,
+  shareReplay,
   Observable,
   Subject } from 'rxjs'
-import { createAxisPointScale } from '@orbcharts/core'
+import { createAxisPointScale, createAxisLinearScale } from '@orbcharts/core'
 import type { ColorType, ComputedDataGrid, GridContainerPosition } from '@orbcharts/core'
 import type { BasePluginFn } from './types'
 import type {
@@ -27,6 +28,7 @@ export interface BaseGroupAxisParams {
   labelColorType: ColorType
   axisLineVisible: boolean
   axisLineColorType: ColorType
+  ticks: number | null | 'all'
   tickFormat: string | ((text: any) => string)
   tickLineVisible: boolean
   tickPadding: number
@@ -67,7 +69,7 @@ interface TextAlign {
 // const groupingLabelClassName = getClassName(pluginName, 'groupingLabel')
 const defaultTickSize = 6
 
-function renderPointAxis ({ selection, xAxisClassName, groupingLabelClassName, params, tickTextAlign, axisLabelAlign, gridAxesSize, fullDataFormatter, chartParams, groupScale, textTransform }: {
+function renderAxis ({ selection, xAxisClassName, groupingLabelClassName, params, tickTextAlign, axisLabelAlign, gridAxesSize, fullDataFormatter, chartParams, groupScale, groupScaleDomain, groupLabels, textTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   xAxisClassName: string
   groupingLabelClassName: string
@@ -77,7 +79,10 @@ function renderPointAxis ({ selection, xAxisClassName, groupingLabelClassName, p
   gridAxesSize: { width: number, height: number }
   fullDataFormatter: DataFormatterGrid,
   chartParams: ChartParams
-  groupScale: d3.ScalePoint<string>
+  // groupScale: d3.ScalePoint<string>
+  groupScale: d3.ScaleLinear<number, number>
+  groupScaleDomain: number[]
+  groupLabels: string[]
   textTransform: string
   // tickTextFormatter: string | ((label: any) => string)
 }) {
@@ -115,16 +120,31 @@ function renderPointAxis ({ selection, xAxisClassName, groupingLabelClassName, p
     })
     .attr('transform', d => `translate(${gridAxesSize.width + d.tickPadding + params.labelOffset[0]}, ${- d.tickPadding - defaultTickSize - params.labelOffset[1]})`)
 
-
+  // 計算所有範圍內groupLabels數量（顯示所有刻度）
+  const allTicksAmount = Math.floor(groupScaleDomain[1]) - Math.ceil(groupScaleDomain[0]) + 1
+console.log(params.ticks, params.ticks === 'all'
+  ? allTicksAmount
+  : params.ticks > allTicksAmount
+    ? allTicksAmount // 不顯示超過groupLabels數量的刻度
+    : params.ticks)
   // 設定X軸刻度
   // const xAxis = d3.axisBottom(groupScale)
   const xAxis = d3.axisTop(groupScale)
     .scale(groupScale)
+    .ticks(params.ticks === 'all'
+      ? allTicksAmount
+      : params.ticks > allTicksAmount
+        ? allTicksAmount // 不顯示超過groupLabels數量的刻度
+        : params.ticks)
     .tickSize(params.tickFullLine == true
       ? -gridAxesSize.height
       : defaultTickSize)
     .tickSizeOuter(0)
-    .tickFormat(d => parseTickFormatValue(d, params.tickFormat))
+    .tickFormat((groupIndex: number) => {
+      // 用index對應到groupLabel
+      const groupLabel = groupLabels[groupIndex] ?? '' // 非整數index不顯示
+      return parseTickFormatValue(groupLabel, params.tickFormat)
+    })
     .tickPadding(params.tickPadding)
 
   const xAxisEl = xAxisSelection
@@ -347,15 +367,63 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
     distinctUntilChanged()
   )
 
-  const groupScale$: Observable<d3.ScalePoint<string>> = new Observable(subscriber => {
-    combineLatest({
-      fullDataFormatter: fullDataFormatter$,
-      gridAxesSize: gridAxesSize$,
-      computedData: computedData$
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async (d) => d),
-    ).subscribe(data => {
+
+  // 使用pointScale計算非連續性比例尺
+  // const groupScale$: Observable<d3.ScalePoint<string>> = new Observable(subscriber => {
+  //   combineLatest({
+  //     fullDataFormatter: fullDataFormatter$,
+  //     gridAxesSize: gridAxesSize$,
+  //     computedData: computedData$
+  //   }).pipe(
+  //     takeUntil(destroy$),
+  //     switchMap(async (d) => d),
+  //   ).subscribe(data => {
+  //     const groupMin = 0
+  //     const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
+  //     const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+  //       ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //       : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
+  //       ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
+  //       : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
+      
+  //     const groupingLength = data.computedData[0]
+  //       ? data.computedData[0].length
+  //       : 0
+
+  //     let _labels = (data.computedData[0] ?? []).map(d => d.groupLabel)
+
+  //     const axisLabels = new Array(groupingLength).fill(0)
+  //       .map((d, i) => {
+  //         return _labels[i] != null
+  //           ? _labels[i]
+  //           : String(i) // 沒有label則用序列號填充
+  //       })
+  //       .filter((d, i) => {
+  //         return i >= groupScaleDomainMin && i <= groupScaleDomainMax
+  //       })
+
+      
+  //     const padding = data.fullDataFormatter.grid.groupAxis.scalePadding
+      
+  //     const groupScale = createAxisPointScale({
+  //       axisLabels,
+  //       axisWidth: data.gridAxesSize.width,
+  //       padding
+  //     })
+
+  //     subscriber.next(groupScale)
+  //   })
+  // })
+
+  const groupScaleDomain$ = combineLatest({
+    fullDataFormatter: fullDataFormatter$,
+    gridAxesSize: gridAxesSize$,
+    computedData: computedData$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
       const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
@@ -364,35 +432,29 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
       const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
         ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
         : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
-      
-      const groupingLength = data.computedData[0]
-        ? data.computedData[0].length
-        : 0
 
-      let _labels = (data.computedData[0] ?? []).map(d => d.groupLabel)
+      return [groupScaleDomainMin, groupScaleDomainMax]
+    }),
+    shareReplay(1)
+  )
 
-      const axisLabels = new Array(groupingLength).fill(0)
-        .map((d, i) => {
-          return _labels[i] != null
-            ? _labels[i]
-            : String(i) // 沒有label則用序列號填充
-        })
-        .filter((d, i) => {
-          return i >= groupScaleDomainMin && i <= groupScaleDomainMax
-        })
-
-      
-      const padding = data.fullDataFormatter.grid.groupAxis.scalePadding
-      
-      const groupScale = createAxisPointScale({
-        axisLabels,
-        axisWidth: data.gridAxesSize.width,
-        padding
-      })
-
-      subscriber.next(groupScale)
+  const groupScale$ = combineLatest({
+    groupScaleDomain: groupScaleDomain$,
+    gridAxesSize: gridAxesSize$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      const groupScale: d3.ScaleLinear<number, number> = d3.scaleLinear()
+        .domain(data.groupScaleDomain)
+        .range([0, data.gridAxesSize.width])
+      return groupScale
     })
-  })
+  )
+
+  const groupLabels$ = computedData$.pipe(
+    map(computedData => (computedData[0] ?? []).map(d => d.groupLabel))
+  )
 
   const tickTextAlign$: Observable<TextAlign> = combineLatest({
     fullDataFormatter: fullDataFormatter$,
@@ -468,6 +530,8 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
     fullDataFormatter: fullDataFormatter$,
     chartParams: fullChartParams$,
     groupScale: groupScale$,
+    groupScaleDomain: groupScaleDomain$,
+    groupLabels: groupLabels$,
     textTransform: textTransform$,
     // tickTextFormatter: tickTextFormatter$
   }).pipe(
@@ -475,7 +539,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
     switchMap(async (d) => d),
   ).subscribe(data => {
 
-    renderPointAxis({
+    renderAxis({
       selection: data.axisSelection,
       xAxisClassName,
       groupingLabelClassName,
@@ -486,6 +550,8 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
       fullDataFormatter: data.fullDataFormatter,
       chartParams: data.chartParams,
       groupScale: data.groupScale,
+      groupScaleDomain: data.groupScaleDomain,
+      groupLabels: data.groupLabels,
       textTransform: data.textTransform,
       // tickTextFormatter: data.tickTextFormatter
     })

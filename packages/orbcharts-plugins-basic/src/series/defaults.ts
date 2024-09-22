@@ -33,7 +33,7 @@ export const DEFAULT_PIE_PARAMS: PieParams = {
   // },
   outerRadius: 0.95,
   innerRadius: 0,
-  mouseoverOuterRadius: 1,
+  outerRadiusWhileHighlight: 1,
   // label?: LabelStyle
   // enterDuration: 800,
   startAngle: 0,
@@ -84,7 +84,7 @@ export const DEFAULT_PIE_LABELS_PARAMS: PieLabelsParams = {
   // solidColor: undefined,
   // colors: DEFAULT_COLORS,
   outerRadius: 0.95,
-  mouseoverOuterRadius: 1,
+  outerRadiusWhileHighlight: 1,
   // innerRadius: 0,
   // enterDuration: 800,
   startAngle: 0,

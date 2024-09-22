@@ -108,12 +108,12 @@ function renderPie ({ selection, data, arc, pathClassName }: {
   return pathSelection
 }
 
-function highlight ({ pathSelection, ids, fullChartParams, arc, arcMouseover }: {
+function highlight ({ pathSelection, ids, fullChartParams, arc, arcHighlight }: {
   pathSelection: d3.Selection<SVGPathElement, PieDatum, any, any>
   ids: string[]
   fullChartParams: ChartParams
   arc: d3.Arc<any, d3.DefaultArcObject>
-  arcMouseover: d3.Arc<any, d3.DefaultArcObject>
+  arcHighlight: d3.Arc<any, d3.DefaultArcObject>
 }) {
   pathSelection.interrupt('highlight')
   
@@ -138,7 +138,7 @@ function highlight ({ pathSelection, ids, fullChartParams, arc, arcMouseover }: 
         .ease(d3.easeElastic)
         .duration(500)
         .attr('d', (d: any) => {
-          return arcMouseover!(d)
+          return arcHighlight!(d)
         })
         // .on('interrupt', () => {
         //   // this.pathSelection!.select('path').attr('d', (d) => {
@@ -246,7 +246,7 @@ function createEachPie (pluginName: string, context: {
     })
   })
 
-  const arcMouseover$: Observable<d3.Arc<any, d3.DefaultArcObject>> = new Observable(subscriber => {
+  const arcHighlight$: Observable<d3.Arc<any, d3.DefaultArcObject>> = new Observable(subscriber => {
     combineLatest({
       shorterSideWith: shorterSideWith$,
       fullParams: context.fullParams$,
@@ -254,14 +254,14 @@ function createEachPie (pluginName: string, context: {
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
-      const arcMouseover = makeD3Arc({
+      const arcHighlight = makeD3Arc({
         axisWidth: data.shorterSideWith,
         innerRadius: data.fullParams.innerRadius,
-        outerRadius: data.fullParams.mouseoverOuterRadius, // 外半徑變化
+        outerRadius: data.fullParams.outerRadiusWhileHighlight, // 外半徑變化
         padAngle: data.fullParams.padAngle,
         cornerRadius: data.fullParams.cornerRadius
       })
-      subscriber.next(arcMouseover)
+      subscriber.next(arcHighlight)
     })
   })
 
@@ -361,7 +361,7 @@ function createEachPie (pluginName: string, context: {
           //   data: data.computedData,
           //   fullChartParams: data.fullChartParams,
           //   arc: data.arc,
-          //   arcMouseover: data.arcMouseover,
+          //   arcHighlight: data.arcHighlight,
           //   SeriesDataMap: data.SeriesDataMap,
           //   event$: store.event$
           // })
@@ -497,7 +497,7 @@ function createEachPie (pluginName: string, context: {
     ),
     fullChartParams: context.fullChartParams$,
     arc: arc$,
-    arcMouseover: arcMouseover$
+    arcHighlight: arcHighlight$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
@@ -507,7 +507,7 @@ function createEachPie (pluginName: string, context: {
       ids: data.highlight,
       fullChartParams: data.fullChartParams,
       arc: data.arc,
-      arcMouseover: data.arcMouseover
+      arcHighlight: data.arcHighlight
     })
   })
 

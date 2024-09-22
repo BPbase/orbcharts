@@ -307,6 +307,16 @@ export const demoList: DemoChartTypeItem[] = [
             pluginName: 'Lines',
             presetName: 'PRESET_LINES_ROTATE_AXIS_LABEL'
           },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'Lines',
+          //   presetName: 'PRESET_LINES_TENSE_TICKS',
+          // },
+          {
+            chartType: 'grid',
+            pluginName: 'Lines',
+            presetName: 'PRESET_LINES_LOOSE_TICKS',
+          },
           {
             chartType: 'grid',
             pluginName: 'Lines',
@@ -356,6 +366,16 @@ export const demoList: DemoChartTypeItem[] = [
             chartType: 'grid',
             pluginName: 'LineAreas',
             presetName: 'PRESET_LINE_AREAS_ROTATE_AXIS_LABEL'
+          },
+          // {
+          //   chartType: 'grid',
+          //   pluginName: 'LineAreas',
+          //   presetName: 'PRESET_LINE_AREAS_TENSE_TICKS',
+          // },
+          {
+            chartType: 'grid',
+            pluginName: 'LineAreas',
+            presetName: 'PRESET_LINE_AREAS_LOOSE_TICKS',
           },
           {
             chartType: 'grid',

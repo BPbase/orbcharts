@@ -26,6 +26,7 @@ export interface BaseDotsParams {
   fillColorType: ColorType
   strokeColorType: ColorType
   strokeWidth: number
+  // strokeWidthWhileHighlight: number
   onlyShowHighlighted: boolean
 }
 
@@ -197,6 +198,7 @@ function highlightDots ({ selection, ids, onlyShowHighlighted, fullChartParams }
   selection: d3.Selection<SVGGElement, ComputedDatumGrid, any, any>
   ids: string[]
   onlyShowHighlighted: boolean
+  // fullParams: BaseDotsParams
   fullChartParams: ChartParams
 }) {
   selection.interrupt('highlight')
@@ -206,21 +208,31 @@ function highlightDots ({ selection, ids, onlyShowHighlighted, fullChartParams }
       .transition('highlight')
       .duration(200)
       .style('opacity', onlyShowHighlighted === true ? 0 : 1)
+    // selection
+    //   .attr('stroke-width', fullParams.strokeWidth)
+
     return
   }
   
   selection
     .each((d, i, n) => {
       if (ids.includes(d.id)) {
-        d3.select(n[i])
+        const dot = d3.select(n[i])
+        dot
           .style('opacity', 1)
           .transition('highlight')
           .duration(200)
+        // dot
+        //   .attr('stroke-width', fullParams.strokeWidthWhileHighlight)
       } else {
-        d3.select(n[i])
+        const dot = d3.select(n[i])
+        dot
           .style('opacity', onlyShowHighlighted === true ? 0 : fullChartParams.styles.unhighlightedOpacity)
           .transition('highlight')
           .duration(200)
+        // dot
+        //   .attr('stroke-width', fullParams.strokeWidth)
+        
       }
     })
 }
@@ -474,24 +486,23 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
     distinctUntilChanged()
   )
   
-  fullChartParams$.pipe(
+  combineLatest({
+    graphicSelection: graphicSelection$,
+    highlight: gridHighlight$.pipe(
+      map(data => data.map(d => d.id))
+    ),
+    onlyShowHighlighted: onlyShowHighlighted$,
+    // fullParams: fullParams$,
+    fullChartParams: fullChartParams$
+  }).pipe(
     takeUntil(destroy$),
-    switchMap(d => combineLatest({
-      graphicSelection: graphicSelection$,
-      highlight: gridHighlight$.pipe(
-        map(data => data.map(d => d.id))
-      ),
-      onlyShowHighlighted: onlyShowHighlighted$,
-      fullChartParams: fullChartParams$
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async d => d)
-    ))
+    switchMap(async d => d)
   ).subscribe(data => {
     highlightDots({
       selection: data.graphicSelection,
       ids: data.highlight,
       onlyShowHighlighted: data.onlyShowHighlighted,
+      // fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
   })
