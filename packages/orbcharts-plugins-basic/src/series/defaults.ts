@@ -11,8 +11,8 @@ import type {
   
 export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
   force: {
-    strength: 0.03, // 泡泡引力
-    velocityDecay: 0.2, // 衰減數
+    strength: 0.08, // 泡泡引力
+    velocityDecay: 0.3, // 衰減數
     collisionSpacing: 2 // 泡泡間距
   },
   bubbleText: {
@@ -20,7 +20,7 @@ export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
     lineHeight: 12,
     lineLengthMin: 4
   },
-  highlightRIncrease: 0,
+  // highlightRIncrease: 0,
   arcScaleType: 'area'
 }
 
@@ -33,7 +33,7 @@ export const DEFAULT_PIE_PARAMS: PieParams = {
   // },
   outerRadius: 0.95,
   innerRadius: 0,
-  mouseoverOuterRadius: 1,
+  outerRadiusWhileHighlight: 1,
   // label?: LabelStyle
   // enterDuration: 800,
   startAngle: 0,
@@ -84,14 +84,14 @@ export const DEFAULT_PIE_LABELS_PARAMS: PieLabelsParams = {
   // solidColor: undefined,
   // colors: DEFAULT_COLORS,
   outerRadius: 0.95,
-  mouseoverOuterRadius: 1,
+  outerRadiusWhileHighlight: 1,
   // innerRadius: 0,
   // enterDuration: 800,
   startAngle: 0,
   endAngle: Math.PI * 2,
   labelCentroid: 2.3,
   // fontSize: 12,
-  labelColorType: 'series',
+  labelColorType: 'primary',
   labelFn: d => String(d.label),
 }
 
@@ -106,7 +106,7 @@ export const DEFAULT_ROSE_LABELS_PARAMS: RoseLabelsParams = {
   outerRadius: 0.95,
   labelCentroid: 2.5,
   labelFn: d => String(d.label),
-  labelColorType: 'series',
+  labelColorType: 'primary',
   arcScaleType: 'area'
 }
 

@@ -1,7 +1,7 @@
 import type { DataFormatterFile } from '../types'
 
-export const DF_GRID_DIVERGING_SCALE: DataFormatterFile<'grid'> = {
-  id: 'DF_GRID_DIVERGING_SCALE',
+export const DF_GRID_PN_SCALE: DataFormatterFile<'grid'> = {
+  id: 'DF_GRID_PN_SCALE',
   chartType: 'grid',
   description: '分向資料圖軸',
   data: {

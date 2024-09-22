@@ -14,7 +14,7 @@ export interface BubblesParams {
     lineHeight: number
     lineLengthMin: number
   }
-  highlightRIncrease: number
+  // highlightRIncrease: number
   arcScaleType: ArcScaleType
 }
 
@@ -22,7 +22,7 @@ export interface PieParams {
   // padding: Padding
   outerRadius: number;
   innerRadius: number;
-  mouseoverOuterRadius: number;
+  outerRadiusWhileHighlight: number;
   // label?: LabelStyle
   // enterDuration: number
   startAngle: number
@@ -42,7 +42,7 @@ export interface PieLabelsParams {
   // solidColor?: string;
   // colors?: string[];
   outerRadius: number
-  mouseoverOuterRadius: number
+  outerRadiusWhileHighlight: number
   // innerRadius?: number;
   // enterDuration?: number
   startAngle: number

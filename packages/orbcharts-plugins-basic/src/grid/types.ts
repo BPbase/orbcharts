@@ -25,6 +25,7 @@ export interface DotsParams {
   fillColorType: ColorType
   strokeColorType: ColorType
   strokeWidth: number
+  // strokeWidthWhileHighlight: number
   onlyShowHighlighted: boolean
 }
 
@@ -47,7 +48,7 @@ export interface BarsParams {
   barRadius: number | boolean
 }
 
-export interface BarsDivergingParams extends BarsParams {}
+export interface BarsPNParams extends BarsParams {}
 
 export interface BarStackParams {
   barWidth: number
@@ -69,6 +70,7 @@ export interface GroupAxisParams {
   labelColorType: ColorType
   axisLineVisible: boolean
   axisLineColorType: ColorType
+  ticks: number | null | 'all'
   tickFormat: string | ((text: any) => string)
   tickLineVisible: boolean
   tickPadding: number
@@ -88,7 +90,7 @@ export interface ValueAxisParams {
   labelColorType: ColorType
   axisLineVisible: boolean
   axisLineColorType: ColorType
-  ticks: number
+  ticks: number | null
   tickFormat: string | ((text: d3.NumberValue) => string)
   tickLineVisible: boolean
   tickPadding: number

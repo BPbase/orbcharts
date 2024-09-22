@@ -66,7 +66,7 @@ interface TextAlign {
 // const textClassName = getClassName(pluginName, 'text')
 const defaultTickSize = 6
 
-function renderLinearAxis ({ selection, yAxisClassName, textClassName, fullParams, tickTextAlign, axisLabelAlign, gridAxesSize, fullDataFormatter, fullChartParams, valueScale, textTransform, minAndMax }: {
+function renderAxis ({ selection, yAxisClassName, textClassName, fullParams, tickTextAlign, axisLabelAlign, gridAxesSize, fullDataFormatter, fullChartParams, valueScale, textTransform, minAndMax }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   yAxisClassName: string
   textClassName: string
@@ -456,7 +456,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     switchMap(async (d) => d),
   ).subscribe(data => {
 
-    renderLinearAxis({
+    renderAxis({
       selection: data.axisSelection,
       yAxisClassName,
       textClassName,

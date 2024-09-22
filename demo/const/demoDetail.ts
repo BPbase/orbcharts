@@ -8,6 +8,7 @@ import { gridData1 } from './data/gridData1'
 import { gridData2 } from './data/gridData2'
 import { gridData3 } from './data/gridData3'
 import { gridData4 } from './data/gridData4'
+import { gridData5 } from './data/gridData5'
 import { multiGridData0 } from './data/multiGridData0'
 import { multiGridData1 } from './data/multiGridData1'
 import { multiGridData2 } from './data/multiGridData2'
@@ -225,11 +226,11 @@ export const demoDetail: DemoDetail = {
         data: gridData1
       },
     },
-    'BarsDiverging': {
-      'PRESET_GRID_DIVERGING_SCALE': {
+    'BarsPN': {
+      'PRESET_GRID_PN_SCALE': {
         chart: core.GridChart,
-        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.BarsDiverging, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_GRID_DIVERGING_SCALE,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.BarsPN, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_GRID_PN_SCALE,
         data: gridData4
       }
     },
@@ -332,7 +333,19 @@ export const demoDetail: DemoDetail = {
         chart: core.GridChart,
         plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_LINES_ROTATE_AXIS_LABEL,
-        data: gridData1
+        data: gridData5
+      },
+      // 'PRESET_LINES_TENSE_TICKS': {
+      //   chart: core.GridChart,
+      //   plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.GroupAux, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_LINES_TENSE_TICKS,
+      //   data: gridData5
+      // },
+      'PRESET_LINES_LOOSE_TICKS': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.Lines, pluginsBasic.GroupAux, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_LINES_LOOSE_TICKS,
+        data: gridData5
       },
       'PRESET_LINES_HORIZONTAL': {
         chart: core.GridChart,
@@ -388,7 +401,19 @@ export const demoDetail: DemoDetail = {
         chart: core.GridChart,
         plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.LineAreas, pluginsBasic.Lines, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_LINE_AREAS_ROTATE_AXIS_LABEL,
-        data: gridData1
+        data: gridData5
+      },
+      // 'PRESET_LINE_AREAS_TENSE_TICKS': {
+      //   chart: core.GridChart,
+      //   plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.LineAreas, pluginsBasic.Lines, pluginsBasic.GroupAux, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_LINE_AREAS_TENSE_TICKS,
+      //   data: gridData5
+      // },
+      'PRESET_LINE_AREAS_LOOSE_TICKS': {
+        chart: core.GridChart,
+        plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.LineAreas, pluginsBasic.Lines, pluginsBasic.GroupAux, pluginsBasic.Dots, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
+        preset: presetsBasic.PRESET_LINE_AREAS_LOOSE_TICKS,
+        data: gridData5
       },
       'PRESET_LINE_AREAS_HORIZONTAL': {
         chart: core.GridChart,

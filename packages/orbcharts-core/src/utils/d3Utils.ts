@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
 import { DATA_FORMATTER_VALUE_AXIS_DEFAULT } from '../defaults'
 
-// scaleLinear - 連續資料對應到比較尺座標上
+// scaleLinear - 連續資料對應到比例尺座標上
 export const createAxisLinearScale = ({
   maxValue = 1,
   minValue = 0,
