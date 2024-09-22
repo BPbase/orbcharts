@@ -38,6 +38,7 @@ export const DEFAULT_MULTI_GROUP_AXIS_PARAMS: MultiGroupAxisParams = {
   labelColorType: 'primary',
   axisLineVisible: true,
   axisLineColorType: 'primary',
+  ticks: 'all',
   tickFormat: text => text,
   tickLineVisible: true,
   tickPadding: 20,

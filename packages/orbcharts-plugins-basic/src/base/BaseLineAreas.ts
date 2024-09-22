@@ -485,7 +485,7 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
     data.pathSelectionArr.forEach(pathSelection => {
       pathSelection
         .on('mouseover', (event, datum) => {
-          event.stopPropagation()
+          // event.stopPropagation()
 
           const seriesLabel = datum[0] ? datum[0].seriesLabel : ''
           const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)
@@ -511,7 +511,7 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
           })
         })
         .on('mousemove', (event, datum) => {
-          event.stopPropagation()
+          // event.stopPropagation()
 
           const seriesLabel = datum[0] ? datum[0].seriesLabel : ''
           const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)
@@ -537,7 +537,7 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
           })
         })
         .on('mouseout', (event, datum) => {
-          event.stopPropagation()
+          // event.stopPropagation()
 
           const seriesLabel = datum[0] ? datum[0].seriesLabel : ''
           const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)
@@ -563,7 +563,7 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
           })
         })
         .on('click', (event, datum) => {
-          event.stopPropagation()
+          // event.stopPropagation()
 
           const seriesLabel = datum[0] ? datum[0].seriesLabel : ''
           const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)
