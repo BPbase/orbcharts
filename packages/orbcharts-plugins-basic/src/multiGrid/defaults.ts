@@ -9,7 +9,8 @@ import type {
   MultiGroupAxisParams,
   MultiValueAxisParams,
   MultiValueStackAxisParams,
-  OverlappingValueAxesParams
+  OverlappingValueAxesParams,
+  OverlappingValueStackAxesParams
 } from './types'
 
 export const DEFAULT_MULTI_GRID_LEGEND_PARAMS: MultiGridLegendParams = {
@@ -150,4 +151,8 @@ export const DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS: OverlappingValueAxesParams =
     tickTextColorType: 'primary',
   },
   gridIndexes: [0, 1]
+}
+
+export const DEFAULT_OVERLAPPING_VALUE_STACK_AXES_PARAMS: OverlappingValueStackAxesParams = {
+  ...DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS
 }

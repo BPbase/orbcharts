@@ -26,23 +26,24 @@ export interface ChartEntity<T extends ChartType> extends ContextSubject<T> {
 }
 
 export interface ChartOptions<T extends ChartType> {
-  preset: Preset<T>
+  preset: Preset<T, unknown>
 }
 
 export interface ChartOptionsPartial<T extends ChartType> {
-  preset?: PresetPartial<T>
+  preset?: Preset<T, unknown>
 }
 
-export interface Preset<T extends ChartType> {
-  chartParams: ChartParams
-  dataFormatter: DataFormatterTypeMap<T>
-  allPluginParams: {[key: string]: any}
+export interface Preset<T extends ChartType, AllPluginParams> {
+  name: string
   description: string
-}
-
-export interface PresetPartial<T extends ChartType> {
   chartParams?: ChartParamsPartial
   dataFormatter?: DataFormatterPartialTypeMap<T>
-  allPluginParams?: {[key: string]: any}
-  description?: string
+  allPluginParams?: AllPluginParams
 }
+
+// export interface PresetPartial<T extends ChartType, AllPluginParams> {
+//   chartParams?: ChartParamsPartial
+//   dataFormatter?: DataFormatterPartialTypeMap<T>
+//   allPluginParams?: AllPluginParams
+//   description?: string
+// }
