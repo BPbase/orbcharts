@@ -425,7 +425,7 @@ export const demoList: DemoChartTypeItem[] = [
           {
             chartType: 'multiGrid',
             pluginName: 'MultiBars',
-            presetName: 'PRESET_MULTI_BARS_DIVERGING'
+            presetName: 'PRESET_MULTI_GRID_DIVERGING'
           },
           {
             chartType: 'multiGrid',

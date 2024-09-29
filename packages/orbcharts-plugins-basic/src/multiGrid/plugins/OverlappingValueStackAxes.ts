@@ -13,7 +13,7 @@ import {
 import type { ContextObserverMultiGrid, DataFormatterGrid, DataFormatterTypeMap, Layout } from '@orbcharts/core'
 import {
   defineMultiGridPlugin } from '@orbcharts/core'
-import { DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS } from '../defaults'
+import { DEFAULT_OVERLAPPING_VALUE_STACK_AXES_PARAMS } from '../defaults'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
@@ -24,7 +24,7 @@ const pluginName = 'OverlappingValueStackAxes'
 const gridClassName = getClassName(pluginName, 'grid')
 
 // 第一個圖軸使用堆疊的資料，第二個圖軸使用原始資料
-export const OverlappingValueStackAxes = defineMultiGridPlugin(pluginName, DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS)(({ selection, name, subject, observer }) => {
+export const OverlappingValueStackAxes = defineMultiGridPlugin(pluginName, DEFAULT_OVERLAPPING_VALUE_STACK_AXES_PARAMS)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []

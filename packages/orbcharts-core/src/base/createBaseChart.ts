@@ -137,11 +137,13 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
     }
 
     // options
-    const mergedPresetWithDefault: Preset<T> = ((options) => {
+    const mergedPresetWithDefault: Preset<T, any> = ((options) => {
       const _options = options ? options : CHART_OPTIONS_DEFAULT as ChartOptionsPartial<T>
-      const preset = _options.preset ? _options.preset : {} as PresetPartial<T>
+      const preset = _options.preset ? _options.preset : {} as PresetPartial<T, any>
 
       return {
+        name: preset.name ?? '',
+        description: preset.description ?? '',
         chartParams: preset.chartParams
           ? mergeOptionsWithDefault(preset.chartParams, CHART_PARAMS_DEFAULT)
           : CHART_PARAMS_DEFAULT,
@@ -151,8 +153,7 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
           : defaultDataFormatter,
         allPluginParams: preset.allPluginParams
           ? preset.allPluginParams
-          : {},
-        description: preset.description ?? ''
+          : {}
       }
     })(options)
 

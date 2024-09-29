@@ -69,3 +69,5 @@ export interface OverlappingValueAxesParams {
   secondAxis: BaseValueAxisParams
   gridIndexes: [number, number]
 }
+
+export interface OverlappingValueStackAxesParams extends OverlappingValueAxesParams {}
