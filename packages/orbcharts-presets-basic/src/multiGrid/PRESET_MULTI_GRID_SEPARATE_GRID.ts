@@ -5,9 +5,9 @@ import type {
 } from '../types'
 import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_MULTI_GRID_2_GRID_SLOT: PresetPartial<'multiGrid', PresetMultiGridSepratedPluginParams
+export const PRESET_MULTI_GRID_SEPARATE_GRID: PresetPartial<'multiGrid', PresetMultiGridSepratedPluginParams
 & PresetNoneDataPluginParams> = {
-  name: 'PRESET_MULTI_GRID_2_GRID_SLOT',
+  name: 'PRESET_MULTI_GRID_SEPARATE_GRID',
   description: '2組Grid圖表',
   chartParams: {
     padding: {
@@ -24,31 +24,31 @@ export const PRESET_MULTI_GRID_2_GRID_SLOT: PresetPartial<'multiGrid', PresetMul
     ...ALL_PLUGIN_PARAMS_NONE_DATA,
     MultiGroupAxis: {
       tickTextRotate: -30,
-      gridIndexes: [0, 1]
+      gridIndexes: 'all'
     },
     MultiValueAxis: {
-      gridIndexes: [0, 1]
+      gridIndexes: 'all'
     },
     MultiValueStackAxis: {
-      gridIndexes: [0, 1]
+      gridIndexes: 'all'
     },
     MultiBars: {
-      gridIndexes: [0, 1]
+      gridIndexes: 'all'
     },
     MultiBarStack: {
-      gridIndexes: [0, 1]
+      gridIndexes: 'all'
     },
     MultiBarsTriangle: {
-      gridIndexes: [0, 1]
+      gridIndexes: 'all'
     },
     MultiLines: {
-      gridIndexes: [0, 1]
+      gridIndexes: 'all'
     },
     MultiLineAreas: {
-      gridIndexes: [0, 1]
+      gridIndexes: 'all'
     },
     MultiDots: {
-      gridIndexes: [0, 1]
+      gridIndexes: 'all'
     },
     MultiGridLegend: {
       position: 'bottom',

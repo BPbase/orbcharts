@@ -19,7 +19,7 @@ import type {
 
 // 可設定多個gridIndex的params
 interface MultiGridPluginParams {
-  gridIndexes: number[]
+  gridIndexes: number[] | 'all'
 }
 
 // 對應grid資料的plugin所需Observable（必須有gridIndexes）
@@ -35,6 +35,11 @@ export const multiGridPluginDetailObservables = (observer: ContextObserverMultiG
     gridIndexes: gridIndexes$,
   }).pipe(
     map(data => {
+      // 對應所有grid
+      if (data.gridIndexes === 'all') {
+        return data.multiGridEachDetail
+      }
+      // 自訂對應grid
       return data.gridIndexes.map(gridIndex => {
         return data.multiGridEachDetail[gridIndex] ?? data.multiGridEachDetail[0]
       })

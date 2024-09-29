@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { SeriesChart } from '../../../packages/orbcharts-core/src'
 import { Pie, PieLabels, Rose, RoseLabels, PieEventTexts, Bubbles, SeriesLegend } from '../../../packages/orbcharts-plugins-basic/src'
-import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
+// import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 import { seriesData3 } from '../../const/data/seriesData3'
 
 useHead({

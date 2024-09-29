@@ -5,14 +5,14 @@
 <script setup lang="ts">
 import { GridChart } from '../../../packages/orbcharts-core/src'
 import { Bars, GridLegend, GroupAxis, ValueAxis, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
-import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
+import { PRESET_MULTI_GRID_SEPARATE_GRID } from '../../../packages/orbcharts-presets-basic/src/index'
 import { gridData4 } from '../../const/data/gridData4'
 
 onMounted(() => {
 
   const el = document.querySelector('#chart')
 
-  console.log(PRESET_MULTI_GRID_2_GRID_SLOT)
+  console.log(PRESET_MULTI_GRID_SEPARATE_GRID)
 
   const chart = new GridChart(el!)
 

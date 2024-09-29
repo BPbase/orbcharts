@@ -14,7 +14,7 @@ import type {
 } from '../types'
 import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_MULTI_LINE_AREAS_3_GRID_SLOT: PresetPartial<'multiGrid', PresetMultiGroupAxisParams
+export const PRESET_MULTI_LINES_SEPARATE_GRID: PresetPartial<'multiGrid', PresetMultiGroupAxisParams
 & PresetMultiValueAxisParams
 & PresetMultiValueStackAxisParams
 & PresetMultiBarsParams
@@ -25,8 +25,8 @@ export const PRESET_MULTI_LINE_AREAS_3_GRID_SLOT: PresetPartial<'multiGrid', Pre
 & PresetMultiDotsParams
 & PresetMultiGridLegendParams
 & PresetNoneDataPluginParams> = {
-  name: 'PRESET_MULTI_LINE_AREAS_3_GRID_SLOT',
-  description: '3組區域圖表',
+  name: 'PRESET_MULTI_LINES_SEPARATE_GRID',
+  description: '多組分開折線圖表',
   chartParams: {
     padding: {
       top: 60,
@@ -36,67 +36,55 @@ export const PRESET_MULTI_LINE_AREAS_3_GRID_SLOT: PresetPartial<'multiGrid', Pre
     },
   },
   dataFormatter: {
-    gridList: [
-      {
-        // slotIndex: 0
-        groupAxis: {
-          scalePadding: 0
-        }
-      },
-      {
-        // slotIndex: 1,
-        groupAxis: {
-          scalePadding: 0
-        }
-      },
-      {
-        // slotIndex: 2,
-        groupAxis: {
-          scalePadding: 0
-        }
-      }
-    ],
     separateGrid: true,
-    // container: {
-    //   rowAmount: 1,
-    //   columnAmount: 3,
-    // }
   },
   allPluginParams: {
     ...ALL_PLUGIN_PARAMS_NONE_DATA,
     MultiGroupAxis: {
       tickTextRotate: -30,
-      gridIndexes: [0, 1, 2]
+      gridIndexes: 'all'
     },
     MultiValueAxis: {
-      gridIndexes: [0, 1, 2]
+      gridIndexes: 'all'
     },
     MultiValueStackAxis: {
-      gridIndexes: [0, 1, 2]
+      gridIndexes: 'all'
     },
     MultiBars: {
-      gridIndexes: [0, 1, 2]
+      gridIndexes: 'all'
     },
     MultiBarStack: {
-      gridIndexes: [0, 1, 2]
+      gridIndexes: 'all'
     },
     MultiBarsTriangle: {
-      gridIndexes: [0, 1, 2]
+      gridIndexes: 'all'
     },
     MultiLines: {
-      gridIndexes: [0, 1, 2]
+      gridIndexes: 'all'
     },
     MultiLineAreas: {
-      gridIndexes: [0, 1, 2]
+      gridIndexes: 'all'
     },
     MultiDots: {
-      gridIndexes: [0, 1, 2]
+      gridIndexes: 'all'
     },
     MultiGridLegend: {
       position: 'bottom',
       justify: 'center',
       padding: 14,
       gridList: [
+        {
+          listRectHeight: 2,
+        },
+        {
+          listRectHeight: 2,
+        },
+        {
+          listRectHeight: 2,
+        },
+        {
+          listRectHeight: 2,
+        },
         {
           listRectHeight: 2,
         },

@@ -410,7 +410,7 @@ export const demoList: DemoChartTypeItem[] = [
           {
             chartType: 'grid',
             pluginName: 'LineAreas',
-            presetName: 'PRESET_LINE_AREAS_SEPARATE_GRID'
+            presetName: 'PRESET_LINE_AREAS_SEPARATE_SERIES'
           },
         ]
       }
@@ -430,18 +430,23 @@ export const demoList: DemoChartTypeItem[] = [
           {
             chartType: 'multiGrid',
             pluginName: 'MultiBars',
-            presetName: 'PRESET_MULTI_GRID_2_GRID_SLOT'
+            presetName: 'PRESET_MULTI_GRID_SEPARATE_GRID'
           },
-          {
-            chartType: 'multiGrid',
-            pluginName: 'MultiBars',
-            presetName: 'PRESET_MULTI_GRID_3_GRID_SLOT'
-          },
-          {
-            chartType: 'multiGrid',
-            pluginName: 'MultiBars',
-            presetName: 'PRESET_MULTI_GRID_4_GRID_SLOT'
-          },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiBars',
+          //   presetName: 'PRESET_MULTI_GRID_2_GRID_SLOT'
+          // },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiBars',
+          //   presetName: 'PRESET_MULTI_GRID_3_GRID_SLOT'
+          // },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiBars',
+          //   presetName: 'PRESET_MULTI_GRID_4_GRID_SLOT'
+          // },
         ]
       },
       {
@@ -450,18 +455,23 @@ export const demoList: DemoChartTypeItem[] = [
           {
             chartType: 'multiGrid',
             pluginName: 'MultiBarStack',
-            presetName: 'PRESET_MULTI_GRID_2_GRID_SLOT'
+            presetName: 'PRESET_MULTI_GRID_SEPARATE_GRID'
           },
-          {
-            chartType: 'multiGrid',
-            pluginName: 'MultiBarStack',
-            presetName: 'PRESET_MULTI_GRID_3_GRID_SLOT'
-          },
-          {
-            chartType: 'multiGrid',
-            pluginName: 'MultiBarStack',
-            presetName: 'PRESET_MULTI_GRID_4_GRID_SLOT'
-          },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiBarStack',
+          //   presetName: 'PRESET_MULTI_GRID_2_GRID_SLOT'
+          // },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiBarStack',
+          //   presetName: 'PRESET_MULTI_GRID_3_GRID_SLOT'
+          // },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiBarStack',
+          //   presetName: 'PRESET_MULTI_GRID_4_GRID_SLOT'
+          // },
         ]
       },
       {
@@ -470,18 +480,23 @@ export const demoList: DemoChartTypeItem[] = [
           {
             chartType: 'multiGrid',
             pluginName: 'MultiBarsTriangle',
-            presetName: 'PRESET_MULTI_GRID_2_GRID_SLOT'
+            presetName: 'PRESET_MULTI_GRID_SEPARATE_GRID'
           },
-          {
-            chartType: 'multiGrid',
-            pluginName: 'MultiBarsTriangle',
-            presetName: 'PRESET_MULTI_GRID_3_GRID_SLOT'
-          },
-          {
-            chartType: 'multiGrid',
-            pluginName: 'MultiBarsTriangle',
-            presetName: 'PRESET_MULTI_GRID_4_GRID_SLOT'
-          },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiBarsTriangle',
+          //   presetName: 'PRESET_MULTI_GRID_2_GRID_SLOT'
+          // },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiBarsTriangle',
+          //   presetName: 'PRESET_MULTI_GRID_3_GRID_SLOT'
+          // },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiBarsTriangle',
+          //   presetName: 'PRESET_MULTI_GRID_4_GRID_SLOT'
+          // },
         ]
       },
       {
@@ -490,18 +505,23 @@ export const demoList: DemoChartTypeItem[] = [
           {
             chartType: 'multiGrid',
             pluginName: 'MultiLines',
-            presetName: 'PRESET_MULTI_LINES_2_GRID_SLOT'
+            presetName: 'PRESET_MULTI_LINES_SEPARATE_GRID'
           },
-          {
-            chartType: 'multiGrid',
-            pluginName: 'MultiLines',
-            presetName: 'PRESET_MULTI_LINES_3_GRID_SLOT'
-          },
-          {
-            chartType: 'multiGrid',
-            pluginName: 'MultiLines',
-            presetName: 'PRESET_MULTI_LINES_4_GRID_SLOT'
-          },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiLines',
+          //   presetName: 'PRESET_MULTI_LINES_2_GRID_SLOT'
+          // },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiLines',
+          //   presetName: 'PRESET_MULTI_LINES_3_GRID_SLOT'
+          // },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiLines',
+          //   presetName: 'PRESET_MULTI_LINES_4_GRID_SLOT'
+          // },
         ]
       },
       {
@@ -510,18 +530,23 @@ export const demoList: DemoChartTypeItem[] = [
           {
             chartType: 'multiGrid',
             pluginName: 'MultiLineAreas',
-            presetName: 'PRESET_MULTI_LINE_AREAS_2_GRID_SLOT'
+            presetName: 'PRESET_MULTI_LINE_AREAS_SEPARATE_GRID'
           },
-          {
-            chartType: 'multiGrid',
-            pluginName: 'MultiLineAreas',
-            presetName: 'PRESET_MULTI_LINE_AREAS_3_GRID_SLOT'
-          },
-          {
-            chartType: 'multiGrid',
-            pluginName: 'MultiLineAreas',
-            presetName: 'PRESET_MULTI_LINE_AREAS_4_GRID_SLOT'
-          },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiLineAreas',
+          //   presetName: 'PRESET_MULTI_LINE_AREAS_2_GRID_SLOT'
+          // },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiLineAreas',
+          //   presetName: 'PRESET_MULTI_LINE_AREAS_3_GRID_SLOT'
+          // },
+          // {
+          //   chartType: 'multiGrid',
+          //   pluginName: 'MultiLineAreas',
+          //   presetName: 'PRESET_MULTI_LINE_AREAS_4_GRID_SLOT'
+          // },
         ]
       },
       {
