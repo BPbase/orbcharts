@@ -1,6 +1,0 @@
-export * from './Bubbles'
-export * from './Pie'
-export * from './PieLabels'
-export * from './Rose'
-export * from './RoseLabels'
-export * from './SeriesLegend'

@@ -31,7 +31,7 @@ export type DemoDetail = Partial<{
 export interface DemoDetailItem<T extends core.ChartType> {
   chart: ChartConstructor<T>
   plugins: core.PluginConstructor<T, any, any>[]
-  preset: core.PresetPartial<T>
+  preset: core.PresetPartial<T, any>
   data: core.DataTypeMap<T>
 }
 
@@ -467,10 +467,10 @@ export const demoDetail: DemoDetail = {
       //   preset: presetsBasic.PRESET_MULTI_GRID_BASIC,
       //   data: multiGridData1
       // },
-      'PRESET_MULTI_BARS_DIVERGING': {
+      'PRESET_MULTI_GRID_DIVERGING': {
         chart: core.MultiGridChart,
         plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBars, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_BARS_DIVERGING,
+        preset: presetsBasic.PRESET_MULTI_GRID_DIVERGING,
         data: multiGridData0
       },
       'PRESET_MULTI_GRID_2_GRID_SLOT': {
