@@ -29,39 +29,39 @@ export interface MultiGridLegendParams {
 }
 
 export interface MultiGroupAxisParams extends BaseGroupAxisParams {
-  gridIndexes: number[]
+  gridIndexes: number[] | 'all'
 }
 
 export interface MultiValueAxisParams extends BaseValueAxisParams {
-  gridIndexes: number[]
+  gridIndexes: number[] | 'all'
 }
 
 export interface MultiValueStackAxisParams extends BaseValueAxisParams {
-  gridIndexes: number[]
+  gridIndexes: number[] | 'all'
 }
 
 export interface MultiBarsParams extends BaseBarsParams {
-  gridIndexes: number[]
+  gridIndexes: number[] | 'all'
 }
 
 export interface MultiBarStackParams extends BaseBarStackParams {
-  gridIndexes: number[]
+  gridIndexes: number[] | 'all'
 }
 
 export interface MultiBarsTriangleParams extends BaseBarsTriangleParams {
-  gridIndexes: number[]
+  gridIndexes: number[] | 'all'
 }
 
 export interface MultiLinesParams extends BaseLinesParams {
-  gridIndexes: number[]
+  gridIndexes: number[] | 'all'
 }
 
 export interface MultiLineAreasParams extends BaseLineAreasParams {
-  gridIndexes: number[]
+  gridIndexes: number[] | 'all'
 }
 
 export interface MultiDotsParams extends BaseDotsParams {
-  gridIndexes: number[]
+  gridIndexes: number[] | 'all'
 }
 
 export interface OverlappingValueAxesParams {

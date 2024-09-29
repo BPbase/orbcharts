@@ -18,7 +18,7 @@ import type { ChartParams } from './types/ChartParams'
 import type { Padding } from './types/Padding'
 
 export const CHART_OPTIONS_DEFAULT: ChartOptionsPartial<any> = {
-  preset: {} // 預設為空
+  // preset: {} // 預設為空
 }
 
 // export const GLOBAL_DEFAULT: ChartGlobalDefault = {

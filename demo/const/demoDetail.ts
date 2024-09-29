@@ -451,10 +451,10 @@ export const demoDetail: DemoDetail = {
       //   preset: presetsBasic.PRESET_LINE_AREAS_4_SERIES_SLOT,
       //   data: gridData3
       // },
-      'PRESET_LINE_AREAS_SEPARATE_GRID': {
+      'PRESET_LINE_AREAS_SEPARATE_SERIES': {
         chart: core.GridChart,
         plugins: [pluginsBasic.GroupAxis, pluginsBasic.ValueAxis, pluginsBasic.LineAreas, pluginsBasic.Lines, pluginsBasic.ScalingArea, pluginsBasic.GridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_LINE_AREAS_SEPARATE_GRID,
+        preset: presetsBasic.PRESET_LINE_AREAS_SEPARATE_SERIES,
         data: gridData1
       },
     },
@@ -471,26 +471,32 @@ export const demoDetail: DemoDetail = {
         chart: core.MultiGridChart,
         plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBars, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
         preset: presetsBasic.PRESET_MULTI_GRID_DIVERGING,
-        data: multiGridData0
-      },
-      'PRESET_MULTI_GRID_2_GRID_SLOT': {
-        chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBars, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_GRID_2_GRID_SLOT,
         data: multiGridData1
       },
-      'PRESET_MULTI_GRID_3_GRID_SLOT': {
+      'PRESET_MULTI_GRID_SEPARATE_GRID': {
         chart: core.MultiGridChart,
         plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBars, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_GRID_3_GRID_SLOT,
-        data: multiGridData2
-      },
-      'PRESET_MULTI_GRID_4_GRID_SLOT': {
-        chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBars, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_GRID_4_GRID_SLOT,
+        preset: presetsBasic.PRESET_MULTI_GRID_SEPARATE_GRID,
         data: multiGridData3
       },
+      // 'PRESET_MULTI_GRID_2_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBars, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_GRID_2_GRID_SLOT,
+      //   data: multiGridData1
+      // },
+      // 'PRESET_MULTI_GRID_3_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBars, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_GRID_3_GRID_SLOT,
+      //   data: multiGridData2
+      // },
+      // 'PRESET_MULTI_GRID_4_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBars, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_GRID_4_GRID_SLOT,
+      //   data: multiGridData3
+      // },
       'PRESET_MULTI_GRID_BASIC': {
         chart: core.MultiGridChart,
         plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.OverlappingValueAxes, pluginsBasic.MultiBars, pluginsBasic.MultiLines, pluginsBasic.MultiDots, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
@@ -505,24 +511,30 @@ export const demoDetail: DemoDetail = {
       },
     },
     'MultiBarStack': {
-      'PRESET_MULTI_GRID_2_GRID_SLOT': {
+      'PRESET_MULTI_GRID_SEPARATE_GRID': {
         chart: core.MultiGridChart,
         plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueStackAxis, pluginsBasic.MultiBarStack, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_GRID_2_GRID_SLOT,
-        data: multiGridData1
-      },
-      'PRESET_MULTI_GRID_3_GRID_SLOT': {
-        chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueStackAxis, pluginsBasic.MultiBarStack, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_GRID_3_GRID_SLOT,
-        data: multiGridData2
-      },
-      'PRESET_MULTI_GRID_4_GRID_SLOT': {
-        chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueStackAxis, pluginsBasic.MultiBarStack, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_GRID_4_GRID_SLOT,
+        preset: presetsBasic.PRESET_MULTI_GRID_SEPARATE_GRID,
         data: multiGridData3
       },
+      // 'PRESET_MULTI_GRID_2_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueStackAxis, pluginsBasic.MultiBarStack, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_GRID_2_GRID_SLOT,
+      //   data: multiGridData1
+      // },
+      // 'PRESET_MULTI_GRID_3_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueStackAxis, pluginsBasic.MultiBarStack, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_GRID_3_GRID_SLOT,
+      //   data: multiGridData2
+      // },
+      // 'PRESET_MULTI_GRID_4_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueStackAxis, pluginsBasic.MultiBarStack, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_GRID_4_GRID_SLOT,
+      //   data: multiGridData3
+      // },
       'PRESET_MULTI_GRID_BASIC': {
         chart: core.MultiGridChart,
         plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.OverlappingValueStackAxes, pluginsBasic.MultiBarStack, pluginsBasic.MultiLines, pluginsBasic.MultiDots, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
@@ -531,24 +543,30 @@ export const demoDetail: DemoDetail = {
       },
     },
     'MultiBarsTriangle': {
-      'PRESET_MULTI_GRID_2_GRID_SLOT': {
+      'PRESET_MULTI_GRID_SEPARATE_GRID': {
         chart: core.MultiGridChart,
         plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBarsTriangle, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_GRID_2_GRID_SLOT,
-        data: multiGridData1
-      },
-      'PRESET_MULTI_GRID_3_GRID_SLOT': {
-        chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBarsTriangle, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_GRID_3_GRID_SLOT,
-        data: multiGridData2
-      },
-      'PRESET_MULTI_GRID_4_GRID_SLOT': {
-        chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBarsTriangle, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_GRID_4_GRID_SLOT,
+        preset: presetsBasic.PRESET_MULTI_GRID_SEPARATE_GRID,
         data: multiGridData3
       },
+      // 'PRESET_MULTI_GRID_2_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBarsTriangle, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_GRID_2_GRID_SLOT,
+      //   data: multiGridData1
+      // },
+      // 'PRESET_MULTI_GRID_3_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBarsTriangle, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_GRID_3_GRID_SLOT,
+      //   data: multiGridData2
+      // },
+      // 'PRESET_MULTI_GRID_4_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiBarsTriangle, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_GRID_4_GRID_SLOT,
+      //   data: multiGridData3
+      // },
       'PRESET_MULTI_GRID_BASIC': {
         chart: core.MultiGridChart,
         plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.OverlappingValueAxes, pluginsBasic.MultiBarsTriangle, pluginsBasic.MultiLines, pluginsBasic.MultiDots, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
@@ -557,44 +575,56 @@ export const demoDetail: DemoDetail = {
       },
     },
     'MultiLines': {
-      'PRESET_MULTI_LINES_2_GRID_SLOT': {
+      'PRESET_MULTI_LINES_SEPARATE_GRID': {
         chart: core.MultiGridChart,
         plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_LINES_2_GRID_SLOT,
-        data: multiGridData1
-      },
-      'PRESET_MULTI_LINES_3_GRID_SLOT': {
-        chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_LINES_3_GRID_SLOT,
-        data: multiGridData2
-      },
-      'PRESET_MULTI_LINES_4_GRID_SLOT': {
-        chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_LINES_4_GRID_SLOT,
+        preset: presetsBasic.PRESET_MULTI_LINES_SEPARATE_GRID,
         data: multiGridData3
       },
+      // 'PRESET_MULTI_LINES_2_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_LINES_2_GRID_SLOT,
+      //   data: multiGridData1
+      // },
+      // 'PRESET_MULTI_LINES_3_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_LINES_3_GRID_SLOT,
+      //   data: multiGridData2
+      // },
+      // 'PRESET_MULTI_LINES_4_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_LINES_4_GRID_SLOT,
+      //   data: multiGridData3
+      // },
     },
     'MultiLineAreas': {
-      'PRESET_MULTI_LINE_AREAS_2_GRID_SLOT': {
+      'PRESET_MULTI_LINE_AREAS_SEPARATE_GRID': {
         chart: core.MultiGridChart,
         plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLineAreas, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_LINE_AREAS_2_GRID_SLOT,
-        data: multiGridData1
-      },
-      'PRESET_MULTI_LINE_AREAS_3_GRID_SLOT': {
-        chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLineAreas, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_LINE_AREAS_3_GRID_SLOT,
-        data: multiGridData2
-      },
-      'PRESET_MULTI_LINE_AREAS_4_GRID_SLOT': {
-        chart: core.MultiGridChart,
-        plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLineAreas, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
-        preset: presetsBasic.PRESET_MULTI_LINE_AREAS_4_GRID_SLOT,
+        preset: presetsBasic.PRESET_MULTI_LINE_AREAS_SEPARATE_GRID,
         data: multiGridData3
       },
+      // 'PRESET_MULTI_LINE_AREAS_2_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLineAreas, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_LINE_AREAS_2_GRID_SLOT,
+      //   data: multiGridData1
+      // },
+      // 'PRESET_MULTI_LINE_AREAS_3_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLineAreas, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_LINE_AREAS_3_GRID_SLOT,
+      //   data: multiGridData2
+      // },
+      // 'PRESET_MULTI_LINE_AREAS_4_GRID_SLOT': {
+      //   chart: core.MultiGridChart,
+      //   plugins: [pluginsBasic.MultiGroupAxis, pluginsBasic.MultiValueAxis, pluginsBasic.MultiLineAreas, pluginsBasic.MultiLines, pluginsBasic.MultiGridLegend, pluginsBasic.Tooltip as any],
+      //   preset: presetsBasic.PRESET_MULTI_LINE_AREAS_4_GRID_SLOT,
+      //   data: multiGridData3
+      // },
     }
   },
   tree: {

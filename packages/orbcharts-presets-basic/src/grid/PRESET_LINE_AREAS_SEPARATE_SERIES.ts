@@ -10,7 +10,7 @@ import type { PresetLinesParams,
 } from '../types'
 import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_LINE_AREAS_SEPARATE_GRID: PresetPartial<'grid', PresetLinesParams
+export const PRESET_LINE_AREAS_SEPARATE_SERIES: PresetPartial<'grid', PresetLinesParams
 & PresetLineAreasParams
 & PresetDotsParams
 & PresetGridLegendParams
@@ -18,7 +18,7 @@ export const PRESET_LINE_AREAS_SEPARATE_GRID: PresetPartial<'grid', PresetLinesP
 & PresetValueAxisParams
 & PresetGroupAuxParams
 & PresetNoneDataPluginParams> = {
-  name: 'PRESET_LINE_AREAS_SEPARATE_GRID',
+  name: 'PRESET_LINE_AREAS_SEPARATE_SERIES',
   description: 'LineAreas 分開顯示Series',
   chartParams: {
     padding: {

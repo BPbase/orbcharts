@@ -5,17 +5,17 @@
 <script setup lang="ts">
 import { MultiGridChart } from '../../../packages/orbcharts-core/src'
 import { MultiBars, MultiLines, MultiDots, MultiGridLegend, MultiGroupAxis, MultiValueAxis, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
-import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
+import { PRESET_MULTI_GRID_SEPARATE_GRID } from '../../../packages/orbcharts-presets-basic/src/index'
 import { multiGridData1 } from '../../const/data/multiGridData1'
 
 onMounted(() => {
 
   const el = document.querySelector('#chart')
 
-  console.log(PRESET_MULTI_GRID_2_GRID_SLOT)
+  console.log(PRESET_MULTI_GRID_SEPARATE_GRID)
 
   const chart = new MultiGridChart(el!, {
-    preset: PRESET_MULTI_GRID_2_GRID_SLOT
+    preset: PRESET_MULTI_GRID_SEPARATE_GRID
   })
 
   // chart!.dataFormatter$.next({
