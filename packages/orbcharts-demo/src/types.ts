@@ -15,6 +15,8 @@ export interface DemoChartTypeItem {
 export interface DemoMainPluginsItem {
   // title: KeyOfOrbChartsPluginsBasic
   title: string
+  description: string
+  descriptionZh: string
   mainPluginNames: KeyOfOrbChartsPluginsBasic[]
   list: DemoItem[]
 }
