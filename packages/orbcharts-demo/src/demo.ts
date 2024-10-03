@@ -1,13 +1,15 @@
 import type { DemoChartTypeItem } from './types'
 // type nonePresetTitle = '[none preset]'
 
-export const demoList: DemoChartTypeItem[] = [
+export const DEMO_LIST: DemoChartTypeItem[] = [
   {
     title: 'Series',
     chartType: 'series',
     list: [
       {
         title: 'Bubbles',
+        description: 'Bubble Chart',
+        descriptionZh: '泡泡圖',
         mainPluginNames: ['Bubbles'],
         list: [
           {
@@ -38,6 +40,8 @@ export const demoList: DemoChartTypeItem[] = [
       },
       {
         title: 'Pie',
+        description: 'Pie Chart',
+        descriptionZh: '圓餅圖',
         mainPluginNames: ['Pie'],
         list: [
           {
@@ -86,6 +90,8 @@ export const demoList: DemoChartTypeItem[] = [
       },
       {
         title: 'Rose',
+        description: 'Rose Chart',
+        descriptionZh: '玫瑰圖',
         mainPluginNames: ['Rose'],
         list: [
           {
@@ -134,6 +140,8 @@ export const demoList: DemoChartTypeItem[] = [
     list: [
       {
         title: 'Bars',
+        description: 'Bar Chart',
+        descriptionZh: '長條圖',
         mainPluginNames: ['Bars'],
         list: [
           {
@@ -203,6 +211,8 @@ export const demoList: DemoChartTypeItem[] = [
       },
       {
         title: 'BarsPN',
+        description: 'Positive and Negative Bar Chart',
+        descriptionZh: '正負長條圖',
         mainPluginNames: ['BarsPN'],
         list: [
           {
@@ -215,6 +225,8 @@ export const demoList: DemoChartTypeItem[] = [
       },
       {
         title: 'BarStack',
+        description: 'Stacked Bar Chart',
+        descriptionZh: '堆疊長條圖',
         mainPluginNames: ['BarStack'],
         list: [
           {
@@ -260,6 +272,8 @@ export const demoList: DemoChartTypeItem[] = [
       },
       {
         title: 'BarsTriangle',
+        description: 'Triangle Bar Chart',
+        descriptionZh: '三角形長條圖',
         mainPluginNames: ['BarsTriangle'],
         list: [
           {
@@ -304,8 +318,10 @@ export const demoList: DemoChartTypeItem[] = [
         ]
       },
       {
-        title: 'Lines, Dots',
-        mainPluginNames: ['Lines', 'Dots'],
+        title: 'Lines',
+        description: 'Line Chart',
+        descriptionZh: '折線圖',
+        mainPluginNames: ['Lines'],
         list: [
           {
             title: 'PRESET_LINES_BASIC',
@@ -372,8 +388,10 @@ export const demoList: DemoChartTypeItem[] = [
         ]
       },
       {
-        title: 'LineAreas, Lines, Dots',
-        mainPluginNames: ['LineAreas', 'Lines', 'Dots'],
+        title: 'LineAreas',
+        description: 'Area Chart',
+        descriptionZh: '區域圖',
+        mainPluginNames: ['LineAreas'],
         list: [
           {
             title: 'PRESET_LINE_AREAS_BASIC',
@@ -447,6 +465,8 @@ export const demoList: DemoChartTypeItem[] = [
     list: [
       {
         title: 'MultiBars',
+        description: 'Multi Bar Chart',
+        descriptionZh: '多組長條圖',
         mainPluginNames: ['MultiBars'],
         list: [
           {
@@ -480,6 +500,8 @@ export const demoList: DemoChartTypeItem[] = [
       },
       {
         title: 'MultiBarStack',
+        description: 'Multi Stacked Bar Chart',
+        descriptionZh: '多組堆疊長條圖',
         mainPluginNames: ['MultiBarStack'],
         list: [
           {
@@ -507,6 +529,8 @@ export const demoList: DemoChartTypeItem[] = [
       },
       {
         title: 'MultiBarsTriangle',
+        description: 'Multi Triangle Bar Chart',
+        descriptionZh: '多組三角形長條圖',
         mainPluginNames: ['MultiBarsTriangle'],
         list: [
           {
@@ -534,6 +558,8 @@ export const demoList: DemoChartTypeItem[] = [
       },
       {
         title: 'MultiLines',
+        description: 'Multi Line Chart',
+        descriptionZh: '多組折線圖',
         mainPluginNames: ['MultiLines'],
         list: [
           {
@@ -561,6 +587,8 @@ export const demoList: DemoChartTypeItem[] = [
       },
       {
         title: 'MultiLineAreas',
+        description: 'Multi Area Chart',
+        descriptionZh: '多組區域圖',
         mainPluginNames: ['MultiLineAreas'],
         list: [
           {
@@ -588,6 +616,8 @@ export const demoList: DemoChartTypeItem[] = [
       },
       {
         title: 'MultiBars, MultiLines',
+        description: 'Dual-Axis Bar and Line Chart',
+        descriptionZh: '雙圖軸長條及折線圖',
         mainPluginNames: ['MultiBars', 'MultiLines'],
         list: [
           {
@@ -606,6 +636,8 @@ export const demoList: DemoChartTypeItem[] = [
       },
       {
         title: 'MultiBarStack, MultiLines',
+        description: 'Dual-Axis Stacked Bar and Line Chart',
+        descriptionZh: '雙圖軸堆疊長條及折線圖',
         mainPluginNames: ['MultiBarStack', 'MultiLines'],
         list: [
           {
@@ -618,6 +650,8 @@ export const demoList: DemoChartTypeItem[] = [
       },
       {
         title: 'MultiBarsTriangle, MultiLines',
+        description: 'Dual-Axis Triangle Bar and Line Chart',
+        descriptionZh: '雙圖軸三角形長條及折線圖',
         mainPluginNames: ['MultiBarsTriangle', 'MultiLines'],
         list: [
           {
@@ -636,6 +670,8 @@ export const demoList: DemoChartTypeItem[] = [
     list: [
       {
         title: 'TreeMap',
+        description: 'Tree Map Chart',
+        descriptionZh: '樹狀圖',
         mainPluginNames: ['TreeMap'],
         list: [
           {

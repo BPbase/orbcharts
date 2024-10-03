@@ -1,3 +1,3 @@
-export * from './demoList'
+export * from './demo'
 export * from './utils'
 export * from './types'
