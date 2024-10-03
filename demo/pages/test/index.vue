@@ -6,7 +6,7 @@
 import { MultiGridChart } from '../../../packages/orbcharts-core/src'
 import { MultiBars, MultiLines, MultiDots, MultiGridLegend, MultiGroupAxis, MultiValueAxis, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_MULTI_GRID_SEPARATE_GRID } from '../../../packages/orbcharts-presets-basic/src/index'
-import { multiGridData1 } from '../../const/data/multiGridData1'
+import multiGridData1 from '../../../packages/orbcharts-demo/src/data/multiGridData1'
 
 onMounted(() => {
 

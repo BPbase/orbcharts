@@ -34,7 +34,7 @@
             v-for="(preset, presetIndex) in pluginGroup.list"
             :key="presetIndex">
             <NuxtLink
-              :to="`/${preset.chartType}/${preset.pluginName}/${preset.presetName}`">
+              :to="`/${chartTypeGroup.chartType}/${pluginGroup.mainPluginNames.join(',')}/${preset.presetName}`">
               {{ preset.presetName }}
             </NuxtLink>
           </div>
@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { demoList } from '@/const/demoList'
+import { demoList } from '../../packages/orbcharts-demo/src'
 
 </script>
 

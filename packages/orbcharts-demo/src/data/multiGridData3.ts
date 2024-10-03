@@ -1,4 +1,4 @@
-export const multiGridData2 = [
+export default [
   [
     [
       1205,
@@ -45,6 +45,22 @@ export const multiGridData2 = [
       980,
       850,
       700
+    ]
+  ],
+  [
+    [
+      680,
+      880,
+      770,
+      330,
+      710
+    ],
+    [
+      540,
+      480,
+      820,
+      780,
+      600
     ]
   ],
 ]

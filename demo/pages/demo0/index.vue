@@ -6,7 +6,7 @@
 import { GridChart } from '../../../packages/orbcharts-core/src'
 import { GroupAxis, ValueAxis, Bars, ScalingArea, Tooltip, GridLegend } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_SEPARATE_SERIES } from '../../../packages/orbcharts-presets-basic/src/index'
-import { gridData3 } from '../../const/data/gridData3'
+import gridData3 from '../../../packages/orbcharts-demo/src/data/gridData3'
 
 useHead({
   title: 'Demo 0',

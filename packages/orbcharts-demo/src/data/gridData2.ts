@@ -1,4 +1,4 @@
-export const gridData1 = [
+export default [
   [
     55,
     80,
@@ -11,6 +11,13 @@ export const gridData1 = [
     40,
     15,
     65,
+    120
+  ],
+  [
+    75,
+    90,
+    600,
+    50,
     120
   ]
 ]
