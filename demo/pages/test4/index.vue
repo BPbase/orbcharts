@@ -6,7 +6,7 @@
 import { TreeChart } from '../../../packages/orbcharts-core/src'
 import { TreeMap, TreeLegend, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 // import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
-import { treeData1 } from '../../const/data/treeData1'
+import treeData1 from '../../../packages/orbcharts-demo/src/data/treeData1'
 
 onMounted(() => {
 

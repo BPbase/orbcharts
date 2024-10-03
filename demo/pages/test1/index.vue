@@ -6,7 +6,7 @@
 import { SeriesChart } from '../../../packages/orbcharts-core/src'
 import { Rose, RoseLabels, Pie, PieLabels, Bubbles, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
-import { seriesData2 } from '../../const/data/seriesData2'
+import seriesData2 from '../../../packages/orbcharts-demo/src/data/seriesData2'
 
 // import { GridChart, PRESET_GRID_HORIZONTAL, MultiBars } from 'orbcharts'
 

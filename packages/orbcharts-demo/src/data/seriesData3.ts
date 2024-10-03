@@ -1,4 +1,4 @@
-export const seriesData3 = [
+export default [
     [
         {
             "id": "疫情",

@@ -1,4 +1,4 @@
-export const multiGridData1 = [
+export default [
   [
     [
       1205,

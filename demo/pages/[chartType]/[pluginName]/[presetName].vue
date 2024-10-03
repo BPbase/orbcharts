@@ -6,9 +6,7 @@
 import * as core from '../../../../packages/orbcharts-core/src'
 import * as pluginsBasic from '../../../../packages/orbcharts-plugins-basic/src'
 import * as presetsBasic from '../../../../packages/orbcharts-presets-basic/src/index'
-// import type { ChartType } from '../../../../packages/orbcharts-core/src'
-import { demoDetail } from '@/const/demoDetail'
-import type { DemoDetailItem } from '@/const/demoDetail'
+import { getDemoData } from '../../../../packages/orbcharts-demo/src'
 
 interface PageParams {
   chartType: core.ChartType
@@ -19,12 +17,6 @@ interface PageParams {
 const route = useRoute()
 const pageParams = route.params as any as PageParams
 
-const detail: DemoDetailItem<any> | null = demoDetail[pageParams.chartType]
-  && demoDetail[pageParams.chartType]![pageParams.pluginName]
-  && demoDetail[pageParams.chartType]![pageParams.pluginName]![pageParams.presetName]
-    ? demoDetail[pageParams.chartType]![pageParams.pluginName]![pageParams.presetName]!
-    : null
-
 useHead({
   title: pageParams.pluginName,
   // meta: [{
@@ -33,129 +25,40 @@ useHead({
   // }]
 })
 
-onMounted(() => {
-  if (!detail) {
+onMounted(async () => {
+  // if (!demoItem) {
+  //   return
+  // }
+  const demoData = await getDemoData({
+    chartType: pageParams.chartType,
+    pluginNames: pageParams.pluginName.split(',') as (keyof typeof pluginsBasic)[],
+    presetName: pageParams.presetName
+  })
+  if (!demoData) {
+    console.error('demoData not found')
     return
   }
 
+  const ChartMap = {
+    series: core.SeriesChart,
+    grid: core.GridChart,
+    multiGrid: core.MultiGridChart,
+    multiValue: core.MultiValueChart,
+    relationship: core.RelationshipChart,
+    tree: core.TreeChart,
+  }
+  const Chart = ChartMap[pageParams.chartType]
+  
   const el = document.querySelector('#chart')
 
-  const plugins = detail.plugins.map((plugin) => {
-    return new plugin()
-  })
-// console.log('detail.preset',)
-  const chart = new detail.chart(el!, {
-    preset: detail.preset
+  const chart = new Chart(el!, {
+    preset: demoData.preset as any
   })
 
-  // chart!.dataFormatter$.next({
-  //   type: '',
-  //   container: {
-  //     columnAmount: 3
-  //   },
-  //   multiGrid: [
-  //     {
-  //       slotIndex: 0
-  //     },
-  //     {
-  //       slotIndex:1
-  //     }
-  //   ]
-  // })
+  chart!.plugins$.next(demoData.plugins as any)
 
-  // let i = 0
-  // setInterval(() => {
-  //   if (i % 2 == 0) {
-  //     chart!.dataFormatter$.next({
-  //       container: {
-  //         columnAmount: 2
-  //       },
-  //       multiGrid: [
-  //         {
-  //           slotIndex: 0
-  //         },
-  //         {
-  //           slotIndex:1
-  //         }
-  //       ]
-  //     })
-  //   } else {
-  //     chart!.dataFormatter$.next({
-  //       container: {
-  //         columnAmount: 1
-  //       },
-  //       multiGrid: [
-  //         {
-  //           slotIndex: 0
-  //         },
-  //         {
-  //           slotIndex:0
-  //         }
-  //       ]
-  //     })
-  //   }
-    
-  //   i++
-  // }, 2000)
+  chart!.data$.next(demoData.data as any)
 
-  // chart!.dataFormatter$.next({
-  //   container: {
-  //     columnAmount: 1
-  //   },
-  //   multiGrid: [
-  //     {
-  //       slotIndex: 0
-  //     },
-  //     {
-  //       slotIndex: 0
-  //     }
-  //   ]
-  // })
-
-
-
-  
-  // chart!.chartParams$.next({
-  //   "padding": {
-  //     "top": 80,
-  //     "right": 80,
-  //     "bottom": 80,
-  //     "left": 80
-  //   }
-  // })
-  // chart!.dataFormatter$.next({
-  //   valueAxis: {
-  //     position: 'bottom',
-  //     scaleDomain: [0, 'auto'],
-  //     scaleRange: [0, 0.9],
-  //     label: ''
-  //   },
-  //   groupAxis: {
-  //     position: 'left',
-  //     scaleDomain: [0, 'auto'],
-  //     scalePadding: 0.5,
-  //     label: ''
-  //   },
-  // })
-
-  chart!.plugins$.next(plugins)
-
-  chart!.data$.next(detail.data as any)
-
-  // chart!.dataFormatter$.next({
-  //   valueAxis: {
-  //     position: 'bottom',
-  //     scaleDomain: [0, 'auto'],
-  //     scaleRange: [0, 0.9],
-  //     label: ''
-  //   },
-  //   groupAxis: {
-  //     position: 'left',
-  //     scaleDomain: [0, 'auto'],
-  //     scalePadding: 0.5,
-  //     label: ''
-  //   },
-  // })
 })
 
 </script>

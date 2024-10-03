@@ -1,4 +1,4 @@
-export const seriesData2 = [
+export default [
   [
     80,
     120,

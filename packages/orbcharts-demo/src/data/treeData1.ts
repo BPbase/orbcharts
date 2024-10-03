@@ -1,4 +1,4 @@
-export const treeData1 = {
+export default {
     "label": "Movies",
     "children": [
         {

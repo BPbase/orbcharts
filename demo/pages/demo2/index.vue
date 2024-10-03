@@ -6,7 +6,7 @@
 import { MultiGridChart } from '../../../packages/orbcharts-core/src'
 import { MultiBars, MultiLines, MultiDots, MultiGridLegend, MultiGroupAxis, MultiValueAxis, OverlappingValueAxes, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 // import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
-import { multiGridData1 } from '../../const/data/multiGridData1'
+import multiGridData1 from '../../../packages/orbcharts-demo/src/data/multiGridData1'
 
 useHead({
   title: 'Demo 2',

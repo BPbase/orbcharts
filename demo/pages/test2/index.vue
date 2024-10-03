@@ -6,7 +6,7 @@
 import { GridChart } from '../../../packages/orbcharts-core/src'
 import { Bars, BarStack, BarsTriangle, Lines, LineAreas, Dots, GroupAux, GroupAxis, ValueAxis, ValueStackAxis, ScalingArea, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
-import { gridData1 } from '../../const/data/gridData1'
+import gridData1 from '../../../packages/orbcharts-demo/src/data/gridData1'
 
 // import { GridChart, PRESET_GRID_HORIZONTAL, MultiBars } from 'orbcharts'
 
