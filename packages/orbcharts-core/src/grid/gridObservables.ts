@@ -426,6 +426,9 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
         width: height,
         height: width
       }
+    } else {
+      // default
+      return { width, height }
     }
   }
 

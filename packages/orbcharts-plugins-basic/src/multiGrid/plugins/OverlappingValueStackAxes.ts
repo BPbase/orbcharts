@@ -51,15 +51,16 @@ export const OverlappingValueStackAxes = defineMultiGridPlugin(pluginName, DEFAU
       if (!data.fullDataFormatter.gridList[data.secondGridIndex]) {
         data.fullDataFormatter.gridList[data.secondGridIndex] = Object.assign({}, data.fullDataFormatter.gridList[data.firstGridIndex])
       }
+      const position = data.fullDataFormatter.gridList[data.firstGridIndex].valueAxis.position
       // 反轉第二個valueAxis的位置
-      let reversePosition = ''
-      if (data.fullDataFormatter.gridList[data.firstGridIndex].valueAxis.position === 'left') {
+      let reversePosition = position
+      if (position === 'left') {
         reversePosition = 'right'
-      } else if (data.fullDataFormatter.gridList[data.firstGridIndex].valueAxis.position === 'bottom') {
+      } else if (position === 'bottom') {
         reversePosition = 'top'
-      } else if (data.fullDataFormatter.gridList[data.firstGridIndex].valueAxis.position === 'top') {
+      } else if (position === 'top') {
         reversePosition = 'bottom'
-      } else if (data.fullDataFormatter.gridList[data.firstGridIndex].valueAxis.position === 'right') {
+      } else if (position === 'right') {
         reversePosition = 'left'
       }
       return <DataFormatterGrid>{
