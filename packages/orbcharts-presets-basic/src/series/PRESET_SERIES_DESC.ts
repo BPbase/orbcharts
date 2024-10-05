@@ -13,3 +13,4 @@ export const PRESET_SERIES_DESC: PresetPartial<'series', PresetSeriesPluginParam
     ...ALL_PLUGIN_PARAMS_NONE_DATA,
   }
 }
+PRESET_SERIES_DESC.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`

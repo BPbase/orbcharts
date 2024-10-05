@@ -79,6 +79,22 @@ export const DEFAULT_PIE_EVENT_TEXTS_PARAMS: PieEventTextsParams = {
     }
   ]
 }
+DEFAULT_PIE_EVENT_TEXTS_PARAMS.eventFn.toString = () => `(eventData: EventSeries, eventName: EventName, t: number) => {
+  if (eventName === 'mouseover' || eventName === 'mousemove') {
+    return [String(eventData.datum!.value)]
+  }
+  return [
+    String(
+      Math.round(
+        eventData.data.reduce((acc, seriesData) => {
+          return acc + seriesData.reduce((_acc, data) => {
+            return _acc + (data.value ?? 0)
+          }, 0)
+        }, 0) * t
+      )
+    )
+  ]
+}`
 
 export const DEFAULT_PIE_LABELS_PARAMS: PieLabelsParams = {
   // solidColor: undefined,
@@ -94,6 +110,7 @@ export const DEFAULT_PIE_LABELS_PARAMS: PieLabelsParams = {
   labelColorType: 'primary',
   labelFn: d => String(d.label),
 }
+DEFAULT_PIE_LABELS_PARAMS.labelFn.toString = () => `d => String(d.label)`
 
 export const DEFAULT_ROSE_PARAMS: RoseParams = {
   outerRadius: 0.95,
@@ -109,6 +126,7 @@ export const DEFAULT_ROSE_LABELS_PARAMS: RoseLabelsParams = {
   labelColorType: 'primary',
   arcScaleType: 'area'
 }
+DEFAULT_ROSE_LABELS_PARAMS.labelFn.toString = () => `d => String(d.label)`
 
 export const DEFAULT_SERIES_LEGEND_PARAMS: SeriesLegendParams = {
   position: 'right',

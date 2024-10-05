@@ -141,6 +141,7 @@ export const DATA_FORMATTER_SERIES_DEFAULT: DataFormatterSeries = {
   //     ]
   // },
 }
+DATA_FORMATTER_SERIES_DEFAULT.visibleFilter.toString = () => `(datum, context) => true`
 
 export const DATA_FORMATTER_GRID_GRID_DEFAULT: DataFormatterGridGrid = {
   seriesDirection: 'row',
@@ -163,6 +164,7 @@ export const DATA_FORMATTER_GRID_DEFAULT: DataFormatterGrid = {
     ...DATA_FORMATTER_CONTAINER_DEFAULT
   }
 }
+DATA_FORMATTER_GRID_DEFAULT.visibleFilter.toString = () => `(datum, context) => true`
 
 // export const DATA_FORMATTER_MULTI_GRID_MULTI_GRID_DEFAULT: DataFormatterMultiGridMultiGrid = {
 //   ...DATA_FORMATTER_GRID_DEFAULT,
@@ -187,6 +189,7 @@ export const DATA_FORMATTER_MULTI_GRID_DEFAULT: DataFormatterMultiGrid = {
     ...DATA_FORMATTER_CONTAINER_DEFAULT
   }
 }
+DATA_FORMATTER_MULTI_GRID_DEFAULT.visibleFilter.toString = () => `(datum, context) => true`
 
 export const DATA_FORMATTER_MULTI_VALUE_DEFAULT: DataFormatterMultiValue = {
   type: 'multiValue',
@@ -196,6 +199,7 @@ export const DATA_FORMATTER_MULTI_VALUE_DEFAULT: DataFormatterMultiValue = {
   xAxis: { ...DATA_FORMATTER_VALUE_AXIS_DEFAULT },
   yAxis: { ...DATA_FORMATTER_VALUE_AXIS_DEFAULT },
 }
+DATA_FORMATTER_MULTI_VALUE_DEFAULT.visibleFilter.toString = () => `(datum, context) => true`
 
 export const DATA_FORMATTER_TREE_DEFAULT: DataFormatterTree = {
   type: 'tree',
@@ -203,6 +207,7 @@ export const DATA_FORMATTER_TREE_DEFAULT: DataFormatterTree = {
   // labelFormat: (datum: any) => (datum && datum.label) ?? '',
   categoryLabels: []
 }
+DATA_FORMATTER_TREE_DEFAULT.visibleFilter.toString = () => `(datum, context) => true`
 
 export const DATA_FORMATTER_RELATIONAL_DEFAULT: DataFormatterRelationship = {
   type: 'relationship',
@@ -217,4 +222,5 @@ export const DATA_FORMATTER_RELATIONAL_DEFAULT: DataFormatterRelationship = {
   //   descriptionFormat: (edge: any) => (edge && edge.label) ?? ''
   // },
 }
+DATA_FORMATTER_RELATIONAL_DEFAULT.visibleFilter.toString = () => `(datum, context) => true`
 

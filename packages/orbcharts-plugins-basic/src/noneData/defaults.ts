@@ -62,3 +62,42 @@ export const TOOLTIP_PARAMS: TooltipParams = {
   },
   svgRenderFn: null
 }
+TOOLTIP_PARAMS.textRenderFn.toString = () => `(eventData) => {
+  if (eventData.highlightTarget === 'datum' && eventData.datum) {
+    return [\`\${eventData.datum.label}: \${eventData.datum.value}\`]
+  } else if (eventData.highlightTarget === 'series') {
+    const label = (eventData as EventBaseSeriesValue<any, any>).seriesLabel
+    const valueArr = (eventData as EventBaseSeriesValue<any, any>).series
+      .filter(d => d.visible == true)
+      .map(d => {
+        return d.value
+      })
+    const value = valueArr.length > 5
+      ? valueArr.slice(0, 5).join(',') + '...'
+      : valueArr.join(',')
+    return [label, value]
+  } else if (eventData.highlightTarget === 'group') {
+    const label = (eventData as EventBaseGridValue<any, any>).groupLabel
+    const valueArr = (eventData as EventBaseGridValue<any, any>).series
+      .filter(d => d.visible == true)
+      .map(d => {
+        return d.value
+      })
+    const value = valueArr.length > 5
+      ? valueArr.slice(0, 5).join(',') + '...'
+      : valueArr.join(',')
+    return [label, value]
+  } else if (eventData.highlightTarget === 'category') {
+    const label = (eventData as EventBaseCategoryValue<any, any>).categoryLabel
+    const valueArr = (eventData as EventBaseCategoryValue<any, any>).category
+      .filter(d => d.visible == true)
+      .map(d => {
+        return d.value
+      })
+    const value = valueArr.length > 5
+      ? valueArr.slice(0, 5).join(',') + '...'
+      : valueArr.join(',')
+    return [label, value]
+  }
+  return []
+}`

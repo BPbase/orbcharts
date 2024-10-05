@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "nuxt": "^3.11.2",
-    "orbcharts": "^3.0.0-alpha.55",
+    "orbcharts": "^3.0.0-alpha.58",
     "rxjs": "npm:@esm-bundle/rxjs@^7.8.1",
     "vue": "^3.4.27",
     "vue-router": "^4.3.2"

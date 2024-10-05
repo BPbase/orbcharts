@@ -17,7 +17,7 @@
       </div>
       <div
         class="menu-list"
-        v-for="(chartTypeGroup, chartTypeIndex) in demoList"
+        v-for="(chartTypeGroup, chartTypeIndex) in DEMO_LIST"
         key="chartTypeIndex">
         <h2>
           {{ chartTypeGroup.title }}
@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { demoList } from '../../packages/orbcharts-demo/src'
+import { DEMO_LIST } from '../../packages/orbcharts-demo/src'
 
 </script>
 
