@@ -188,6 +188,10 @@ export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
         rotateX = 180
         translateY = height
       }
+    } else {
+      // 預設
+      rotateX = 180
+      translateY = height
     }
     // selection.style('transform', `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`)
   
