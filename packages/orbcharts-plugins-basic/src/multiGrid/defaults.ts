@@ -50,6 +50,7 @@ export const DEFAULT_MULTI_GROUP_AXIS_PARAMS: MultiGroupAxisParams = {
   tickTextColorType: 'primary',
   gridIndexes: [0]
 }
+DEFAULT_MULTI_GROUP_AXIS_PARAMS.tickFormat.toString = () => `text => text`
 
 export const DEFAULT_MULTI_VALUE_AXIS_PARAMS: MultiValueAxisParams = {
   // labelAnchor: 'end',

@@ -34,7 +34,8 @@ export const computeTreeData: ComputedDataFn<'tree'> = (context) => {
     const dataTreeObj: DataTreeObj = (function () {
       if (isPlainObject(data) === true) {
         // 原本就是樹狀結構則直接複製
-        return structuredClone(data) as DataTreeObj
+        // return structuredClone(data) as DataTreeObj
+        return JSON.parse(JSON.stringify(data)) as DataTreeObj
       } else if (Array.isArray(data) === false) {
         return {
           id: ''

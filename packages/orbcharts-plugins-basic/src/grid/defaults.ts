@@ -41,6 +41,7 @@ export const DEFAULT_GROUP_AREA_PARAMS: GroupAuxParams = {
   labelTextFormat: text => text,
   labelPadding: 24,
 }
+DEFAULT_GROUP_AREA_PARAMS.labelTextFormat.toString = () => `text => text`
 
 export const DEFAULT_BARS_PARAMS: BarsParams = {
   // barType: 'rect',
@@ -83,6 +84,7 @@ export const DEFAULT_GROUP_AXIS_PARAMS: GroupAxisParams = {
   tickTextRotate: 0,
   tickTextColorType: 'primary',
 }
+DEFAULT_GROUP_AXIS_PARAMS.tickFormat.toString = () => `text => text`
 
 export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
   // labelAnchor: 'end',
