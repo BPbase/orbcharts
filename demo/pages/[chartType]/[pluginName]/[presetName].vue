@@ -6,7 +6,8 @@
 import * as core from '../../../../packages/orbcharts-core/src'
 import * as pluginsBasic from '../../../../packages/orbcharts-plugins-basic/src'
 import * as presetsBasic from '../../../../packages/orbcharts-presets-basic/src/index'
-import { getDemoData } from '../../../../packages/orbcharts-demo/src'
+// import { getDemoData } from '../../../../packages/orbcharts-demo/src'
+import { getDemoData } from '@/utils/getDemoData'
 
 interface PageParams {
   chartType: core.ChartType
@@ -50,7 +51,7 @@ onMounted(async () => {
   const Chart = ChartMap[pageParams.chartType]
   
   const el = document.querySelector('#chart')
-
+console.log('demoData.preset', demoData.preset)
   const chart = new Chart(el!, {
     preset: demoData.preset as any
   })

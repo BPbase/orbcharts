@@ -25,14 +25,15 @@
   "types": "./dist/src/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "vite build --mode release"
+    "build": "vite build --mode production"
   },
   "devDependencies": {
     "@types/d3": "^7.4.0",
     "ts-loader": "^9.4.2",
     "typescript": "^5.0.4",
     "vite": "^5.3.5",
-    "vite-plugin-dts": "^3.7.3"
+    "vite-plugin-dts": "^3.7.3",
+    "vite-plugin-tsconfig": "^1.0.5"
   },
   "dependencies": {
     "@orbcharts/core": "^3.0.0-alpha.52",
