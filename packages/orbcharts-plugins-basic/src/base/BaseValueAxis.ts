@@ -109,7 +109,7 @@ function renderAxis ({ selection, yAxisClassName, textClassName, fullParams, tic
         .attr('dominant-baseline', axisLabelAlign.dominantBaseline)
         .attr('font-size', fullChartParams.styles.textSize)
         .style('fill', getColor(fullParams.labelColorType, fullChartParams))
-        .style('transform', textTransform)
+        // .style('transform', textTransform)
         .text(d => fullDataFormatter.grid.valueAxis.label)
     })
     .attr('transform', d => `translate(${- d.tickPadding + fullParams.labelOffset[0]}, ${gridAxesSize.height + d.tickPadding + fullParams.labelOffset[1]})`)

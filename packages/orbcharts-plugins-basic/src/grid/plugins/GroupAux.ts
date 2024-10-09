@@ -168,7 +168,9 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
     let rectX = - rectWidth / 2
     let rectY = -2
     if (fullDataFormatter.grid.groupAxis.position === 'bottom') {
-      rectX = - rectWidth / 2
+      rectX = fullParams.labelRotate
+        ? - rectWidth
+        : - rectWidth / 2
       rectY = 2
     } else if (fullDataFormatter.grid.groupAxis.position === 'left') {
       rectX = - rectWidth + 2
@@ -177,7 +179,9 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
       rectX = - 2
       rectY = - rectHeight / 2
     } else if (fullDataFormatter.grid.groupAxis.position === 'top') {
-      rectX = - rectWidth / 2
+      rectX = fullParams.labelRotate
+        ? - rectWidth
+        : - rectWidth / 2
       rectY = - rectHeight + 2
     }
 
@@ -598,10 +602,10 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
       const containerScaleReverseScaleValue = `scale(${1 / data.gridContainerPosition[0].scale[0]}, ${1 / data.gridContainerPosition[0].scale[1]})`
       const tickTextRotateDeg = (data.fullDataFormatter.grid.groupAxis.position === 'left' && data.fullDataFormatter.grid.valueAxis.position === 'top')
         || (data.fullDataFormatter.grid.groupAxis.position === 'right' && data.fullDataFormatter.grid.valueAxis.position === 'bottom')
-          // ? data.fullParams.tickTextRotate + 180 // 修正文字倒轉
-          // : data.fullParams.tickTextRotate
-          ? 180 // 修正文字倒轉
-          : 0
+          ? data.fullParams.labelRotate + 180 // 修正文字倒轉
+          : data.fullParams.labelRotate
+          // ? 180 // 修正文字倒轉
+          // : 0
       
       const textRotateValue = `rotate(${tickTextRotateDeg}deg)`
       
@@ -753,29 +757,29 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
           data: data.computedData
         })
       })
-      .on('mouseout', (event, datum) => {
-        event.stopPropagation()
-        // const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)
+      // .on('mouseout', (event, datum) => {
+      //   event.stopPropagation()
+      //   // const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)
 
-        isLabelMouseover = false
+      //   isLabelMouseover = false
 
-        subject.event$.next({
-          type: 'grid',
-          pluginName: name,
-          eventName: 'mouseout',
-          highlightTarget: data.highlightTarget,
-          datum: null,
-          gridIndex: 0, // @Q@ 暫不處理
-          series: [],
-          seriesIndex: -1,
-          seriesLabel: '',
-          groups: data.GroupDataMap.get(groupLabel) ?? [],
-          groupIndex,
-          groupLabel,
-          event,
-          data: data.computedData
-        })
-      })
+      //   subject.event$.next({
+      //     type: 'grid',
+      //     pluginName: name,
+      //     eventName: 'mouseout',
+      //     highlightTarget: data.highlightTarget,
+      //     datum: null,
+      //     gridIndex: 0, // @Q@ 暫不處理
+      //     series: [],
+      //     seriesIndex: -1,
+      //     seriesLabel: '',
+      //     groups: data.GroupDataMap.get(groupLabel) ?? [],
+      //     groupIndex,
+      //     groupLabel,
+      //     event,
+      //     data: data.computedData
+      //   })
+      // })
       .on('click', (event, datum) => {
         event.stopPropagation()
         // const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)

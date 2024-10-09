@@ -38,6 +38,7 @@ export interface GroupAuxParams {
   labelTextColorType: ColorType
   labelTextFormat: string | ((text: any) => string)
   labelPadding: number
+  labelRotate: number
 }
 
 export interface BarsParams {

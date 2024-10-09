@@ -22,6 +22,9 @@ export const PRESET_GRID_SEPARATE_SERIES: PresetPartial<'grid', PresetGridPlugin
   allPluginParams: {
     ...ALL_PLUGIN_PARAMS_GRID,
     ...ALL_PLUGIN_PARAMS_NONE_DATA,
+    GroupAux: {
+      labelRotate: -30
+    },
     GroupAxis: {
       tickPadding: 15,
       tickTextRotate: -30
