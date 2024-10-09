@@ -23,6 +23,7 @@ import type {
   Layout } from '@orbcharts/core'
 import { createAxisQuantizeScale } from '@orbcharts/core'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
+import { d3EventObservable } from '../utils/observables'
 
 // grid選取器
 export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, seriesLabels$, gridContainerPosition$, gridAxesTransform$, gridGraphicTransform$ }: {
@@ -144,7 +145,8 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, se
 }
 
 // 由事件取得group data的function
-export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize$, computedData$, fullChartParams$ }: {
+// @Q@ 之後重構改用 gridGroupPosition
+export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize$, computedData$, fullChartParams$, gridContainerPosition$, layout$ }: {
   fullDataFormatter$: Observable<DataFormatterGrid>
   gridAxesSize$: Observable<{
     width: number;
@@ -153,56 +155,128 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
   computedData$: Observable<ComputedDataGrid>
   // GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullChartParams$: Observable<ChartParams>
+  gridContainerPosition$: Observable<GridContainerPosition[]>
+  layout$: Observable<Layout>
 }): Observable<(event: any) => { groupIndex: number; groupLabel: string }> => {
   const destroy$ = new Subject()
 
   // 顯示範圍內的group labels
-  const scaleRangeGroupLabels$: Observable<string[]> = new Observable(subscriber => {
-    combineLatest({
-      dataFormatter: fullDataFormatter$,
-      computedData: computedData$
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async (d) => d),
-    ).subscribe(data => {
+  // const scaleRangeGroupLabels$: Observable<string[]> = new Observable(subscriber => {
+  //   combineLatest({
+  //     dataFormatter: fullDataFormatter$,
+  //     computedData: computedData$
+  //   }).pipe(
+  //     takeUntil(destroy$),
+  //     switchMap(async (d) => d),
+  //   ).subscribe(data => {
+  //     const groupMin = 0
+  //     const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
+  //     const groupScaleDomainMin = data.dataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+  //       ? groupMin - data.dataFormatter.grid.groupAxis.scalePadding
+  //       : data.dataFormatter.grid.groupAxis.scaleDomain[0] as number - data.dataFormatter.grid.groupAxis.scalePadding
+  //     const groupScaleDomainMax = data.dataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
+  //       ? groupMax + data.dataFormatter.grid.groupAxis.scalePadding
+  //       : data.dataFormatter.grid.groupAxis.scaleDomain[1] as number + data.dataFormatter.grid.groupAxis.scalePadding
+      
+  //     // const groupingAmount = data.computedData[0]
+  //     //   ? data.computedData[0].length
+  //     //   : 0
+
+  //     let _labels = data.dataFormatter.grid.seriesDirection === 'row'
+  //       ? (data.computedData[0] ?? []).map(d => d.groupLabel)
+  //       : data.computedData.map(d => d[0].groupLabel)
+
+  //     const _axisLabels = 
+  //     // new Array(groupingAmount).fill(0)
+  //     //   .map((d, i) => {
+  //     //     return _labels[i] != null
+  //     //       ? _labels[i]
+  //     //       : String(i) // 沒有label則用序列號填充
+  //     //   })
+  //       _labels
+  //       .filter((d, i) => {
+  //         return i >= groupScaleDomainMin && i <= groupScaleDomainMax
+  //       })
+  //     subscriber.next(_axisLabels)
+  //   })
+  // })
+  const groupScaleDomain$ = combineLatest({
+    fullDataFormatter: fullDataFormatter$,
+    gridAxesSize: gridAxesSize$,
+    computedData: computedData$
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      const groupScaleDomainMin = data.dataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-        ? groupMin - data.dataFormatter.grid.groupAxis.scalePadding
-        : data.dataFormatter.grid.groupAxis.scaleDomain[0] as number - data.dataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMax = data.dataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
-        ? groupMax + data.dataFormatter.grid.groupAxis.scalePadding
-        : data.dataFormatter.grid.groupAxis.scaleDomain[1] as number + data.dataFormatter.grid.groupAxis.scalePadding
-      
-      // const groupingAmount = data.computedData[0]
-      //   ? data.computedData[0].length
-      //   : 0
+      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+        ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+        : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
+        ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
+        : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
 
-      let _labels = data.dataFormatter.grid.seriesDirection === 'row'
+      return [groupScaleDomainMin, groupScaleDomainMax]
+    }),
+    shareReplay(1)
+  )
+
+  const groupLabels$ = combineLatest({
+    fullDataFormatter: fullDataFormatter$,
+    computedData: computedData$
+  }).pipe(
+    switchMap(async d => d),
+    map(data => {
+      return data.fullDataFormatter.grid.seriesDirection === 'row'
         ? (data.computedData[0] ?? []).map(d => d.groupLabel)
         : data.computedData.map(d => d[0].groupLabel)
-
-      const _axisLabels = 
-      // new Array(groupingAmount).fill(0)
-      //   .map((d, i) => {
-      //     return _labels[i] != null
-      //       ? _labels[i]
-      //       : String(i) // 沒有label則用序列號填充
-      //   })
-        _labels
-        .filter((d, i) => {
-          return i >= groupScaleDomainMin && i <= groupScaleDomainMax
-        })
-      subscriber.next(_axisLabels)
     })
-  })
+  )
+
+  // 顯示範圍內的group labels
+  const scaleRangeGroupLabels$ = combineLatest({
+    groupScaleDomain: groupScaleDomain$,
+    groupLabels: groupLabels$
+  }).pipe(
+    switchMap(async d => d),
+    map(data => {
+      return data.groupLabels
+        .filter((d, i) => {
+          return i >= data.groupScaleDomain[0] && i <= data.groupScaleDomain[1]
+        })
+    })
+  )
+
+  const columnAmount$ = gridContainerPosition$.pipe(
+    map(gridContainerPosition => {
+      const maxColumnIndex = gridContainerPosition.reduce((acc, current) => {
+        return current.columnIndex > acc ? current.columnIndex : acc
+      }, 0)
+      return maxColumnIndex + 1
+    }),
+    distinctUntilChanged()
+  )
+
+  const rowAmount$ = gridContainerPosition$.pipe(
+    map(gridContainerPosition => {
+      const maxRowIndex = gridContainerPosition.reduce((acc, current) => {
+        return current.rowIndex > acc ? current.rowIndex : acc
+      }, 0)
+      return maxRowIndex + 1
+    }),
+    distinctUntilChanged()
+  )
 
   return new Observable<(event: any) => { groupIndex: number; groupLabel: string }>(subscriber => {
     combineLatest({
       dataFormatter: fullDataFormatter$,
       axisSize: gridAxesSize$,
       fullChartParams: fullChartParams$,
-      scaleRangeGroupLabels: scaleRangeGroupLabels$
+      scaleRangeGroupLabels: scaleRangeGroupLabels$,
+      groupScaleDomain: groupScaleDomain$,
+      columnAmount: columnAmount$,
+      rowAmount: rowAmount$,
+      layout: layout$
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
@@ -213,7 +287,7 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
           ? true : false
 
       // 比例尺座標對應非連續資料索引
-      const groupIndexScale = createAxisQuantizeScale({
+      const xIndexScale = createAxisQuantizeScale({
         axisLabels: data.scaleRangeGroupLabels,
         axisWidth: data.axisSize.width,
         reverse
@@ -229,8 +303,16 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
 
       // 比例尺座標取得groupData的function
       const createEventGroupData: (event: any) => { groupIndex: number; groupLabel: string } = (event: any) => {
-        const axisValue = axisValuePredicate(event)
-        const groupIndex = groupIndexScale(axisValue)
+        // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
+        const eventData = {
+          offsetX: event.offsetX * data.columnAmount % data.layout.rootWidth,
+          offsetY: event.offsetY * data.rowAmount % data.layout.rootHeight
+        }
+        // console.log('data.columnAmount', data.columnAmount, 'data.rowAmount', data.rowAmount, 'data.layout.rootWidth', data.layout.rootWidth, 'data.layout.rootHeight', data.layout.rootHeight)
+        const axisValue = axisValuePredicate(eventData)
+        const xIndex = xIndexScale(axisValue)
+        const currentxIndexStart = Math.ceil(data.groupScaleDomain[0]) // 因為有padding所以會有小數點，所以要無條件進位
+        const groupIndex =  xIndex + currentxIndexStart
         return {
           groupIndex,
           groupLabel: data.scaleRangeGroupLabels[groupIndex] ?? ''
@@ -246,3 +328,212 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
   })
 }
 
+export const gridGroupPosition = ({ rootSelection, fullDataFormatter$, gridAxesSize$, computedData$, fullChartParams$, gridContainerPosition$, layout$ }: {
+  rootSelection: d3.Selection<any, unknown, any, unknown>
+  fullDataFormatter$: Observable<DataFormatterGrid>
+  gridAxesSize$: Observable<{
+    width: number;
+    height: number;
+  }>
+  computedData$: Observable<ComputedDataGrid>
+  fullChartParams$: Observable<ChartParams>
+  gridContainerPosition$: Observable<GridContainerPosition[]>
+  layout$: Observable<Layout>
+}) => {
+  const rootMousemove$: Observable<any> = d3EventObservable(rootSelection, 'mousemove')
+
+  const groupScaleDomain$ = combineLatest({
+    fullDataFormatter: fullDataFormatter$,
+    gridAxesSize: gridAxesSize$,
+    computedData: computedData$
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      const groupMin = 0
+      const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
+      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+        ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+        : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
+        ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
+        : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
+
+      return [groupScaleDomainMin, groupScaleDomainMax]
+    }),
+    shareReplay(1)
+  )
+
+  const groupLabels$ = combineLatest({
+    fullDataFormatter: fullDataFormatter$,
+    computedData: computedData$
+  }).pipe(
+    switchMap(async d => d),
+    map(data => {
+      return data.fullDataFormatter.grid.seriesDirection === 'row'
+        ? (data.computedData[0] ?? []).map(d => d.groupLabel)
+        : data.computedData.map(d => d[0].groupLabel)
+    })
+  )
+
+  const scaleRangeGroupLabels$ = combineLatest({
+    groupScaleDomain: groupScaleDomain$,
+    groupLabels: groupLabels$
+  }).pipe(
+    switchMap(async d => d),
+    map(data => {
+      return data.groupLabels
+        .filter((d, i) => {
+          return i >= data.groupScaleDomain[0] && i <= data.groupScaleDomain[1]
+        })
+    })
+  )
+
+  const reverse$ = fullDataFormatter$.pipe(
+    map(d => {
+      return d.grid.valueAxis.position === 'right' || d.grid.valueAxis.position === 'bottom'
+          ? true
+          : false
+    })
+  )
+
+  // 比例尺座標對應非連續資料索引
+  const xIndexScale$ = combineLatest({
+    reverse: reverse$,
+    gridAxesSize: gridAxesSize$,
+    scaleRangeGroupLabels: scaleRangeGroupLabels$
+  }).pipe(
+    switchMap(async d => d),
+    map(data => {
+      return createAxisQuantizeScale({
+        axisLabels: data.scaleRangeGroupLabels,
+        axisWidth: data.gridAxesSize.width,
+        reverse: data.reverse
+      })
+    })
+  )
+
+  const columnAmount$ = gridContainerPosition$.pipe(
+    map(gridContainerPosition => {
+      const maxColumnIndex = gridContainerPosition.reduce((acc, current) => {
+        return current.columnIndex > acc ? current.columnIndex : acc
+      }, 0)
+      return maxColumnIndex + 1
+    }),
+    distinctUntilChanged()
+  )
+
+  const rowAmount$ = gridContainerPosition$.pipe(
+    map(gridContainerPosition => {
+      const maxRowIndex = gridContainerPosition.reduce((acc, current) => {
+        return current.rowIndex > acc ? current.rowIndex : acc
+      }, 0)
+      return maxRowIndex + 1
+    }),
+    distinctUntilChanged()
+  )
+
+  const axisValue$ = combineLatest({
+    fullDataFormatter: fullDataFormatter$,
+    fullChartParams: fullChartParams$,
+    rootMousemove: rootMousemove$,
+    columnAmount: columnAmount$,
+    rowAmount: rowAmount$,
+    layout: layout$
+  }).pipe(
+    switchMap(async d => d),
+    map(data => {
+      // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
+      const eventData = {
+        offsetX: data.rootMousemove.offsetX * data.columnAmount % data.layout.rootWidth,
+        offsetY: data.rootMousemove.offsetY * data.rowAmount % data.layout.rootHeight
+      }
+      return data.fullDataFormatter.grid.groupAxis.position === 'bottom'
+          || data.fullDataFormatter.grid.groupAxis.position === 'top'
+            ? eventData.offsetX - data.fullChartParams.padding.left
+            : eventData.offsetY - data.fullChartParams.padding.top
+    })
+  )
+
+  const groupIndex$ = combineLatest({
+    xIndexScale: xIndexScale$,
+    axisValue: axisValue$,
+    groupScaleDomain: groupScaleDomain$
+  }).pipe(
+    switchMap(async d => d),
+    map(data => {
+      const xIndex = data.xIndexScale(data.axisValue)
+      const currentxIndexStart = Math.ceil(data.groupScaleDomain[0]) // 因為有padding所以會有小數點，所以要無條件進位
+      return xIndex + currentxIndexStart
+    })
+  )
+
+  const groupLabel$ = combineLatest({
+    groupIndex: groupIndex$,
+    groupLabels: groupLabels$
+  }).pipe(
+    switchMap(async d => d),
+    map(data => {
+      return data.groupLabels[data.groupIndex] ?? ''
+    })
+  )
+
+  return combineLatest({
+    groupIndex: groupIndex$,
+    groupLabel: groupLabel$
+  }).pipe(
+    switchMap(async d => d),
+    map(data => {
+      return {
+        groupIndex: data.groupIndex,
+        groupLabel: data.groupLabel
+      }
+    })
+  )
+}
+
+// const gridContainerEventData$ = ({ eventData$, gridContainerPosition$, layout$ }: {
+//   eventData$: Observable<any>
+//   gridContainerPosition$: Observable<GridContainerPosition[]>
+//   layout$: Observable<Layout>
+// }): Observable<{
+//   offsetX: number;
+//   offsetY: number;
+// }> => {
+//   const columnAmount$ = gridContainerPosition$.pipe(
+//     map(gridContainerPosition => {
+//       const maxColumnIndex = gridContainerPosition.reduce((acc, current) => {
+//         return current.columnIndex > acc ? current.columnIndex : acc
+//       }, 0)
+//       return maxColumnIndex + 1
+//     }),
+//     distinctUntilChanged()
+//   )
+
+//   const rowAmount$ = gridContainerPosition$.pipe(
+//     map(gridContainerPosition => {
+//       const maxRowIndex = gridContainerPosition.reduce((acc, current) => {
+//         return current.rowIndex > acc ? current.rowIndex : acc
+//       }, 0)
+//       return maxRowIndex + 1
+//     }),
+//     distinctUntilChanged()
+//   )
+
+//   return combineLatest({
+//     eventData: eventData$,
+//     gridContainerPosition: gridContainerPosition$,
+//     layout: layout$,
+//     columnAmount: columnAmount$,
+//     rowAmount: rowAmount$
+//   }).pipe(
+//     switchMap(async d => d),
+//     map(data => {
+//       // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
+//       const eventData = {
+//         offsetX: data.eventData.offsetX * data.columnAmount % data.layout.rootWidth,
+//         offsetY: data.eventData.offsetY * data.rowAmount % data.layout.rootHeight
+//       }
+//       return eventData
+//     })
+//   )
+// }

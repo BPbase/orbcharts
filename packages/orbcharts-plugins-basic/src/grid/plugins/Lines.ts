@@ -7,7 +7,7 @@ import { createBaseLines } from '../../base/BaseLines'
 
 const pluginName = 'Lines'
 
-export const Lines = defineGridPlugin(pluginName, DEFAULT_LINES_PARAMS)(({ selection, name, observer, subject }) => {
+export const Lines = defineGridPlugin(pluginName, DEFAULT_LINES_PARAMS)(({ selection, rootSelection, name, observer, subject }) => {
 
   const destroy$ = new Subject()
 
@@ -28,6 +28,8 @@ export const Lines = defineGridPlugin(pluginName, DEFAULT_LINES_PARAMS)(({ selec
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
     gridContainerPosition$: observer.gridContainerPosition$,
+    allContainerPosition$: observer.gridContainerPosition$,
+    layout$: observer.layout$,
     event$: subject.event$,
   })
 

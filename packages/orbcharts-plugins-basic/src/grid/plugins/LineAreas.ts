@@ -28,6 +28,7 @@ export const LineAreas = defineGridPlugin(pluginName, DEFAULT_LINE_AREAS_PARAMS)
     gridAxesSize$: observer.gridAxesSize$,
     gridHighlight$: observer.gridHighlight$,
     gridContainerPosition$: observer.gridContainerPosition$,
+    allContainerPosition$: observer.gridContainerPosition$,
     layout$: observer.layout$,
     event$: subject.event$,
   })

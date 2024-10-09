@@ -57,6 +57,8 @@ interface BaseLinesContext {
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
   gridContainerPosition$: Observable<GridContainerPosition[]>
+  allContainerPosition$: Observable<GridContainerPosition[]>
+  layout$: Observable<Layout>
   event$: Subject<EventGrid>
 }
 
@@ -240,6 +242,8 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
   gridAxesSize$,
   gridHighlight$,
   gridContainerPosition$,
+  allContainerPosition$,
+  layout$,
   event$
 }) => {
 
@@ -496,7 +500,9 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
     fullDataFormatter$,
     gridAxesSize$: gridAxesSize$,
     computedData$: computedData$,
-    fullChartParams$: fullChartParams$
+    fullChartParams$: fullChartParams$,
+    gridContainerPosition$: allContainerPosition$,
+    layout$: layout$
   })
 
   const highlightTarget$ = fullChartParams$.pipe(
@@ -541,8 +547,6 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
 
       return pathSelectionArr
     })
-
-
   )
 
   combineLatest({
@@ -563,6 +567,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
 
           const seriesLabel = datum[0] ? datum[0].seriesLabel : ''
           const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)
+          // console.log('groupIndex', groupIndex)
           const groupData = data.GroupDataMap.get(groupLabel)!
           const targetDatum = groupData.find(d => d.seriesLabel === seriesLabel)
           const _datum = targetDatum ?? datum[0]

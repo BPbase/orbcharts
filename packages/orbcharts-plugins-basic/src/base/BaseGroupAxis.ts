@@ -115,7 +115,7 @@ function renderAxis ({ selection, xAxisClassName, groupingLabelClassName, params
         .attr('dominant-baseline', axisLabelAlign.dominantBaseline)
         .attr('font-size', chartParams.styles.textSize)
         .style('fill', getColor(params.labelColorType, chartParams))
-        .style('transform', textTransform)
+        // .style('transform', textTransform)
         .text(d => fullDataFormatter.grid.groupAxis.label)
     })
     .attr('transform', d => `translate(${gridAxesSize.width + d.tickPadding + params.labelOffset[0]}, ${- d.tickPadding - defaultTickSize - params.labelOffset[1]})`)

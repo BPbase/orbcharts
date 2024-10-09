@@ -46,7 +46,9 @@ export const PRESET_LINE_AREAS_ROTATE_AXIS_LABEL: PresetPartial<'grid', PresetLi
       tickTextRotate: -30
     },
     ValueAxis: {},
-    GroupAux: {},
+    GroupAux: {
+      labelRotate: -30
+    },
     GridLegend: {
       position: 'bottom',
       justify: 'center',

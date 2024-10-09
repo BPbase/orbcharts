@@ -48,7 +48,9 @@ export const PRESET_LINE_AREAS_SEPARATE_SERIES: PresetPartial<'grid', PresetLine
       tickTextRotate: -30
     },
     ValueAxis: {},
-    GroupAux: {},
+    GroupAux: {
+      labelRotate: -30
+    },
     GridLegend: {
       position: 'bottom',
       justify: 'center',
