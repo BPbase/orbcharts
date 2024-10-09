@@ -1,0 +1,1 @@
+import{A as a}from"./CzL6dh2v.js";const r={name:"PRESET_BARS_ROUND",description:"圓角長條圖",chartParams:{padding:{top:60,right:60,bottom:120,left:60}},allPluginParams:{...a,Bars:{barWidth:0,barPadding:1,barGroupPadding:10,barRadius:!0},GroupAxis:{},ValueAxis:{},GroupAux:{},GridLegend:{position:"bottom",justify:"center",padding:14,listRectRadius:7}}};export{r as P};
