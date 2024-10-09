@@ -1,7 +1,8 @@
 import {
+  map,
   shareReplay } from 'rxjs'
 import type { ContextObserverFn } from '../types'
-import { multiGridEachDetailObservable } from './multiGridObservables'
+import { multiGridEachDetailObservable, multiGridContainerObservable } from './multiGridObservables'
 import { textSizePxObservable } from '../utils/observables'
 
 export const createMultiGridContextObserver: ContextObserverFn<'multiGrid'> = ({ subject, observer }) => {
@@ -20,12 +21,11 @@ export const createMultiGridContextObserver: ContextObserverFn<'multiGrid'> = ({
     shareReplay(1)
   )
 
-  // const multiGridContainer$ = multiGridContainerObservable({
-  //   computedData$: observer.computedData$,
-  //   fullDataFormatter$: observer.fullDataFormatter$,
-  //   fullChartParams$: observer.fullChartParams$,
-  //   layout$: observer.layout$,
-  // })
+  const multiGridContainerPosition$ = multiGridContainerObservable({
+    computedData$: observer.computedData$,
+    fullDataFormatter$: observer.fullDataFormatter$,
+    layout$: observer.layout$,
+  })
 
   return {
     fullParams$: observer.fullParams$,
@@ -34,6 +34,7 @@ export const createMultiGridContextObserver: ContextObserverFn<'multiGrid'> = ({
     computedData$: observer.computedData$,
     layout$: observer.layout$,
     textSizePx$,
+    multiGridContainerPosition$,
     multiGridEachDetail$,
     // multiGridContainer$
   }

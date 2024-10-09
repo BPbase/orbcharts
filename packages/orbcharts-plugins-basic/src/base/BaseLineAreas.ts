@@ -52,6 +52,7 @@ interface BaseLineAreasContext {
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
   gridContainerPosition$: Observable<GridContainerPosition[]>
+  allContainerPosition$: Observable<GridContainerPosition[]>
   layout$: Observable<Layout>
   event$: Subject<EventGrid>
 }
@@ -408,7 +409,9 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
     fullDataFormatter$,
     gridAxesSize$: gridAxesSize$,
     computedData$: computedData$,
-    fullChartParams$: fullChartParams$
+    fullChartParams$: fullChartParams$,
+    gridContainerPosition$: gridContainerPosition$,
+    layout$: layout$
   })
 
   const highlightTarget$ = fullChartParams$.pipe(

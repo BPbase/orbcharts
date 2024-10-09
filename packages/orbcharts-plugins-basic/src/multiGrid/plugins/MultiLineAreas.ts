@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 import {
+  map,
   takeUntil,
   Subject } from 'rxjs'
 import {
@@ -18,6 +19,14 @@ export const MultiLineAreas = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_LI
   const destroy$ = new Subject()
   
   const unsubscribeFnArr: (() => void)[] = []
+
+  // 攤平所有grid的containerPosition
+  const allContainerPosition$ = observer.multiGridContainerPosition$.pipe(
+    takeUntil(destroy$),
+    map(data => {
+      return data.flat()
+    })
+  )
 
   const multiGridPluginDetail$ = multiGridPluginDetailObservables(observer)
 
@@ -54,6 +63,7 @@ export const MultiLineAreas = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_LI
             gridAxesSize$: d.gridAxesSize$,
             gridHighlight$: d.gridHighlight$,
             gridContainerPosition$: d.gridContainerPosition$,
+            allContainerPosition$: allContainerPosition$,
             layout$: observer.layout$,
             event$: subject.event$ as Subject<any>,
           })

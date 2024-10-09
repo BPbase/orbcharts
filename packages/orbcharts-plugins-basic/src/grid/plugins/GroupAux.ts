@@ -24,7 +24,7 @@ import { parseTickFormatValue } from '../../utils/d3Utils'
 import { measureTextWidth } from '../../utils/commonUtils'
 import { getColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { d3EventObservable } from '../../utils/observables'
-import { gridGroupPositionFnObservable } from '../gridObservables'
+import { gridGroupPosition } from '../gridObservables'
 import { createAxisPointScale } from '@orbcharts/core'
 import type { GroupAuxParams } from '../types'
 import { gridSelectionsObservable } from '../gridObservables'
@@ -65,7 +65,7 @@ function createLineData ({ groupLabel, axisX, axisHeight, fullParams }: {
 }
 
 function renderLine ({ selection, pluginName, lineData, fullParams, fullChartParams }: {
-  selection: d3.Selection<any, unknown, any, unknown>
+  selection: d3.Selection<any, string, any, unknown>
   pluginName: string
   lineData: LineDatum[]
   fullParams: GroupAuxParams
@@ -106,7 +106,7 @@ function renderLine ({ selection, pluginName, lineData, fullParams, fullChartPar
   return auxLineSelection
 }
 
-function removeLine (selection: d3.Selection<any, unknown, any, unknown>) {
+function removeLine (selection: d3.Selection<any, string, any, unknown>) {
   const update = selection
     .selectAll<SVGLineElement, LineDatum>('line')
     .data([])
@@ -130,7 +130,7 @@ function createLabelData ({ groupLabel, axisX, fullParams }: {
 }
 
 function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, fullChartParams, labelTransform, textSizePx }: {
-  selection: d3.Selection<any, unknown, any, unknown>
+  selection: d3.Selection<any, string, any, unknown>
   labelData: LabelDatum[]
   fullParams: GroupAuxParams
   fullDataFormatter: DataFormatterGrid
@@ -222,7 +222,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
   return axisLabelSelection
 }
 
-function removeLabel (selection: d3.Selection<any, unknown, any, unknown>) {
+function removeLabel (selection: d3.Selection<any, string, any, unknown>) {
   const gUpdate = selection
     .selectAll<SVGGElement, LabelDatum>(`g.${labelClassName}`)
     .data([])
@@ -352,15 +352,65 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
   //   distinctUntilChanged()
   // )
 
-  const groupScale$: Observable<d3.ScalePoint<string>> = new Observable(subscriber => {
-    combineLatest({
-      fullDataFormatter: observer.fullDataFormatter$,
-      gridAxesSize: observer.gridAxesSize$,
-      computedData: observer.computedData$
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async (d) => d),
-    ).subscribe(data => {
+  // const groupScale$: Observable<d3.ScalePoint<string>> = new Observable(subscriber => {
+  //   combineLatest({
+  //     fullDataFormatter: observer.fullDataFormatter$,
+  //     gridAxesSize: observer.gridAxesSize$,
+  //     computedData: observer.computedData$
+  //   }).pipe(
+  //     takeUntil(destroy$),
+  //     switchMap(async (d) => d),
+  //   ).subscribe(data => {
+  //     const groupMin = 0
+  //     const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
+  //     const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+  //       ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //       : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
+  //       ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
+  //       : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
+      
+  //     const groupingLength = data.computedData[0]
+  //       ? data.computedData[0].length
+  //       : 0
+
+  //     let _labels = data.fullDataFormatter.grid.seriesDirection === 'row'
+  //       // ? data.fullDataFormatter.grid.columnLabels
+  //       // : data.fullDataFormatter.grid.rowLabels
+  //       ? (data.computedData[0] ?? []).map(d => d.groupLabel)
+  //       : data.computedData.map(d => d[0].groupLabel)
+
+  //     const axisLabels = new Array(groupingLength).fill(0)
+  //       .map((d, i) => {
+  //         return _labels[i] != null
+  //           ? _labels[i]
+  //           : String(i) // 沒有label則用序列號填充
+  //       })
+  //       .filter((d, i) => {
+  //         return i >= groupScaleDomainMin && i <= groupScaleDomainMax
+  //       })
+
+      
+  //     const padding = data.fullDataFormatter.grid.groupAxis.scalePadding
+      
+  //     const groupScale = createAxisPointScale({
+  //       axisLabels,
+  //       axisWidth: data.gridAxesSize.width,
+  //       padding
+  //     })
+
+  //     subscriber.next(groupScale)
+  //   })
+  // })
+
+  const groupScaleDomain$ = combineLatest({
+    fullDataFormatter: observer.fullDataFormatter$,
+    gridAxesSize: observer.gridAxesSize$,
+    computedData: observer.computedData$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
       const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
@@ -369,47 +419,33 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
       const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
         ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
         : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
-      
-      const groupingLength = data.computedData[0]
-        ? data.computedData[0].length
-        : 0
 
-      let _labels = data.fullDataFormatter.grid.seriesDirection === 'row'
-        // ? data.fullDataFormatter.grid.columnLabels
-        // : data.fullDataFormatter.grid.rowLabels
-        ? (data.computedData[0] ?? []).map(d => d.groupLabel)
-        : data.computedData.map(d => d[0].groupLabel)
+      return [groupScaleDomainMin, groupScaleDomainMax]
+    }),
+    shareReplay(1)
+  )
 
-      const axisLabels = new Array(groupingLength).fill(0)
-        .map((d, i) => {
-          return _labels[i] != null
-            ? _labels[i]
-            : String(i) // 沒有label則用序列號填充
-        })
-        .filter((d, i) => {
-          return i >= groupScaleDomainMin && i <= groupScaleDomainMax
-        })
-
-      
-      const padding = data.fullDataFormatter.grid.groupAxis.scalePadding
-      
-      const groupScale = createAxisPointScale({
-        axisLabels,
-        axisWidth: data.gridAxesSize.width,
-        padding
-      })
-
-      subscriber.next(groupScale)
+  const groupScale$ = combineLatest({
+    groupScaleDomain: groupScaleDomain$,
+    gridAxesSize: observer.gridAxesSize$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      const groupScale: d3.ScaleLinear<number, number> = d3.scaleLinear()
+        .domain(data.groupScaleDomain)
+        .range([0, data.gridAxesSize.width])
+      return groupScale
     })
-  })
+  )
 
-  // 取得事件座標的group資料
-  const gridGroupPositionFn$ = gridGroupPositionFnObservable({
-    fullDataFormatter$: observer.fullDataFormatter$,
-    gridAxesSize$: observer.gridAxesSize$,
-    computedData$: observer.computedData$,
-    fullChartParams$: observer.fullChartParams$,
-  })
+  // // 取得事件座標的group資料
+  // const gridGroupPositionFn$ = gridGroupPositionFnObservable({
+  //   fullDataFormatter$: observer.fullDataFormatter$,
+  //   gridAxesSize$: observer.gridAxesSize$,
+  //   computedData$: observer.computedData$,
+  //   fullChartParams$: observer.fullChartParams$,
+  // })
 
   const highlightTarget$ = observer.fullChartParams$.pipe(
     takeUntil(destroy$),
@@ -597,13 +633,26 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
     distinctUntilChanged()
   )
 
+  const gridGroupPosition$ = gridGroupPosition({
+    rootSelection,
+    fullDataFormatter$: observer.fullDataFormatter$,
+    gridAxesSize$: observer.gridAxesSize$,
+    computedData$: observer.computedData$,
+    fullChartParams$: observer.fullChartParams$,
+    gridContainerPosition$: observer.gridContainerPosition$,
+    layout$: observer.layout$
+  }).pipe(
+    takeUntil(destroy$)
+  )
+
   combineLatest({
     axesSelection: axesSelection$,
     columnAmount: columnAmount$,
     rowAmount: rowAmount$,
     layout: observer.layout$,
     rootMousemove: rootMousemove$,
-    gridGroupPositionFn: gridGroupPositionFn$,
+    // gridGroupPositionFn: gridGroupPositionFn$,
+    gridGroupPosition: gridGroupPosition$,
     computedData: observer.computedData$,
     groupScale: groupScale$,
     gridAxesSize: observer.gridAxesSize$,
@@ -616,22 +665,23 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
     GroupDataMap: observer.GroupDataMap$,
     textSizePx: observer.textSizePx$
   }).subscribe(data => {
-    // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
-    const eventData = {
-      offsetX: data.rootMousemove.offsetX * data.columnAmount % data.layout.rootWidth,
-      offsetY: data.rootMousemove.offsetY * data.rowAmount % data.layout.rootHeight
-    }
+    // // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
+    // const eventData = {
+    //   offsetX: data.rootMousemove.offsetX * data.columnAmount % data.layout.rootWidth,
+    //   offsetY: data.rootMousemove.offsetY * data.rowAmount % data.layout.rootHeight
+    // }
     // 依event的座標取得group資料
-    const { groupIndex, groupLabel } = data.gridGroupPositionFn(eventData)
-
-    const axisX = data.groupScale(groupLabel) ?? 0
-    
+    const { groupIndex, groupLabel } = data.gridGroupPosition
+    // console.log('gridGroupPosition', groupIndex, groupLabel)
+    const axisX = data.groupScale(groupIndex) ?? 0
+    // console.log('axisX', axisX)
     const lineData = createLineData({
       groupLabel: groupLabel,
       axisX,
       axisHeight: data.gridAxesSize.height,
       fullParams: data.fullParams,
     })
+    // console.log('lineData', lineData)
     renderLine({
       // selection: axisSelection,
       selection: data.axesSelection,
