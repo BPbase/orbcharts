@@ -1,5 +1,3 @@
-import path from "path"
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
@@ -37,5 +35,12 @@ export default defineNuxtConfig({
     prerender:{
       failOnError:false,
     }
+  },
+  alias: {
+    'orbcharts': '/../packages/orbcharts',
+    '@orbcharts/core': '/../packages/orbcharts-core',
+    '@orbcharts/plugins-basic': '/../packages/orbcharts-basic',
+    '@orbcharts/presets-basic': '/../packages/orbcharts-basic',
+    '@orbcharts/demo': '/../packages/orbcharts-demo',
   }
 })
