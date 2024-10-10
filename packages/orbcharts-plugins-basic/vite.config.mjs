@@ -7,7 +7,7 @@ export default defineConfig(({ command, mode }) => {
   const alias = mode === 'production'
     ? {}
     : {
-      "@orbcharts/core": path.resolve(__dirname, "./../orbcharts-core/src")
+      "@orbcharts/core": path.resolve(__dirname, "./../orbcharts-core")
     }
 
   const tsconfigPath = mode === 'production'

@@ -290,6 +290,7 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
       const xIndexScale = createAxisQuantizeScale({
         axisLabels: data.scaleRangeGroupLabels,
         axisWidth: data.axisSize.width,
+        padding: data.dataFormatter.grid.groupAxis.scalePadding,
         reverse
       })
 
@@ -400,13 +401,15 @@ export const gridGroupPosition = ({ rootSelection, fullDataFormatter$, gridAxesS
   const xIndexScale$ = combineLatest({
     reverse: reverse$,
     gridAxesSize: gridAxesSize$,
-    scaleRangeGroupLabels: scaleRangeGroupLabels$
+    scaleRangeGroupLabels: scaleRangeGroupLabels$,
+    fullDataFormatter: fullDataFormatter$
   }).pipe(
     switchMap(async d => d),
     map(data => {
       return createAxisQuantizeScale({
         axisLabels: data.scaleRangeGroupLabels,
         axisWidth: data.gridAxesSize.width,
+        padding: data.fullDataFormatter.grid.groupAxis.scalePadding,
         reverse: data.reverse
       })
     })

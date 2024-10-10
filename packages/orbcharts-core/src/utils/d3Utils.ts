@@ -65,13 +65,12 @@ export const createAxisPointScale = ({ axisLabels, axisWidth, padding = 0.5 }: {
 }
 
 // scaleQuantize - 比例尺座標對應非連續資料索引
-export const createAxisQuantizeScale = ({ axisLabels, axisWidth, padding = 0.5, reverse = false }:{
+export const createAxisQuantizeScale = ({ axisLabels, axisWidth, padding = 0, reverse = false }:{
   axisLabels: string[] | Date[],
   axisWidth: number
   padding?: number
   reverse?: boolean
 }) => {
-  const rangePadding = 0
 
   let range: number[] = axisLabels.map((d: string | Date, i: number) => i)
   if (reverse) {
@@ -82,8 +81,12 @@ export const createAxisQuantizeScale = ({ axisLabels, axisWidth, padding = 0.5, 
   // } else {
   //   range = axisLabels.map((d: string | Date, i: number) => i)
   // }
+  const step = range.length - 1 + (padding * 2) // 圖軸刻度分段數量
+  const stepWidth = axisWidth / step
+  const rangePadding = stepWidth * padding - (stepWidth * 0.5) // 實際要計算的範圍是圖軸左右那邊增加0.5
 
+  // console.log('rangePadding', rangePadding)
   return d3.scaleQuantize<number>()
-    .domain([- rangePadding, axisWidth + rangePadding])
+    .domain([rangePadding, axisWidth - rangePadding])
     .range(range)
 }
