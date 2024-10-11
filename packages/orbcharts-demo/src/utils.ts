@@ -1,10 +1,11 @@
 // import * as core from '@orbcharts/core'
-// import * as pluginsBasic from '@orbcharts/plugins-basic'
+import * as pluginsBasic from '@orbcharts/plugins-basic'
 // import * as presetsBasic from '@orbcharts/presets-basic'
 // import type { DemoItem, DemoData } from './types'
-// import { DEMO_LIST } from './demo'
+import type { ChartType } from 'orbcharts'
+import { DEMO_LIST } from './demo'
 
-// // 取得demo資料
+// 取得demo資料
 // export async function getDemoData <T extends core.ChartType>({ chartType, pluginNames, presetName }: {
 //   chartType: T
 //   pluginNames: (keyof typeof pluginsBasic)[]
@@ -30,9 +31,9 @@
 //   return { preset, plugins, data }
 // }
 
-// // 依plugins取得demo列表資料
-// export function getPluginDemoList (chartType: core.ChartType, pluginNames: (keyof typeof pluginsBasic)[]) {
-//   return DEMO_LIST
-//     .find(demo => demo.chartType === chartType)!.list
-//     .find(mainPluginsItem => mainPluginsItem.mainPluginNames.join(',') === pluginNames.join(','))!.list
-// }
+// 依plugins取得demo列表資料
+export function getPluginDemoList (chartType: ChartType, pluginNames: (keyof typeof pluginsBasic)[]) {
+  return DEMO_LIST
+    .find(demo => demo.chartType === chartType)!.list
+    .find(mainPluginsItem => mainPluginsItem.mainPluginNames.join(',') === pluginNames.join(','))!.list
+}
