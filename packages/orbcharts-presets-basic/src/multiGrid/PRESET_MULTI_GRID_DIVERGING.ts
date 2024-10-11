@@ -13,7 +13,7 @@ export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', PresetMulti
     padding: {
       top: 60,
       right: 60,
-      bottom: 160,
+      bottom: 120,
       left: 60
     },
   },

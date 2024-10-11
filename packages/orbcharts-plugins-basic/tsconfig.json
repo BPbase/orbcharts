@@ -2,7 +2,7 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "paths":{
-      "@orbcharts/core": ["./../orbcharts-core/src"]
+      "@orbcharts/core": ["./../orbcharts-core"]
     }
   }
 }
