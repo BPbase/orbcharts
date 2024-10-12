@@ -1,31 +1,13 @@
-import path from "path"
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
-import tsconfig from 'vite-plugin-tsconfig'
 
 export default defineConfig(({ command, mode }) => {
-  const alias = mode === 'production'
-    ? {}
-    : {
-      "@orbcharts/core": path.resolve(__dirname, "./../orbcharts-core")
-    }
-
-  const tsconfigPath = mode === 'production'
-    ? 'tsconfig.prod.json'
-    : 'tsconfig.json'
-
   return {
     plugins: [
-      tsconfig({
-        filename: tsconfigPath
-      }),
       dts({
         insertTypesEntry: true
       })
     ],
-    resolve: {
-      alias
-    },
     compilerOptions: {
       composite: true
     },
