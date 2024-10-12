@@ -1,10 +1,3 @@
 {
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "paths":{
-      "@orbcharts/core": ["./../orbcharts-core"],
-      "@orbcharts/plugins-basic": ["./../orbcharts-plugins-basic"],
-      "@orbcharts/presets-basic": ["./../orbcharts-presets-basic"]
-    }
-  }
+  "extends": "./tsconfig.base.json"
 }

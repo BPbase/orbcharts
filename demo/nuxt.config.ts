@@ -36,11 +36,11 @@ export default defineNuxtConfig({
       failOnError:false,
     }
   },
-  alias: {
-    'orbcharts': '/../packages/orbcharts',
-    '@orbcharts/core': '/../packages/orbcharts-core',
-    '@orbcharts/plugins-basic': '/../packages/orbcharts-basic',
-    '@orbcharts/presets-basic': '/../packages/orbcharts-basic',
-    '@orbcharts/demo': '/../packages/orbcharts-demo',
-  }
+  // alias: {
+  //   'orbcharts': '/../packages/orbcharts',
+  //   '@orbcharts/core': '/../packages/orbcharts-core',
+  //   '@orbcharts/plugins-basic': '/../packages/orbcharts-basic',
+  //   '@orbcharts/presets-basic': '/../packages/orbcharts-basic',
+  //   '@orbcharts/demo': '/../packages/orbcharts-demo',
+  // }
 })
