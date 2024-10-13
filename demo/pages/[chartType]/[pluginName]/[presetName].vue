@@ -51,7 +51,7 @@ onMounted(async () => {
   const Chart = ChartMap[pageParams.chartType]
   
   const el = document.querySelector('#chart')
-console.log('demoData.preset', demoData.preset)
+// console.log('demoData.preset', demoData.preset)
   const chart = new Chart(el!, {
     preset: demoData.preset as any
   })

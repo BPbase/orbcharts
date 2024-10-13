@@ -315,7 +315,7 @@ export const multiGridContainerObservable = ({ computedData$, fullDataFormatter$
         }
         return seriesContainerArr
       })
-      console.log('gridContainerPositionArr', gridContainerPositionArr)
+      // console.log('gridContainerPositionArr', gridContainerPositionArr)
 
       // let accGridSlotIndex = 0
 
