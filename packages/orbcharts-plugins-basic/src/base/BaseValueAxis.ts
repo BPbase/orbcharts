@@ -354,7 +354,9 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       })
     
       const filteredMinAndMax = getMinAndMaxValue(filteredData.flat())
-      
+      if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
+        filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+      }
       subscriber.next(filteredMinAndMax)
     })
   })

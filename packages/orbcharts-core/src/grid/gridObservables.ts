@@ -315,6 +315,9 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
     })
   
     const filteredMinAndMax = getMinAndMaxGrid(filteredData)
+    if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
+      filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+    }
   
     const valueAxisWidth = (valueAxis.position === 'left' || valueAxis.position === 'right')
       ? height
@@ -330,12 +333,15 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
   
     // -- translateY, scaleY --
     const minAndMax = getMinAndMaxGrid(data)
+    if (minAndMax[0] === minAndMax[1]) {
+      minAndMax[0] = minAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+    }
     const rangeMinY = valueScale(minAndMax[0])
     const rangeMaxY = valueScale(minAndMax[1])
     translateY = rangeMinY
     const gHeight = rangeMaxY - rangeMinY
     scaleY = gHeight / valueAxisWidth
-  
+
     return {
       translate: [translateX, translateY],
       scale: [scaleX, scaleY],
