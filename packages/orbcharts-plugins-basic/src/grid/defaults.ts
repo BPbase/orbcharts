@@ -39,7 +39,7 @@ export const DEFAULT_GROUP_AREA_PARAMS: GroupAuxParams = {
   labelColorType: 'primary',
   labelTextColorType: 'background',
   labelTextFormat: text => text,
-  labelPadding: 24,
+  labelPadding: 20,
   labelRotate: 0
 }
 DEFAULT_GROUP_AREA_PARAMS.labelTextFormat.toString = () => `text => text`

@@ -129,17 +129,17 @@ function createLabelData ({ groupLabel, axisX, fullParams }: {
     : []
 }
 
-function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, fullChartParams, labelTransform, textSizePx }: {
+function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, fullChartParams, textReverseTransformWithRotate, textSizePx }: {
   selection: d3.Selection<any, string, any, unknown>
   labelData: LabelDatum[]
   fullParams: GroupAuxParams
   fullDataFormatter: DataFormatterGrid
   fullChartParams: ChartParams
   // gridAxesReverseTransformValue: string
-  labelTransform: string
+  textReverseTransformWithRotate: string
   textSizePx: number
 }) {
-  const rectHeight = textSizePx + 4
+  const rectHeight = textSizePx + 6
 
   const gUpdate = selection
     .selectAll<SVGGElement, LabelDatum>(`g.${labelClassName}`)
@@ -169,7 +169,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
     let rectY = -2
     if (fullDataFormatter.grid.groupAxis.position === 'bottom') {
       rectX = fullParams.labelRotate
-        ? - rectWidth
+        ? - rectWidth + rectHeight // 有傾斜時以末端對齊（+height是為了修正移動太多）
         : - rectWidth / 2
       rectY = 2
     } else if (fullDataFormatter.grid.groupAxis.position === 'left') {
@@ -180,7 +180,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
       rectY = - rectHeight / 2
     } else if (fullDataFormatter.grid.groupAxis.position === 'top') {
       rectX = fullParams.labelRotate
-        ? - rectWidth
+        ? - rectWidth + rectHeight // 有傾斜時以末端對齊（+height是為了修正移動太多）
         : - rectWidth / 2
       rectY = - rectHeight + 2
     }
@@ -194,14 +194,14 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
       .attr('height', `${rectHeight}px`)
       .attr('fill', d => getColor(fullParams.labelColorType, fullChartParams))
       .attr('x', rectX)
-      .attr('y', rectY)
+      .attr('y', rectY - 2) // 奇怪的偏移修正
       .attr('rx', 5)
       .attr('ry', 5)
       .style('cursor', 'pointer')
       // .style('pointer-events', 'none')
     const rect = rectUpdate.merge(rectEnter)
       .attr('width', d => `${rectWidth}px`)
-      .style('transform', labelTransform)
+      .style('transform', textReverseTransformWithRotate)
     rectUpdate.exit().remove()
 
     const textUpdate = d3.select(n[i])
@@ -215,7 +215,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
       // .style('pointer-events', 'none')
     const text = textUpdate.merge(textEnter)
       .text(d => d.text)
-      .style('transform', labelTransform)
+      .style('transform', textReverseTransformWithRotate)
       .attr('fill', d => getColor(fullParams.labelTextColorType, fullChartParams))
       .attr('font-size', fullChartParams.styles.textSize)
       .attr('x', rectX + 6)
@@ -588,31 +588,34 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
   //   shareReplay(1)
   // )
 
-  const labelTransform$ = combineLatest({
-    fullParams: observer.fullParams$,
-    fullDataFormatter: observer.fullDataFormatter$,
+
+  const textReverseTransform$ = combineLatest({
     gridAxesReverseTransform: observer.gridAxesReverseTransform$,
     gridContainerPosition: observer.gridContainerPosition$
   }).pipe(
     takeUntil(destroy$),
-    switchMap(async d => d),
+    switchMap(async (d) => d),
     map(data => {
-      const axisReverseTranslateValue = `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px)`
-      const axisReverseRotateValue = `rotate(${data.gridAxesReverseTransform.rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
-      const containerScaleReverseScaleValue = `scale(${1 / data.gridContainerPosition[0].scale[0]}, ${1 / data.gridContainerPosition[0].scale[1]})`
-      const tickTextRotateDeg = (data.fullDataFormatter.grid.groupAxis.position === 'left' && data.fullDataFormatter.grid.valueAxis.position === 'top')
-        || (data.fullDataFormatter.grid.groupAxis.position === 'right' && data.fullDataFormatter.grid.valueAxis.position === 'bottom')
-          ? data.fullParams.labelRotate + 180 // 修正文字倒轉
-          : data.fullParams.labelRotate
-          // ? 180 // 修正文字倒轉
-          // : 0
-      
-      const textRotateValue = `rotate(${tickTextRotateDeg}deg)`
-      
-      // 必須按照順序（先抵消外層rotate，再抵消最外層scale，最後再做本身的rotate）
-      return `${axisReverseTranslateValue} ${axisReverseRotateValue} ${containerScaleReverseScaleValue} ${textRotateValue}`
+      // const axisReverseTranslateValue = `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px)`
+      const axesRotateXYReverseValue = `rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
+      const axesRotateReverseValue = `rotate(${data.gridAxesReverseTransform.rotate}deg)`
+      const containerScaleReverseValue = `scale(${1 / data.gridContainerPosition[0].scale[0]}, ${1 / data.gridContainerPosition[0].scale[1]})`
+      // 必須按照順序（先抵消外層rotate，再抵消最外層scale）
+      return `${axesRotateXYReverseValue} ${axesRotateReverseValue} ${containerScaleReverseValue}`
     }),
     distinctUntilChanged()
+  )
+
+  const textReverseTransformWithRotate$ = combineLatest({
+    textReverseTransform: textReverseTransform$,
+    fullParams: observer.fullParams$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      // 必須按照順序（先抵消外層rotate，再抵消最外層scale，最後再做本身的rotate）
+      return `${data.textReverseTransform} rotate(${data.fullParams.labelRotate}deg)`
+    })
   )
 
   const columnAmount$ = observer.gridContainerPosition$.pipe(
@@ -665,7 +668,7 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
     fullChartParams: observer.fullChartParams$,
     highlightTarget: highlightTarget$,
     // gridAxesReverseTransform: observer.gridAxesReverseTransform$,
-    labelTransform: labelTransform$,
+    textReverseTransformWithRotate: textReverseTransformWithRotate$,
     GroupDataMap: observer.GroupDataMap$,
     textSizePx: observer.textSizePx$
   }).subscribe(data => {
@@ -707,7 +710,7 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
       fullDataFormatter: data.fullDataFormatter,
       fullChartParams: data.fullChartParams,
       // gridAxesReverseTransformValue: data.gridAxesReverseTransform.value,
-      labelTransform: data.labelTransform,
+      textReverseTransformWithRotate: data.textReverseTransformWithRotate,
       textSizePx: data.textSizePx
     })
 
