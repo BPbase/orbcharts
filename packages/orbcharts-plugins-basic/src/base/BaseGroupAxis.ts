@@ -69,33 +69,54 @@ interface TextAlign {
 // const groupingLabelClassName = getClassName(pluginName, 'groupingLabel')
 const defaultTickSize = 6
 
-function renderAxis ({ selection, xAxisClassName, groupingLabelClassName, params, tickTextAlign, axisLabelAlign, gridAxesSize, fullDataFormatter, chartParams, groupScale, groupScaleDomain, groupLabels, textTransform }: {
+function renderAxisLabel ({ selection, groupingLabelClassName, fullParams, axisLabelAlign, gridAxesSize, fullDataFormatter, chartParams, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
-  xAxisClassName: string
   groupingLabelClassName: string
-  params: BaseGroupAxisParams
-  tickTextAlign: TextAlign
+  fullParams: BaseGroupAxisParams
   axisLabelAlign: TextAlign
   gridAxesSize: { width: number, height: number }
   fullDataFormatter: DataFormatterGrid,
   chartParams: ChartParams
-  // groupScale: d3.ScalePoint<string>
-  groupScale: d3.ScaleLinear<number, number>
-  groupScaleDomain: number[]
-  groupLabels: string[]
-  textTransform: string
-  // tickTextFormatter: string | ((label: any) => string)
+  textReverseTransform: string
 }) {
-
-  const xAxisSelection = selection
-    .selectAll<SVGGElement, BaseGroupAxisParams>(`g.${xAxisClassName}`)
-    .data([params])
-    .join('g')
-    .classed(xAxisClassName, true)
+  
+  const offsetX = fullParams.tickPadding + fullParams.labelOffset[0]
+  const offsetY = fullParams.tickPadding + fullParams.labelOffset[1]
+  let labelX = 0
+  let labelY = 0
+  if (fullDataFormatter.grid.groupAxis.position === 'bottom') {
+    labelY = offsetY
+    if (fullDataFormatter.grid.valueAxis.position === 'left') {
+      labelX = offsetX
+    } else if (fullDataFormatter.grid.valueAxis.position === 'right') {
+      labelX = - offsetX
+    }
+  } else if (fullDataFormatter.grid.groupAxis.position === 'top') {
+    labelY = - offsetY
+    if (fullDataFormatter.grid.valueAxis.position === 'left') {
+      labelX = offsetX
+    } else if (fullDataFormatter.grid.valueAxis.position === 'right') {
+      labelX = - offsetX
+    }
+  } else if (fullDataFormatter.grid.groupAxis.position === 'left') {
+    labelX = - offsetX
+    if (fullDataFormatter.grid.valueAxis.position === 'bottom') {
+      labelY = - offsetY
+    } else if (fullDataFormatter.grid.valueAxis.position === 'top') {
+      labelY = offsetY
+    }
+  } else if (fullDataFormatter.grid.groupAxis.position === 'right') {
+    labelX = offsetX
+    if (fullDataFormatter.grid.valueAxis.position === 'bottom') {
+      labelY = - offsetY
+    } else if (fullDataFormatter.grid.valueAxis.position === 'top') {
+      labelY = offsetY
+    }
+  }
 
   const axisLabelSelection = selection
     .selectAll<SVGGElement, BaseGroupAxisParams>(`g.${groupingLabelClassName}`)
-    .data([params])
+    .data([fullParams])
     .join('g')
     .classed(groupingLabelClassName, true)
     .each((d, i, g) => {
@@ -114,34 +135,76 @@ function renderAxis ({ selection, xAxisClassName, groupingLabelClassName, params
         .attr('text-anchor', axisLabelAlign.textAnchor)
         .attr('dominant-baseline', axisLabelAlign.dominantBaseline)
         .attr('font-size', chartParams.styles.textSize)
-        .style('fill', getColor(params.labelColorType, chartParams))
-        // .style('transform', textTransform)
+        .style('fill', getColor(fullParams.labelColorType, chartParams))
+        .style('transform', textReverseTransform)
+        // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
+        .attr('x', labelX)
+        .attr('y', labelY)
         .text(d => fullDataFormatter.grid.groupAxis.label)
     })
-    .attr('transform', d => `translate(${gridAxesSize.width + d.tickPadding + params.labelOffset[0]}, ${- d.tickPadding - defaultTickSize - params.labelOffset[1]})`)
+    .attr('transform', d => `translate(${gridAxesSize.width}, 0)`)
+    // .attr('transform', d => `translate(${gridAxesSize.width + d.tickPadding + fullParams.labelOffset[0]}, ${- d.tickPadding - fullParams.labelOffset[1]})`)
+
+}
+
+function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gridAxesSize, fullDataFormatter, chartParams, groupScale, groupScaleDomain, groupLabels, textReverseTransformWithRotate }: {
+  selection: d3.Selection<SVGGElement, any, any, any>,
+  xAxisClassName: string
+  fullParams: BaseGroupAxisParams
+  tickTextAlign: TextAlign
+  gridAxesSize: { width: number, height: number }
+  fullDataFormatter: DataFormatterGrid,
+  chartParams: ChartParams
+  groupScale: d3.ScaleLinear<number, number>
+  groupScaleDomain: number[]
+  groupLabels: string[]
+  textReverseTransformWithRotate: string
+}) {
+
+  const xAxisSelection = selection
+    .selectAll<SVGGElement, BaseGroupAxisParams>(`g.${xAxisClassName}`)
+    .data([fullParams])
+    .join('g')
+    .classed(xAxisClassName, true)
 
   // 計算所有範圍內groupLabels數量（顯示所有刻度）
   const allTicksAmount = Math.floor(groupScaleDomain[1]) - Math.ceil(groupScaleDomain[0]) + 1
 
+  // 刻度文字偏移
+  let tickPadding = 0
+  let textX = 0
+  if (fullDataFormatter.grid.groupAxis.position === 'left') {
+    tickPadding = 0
+    textX = - fullParams.tickPadding
+  } else if (fullDataFormatter.grid.groupAxis.position === 'right') {
+    tickPadding = 0
+    textX = fullParams.tickPadding
+  } else if (fullDataFormatter.grid.groupAxis.position === 'bottom') {
+    tickPadding = fullParams.tickPadding
+    textX = 0
+  } else if (fullDataFormatter.grid.groupAxis.position === 'top') {
+    tickPadding = - fullParams.tickPadding
+    textX = - 0
+  }
+
   // 設定X軸刻度
-  // const xAxis = d3.axisBottom(groupScale)
-  const xAxis = d3.axisTop(groupScale)
+  const xAxis = d3.axisBottom(groupScale)
     .scale(groupScale)
-    .ticks(params.ticks === 'all'
+    .ticks(fullParams.ticks === 'all'
       ? allTicksAmount
-      : params.ticks > allTicksAmount
+      : fullParams.ticks > allTicksAmount
         ? allTicksAmount // 不顯示超過groupLabels數量的刻度
-        : params.ticks)
-    .tickSize(params.tickFullLine == true
-      ? -gridAxesSize.height
-      : defaultTickSize)
+        : fullParams.ticks)
+    .tickSize(fullParams.tickFullLine == true
+      ? gridAxesSize.height
+      : - defaultTickSize)
     .tickSizeOuter(0)
     .tickFormat((groupIndex: number) => {
       // 用index對應到groupLabel
       const groupLabel = groupLabels[groupIndex] ?? '' // 非整數index不顯示
-      return parseTickFormatValue(groupLabel, params.tickFormat)
+      return parseTickFormatValue(groupLabel, fullParams.tickFormat)
     })
-    .tickPadding(params.tickPadding)
+    .tickPadding(tickPadding)
 
   const xAxisEl = xAxisSelection
     .transition()
@@ -152,13 +215,13 @@ function renderAxis ({ selection, xAxisClassName, groupingLabelClassName, params
 
   xAxisEl.selectAll('line')
     .style('fill', 'none')
-    .style('stroke', params.tickLineVisible == true ? getColor(params.tickColorType, chartParams) : 'none')
-    .style('stroke-dasharray', params.tickFullLineDasharray)
+    .style('stroke', fullParams.tickLineVisible == true ? getColor(fullParams.tickColorType, chartParams) : 'none')
+    .style('stroke-dasharray', fullParams.tickFullLineDasharray)
     .attr('pointer-events', 'none')
 
   xAxisEl.selectAll('path')
     .style('fill', 'none')
-    .style('stroke', params.axisLineVisible == true ? getColor(params.axisLineColorType, chartParams) : 'none')
+    .style('stroke', fullParams.axisLineVisible == true ? getColor(fullParams.axisLineColorType, chartParams) : 'none')
     .style('shape-rendering', 'crispEdges')
 
   // const xText = xAxisEl.selectAll('text')
@@ -174,18 +237,22 @@ function renderAxis ({ selection, xAxisClassName, groupingLabelClassName, params
   //     .attr('text-anchor', tickTextAlign.textAnchor)
   //     .attr('dominant-baseline', tickTextAlign.dominantBaseline)
   //     .attr('transform-origin', `0 -${params.tickPadding + defaultTickSize}`)
-  //     .style('transform', textTransform)
+  //     .style('transform', textReverseTransform)
   // })
   const xText = xAxisSelection.selectAll('text')
     // .style('font-family', 'sans-serif')
     .attr('font-size', chartParams.styles.textSize)
     // .style('font-weight', 'bold')
-    .style('color', getColor(params.tickTextColorType, chartParams))
+    .style('color', getColor(fullParams.tickTextColorType, chartParams))
     .attr('text-anchor', tickTextAlign.textAnchor)
     .attr('dominant-baseline', tickTextAlign.dominantBaseline)
-    .attr('transform-origin', `0 -${params.tickPadding + defaultTickSize}`)
-    .style('transform', textTransform)
-    
+    .attr('x', textX)
+    .style('transform', textReverseTransformWithRotate)
+  
+  // 抵消掉預設的偏移
+  // if (fullDataFormatter.grid.groupAxis.position === 'left' || fullDataFormatter.grid.groupAxis.position === 'right') {
+    xText.attr('dy', 0)
+  // }
     
   return xAxisSelection
 }
@@ -297,7 +364,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
   //     })
   //   )
 
-  // const textTransform$: Observable<string> = new Observable(subscriber => {
+  // const textReverseTransform$: Observable<string> = new Observable(subscriber => {
   //   combineLatest({
   //     params: fullParams$,
   //     gridAxesTransform: gridAxesTransform$
@@ -338,31 +405,34 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
   //     }
   //   }),
   // )
-  const textTransform$ = combineLatest({
-    fullParams: fullParams$,
-    fullDataFormatter: fullDataFormatter$,
+  const textReverseTransform$ = combineLatest({
     gridAxesReverseTransform: gridAxesReverseTransform$,
     gridContainerPosition: gridContainerPosition$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      const axisReverseTranslateValue = `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px)`
-      const axisReverseRotateValue = `rotate(${data.gridAxesReverseTransform.rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
-      const containerScaleReverseScaleValue = `scale(${1 / data.gridContainerPosition[0].scale[0]}, ${1 / data.gridContainerPosition[0].scale[1]})`
-      const tickTextRotateDeg = (data.fullDataFormatter.grid.groupAxis.position === 'left' && data.fullDataFormatter.grid.valueAxis.position === 'top')
-        || (data.fullDataFormatter.grid.groupAxis.position === 'right' && data.fullDataFormatter.grid.valueAxis.position === 'bottom')
-          ? data.fullParams.tickTextRotate + 180 // 修正文字倒轉
-          : data.fullParams.tickTextRotate
-      
-      const textRotateValue = `rotate(${tickTextRotateDeg}deg)`
-      
-      // 必須按照順序（先抵消外層rotate，再抵消最外層scale，最後再做本身的rotate）
-      return `${axisReverseTranslateValue} ${axisReverseRotateValue} ${containerScaleReverseScaleValue} ${textRotateValue}`
+      // const axisReverseTranslateValue = `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px)`
+      const axesRotateXYReverseValue = `rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
+      const axesRotateReverseValue = `rotate(${data.gridAxesReverseTransform.rotate}deg)`
+      const containerScaleReverseValue = `scale(${1 / data.gridContainerPosition[0].scale[0]}, ${1 / data.gridContainerPosition[0].scale[1]})`
+      // 必須按照順序（先抵消外層rotate，再抵消最外層scale）
+      return `${axesRotateXYReverseValue} ${axesRotateReverseValue} ${containerScaleReverseValue}`
     }),
     distinctUntilChanged()
   )
 
+  const textReverseTransformWithRotate$ = combineLatest({
+    textReverseTransform: textReverseTransform$,
+    fullParams: fullParams$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      // 必須按照順序（先抵消外層rotate，再抵消最外層scale，最後再做本身的rotate）
+      return `${data.textReverseTransform} rotate(${data.fullParams.tickTextRotate}deg)`
+    })
+  )
 
   // 使用pointScale計算非連續性比例尺
   // const groupScale$: Observable<d3.ScalePoint<string>> = new Observable(subscriber => {
@@ -469,7 +539,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
         dominantBaseline = 'hanging'
       } else if (data.fullDataFormatter.grid.groupAxis.position === 'top') {
         textAnchor = data.fullParams.tickTextRotate
-          ? 'end'
+          ? 'start'
           : 'middle'
         dominantBaseline = 'auto'
       } else if (data.fullDataFormatter.grid.groupAxis.position === 'left') {
@@ -519,7 +589,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
 
   combineLatest({
     axisSelection: axisSelection$,
-    params: fullParams$,
+    fullParams: fullParams$,
     tickTextAlign: tickTextAlign$,
     axisLabelAlign: axisLabelAlign$,
     gridAxesSize: gridAxesSize$,
@@ -528,7 +598,8 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
     groupScale: groupScale$,
     groupScaleDomain: groupScaleDomain$,
     groupLabels: groupLabels$,
-    textTransform: textTransform$,
+    textReverseTransform: textReverseTransform$,
+    textReverseTransformWithRotate: textReverseTransformWithRotate$,
     // tickTextFormatter: tickTextFormatter$
   }).pipe(
     takeUntil(destroy$),
@@ -538,18 +609,26 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
     renderAxis({
       selection: data.axisSelection,
       xAxisClassName,
-      groupingLabelClassName,
-      params: data.params,
+      fullParams: data.fullParams,
       tickTextAlign: data.tickTextAlign,
-      axisLabelAlign: data.axisLabelAlign,
       gridAxesSize: data.gridAxesSize,
       fullDataFormatter: data.fullDataFormatter,
       chartParams: data.chartParams,
       groupScale: data.groupScale,
       groupScaleDomain: data.groupScaleDomain,
       groupLabels: data.groupLabels,
-      textTransform: data.textTransform,
-      // tickTextFormatter: data.tickTextFormatter
+      textReverseTransformWithRotate: data.textReverseTransformWithRotate,
+    })
+
+    renderAxisLabel({
+      selection: data.axisSelection,
+      groupingLabelClassName,
+      fullParams: data.fullParams,
+      axisLabelAlign: data.axisLabelAlign,
+      gridAxesSize: data.gridAxesSize,
+      fullDataFormatter: data.fullDataFormatter,
+      chartParams: data.chartParams,
+      textReverseTransform: data.textReverseTransform,
     })
   })
 

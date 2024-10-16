@@ -247,7 +247,7 @@ export const gridAxesReverseTransformObservable = ({ gridAxesTransform$ }: {
         rotate,
         rotateX,
         rotateY,
-        value: `translate(${translate[0]}px, ${translate[1]}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
+        value: `translate(${translate[0]}px, ${translate[1]}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotate(${rotate}deg)`
       }
     }),
   )

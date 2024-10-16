@@ -66,26 +66,52 @@ interface TextAlign {
 // const textClassName = getClassName(pluginName, 'text')
 const defaultTickSize = 6
 
-function renderAxis ({ selection, yAxisClassName, textClassName, fullParams, tickTextAlign, axisLabelAlign, gridAxesSize, fullDataFormatter, fullChartParams, valueScale, textTransform, minAndMax }: {
+function renderAxisLabel ({ selection, textClassName, fullParams, axisLabelAlign, gridAxesSize, fullDataFormatter, fullChartParams, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
-  yAxisClassName: string
   textClassName: string
   fullParams: BaseValueAxisParams
-  tickTextAlign: TextAlign
   axisLabelAlign: TextAlign
   gridAxesSize: { width: number, height: number }
   fullDataFormatter: DataFormatterGrid,
   fullChartParams: ChartParams
-  valueScale: d3.ScaleLinear<number, number>
-  textTransform: string,
-  minAndMax: [number, number]
+  textReverseTransform: string,
 }) {
-
-  const yAxisSelection = selection
-    .selectAll<SVGGElement, BaseValueAxisParams>(`g.${yAxisClassName}`)
-    .data([fullParams])
-    .join('g')
-    .classed(yAxisClassName, true)
+  const offsetX = fullParams.tickPadding - fullParams.labelOffset[0]
+  const offsetY = fullParams.tickPadding + fullParams.labelOffset[1]
+  let labelX = 0
+  let labelY = 0
+  if (fullDataFormatter.grid.groupAxis.position === 'bottom') {
+    // labelY = - gridAxesSize.height - offsetY
+    labelY = - offsetY
+    if (fullDataFormatter.grid.valueAxis.position === 'left') {
+      labelX = - offsetX
+    } else if (fullDataFormatter.grid.valueAxis.position === 'right') {
+      labelX = offsetX
+    }
+  } else if (fullDataFormatter.grid.groupAxis.position === 'top') {
+    // labelY = gridAxesSize.height + offsetY
+    labelY = offsetY
+    if (fullDataFormatter.grid.valueAxis.position === 'left') {
+      labelX = - offsetX
+    } else if (fullDataFormatter.grid.valueAxis.position === 'right') {
+      labelX = offsetX
+    }
+  } else if (fullDataFormatter.grid.groupAxis.position === 'left') {
+    // labelX = gridAxesSize.width + offsetX
+    labelX = offsetX
+    if (fullDataFormatter.grid.valueAxis.position === 'bottom') {
+      labelY = offsetY
+    } else if (fullDataFormatter.grid.valueAxis.position === 'top') {
+      labelY = - offsetY
+    }
+  } else if (fullDataFormatter.grid.groupAxis.position === 'right') {
+    labelX = - offsetX
+    if (fullDataFormatter.grid.valueAxis.position === 'bottom') {
+      labelY = offsetY
+    } else if (fullDataFormatter.grid.valueAxis.position === 'top') {
+      labelY = - offsetY
+    }
+  }
 
   const axisLabelSelection = selection
     .selectAll<SVGGElement, BaseValueAxisParams>(`g.${textClassName}`)
@@ -109,16 +135,59 @@ function renderAxis ({ selection, yAxisClassName, textClassName, fullParams, tic
         .attr('dominant-baseline', axisLabelAlign.dominantBaseline)
         .attr('font-size', fullChartParams.styles.textSize)
         .style('fill', getColor(fullParams.labelColorType, fullChartParams))
-        // .style('transform', textTransform)
+        .style('transform', textReverseTransform)
+        // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
+        .attr('x', labelX)
+        .attr('y', labelY)
         .text(d => fullDataFormatter.grid.valueAxis.label)
     })
-    .attr('transform', d => `translate(${- d.tickPadding + fullParams.labelOffset[0]}, ${gridAxesSize.height + d.tickPadding + fullParams.labelOffset[1]})`)
+    .attr('transform', d => `translate(0, ${gridAxesSize.height})`)
+    // .attr('transform', d => `translate(${- fullParams.tickPadding + fullParams.labelOffset[0]}, ${gridAxesSize.height + fullParams.tickPadding + fullParams.labelOffset[1]})`)
+
+
+}
+
+function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gridAxesSize, fullDataFormatter, fullChartParams, valueScale, textReverseTransformWithRotate, minAndMax }: {
+  selection: d3.Selection<SVGGElement, any, any, any>,
+  yAxisClassName: string
+  fullParams: BaseValueAxisParams
+  tickTextAlign: TextAlign
+  gridAxesSize: { width: number, height: number }
+  fullDataFormatter: DataFormatterGrid,
+  fullChartParams: ChartParams
+  valueScale: d3.ScaleLinear<number, number>
+  textReverseTransformWithRotate: string,
+  minAndMax: [number, number]
+}) {
+
+  const yAxisSelection = selection
+    .selectAll<SVGGElement, BaseValueAxisParams>(`g.${yAxisClassName}`)
+    .data([fullParams])
+    .join('g')
+    .classed(yAxisClassName, true)
 
   const valueLength = minAndMax[1] - minAndMax[0]
   
   // const _valueScale = d3.scaleLinear()
   //   .domain([0, 150])
   //   .range([416.5, 791.349])
+
+  // 刻度文字偏移
+  let tickPadding = 0
+  let textY = 0
+  if (fullDataFormatter.grid.valueAxis.position === 'left') {
+    tickPadding = fullParams.tickPadding
+    textY = 0
+  } else if (fullDataFormatter.grid.valueAxis.position === 'right') {
+    tickPadding = - fullParams.tickPadding
+    textY = 0
+  } else if (fullDataFormatter.grid.valueAxis.position === 'bottom') {
+    tickPadding = 0
+    textY = fullParams.tickPadding
+  } else if (fullDataFormatter.grid.valueAxis.position === 'top') {
+    tickPadding = 0
+    textY = - fullParams.tickPadding
+  }
 
   // 設定Y軸刻度
   const yAxis = d3.axisLeft(valueScale)
@@ -132,7 +201,7 @@ function renderAxis ({ selection, yAxisClassName, textClassName, fullParams, tic
     .tickSize(fullParams.tickFullLine == true
       ? -gridAxesSize.width
       : defaultTickSize)
-    .tickPadding(fullParams.tickPadding)
+    .tickPadding(tickPadding)
   
   const yAxisEl = yAxisSelection
     .transition()
@@ -158,8 +227,14 @@ function renderAxis ({ selection, yAxisClassName, textClassName, fullParams, tic
     .style('color', getColor(fullParams.tickTextColorType, fullChartParams))
     .attr('text-anchor', tickTextAlign.textAnchor)
     .attr('dominant-baseline', tickTextAlign.dominantBaseline)
-    .attr('transform-origin', `-${fullParams.tickPadding + defaultTickSize} 0`)
-  yText.style('transform', textTransform)
+    // .attr('dy', 0)
+    .attr('y', textY)
+  yText.style('transform', textReverseTransformWithRotate)
+  
+  // 抵消掉預設的偏移
+  if (fullDataFormatter.grid.valueAxis.position === 'bottom' || fullDataFormatter.grid.valueAxis.position === 'top') {
+    yText.attr('dy', 0)
+  }
 
   return yAxisSelection
 }
@@ -263,7 +338,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   //   layout$
   // })
 
-  // const textTransform$: Observable<string> = new Observable(subscriber => {
+  // const textReverseTransform$: Observable<string> = new Observable(subscriber => {
   //   combineLatest({
   //     fullParams: fullParams$,
   //     layout: layout$
@@ -304,29 +379,33 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   //     }
   //   }),
   // )
-  const textTransform$ = combineLatest({
-    fullParams: fullParams$,
-    fullDataFormatter: fullDataFormatter$,
+  const textReverseTransform$ = combineLatest({
     gridAxesReverseTransform: gridAxesReverseTransform$,
     gridContainerPosition: gridContainerPosition$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      const axisReverseTranslateValue = `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px)`
-      const axisReverseRotateValue = `rotate(${data.gridAxesReverseTransform.rotate}deg) rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
-      const containerScaleReverseScaleValue = `scale(${1 / data.gridContainerPosition[0].scale[0]}, ${1 / data.gridContainerPosition[0].scale[1]})`
-      const tickTextRotateDeg = (data.fullDataFormatter.grid.groupAxis.position === 'left' && data.fullDataFormatter.grid.valueAxis.position === 'top')
-        || (data.fullDataFormatter.grid.groupAxis.position === 'right' && data.fullDataFormatter.grid.valueAxis.position === 'bottom')
-          ? data.fullParams.tickTextRotate + 180 // 修正文字倒轉
-          : data.fullParams.tickTextRotate
-      
-      const textRotateValue = `rotate(${tickTextRotateDeg}deg)`
-      
-      // 必須按照順序（先抵消外層rotate，再抵消最外層scale，最後再做本身的rotate）
-      return `${axisReverseTranslateValue} ${axisReverseRotateValue} ${containerScaleReverseScaleValue} ${textRotateValue}`
+      // const axisReverseTranslateValue = `translate(${data.gridAxesReverseTransform.translate[0]}px, ${data.gridAxesReverseTransform.translate[1]}px)`
+      const axesRotateXYReverseValue = `rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
+      const axesRotateReverseValue = `rotate(${data.gridAxesReverseTransform.rotate}deg)`
+      const containerScaleReverseValue = `scale(${1 / data.gridContainerPosition[0].scale[0]}, ${1 / data.gridContainerPosition[0].scale[1]})`
+      // 必須按照順序（先抵消外層rotate，再抵消最外層scale）
+      return `${axesRotateXYReverseValue} ${axesRotateReverseValue} ${containerScaleReverseValue}`
     }),
     distinctUntilChanged()
+  )
+
+  const textReverseTransformWithRotate$ = combineLatest({
+    textReverseTransform: textReverseTransform$,
+    fullParams: fullParams$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      // 必須按照順序（先抵消外層rotate，再抵消最外層scale，最後再做本身的rotate）
+      return `${data.textReverseTransform} rotate(${data.fullParams.tickTextRotate}deg)`
+    })
   )
 
   const minAndMax$: Observable<[number, number]> = new Observable(subscriber => {
@@ -383,23 +462,31 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     })
   })
 
-  const tickTextAlign$: Observable<TextAlign> = fullDataFormatter$.pipe(
+  const tickTextAlign$: Observable<TextAlign> = combineLatest({
+    fullDataFormatter: fullDataFormatter$,
+    fullParams: fullParams$
+  }).pipe(
     takeUntil(destroy$),
-    map(d => {
+    switchMap(async (d) => d),
+    map(data => {
       let textAnchor: 'start' | 'middle' | 'end' = 'start'
       let dominantBaseline: 'auto' | 'middle' | 'hanging' = 'hanging'
 
-      if (d.grid.valueAxis.position === 'left') {
+      if (data.fullDataFormatter.grid.valueAxis.position === 'left') {
         textAnchor = 'end'
         dominantBaseline = 'middle'
-      } else if (d.grid.valueAxis.position === 'right') {
+      } else if (data.fullDataFormatter.grid.valueAxis.position === 'right') {
         textAnchor = 'start'
         dominantBaseline = 'middle'
-      } else if (d.grid.valueAxis.position === 'bottom') {
-        textAnchor = 'middle'
+      } else if (data.fullDataFormatter.grid.valueAxis.position === 'bottom') {
+        textAnchor = data.fullParams.tickTextRotate
+          ? 'end'
+          : 'middle'
         dominantBaseline = 'hanging'
-      } else if (d.grid.valueAxis.position === 'top') {
-        textAnchor = 'middle'
+      } else if (data.fullDataFormatter.grid.valueAxis.position === 'top') {
+        textAnchor = data.fullParams.tickTextRotate
+          ? 'start'
+          : 'middle'
         dominantBaseline = 'auto'
       }
       return {
@@ -451,7 +538,8 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     fullDataFormatter: fullDataFormatter$,
     fullChartParams: fullChartParams$,
     valueScale: valueScale$,
-    textTransform: textTransform$,
+    textReverseTransform: textReverseTransform$,
+    textReverseTransformWithRotate: textReverseTransformWithRotate$,
     minAndMax: minAndMax$
   }).pipe(
     takeUntil(destroy$),
@@ -461,16 +549,25 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     renderAxis({
       selection: data.axisSelection,
       yAxisClassName,
-      textClassName,
       fullParams: data.fullParams,
       tickTextAlign: data.tickTextAlign,
-      axisLabelAlign: data.axisLabelAlign,
       gridAxesSize: data.gridAxesSize,
       fullDataFormatter: data.fullDataFormatter,
       fullChartParams: data.fullChartParams,
       valueScale: data.valueScale,
-      textTransform: data.textTransform,
+      textReverseTransformWithRotate: data.textReverseTransformWithRotate,
       minAndMax: data.minAndMax
+    })
+
+    renderAxisLabel({
+      selection: data.axisSelection,
+      textClassName,
+      fullParams: data.fullParams,
+      axisLabelAlign: data.axisLabelAlign,
+      gridAxesSize: data.gridAxesSize,
+      fullDataFormatter: data.fullDataFormatter,
+      fullChartParams: data.fullChartParams,
+      textReverseTransform: data.textReverseTransform,
     })
   })
 
