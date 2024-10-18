@@ -47,6 +47,7 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
+      console.log('data', data)
       if (!data.fullDataFormatter.gridList[data.secondGridIndex]) {
         data.fullDataFormatter.gridList[data.secondGridIndex] = Object.assign({}, data.fullDataFormatter.gridList[data.firstGridIndex])
       }
@@ -62,6 +63,7 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
       } else if (position === 'right') {
         reversePosition = 'left'
       }
+      // console.log('reversePosition', reversePosition)
       return <DataFormatterGrid>{
         type: 'grid',
         visibleFilter: data.fullDataFormatter.visibleFilter as any,
@@ -116,6 +118,7 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
         })
         return {
           ...observables,
+          dataFormatter$: secondGridDataFormatter$,
           gridAxesTransform$,
           gridAxesReverseTransform$,
           gridContainerPosition$,

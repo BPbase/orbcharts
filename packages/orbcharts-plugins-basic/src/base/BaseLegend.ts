@@ -637,6 +637,7 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
   itemSelection$.subscribe()
 
   return () => {
+    rootSelection.select(`g.${rootPositionClassName}`).remove()
     destroy$.next(undefined)
   }
 }
