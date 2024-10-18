@@ -117,6 +117,7 @@ export const OverlappingValueStackAxes = defineMultiGridPlugin(pluginName, DEFAU
         })
         return {
           ...observables,
+          dataFormatter$: secondGridDataFormatter$,
           gridAxesTransform$,
           gridAxesReverseTransform$,
           gridContainerPosition$,
