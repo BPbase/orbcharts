@@ -20,9 +20,9 @@ export interface BubblesParams {
 
 export interface PieParams {
   // padding: Padding
-  outerRadius: number;
-  innerRadius: number;
-  outerRadiusWhileHighlight: number;
+  outerRadius: number
+  innerRadius: number
+  outerRadiusWhileHighlight: number
   // label?: LabelStyle
   // enterDuration: number
   startAngle: number
