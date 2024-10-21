@@ -28,6 +28,8 @@ export interface PieParams {
   startAngle: number
   endAngle: number
   padAngle: number
+  strokeColorType: ColorType
+  strokeWidth: number
   // padRadius: number
   cornerRadius: number
 }
@@ -55,10 +57,12 @@ export interface PieLabelsParams {
 
 export interface RoseParams {
   outerRadius: number
-  // padAngle: number
+  padAngle: number
+  strokeColorType: ColorType
+  strokeWidth: number
   cornerRadius: number
   arcScaleType: ArcScaleType
-  mouseoverAngleIncrease: number
+  angleIncreaseWhileHighlight: number
 }
 
 export interface RoseLabelsParams {

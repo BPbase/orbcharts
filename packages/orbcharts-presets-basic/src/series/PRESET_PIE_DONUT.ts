@@ -24,3 +24,4 @@ export const PRESET_PIE_DONUT: PresetPartial<'series', PresetPieParams
     }
   }
 }
+PRESET_PIE_DONUT.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`

@@ -6,6 +6,7 @@ export const PRESET_SERIES_SEPARATE_SERIES: PresetPartial<'series', PresetSeries
   name: 'PRESET_SERIES_SEPARATE_SERIES',
   description: '分開顯示Series',
   dataFormatter: {
+    sort: (a, b) => b.value - a.value,
     separateSeries: true,
   },
   allPluginParams: {
@@ -13,3 +14,4 @@ export const PRESET_SERIES_SEPARATE_SERIES: PresetPartial<'series', PresetSeries
     ...ALL_PLUGIN_PARAMS_NONE_DATA,
   }
 }
+PRESET_SERIES_SEPARATE_SERIES.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`

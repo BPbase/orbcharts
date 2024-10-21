@@ -6,6 +6,7 @@ export const PRESET_SERIES_SUM_SERIES: PresetPartial<'series', PresetSeriesPlugi
   name: 'PRESET_SERIES_SUM_SERIES',
   description: '合併Series資料',
   dataFormatter: {
+    sort: (a, b) => b.value - a.value,
     sumSeries: true
   },
   allPluginParams: {
@@ -13,3 +14,4 @@ export const PRESET_SERIES_SUM_SERIES: PresetPartial<'series', PresetSeriesPlugi
     ...ALL_PLUGIN_PARAMS_NONE_DATA,
   }
 }
+PRESET_SERIES_SUM_SERIES.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`

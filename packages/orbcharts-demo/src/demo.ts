@@ -45,8 +45,8 @@ export const DEMO_LIST: DemoChartTypeItem[] = [
         mainPluginNames: ['Pie'],
         list: [
           {
-            title: 'PRESET_SERIES_BASIC',
-            presetName: 'PRESET_SERIES_BASIC',
+            title: 'PRESET_PIE_BASIC',
+            presetName: 'PRESET_PIE_BASIC',
             allPluginNames: ['Pie', 'PieLabels', 'SeriesLegend', 'Tooltip'],
             getData: () => import('./data/seriesData2')
           },
@@ -68,12 +68,12 @@ export const DEMO_LIST: DemoChartTypeItem[] = [
             allPluginNames: ['Pie', 'PieLabels', 'SeriesLegend', 'Tooltip'],
             getData: () => import('./data/seriesData2')
           },
-          {
-            title: 'PRESET_SERIES_DESC',
-            presetName: 'PRESET_SERIES_DESC',
-            allPluginNames: ['Pie', 'PieLabels', 'SeriesLegend', 'Tooltip'],
-            getData: () => import('./data/seriesData2')
-          },
+          // {
+          //   title: 'PRESET_SERIES_DESC',
+          //   presetName: 'PRESET_SERIES_DESC',
+          //   allPluginNames: ['Pie', 'PieLabels', 'SeriesLegend', 'Tooltip'],
+          //   getData: () => import('./data/seriesData2')
+          // },
           {
             title: 'PRESET_SERIES_SEPARATE_SERIES',
             presetName: 'PRESET_SERIES_SEPARATE_SERIES',
@@ -95,8 +95,8 @@ export const DEMO_LIST: DemoChartTypeItem[] = [
         mainPluginNames: ['Rose'],
         list: [
           {
-            title: 'PRESET_SERIES_BASIC',
-            presetName: 'PRESET_SERIES_BASIC',
+            title: 'PRESET_ROSE_BASIC',
+            presetName: 'PRESET_ROSE_BASIC',
             allPluginNames: ['Rose', 'RoseLabels', 'SeriesLegend', 'Tooltip'],
             getData: () => import('./data/seriesData2')
           },
@@ -106,12 +106,12 @@ export const DEMO_LIST: DemoChartTypeItem[] = [
             allPluginNames: ['Rose', 'RoseLabels', 'SeriesLegend', 'Tooltip'],
             getData: () => import('./data/seriesData2')
           },
-          {
-            title: 'PRESET_SERIES_DESC',
-            presetName: 'PRESET_SERIES_DESC',
-            allPluginNames: ['Rose', 'RoseLabels', 'SeriesLegend', 'Tooltip'],
-            getData: () => import('./data/seriesData2')
-          },
+          // {
+          //   title: 'PRESET_SERIES_DESC',
+          //   presetName: 'PRESET_SERIES_DESC',
+          //   allPluginNames: ['Rose', 'RoseLabels', 'SeriesLegend', 'Tooltip'],
+          //   getData: () => import('./data/seriesData2')
+          // },
           {
             title: 'PRESET_SERIES_SEPARATE_SERIES',
             presetName: 'PRESET_SERIES_SEPARATE_SERIES',

@@ -22,7 +22,7 @@ import {
 import { DEFAULT_PIE_PARAMS } from '../defaults'
 import { makePieData } from '../seriesUtils'
 import { getD3TransitionEase, makeD3Arc } from '../../utils/d3Utils'
-import { getClassName } from '../../utils/orbchartsUtils'
+import { getDatumColor, getClassName } from '../../utils/orbchartsUtils'
 import { seriesCenterSelectionObservable } from '../seriesObservables'
 
 
@@ -87,11 +87,13 @@ function makePieRenderData (data: PieDatum[], startAngle: number, endAngle: numb
   })
 }
 
-function renderPie ({ selection, data, arc, pathClassName }: {
+function renderPie ({ selection, data, arc, pathClassName, fullParams, fullChartParams }: {
   selection: d3.Selection<SVGGElement, unknown, any, unknown>
   data: PieDatum[]
   arc: d3.Arc<any, d3.DefaultArcObject>
   pathClassName: string
+  fullParams: PieParams
+  fullChartParams: ChartParams
 }): d3.Selection<SVGPathElement, PieDatum, any, any> {
   // console.log('data', data)
   const pathSelection: d3.Selection<SVGPathElement, PieDatum, any, any> = selection
@@ -101,6 +103,8 @@ function renderPie ({ selection, data, arc, pathClassName }: {
     .classed(pathClassName, true)
     .style('cursor', 'pointer')
     .attr('fill', (d, i) => d.data.color)
+    .attr('stroke', (d, i) => getDatumColor({ datum: d.data, colorType: fullParams.strokeColorType, fullChartParams }))
+    .attr('stroke-width', fullParams.strokeWidth)
     .attr('d', (d, i) => {
       return arc!(d as any)
     })
@@ -312,7 +316,9 @@ function createEachPie (pluginName: string, context: {
               selection: context.containerSelection,
               data: tweenData,
               arc: data.arc,
-              pathClassName
+              pathClassName,
+              fullParams: data.fullParams,
+              fullChartParams: data.fullChartParams,
             })
   
             // @Q@ 想盡量減清效能負擔所以取消掉
@@ -345,7 +351,9 @@ function createEachPie (pluginName: string, context: {
             selection: context.containerSelection,
             data: tweenData,
             arc: data.arc,
-            pathClassName
+            pathClassName,
+            fullParams: data.fullParams,
+            fullChartParams: data.fullChartParams,
           })
   
           // if (data.fullParams.highlightTarget && data.fullParams.highlightTarget != 'none') {
