@@ -9,6 +9,9 @@ export const PRESET_PIE_DONUT: PresetPartial<'series', PresetPieParams
 & PresetNoneDataPluginParams> = {
   name: 'PRESET_PIE_DONUT',
   description: '甜甜圈圖',
+  dataFormatter: {
+    sort: (a, b) => b.value - a.value
+  },
   allPluginParams: {
     ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Pie: {

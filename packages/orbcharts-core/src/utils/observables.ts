@@ -54,7 +54,8 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
   // 事件觸發的highlight
   const highlightMouseover$ = event$.pipe(
     takeUntil(destroy$),
-    filter(d => d.eventName === 'mouseover' || d.eventName === 'mousemove'),
+    // filter(d => d.eventName === 'mouseover' || d.eventName === 'mousemove'),
+    filter(d => d.eventName === 'mouseover'),
     // distinctUntilChanged((prev, current) => prev.eventName === current.eventName)
     map(d => {
       return d.datum

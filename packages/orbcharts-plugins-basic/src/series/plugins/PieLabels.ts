@@ -28,10 +28,10 @@ interface RenderDatum {
   pieDatum: PieDatum
   arcIndex: number
   arcLabel: string
-  pieOuterX: number
-  pieOuterY: number
-  pieOuterMouseoverX: number
-  pieOuterMouseoverY: number
+  lineStartX: number
+  lineStartY: number
+  lineStartMouseoverX: number
+  lineStartMouseoverY: number
   x: number
   y: number
   mouseoverX: number
@@ -39,78 +39,93 @@ interface RenderDatum {
   textWidth: number, // 文字寬度
   collisionShiftX: number // 避免碰撞的位移
   collisionShiftY: number
+  quadrant: number // 第幾象限
 }
 
 const pluginName = 'PieLabels'
+const labelGClassName = getClassName(pluginName, 'label-g')
+const lineGClassName = getClassName(pluginName, 'line-g')
 const textClassName = getClassName(pluginName, 'text')
 
-function makeRenderData (pieData: PieDatum[], arc: d3.Arc<any, d3.DefaultArcObject>, mouseoverArc: d3.Arc<any, d3.DefaultArcObject>, centroid: number): RenderDatum[] {
+const pieOuterCentroid = 2
+
+function makeRenderData ({ pieData, arc, arcMouseover, labelCentroid, lineStartCentroid }: {
+  pieData: PieDatum[]
+  arc: d3.Arc<any, d3.DefaultArcObject>
+  arcMouseover: d3.Arc<any, d3.DefaultArcObject>
+  labelCentroid: number
+  lineStartCentroid: number
+}): RenderDatum[] {
   return pieData
     .map((d, i) => {
       const [_x, _y] = arc!.centroid(d as any)
-      const [_mouseoverX, _mouseoverY] = mouseoverArc!.centroid(d as any)
+      const [_mouseoverX, _mouseoverY] = arcMouseover!.centroid(d as any)
       return {
         pieDatum: d,
         arcIndex: i,
         arcLabel: d.data.label,
-        pieOuterX: _x * 2,
-        pieOuterY: _y * 2,
-        pieOuterMouseoverX: _mouseoverX * 2,
-        pieOuterMouseoverY: _mouseoverY * 2,
-        x: _x * centroid!,
-        y: _y * centroid!,
-        mouseoverX: _mouseoverX * centroid!,
-        mouseoverY: _mouseoverY * centroid!,
-        textWidth: 0,
-        collisionShiftX: 0,
-        collisionShiftY: 0,
+        lineStartX: _x * lineStartCentroid,
+        lineStartY: _y * lineStartCentroid,
+        lineStartMouseoverX: _mouseoverX * lineStartCentroid,
+        lineStartMouseoverY: _mouseoverY * lineStartCentroid,
+        x: _x * labelCentroid!,
+        y: _y * labelCentroid!,
+        mouseoverX: _mouseoverX * labelCentroid!,
+        mouseoverY: _mouseoverY * labelCentroid!,
+        textWidth: 0, // 後面再做計算
+        collisionShiftX: 0, // 後面再做計算
+        collisionShiftY: 0, // 後面再做計算
+        quadrant: _x >= 0 && _y <= 0
+          ? 1
+          : _x < 0 && _y <= 0
+            ? 2
+            : _x < 0 && _y > 0
+              ? 3
+              : 4
       }
     })
     .filter(d => d.pieDatum.data.visible)
 }
 
 // 繪製圓餅圖
-function renderLabel (selection: d3.Selection<SVGGElement, undefined, any, any>, data: RenderDatum[], pluginParams: PieLabelsParams, fullChartParams: ChartParams) {
+function renderLabel ({ labelGSelection, data, fullParams, fullChartParams }: {
+  labelGSelection: d3.Selection<SVGGElement, undefined, any, any>
+  data: RenderDatum[]
+  fullParams: PieLabelsParams
+  fullChartParams: ChartParams
+}) {
   // console.log(data)
   // let update = this.gSelection.selectAll('g').data(pieData)
-  let update: d3.Selection<SVGPathElement, RenderDatum, any, any> = selection
-    .selectAll<SVGPathElement, RenderDatum>('text')
+  const textSelection = labelGSelection
+    .selectAll<SVGTextElement, RenderDatum>('text')
     .data(data, d => d.pieDatum.id)
-  let enter = update.enter()
-    .append<SVGPathElement>('text')
+    .join('text')
     .classed(textClassName, true)
-  let exit = update.exit()
-
-  enter
-    .append('text')
-    
-  const labelSelection = update.merge(enter)
-  labelSelection
     .attr('font-weight', 'bold')
-    .attr('text-anchor', 'middle')
-    .style('dominant-baseline', 'middle')
+    .attr('text-anchor', d => d.quadrant == 1 || d.quadrant == 4 ? 'start' : 'end')
+    .style('dominant-baseline', d => d.quadrant == 1 || d.quadrant == 2 ? 'auto' : 'hanging')
     // .style('pointer-events', 'none')
     .style('cursor', d => fullChartParams.highlightTarget && fullChartParams.highlightTarget != 'none'
       ? 'pointer'
       : 'none')
     // .text((d, i) => d.arcLabel)
-    .text(d => pluginParams.labelFn(d.pieDatum.data))
+    .text(d => fullParams.labelFn(d.pieDatum.data))
     .attr('font-size', fullChartParams.styles.textSize)
-    .attr('fill', (d, i) => getDatumColor({ datum: d.pieDatum.data, colorType: pluginParams.labelColorType, fullChartParams }))
+    .attr('fill', (d, i) => getDatumColor({ datum: d.pieDatum.data, colorType: fullParams.labelColorType, fullChartParams }))
+  textSelection  
     .transition()
     .attr('transform', (d) => {
       // console.log('transform', d)
       return 'translate(' + d.x + ',' + d.y + ')'
     })
     // .on('end', () => initHighlight({ labelSelection, data, fullChartParams }))
-  exit.remove()
 
   // 如無新增資料則不用等動畫
   // if (enter.size() == 0) {
   //   this.initHighlight()
   // }
 
-  return labelSelection
+  return textSelection
 }
 
 // // 獲取每個文字元素的邊界框並檢查是否重疊
@@ -166,9 +181,9 @@ function renderLabel (selection: d3.Selection<SVGGElement, undefined, any, any>,
 // }
 
 // 獲取每個文字元素的邊界框並檢查是否重疊
-function setShiftData(labelSelection: d3.Selection<SVGPathElement, RenderDatum, any, any>, data: RenderDatum[]) {
-  const textArray = labelSelection.nodes();
-  const padding = 10;  // 調整文字間的間距
+function resolveCollisions(textSelection: d3.Selection<SVGTextElement, RenderDatum, any, any>, data: RenderDatum[], textSizePx: number) {
+  const textArray = textSelection.nodes();
+  const padding = textSizePx  // 調整文字間的間距
   
   // 存儲每個標籤的當前位置
   const positions = textArray.map((textNode, i) => {
@@ -183,11 +198,11 @@ function setShiftData(labelSelection: d3.Selection<SVGPathElement, RenderDatum, 
       height: bbox.height
     }
   })
-  // console.log('positions', positions)
 
+  // 順時針碰撞檢測（只處理 2、4 象限，將較後面的文字碰撞時往外偏移）
   for (let i = 0; i < positions.length; i++) {
     const a = positions[i]
-    
+
     for (let j = i + 1; j < positions.length; j++) {
       const b = positions[j]
 
@@ -204,89 +219,133 @@ function setShiftData(labelSelection: d3.Selection<SVGPathElement, RenderDatum, 
             ax - a.width / 2 > bx + b.width / 2 || 
             ay + a.height / 2 < by - b.height / 2 || 
             ay - a.height / 2 > by + b.height / 2)) {
-        
-        // 如果有重疊，則位移其中一個文字，這裡我們進行上下位移
-        const moveDown = (by > ay) ? padding : -padding;  // 決定方向
-        // b.y += moveDown;  // 更新 b 的 y 座標
-        
-        // 更新 b 的 x 座標，根據與 a 的位置差異進行微調
-        const moveRight = (bx > ax) ? padding : -padding;
-        // b.x += moveRight;
 
-        // // 重新設置 b 的 transform 來移動
-        // d3.select(b.node)
-        //   .transition()
-        //   .attr("transform", `translate(${b.x},${b.y})`);
-
-        // 累加位移
-        data[j].collisionShiftX += moveRight
-        data[j].collisionShiftY += moveDown
+        if (data[j].quadrant == 2) {
+          const moveDown = (by > ay)
+            ? -padding * 2
+            : -padding
+          data[j].collisionShiftY += moveDown // 由後一個累加高度
+        } else if (data[j].quadrant == 4) {
+          const moveDown = (by > ay)
+            ? padding
+            : padding * 2
+          data[j].collisionShiftY += moveDown // 由後一個累加高度
+        }
       }
     }
   }
+
+  // 逆時針碰撞檢測（只處理 1、3 象限，將較前面的文字碰撞時往外偏移）
+  for (let i = positions.length - 1; i >= 0; i--) {
+    const a = positions[i]
+    
+    for (let j = i - 1; j >= 0; j--) {
+      const b = positions[j]
+
+      // 記錄文字寬度
+      data[i].textWidth = a.width
+
+      const ax = a.x + data[i].collisionShiftX
+      const ay = a.y + data[i].collisionShiftY
+      const bx = b.x + data[j].collisionShiftX
+      const by = b.y + data[j].collisionShiftY
+
+      // 檢查是否重疊
+      if (!(ax + a.width / 2 < bx - b.width / 2 || 
+            ax - a.width / 2 > bx + b.width / 2 || 
+            ay + a.height / 2 < by - b.height / 2 || 
+            ay - a.height / 2 > by + b.height / 2)) {
+
+        if (data[j].quadrant == 1) {
+          const moveDown = (by > ay)
+            ? -padding * 2
+            : -padding
+          data[j].collisionShiftY += moveDown // 由前一個累加高度
+        } else if (data[j].quadrant == 3) {
+          const moveDown = (by > ay)
+            ? padding
+            : padding * 2
+          data[j].collisionShiftY += moveDown // 由前一個累加高度
+        }
+      }
+    }
+  }
+
+  // 全部算完再來 render
+  textSelection
+    .data(data)
+    .transition()
+    .attr('transform', (d) => {
+      return `translate(${d.x + d.collisionShiftX},${d.y + d.collisionShiftY})`
+    })
 }
 
-function renderLine (selection: d3.Selection<SVGGElement, undefined, any, any>, data: RenderDatum[]) {
+function renderLine ({ lineGSelection, data, fullParams, fullChartParams }: {
+  lineGSelection: d3.Selection<SVGGElement, undefined, any, any>
+  data: RenderDatum[]
+  fullParams: PieLabelsParams
+  fullChartParams: ChartParams
+}) {
+  
+  // 只顯示在有偏移的標籤
+  const filteredData = data.filter(d => d.collisionShiftX || d.collisionShiftY)
+
   // 添加標籤的連接線
-  const lines = selection.selectAll<SVGPolylineElement, RenderDatum>("polyline")
-    .data(data, d => d.pieDatum.id)
+  const lines = lineGSelection.selectAll<SVGPolylineElement, RenderDatum>("polyline")
+    .data(filteredData, d => d.pieDatum.id)
     .join("polyline")
-    .attr("stroke", "black")
+    .attr("stroke", d => getDatumColor({ datum: d.pieDatum.data, colorType: fullParams.labelColorType, fullChartParams }))
     .attr("stroke-width", 1)
     .attr("fill", "none")
+    .attr("points", (d) => {
+      return [[d.lineStartX, d.lineStartY], [d.lineStartX, d.lineStartY]] as any // 畫出從弧線中心到延伸點的線
+    })
+  lines
+    .transition()
     .attr("points", (d) => {
       // const pos = arc.centroid(d)  // 起點：弧線的中心點
       // const outerPos = [pos[0] * 2.5, pos[1] * 2.5]  // 外部延伸的點（乘以倍率來延長線段）
 
       let lineEndX = d.x + d.collisionShiftX
       let lineEndY = d.y + d.collisionShiftY
-      if (d.pieOuterX >= Math.abs(d.pieOuterY)) {
-        lineEndX -= d.textWidth / 2
-      } else if (d.pieOuterX <= - Math.abs(d.pieOuterY)) {
-        lineEndX += d.textWidth / 2
-      }
+      // if (d.lineStartX >= Math.abs(d.lineStartY)) {
+      //   lineEndX -= d.textWidth / 2
+      // } else if (d.lineStartX <= - Math.abs(d.lineStartY)) {
+      //   lineEndX += d.textWidth / 2
+      // }
 
-      return [[lineEndX, lineEndY], [d.pieOuterX, d.pieOuterY]]  // 畫出從弧線中心到延伸點的線
+      return [[lineEndX, lineEndY], [d.lineStartX, d.lineStartY]] as any // 畫出從弧線中心到延伸點的線
     })
+
+  return lines
 }
 
-// function initHighlight ({ labelSelection, data, fullChartParams }: {
-//   labelSelection: (d3.Selection<SVGPathElement, RenderDatum, any, any>)
-//   data: RenderDatum[]
-//   fullChartParams: ChartParams
-// }) {
-//   removeHighlight({ labelSelection })
-//   // if (fullParams.highlightSeriesId || fullParams.highlightDatumId) {
-//     highlight({
-//       labelSelection,
-//       data,
-//       id: fullChartParams.highlightDefault,
-//       label: fullChartParams.highlightDefault,
-//       fullChartParams
-//     })
-//   // }
-// }
-
-function highlight ({ labelSelection, ids, fullChartParams }: {
-  labelSelection: (d3.Selection<SVGPathElement, RenderDatum, any, any>)
+function highlight ({ textSelection, lineSelection, ids, fullChartParams }: {
+  textSelection: d3.Selection<SVGTextElement, RenderDatum, any, any>
+  lineSelection: d3.Selection<SVGPolylineElement, RenderDatum, any, any>
   ids: string[]
   fullChartParams: ChartParams
 }) {
-  labelSelection.interrupt('highlight')
+  textSelection.interrupt('highlight')
+  lineSelection.interrupt('highlight')
   
   if (!ids.length) {
-    labelSelection
+    textSelection
       .transition('highlight')
       .duration(200)
       .attr('transform', (d) => {
         return `translate(${d.x + d.collisionShiftX},${d.y + d.collisionShiftY})`
       })
       .style('opacity', 1)
+    lineSelection
+      .transition('highlight')
+      .duration(200)
+      .style('opacity', 1)
     return
   }
   
-  labelSelection.each((d, i, n) => {
-    const segment = d3.select<SVGPathElement, RenderDatum>(n[i])
+  textSelection.each((d, i, n) => {
+    const segment = d3.select<SVGTextElement, RenderDatum>(n[i])
 
     if (ids.includes(d.pieDatum.id)) {
       segment
@@ -294,6 +353,10 @@ function highlight ({ labelSelection, ids, fullChartParams }: {
         .transition('highlight')
         .duration(200)
         .attr('transform', (d) => {
+          // 如果已經有偏移過，則使用偏移後的位置（如果再改變的話很容易造成文字重疊）
+          if (d.collisionShiftX || d.collisionShiftY) {
+            return `translate(${d.x + d.collisionShiftX},${d.y + d.collisionShiftY})`
+          }
           return `translate(${d.mouseoverX + d.collisionShiftX},${d.mouseoverY + d.collisionShiftY})`
         })
     } else {
@@ -306,6 +369,21 @@ function highlight ({ labelSelection, ids, fullChartParams }: {
         })
     }
   })
+  lineSelection.each((d, i, n) => {
+    const segment = d3.select<SVGPolylineElement, RenderDatum>(n[i])
+
+    if (ids.includes(d.pieDatum.data.id)) {
+      segment
+        .style('opacity', 1)
+        .transition('highlight')
+        .duration(200)
+    } else {
+      segment
+        .style('opacity', fullChartParams.styles.unhighlightedOpacity)
+        .transition('highlight')
+        .duration(200)
+    }
+  })
 }
 
 
@@ -316,14 +394,23 @@ function createEachPieLabel (pluginName: string, context: {
   // SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
   fullParams$: Observable<PieLabelsParams>
   fullChartParams$: Observable<ChartParams>
+  textSizePx$: Observable<number>
   seriesHighlight$: Observable<ComputedDatumSeries[]>
   seriesContainerPosition$: Observable<SeriesContainerPosition>
   event$: Subject<EventSeries>
 }) {
   const destroy$ = new Subject()
 
+  context.containerSelection.selectAll('g').remove()
+
+  const lineGSelection: d3.Selection<SVGGElement, any, any, unknown> = context.containerSelection.append('g')
+  lineGSelection.classed(lineGClassName, true)
+  const labelGSelection: d3.Selection<SVGGElement, any, any, unknown> = context.containerSelection.append('g')
+  labelGSelection.classed(labelGClassName, true)
+
   // const graphicSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
-  let labelSelection$: Subject<d3.Selection<SVGPathElement, RenderDatum, any, any>> = new Subject()
+  const textSelection$: Subject<d3.Selection<SVGTextElement, RenderDatum, any, any>> = new Subject()
+  const lineSelection$: Subject<d3.Selection<SVGPolylineElement, RenderDatum, any, any>> = new Subject()
   let renderData: RenderDatum[] = []
   
   const shorterSideWith$ = context.seriesContainerPosition$.pipe(
@@ -332,17 +419,27 @@ function createEachPieLabel (pluginName: string, context: {
     distinctUntilChanged()
   )
 
+  const lineStartCentroid$ = context.fullParams$.pipe(
+    takeUntil(destroy$),
+    map(d => {
+      return d.labelCentroid >= pieOuterCentroid
+        ? pieOuterCentroid // 當 label在 pie的外側時，線條從 pie的邊緣開始
+        : d.labelCentroid // 當 label在 pie的內側時，線條從 label未偏移前的位置開始
+
+    })
+  )
+
   combineLatest({
     shorterSideWith: shorterSideWith$,
     containerVisibleComputedLayoutData: context.containerVisibleComputedLayoutData$,
     fullParams: context.fullParams$,
-    fullChartParams: context.fullChartParams$
+    fullChartParams: context.fullChartParams$,
+    textSizePx: context.textSizePx$,
+    lineStartCentroid: lineStartCentroid$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
   ).subscribe(data => {
-
-    // const shorterSideWith = data.layout.width < data.layout.height ? data.layout.width : data.layout.height
 
     // 弧產生器 (d3.arc())
     const arc = makeD3Arc({
@@ -367,38 +464,43 @@ function createEachPieLabel (pluginName: string, context: {
       endAngle: data.fullParams.endAngle
     })
 
-    renderData = makeRenderData(pieData, arc, arcMouseover, data.fullParams.labelCentroid)
+    renderData = makeRenderData({
+      pieData,
+      arc,
+      arcMouseover,
+      labelCentroid: data.fullParams.labelCentroid,
+      lineStartCentroid: data.lineStartCentroid
+    })
 
-    const labelSelection = renderLabel(context.containerSelection, renderData, data.fullParams, data.fullChartParams)
+    // 先移除線條，等偏移後再重新繪製
+    lineGSelection.selectAll('polyline').remove()
 
-    
+    const textSelection = renderLabel({
+      labelGSelection,
+      data: renderData,
+      fullParams: data.fullParams,
+      fullChartParams: data.fullChartParams
+    })
 
-    // labelSelection.on('end', () => {
-    //   console.log('end')
-    //   resolveCollisions(labelSelection, renderData)
-    // })
     // 等 label 本身的 transition 結束後再進行碰撞檢測
     setTimeout(() => {
       // resolveCollisions(labelSelection, renderData)
-      setShiftData(labelSelection, renderData)
-      // console.log('renderData', renderData)
-      context.containerSelection
-        .selectAll('text')
-        .data(renderData)
-        .transition()
-        .attr('transform', (d) => {
-          return `translate(${d.x + d.collisionShiftX},${d.y + d.collisionShiftY})`
-        })
+      // 偏移 label
+      resolveCollisions(textSelection, renderData, data.textSizePx)
 
-      renderLine(context.containerSelection, renderData)
+      const lineSelection = renderLine({ lineGSelection, data: renderData, fullParams: data.fullParams, fullChartParams: data.fullChartParams })
+
+      lineSelection$.next(lineSelection)
+
     }, 1000)
 
-    labelSelection$.next(labelSelection)
+    textSelection$.next(textSelection)
 
   })
   
   combineLatest({
-    labelSelection: labelSelection$,
+    textSelection: textSelection$,
+    lineSelection: lineSelection$,
     highlight: context.seriesHighlight$.pipe(
       map(data => data.map(d => d.id))
     ),
@@ -408,7 +510,8 @@ function createEachPieLabel (pluginName: string, context: {
     switchMap(async d => d)
   ).subscribe(data => {
     highlight({
-      labelSelection: data.labelSelection,
+      textSelection: data.textSelection,
+      lineSelection: data.lineSelection,
       ids: data.highlight,
       fullChartParams: data.fullChartParams,
     })
@@ -463,6 +566,7 @@ export const PieLabels = defineSeriesPlugin(pluginName, DEFAULT_PIE_LABELS_PARAM
           // SeriesDataMap$: observer.SeriesDataMap$,
           fullParams$: observer.fullParams$,
           fullChartParams$: observer.fullChartParams$,
+          textSizePx$: observer.textSizePx$,
           seriesHighlight$: observer.seriesHighlight$,
           seriesContainerPosition$: containerPosition$,
           event$: subject.event$,
