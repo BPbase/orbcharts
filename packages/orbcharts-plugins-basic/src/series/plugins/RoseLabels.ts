@@ -27,7 +27,7 @@ import { seriesCenterSelectionObservable } from '../seriesObservables'
 interface RenderDatum {
   pieDatum: PieDatum
   arcIndex: number
-  arcLabel: string
+  arcLabels: string[]
   lineStartX: number
   lineStartY: number
   lineStartMouseoverX: number
@@ -49,7 +49,7 @@ const textClassName = getClassName(pluginName, 'text')
 
 const pieOuterCentroid = 2
 
-function makeRenderData ({ pieData, labelCentroid, arcScaleType, maxValue, axisWidth, outerRadius, lineStartCentroid }: {
+function makeRenderData ({ pieData, labelCentroid, arcScaleType, maxValue, axisWidth, outerRadius, lineStartCentroid, fullParams }: {
   pieData: PieDatum[]
   // arc: d3.Arc<any, d3.DefaultArcObject>
   labelCentroid: number
@@ -58,6 +58,7 @@ function makeRenderData ({ pieData, labelCentroid, arcScaleType, maxValue, axisW
   axisWidth: number
   outerRadius: number
   lineStartCentroid: number
+  fullParams: RoseLabelsParams
 }): RenderDatum[] {
 
   const outerRadiusWidth = (axisWidth / 2) * outerRadius
@@ -84,10 +85,11 @@ function makeRenderData ({ pieData, labelCentroid, arcScaleType, maxValue, axisW
 
       const [_x, _y] = arc!.centroid(d as any)
       const [_mouseoverX, _mouseoverY] = [_x, _y]
+      const arcLabel = fullParams.labelFn(d.data)
       return {
         pieDatum: d,
         arcIndex: i,
-        arcLabel: d.data.label,
+        arcLabels: arcLabel.split('\n'),
         lineStartX: _x * lineStartCentroid,
         lineStartY: _y * lineStartCentroid,
         lineStartMouseoverX: _mouseoverX * lineStartCentroid,
@@ -112,11 +114,12 @@ function makeRenderData ({ pieData, labelCentroid, arcScaleType, maxValue, axisW
 }
 
 // 繪製圓餅圖
-function renderLabel ({ labelGSelection, data, fullParams, fullChartParams }: {
+function renderLabel ({ labelGSelection, data, fullParams, fullChartParams, textSizePx }: {
   labelGSelection: d3.Selection<SVGGElement, undefined, any, any>
   data: RenderDatum[]
   fullParams: RoseLabelsParams
   fullChartParams: ChartParams
+  textSizePx: number
 }) {
   // console.log(data)
   // let update = this.gSelection.selectAll('g').data(pieData)
@@ -133,9 +136,20 @@ function renderLabel ({ labelGSelection, data, fullParams, fullChartParams }: {
       ? 'pointer'
       : 'none')
     // .text((d, i) => d.arcLabel)
-    .text(d => fullParams.labelFn(d.pieDatum.data))
+    // .text(d => fullParams.labelFn(d.pieDatum.data))
     .attr('font-size', fullChartParams.styles.textSize)
     .attr('fill', (d, i) => getDatumColor({ datum: d.pieDatum.data, colorType: fullParams.labelColorType, fullChartParams }))
+    .each((d, i, n) => {
+      const textNode = d3.select<SVGTextElement, RenderDatum>(n[i])
+        .selectAll('tspan')
+        .data(d.arcLabels)
+        .join('tspan')
+        .attr('x', 0)
+        .attr('y', (_d, _i) => d.quadrant == 1 || d.quadrant == 2
+          ? - (d.arcLabels.length - 1 - _i) * textSizePx
+          : _i * textSizePx)
+        .text(d => d)
+    })
   textSelection
     .transition()
     .attr('transform', (d) => {
@@ -437,7 +451,8 @@ function createEachPieLabel (pluginName: string, context: {
       maxValue: data.maxValue,
       axisWidth: data.shorterSideWith,
       outerRadius: data.fullParams.outerRadius,
-      lineStartCentroid: data.lineStartCentroid
+      lineStartCentroid: data.lineStartCentroid,
+      fullParams: data.fullParams
     })
 
     // 先移除線條，等偏移後再重新繪製
@@ -447,7 +462,8 @@ function createEachPieLabel (pluginName: string, context: {
       labelGSelection,
       data: renderData,
       fullParams: data.fullParams,
-      fullChartParams: data.fullChartParams
+      fullChartParams: data.fullChartParams,
+      textSizePx: data.textSizePx
     })
 
     // 等 label 本身的 transition 結束後再進行碰撞檢測

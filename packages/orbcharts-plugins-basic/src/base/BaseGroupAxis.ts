@@ -55,6 +55,7 @@ interface BaseGroupAxisContext {
   }>
   gridContainerPosition$: Observable<GridContainerPosition[]>
   isSeriesSeprate$: Observable<boolean>
+  textSizePx$: Observable<number>
 }
 
 interface TextAlign {
@@ -147,7 +148,7 @@ function renderAxisLabel ({ selection, groupingLabelClassName, fullParams, axisL
 
 }
 
-function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gridAxesSize, fullDataFormatter, chartParams, groupScale, groupScaleDomain, groupLabels, textReverseTransformWithRotate }: {
+function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gridAxesSize, fullDataFormatter, chartParams, groupScale, groupScaleDomain, groupLabels, textReverseTransformWithRotate, textSizePx }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   xAxisClassName: string
   fullParams: BaseGroupAxisParams
@@ -159,6 +160,7 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
   groupScaleDomain: number[]
   groupLabels: string[]
   textReverseTransformWithRotate: string
+  textSizePx: number
 }) {
 
   const xAxisSelection = selection
@@ -209,9 +211,34 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
   const xAxisEl = xAxisSelection
     .transition()
     .duration(100)
-    .call(xAxis)      
-    // .attr('text-anchor', () => params.tickTextRotate !== false ? 'end' : 'middle')
-    // .attr('text-anchor', () => 'middle')
+    .call(xAxis)
+    .on('end', (self, t) => {
+      // 先等transition結束再處理文字，否則會被原本的文字覆蓋
+      xAxisEl
+        .selectAll('.tick text')
+        .each((d, groupIndex, n) => {
+          // -- 將原本單行文字改為多行文字 --
+          const groupLabel = groupLabels[groupIndex] ?? '' // 非整數index不顯示
+          const groupLabelTspans = groupLabel.split('\n')
+          const textSelection = d3.select(n[groupIndex])
+            .text(null) // 先清空原本的 text
+
+          const textX = Number(textSelection.attr('x'))
+          let textY = Number(textSelection.attr('y'))
+          if (fullDataFormatter.grid.groupAxis.position === 'top') {
+            // 當文字在上方時，要往上偏移第一行的高度
+            textY -= (groupLabelTspans.length - 1) * textSizePx
+          }
+          
+          textSelection
+            .selectAll('tspan')
+            .data(groupLabelTspans)
+            .join('tspan')
+            .attr('x', textX)
+            .attr('y', (_d, _i) => textY + _i * textSizePx)
+            .text(d => d)
+        })
+    })
 
   xAxisEl.selectAll('line')
     .style('fill', 'none')
@@ -224,22 +251,7 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
     .style('stroke', fullParams.axisLineVisible == true ? getColor(fullParams.axisLineColorType, chartParams) : 'none')
     .style('shape-rendering', 'crispEdges')
 
-  // const xText = xAxisEl.selectAll('text')
-  // xAxisSelection.each((d, i, g) => {
-  //   d3.select(g[i])
-  //     .selectAll('text')
-  //     .data([d])
-  //     .join('text')
-  //     .style('font-family', 'sans-serif')
-  //     .style('font-size', `${chartParams.styles.textSize}px`)
-  //     // .style('font-weight', 'bold')
-  //     .style('color', getColor(params.tickTextColorType, chartParams))
-  //     .attr('text-anchor', tickTextAlign.textAnchor)
-  //     .attr('dominant-baseline', tickTextAlign.dominantBaseline)
-  //     .attr('transform-origin', `0 -${params.tickPadding + defaultTickSize}`)
-  //     .style('transform', textReverseTransform)
-  // })
-  const xText = xAxisSelection.selectAll('text')
+  const xText = xAxisSelection.selectAll<SVGTextElement, BaseGroupAxisParams>('text')
     // .style('font-family', 'sans-serif')
     .attr('font-size', chartParams.styles.textSize)
     // .style('font-weight', 'bold')
@@ -269,6 +281,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
   gridAxesSize$,
   gridContainerPosition$,
   isSeriesSeprate$,
+  textSizePx$,
 }) => {
   
   const destroy$ = new Subject()
@@ -600,6 +613,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
     groupLabels: groupLabels$,
     textReverseTransform: textReverseTransform$,
     textReverseTransformWithRotate: textReverseTransformWithRotate$,
+    textSizePx: textSizePx$
     // tickTextFormatter: tickTextFormatter$
   }).pipe(
     takeUntil(destroy$),
@@ -618,6 +632,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
       groupScaleDomain: data.groupScaleDomain,
       groupLabels: data.groupLabels,
       textReverseTransformWithRotate: data.textReverseTransformWithRotate,
+      textSizePx: data.textSizePx
     })
 
     renderAxisLabel({

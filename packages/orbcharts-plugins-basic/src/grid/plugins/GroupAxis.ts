@@ -27,6 +27,7 @@ export const GroupAxis = defineGridPlugin(pluginName, DEFAULT_GROUP_AXIS_PARAMS)
     gridAxesSize$: observer.gridAxesSize$,
     gridContainerPosition$: observer.gridContainerPosition$,
     isSeriesSeprate$: observer.isSeriesSeprate$,
+    textSizePx$: observer.textSizePx$,
   })
 
   return () => {
