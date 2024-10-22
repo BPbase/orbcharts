@@ -6,6 +6,7 @@ export const PRESET_SERIES_SEPARATE_SERIES_AND_SUM_SERIES: PresetPartial<'series
   name: 'PRESET_SERIES_SEPARATE_SERIES_AND_SUM_SERIES',
   description: '分開顯示Series並合併Series資料',
   dataFormatter: {
+    sort: (a, b) => b.value - a.value,
     separateSeries: true,
     sumSeries: true,
   },
@@ -14,3 +15,4 @@ export const PRESET_SERIES_SEPARATE_SERIES_AND_SUM_SERIES: PresetPartial<'series
     ...ALL_PLUGIN_PARAMS_NONE_DATA,
   }
 }
+PRESET_SERIES_SEPARATE_SERIES_AND_SUM_SERIES.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`

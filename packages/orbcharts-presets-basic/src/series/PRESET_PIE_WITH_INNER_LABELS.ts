@@ -9,6 +9,9 @@ export const PRESET_PIE_WITH_INNER_LABELS: PresetPartial<'series', PresetPiePara
 & PresetNoneDataPluginParams> = {
   name: 'PRESET_PIE_WITH_INNER_LABELS',
   description: '圓餅圖及內部資料標籤',
+  dataFormatter: {
+    sort: (a, b) => b.value - a.value
+  },
   allPluginParams: {
     ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Pie: {},
@@ -22,3 +25,4 @@ export const PRESET_PIE_WITH_INNER_LABELS: PresetPartial<'series', PresetPiePara
     }
   }
 }
+PRESET_PIE_WITH_INNER_LABELS.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`

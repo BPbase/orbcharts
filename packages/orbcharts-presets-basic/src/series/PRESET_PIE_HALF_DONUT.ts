@@ -17,6 +17,9 @@ export const PRESET_PIE_HALF_DONUT: PresetPartial<'series', PresetPieParams
       left: 60
     },
   },
+  dataFormatter: {
+    sort: (a, b) => b.value - a.value
+  },
   allPluginParams: {
     ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Pie: {
@@ -34,3 +37,4 @@ export const PRESET_PIE_HALF_DONUT: PresetPartial<'series', PresetPieParams
     }
   }
 }
+PRESET_PIE_HALF_DONUT.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`

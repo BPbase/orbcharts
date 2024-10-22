@@ -34,15 +34,32 @@ const pluginName = 'Tooltip'
 const gClassName = getClassName(pluginName, 'g')
 const boxClassName = getClassName(pluginName, 'box')
 
-function textToSvg (textArr: string[], textStyle: TooltipStyle) {
+function textToSvg (_textArr: string[] | string | null | undefined, textStyle: TooltipStyle) {
   const lineHeight = textStyle.textSizePx * 1.5
-  return textArr
+
+  const textArr = _textArr == null
+    ? []
+    : Array.isArray(_textArr)
+      ? _textArr
+      : typeof _textArr === 'string'
+        ? _textArr.split('\n')
+        : [_textArr]
+
+  const tspan = textArr
     .filter(d => d != '')
     .map((text, i) => {
       const top = i * lineHeight
-      return `<text font-size="${textStyle.textSize}" fill="${textStyle.textColor}" x="0" y="${top}" style="dominant-baseline:text-before-edge">${text}</text>`
+      return `<tspan x="0" y="${top}">${text}</tspan>`
     })
-    .join()
+    .join('')
+
+  if (tspan) {
+    return `<text font-size="${textStyle.textSize}" fill="${textStyle.textColor}" x="0" y="0" style="dominant-baseline:text-before-edge">
+    ${tspan}
+  </text>`
+  } else {
+    return ''
+  }
 }
 
 function renderTooltip ({ rootSelection, pluginName, rootWidth, rootHeight, svgString, tooltipStyle, event  }: {
@@ -234,14 +251,14 @@ export const Tooltip: PluginConstructor<any, string, any> = defineNoneDataPlugin
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
-    map(d => {
-      if (d.fullParams.svgRenderFn) {
-        return d.fullParams.svgRenderFn
+    map(data => {
+      if (data.fullParams.svgRenderFn) {
+        return data.fullParams.svgRenderFn
       }
       // 將textRenderFn回傳的資料使用<text>包裝起來
       return (eventData: EventTypeMap<any>) => {
-        const textArr = d.fullParams.textRenderFn(eventData as any)
-        return textToSvg(textArr, d.tooltipStyle)
+        const textArr = data.fullParams.textRenderFn(eventData as any)
+        return textToSvg(textArr, data.tooltipStyle)
       }
     })
   )

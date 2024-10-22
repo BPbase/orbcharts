@@ -24,7 +24,7 @@ import {
 import { DEFAULT_ROSE_PARAMS } from '../defaults'
 // import { makePieData } from '../seriesUtils'
 // import { getD3TransitionEase, makeD3Arc } from '../../utils/d3Utils'
-import { getClassName } from '../../utils/orbchartsUtils'
+import { getDatumColor, getClassName } from '../../utils/orbchartsUtils'
 import { seriesCenterSelectionObservable } from '../seriesObservables'
 
 // @Q@ 暫時先寫在這裡，之後pie一起重構後再放到seriesUtils
@@ -39,15 +39,15 @@ const pluginName = 'Rose'
 const roseInnerRadius = 0
 const roseStartAngle = 0
 const roseEndAngle = Math.PI * 2
-const rosePadAngle = 0
 
-function makeTweenArcFn ({ cornerRadius, outerRadius, axisWidth, maxValue, arcScaleType }: {
+function makeTweenArcFn ({ cornerRadius, outerRadius, axisWidth, maxValue, arcScaleType, fullParams }: {
   // interpolateRadius: (t: number) => number
   outerRadius: number
   cornerRadius: number
   axisWidth: number
   maxValue: number
   arcScaleType: 'radius' | 'area'
+  fullParams: RoseParams
 }): (d: PieDatum) => (t: number) => string {
 
   const outerRadiusWidth = (axisWidth / 2) * outerRadius
@@ -78,7 +78,7 @@ function makeTweenArcFn ({ cornerRadius, outerRadius, axisWidth, maxValue, arcSc
       const arc = d3.arc()
         .innerRadius(0)
         .outerRadius(outerRadius)
-        .padAngle(rosePadAngle)
+        .padAngle(fullParams.padAngle)
         .padRadius(outerRadius)
         .cornerRadius(cornerRadius)
 
@@ -151,8 +151,8 @@ function highlight ({ pathSelection, ids, fullParams, fullChartParams, tweenArc 
         .attr('d', (d: PieDatum) => {
           return tweenArc({
             ...d,
-            startAngle: d.startAngle - fullParams.mouseoverAngleIncrease,
-            endAngle: d.endAngle + fullParams.mouseoverAngleIncrease
+            startAngle: d.startAngle - fullParams.angleIncreaseWhileHighlight,
+            endAngle: d.endAngle + fullParams.angleIncreaseWhileHighlight
           })(1)
         })
         // .on('interrupt', () => {
@@ -215,7 +215,7 @@ function createEachRose (pluginName: string, context: {
           value: d.value,
           startAngle: eachAngle * i,
           endAngle: eachAngle * (i + 1),
-          padAngle: rosePadAngle, 
+          padAngle: data.fullParams.padAngle, 
           prevValue: (lastPieData[i] && lastPieData[i].id === d.id) ? lastPieData[i].value : 0
         }
       })
@@ -250,7 +250,8 @@ function createEachRose (pluginName: string, context: {
         outerRadius: data.fullParams.outerRadius,
         axisWidth: data.axisWidth,
         maxValue: data.maxValue,
-        arcScaleType: data.fullParams.arcScaleType
+        arcScaleType: data.fullParams.arcScaleType,
+        fullParams: data.fullParams
       })
     })
   )
@@ -269,6 +270,8 @@ function createEachRose (pluginName: string, context: {
       pieData: pieData$,
       tweenArc: tweenArc$,
       transitionDuration: transitionDuration$,
+      fullParams: context.fullParams$,
+      fullChartParams: context.fullChartParams$
     }).pipe(
       takeUntil(destroy$),
       switchMap(async d => d)
@@ -287,6 +290,12 @@ function createEachRose (pluginName: string, context: {
         .classed(pathClassName, true)
         .style('cursor', 'pointer')
         .attr('fill', (d, i) => d.data.color)
+        .attr('stroke', (d, i) => getDatumColor({
+          datum: d.data,
+          colorType: data.fullParams.strokeColorType,
+          fullChartParams: data.fullChartParams
+        }))
+        .attr('stroke-width', data.fullParams.strokeWidth)
       pathSelection.interrupt('graphicMove')
       pathSelection
         .transition('graphicMove')
