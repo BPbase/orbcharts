@@ -47,7 +47,7 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OV
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      console.log('data', data)
+      // console.log('data', data)
       if (!data.fullDataFormatter.gridList[data.secondGridIndex]) {
         data.fullDataFormatter.gridList[data.secondGridIndex] = Object.assign({}, data.fullDataFormatter.gridList[data.firstGridIndex])
       }
