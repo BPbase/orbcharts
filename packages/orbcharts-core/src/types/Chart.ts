@@ -27,10 +27,14 @@ export interface ChartEntity<T extends ChartType> extends ContextSubject<T> {
 
 export interface ChartOptions<T extends ChartType> {
   preset: Preset<T, unknown>
+  width: number | 'auto'
+  height: number | 'auto'
 }
 
 export interface ChartOptionsPartial<T extends ChartType> {
   preset?: Preset<T, unknown>
+  width?: number | 'auto'
+  height?: number | 'auto'
 }
 
 export interface Preset<T extends ChartType, AllPluginParams> {

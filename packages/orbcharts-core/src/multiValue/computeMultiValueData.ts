@@ -83,12 +83,48 @@ export const computeMultiValueData: ComputedDataFn<'multiValue'> = (context) => 
     })
 
     const _xScaleDoamin: [number, number] = [
-      dataFormatter.xAxis.scaleDomain[0] === 'auto' ? xMinValue : dataFormatter.xAxis.scaleDomain[0],
-      dataFormatter.xAxis.scaleDomain[1] === 'auto' ? xMaxValue : dataFormatter.xAxis.scaleDomain[1]
+      // dataFormatter.xAxis.scaleDomain[0] === 'auto' ? xMinValue : dataFormatter.xAxis.scaleDomain[0],
+      (() => {
+        if (dataFormatter.xAxis.scaleDomain[0] === 'auto') {
+          return xMinValue < 0 ? xMinValue : 0
+        } else if (dataFormatter.xAxis.scaleDomain[0] === 'min') {
+          return xMinValue
+        } else {
+          return dataFormatter.xAxis.scaleDomain[0]
+        }
+      })(),
+      // dataFormatter.xAxis.scaleDomain[1] === 'auto' ? xMaxValue : dataFormatter.xAxis.scaleDomain[1]
+      (() => {
+        if (dataFormatter.xAxis.scaleDomain[1] === 'auto') {
+          return xMaxValue >= 0 ? xMaxValue : 0
+        } else if (dataFormatter.xAxis.scaleDomain[1] === 'max') {
+          return xMaxValue
+        } else {
+          return dataFormatter.xAxis.scaleDomain[1]
+        }
+      })()
     ]
     const _yScaleDoamin: [number, number] = [
-      dataFormatter.yAxis.scaleDomain[0] === 'auto' ? yMinValue : dataFormatter.yAxis.scaleDomain[0],
-      dataFormatter.yAxis.scaleDomain[1] === 'auto' ? yMaxValue : dataFormatter.yAxis.scaleDomain[1]
+      // dataFormatter.yAxis.scaleDomain[0] === 'auto' ? yMinValue : dataFormatter.yAxis.scaleDomain[0],
+      (() => {
+        if (dataFormatter.yAxis.scaleDomain[0] === 'auto') {
+          return xMinValue < 0 ? xMinValue : 0
+        } else if (dataFormatter.yAxis.scaleDomain[0] === 'min') {
+          return xMinValue
+        } else {
+          return dataFormatter.yAxis.scaleDomain[0]
+        }
+      })(),
+      // dataFormatter.yAxis.scaleDomain[1] === 'auto' ? yMaxValue : dataFormatter.yAxis.scaleDomain[1]
+      (() => {
+        if (dataFormatter.yAxis.scaleDomain[1] === 'auto') {
+          return xMaxValue >= 0 ? xMaxValue : 0
+        } else if (dataFormatter.yAxis.scaleDomain[1] === 'max') {
+          return xMaxValue
+        } else {
+          return dataFormatter.yAxis.scaleDomain[1]
+        }
+      })()
     ]
     
     // // 篩選顯示狀態

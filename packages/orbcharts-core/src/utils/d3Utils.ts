@@ -12,19 +12,35 @@ export const createAxisLinearScale = ({
   maxValue: number
   minValue: number
   axisWidth: number
-  scaleDomain: [number | 'auto', number | 'auto']
+  scaleDomain: [number | 'min' | 'auto', number | 'max' | 'auto']
   scaleRange: [number, number] // 0-1
 }) => {
   // -- 無值補上預設值 --
-  const domainMin: number | 'auto' = scaleDomain[0] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[0]
-  const domainMax: number | 'auto' = scaleDomain[1] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[1]
+  const domainMin: number | 'min' | 'auto' = scaleDomain[0] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[0]
+  const domainMax: number | 'max' | 'auto' = scaleDomain[1] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[1]
   const rangeMin: number = scaleRange[0] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange[0]
   const rangeMax: number = scaleRange[1] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange[1]
 
-  // -- 'auto'提換成實際值 --
-  const domainMinValue = domainMin === 'auto' ? minValue : domainMin
-  const domainMaxValue = domainMax === 'auto' ? maxValue : domainMax
+  // -- 'auto' | 'max' | 'min' 替換成實際值 --
+  let domainMinValue: number = (() => {
+    if (domainMin === 'auto') {
+      return minValue < 0 ? minValue : 0
+    } else if (domainMin === 'min') {
+      return minValue
+    } else {
+      return domainMin
+    }
+  })()
   
+  let domainMaxValue: number = (() => {
+    if (domainMax === 'auto') {
+      return maxValue >= 0 ? maxValue : 0
+    } else if (domainMax === 'max') {
+      return maxValue
+    } else {
+      return domainMax
+    }
+  })()
   // let rangeMinValue = axisWidth * rangeMin
   // let rangeMaxValue = axisWidth * rangeMax
 

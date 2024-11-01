@@ -80,10 +80,11 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
   ).subscribe(data => {
     const groupMin = 0
     const groupMax = data.groupMaxIndex
-    const groupScaleDomainMin = data.initGroupAxis.scaleDomain[0] === 'auto'
-      ? groupMin - data.initGroupAxis.scalePadding
-      : data.initGroupAxis.scaleDomain[0] as number - data.initGroupAxis.scalePadding
-    const groupScaleDomainMax = data.initGroupAxis.scaleDomain[1] === 'auto'
+    // const groupScaleDomainMin = data.initGroupAxis.scaleDomain[0] === 'min'
+    //   ? groupMin - data.initGroupAxis.scalePadding
+    //   : data.initGroupAxis.scaleDomain[0] as number - data.initGroupAxis.scalePadding
+    const groupScaleDomainMin = data.initGroupAxis.scaleDomain[0] - data.initGroupAxis.scalePadding
+    const groupScaleDomainMax = data.initGroupAxis.scaleDomain[1] === 'max'
       ? groupMax + data.initGroupAxis.scalePadding
       : data.initGroupAxis.scaleDomain[1] as number + data.initGroupAxis.scalePadding
 

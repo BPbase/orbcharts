@@ -47,14 +47,14 @@ export type DataFormatterBasePartial<T extends ChartType> = Partial<DataFormatte
 
 export interface DataFormatterValueAxis {
   position: AxisPosition
-  scaleDomain: [number | 'auto', number | 'auto']
+  scaleDomain: [number | 'min' | 'auto', number | 'max' | 'auto']
   scaleRange: [number, number]
   label: string
 }
 
 export interface DataFormatterGroupAxis {
   position: AxisPosition
-  scaleDomain: [number | 'auto', number | 'auto']
+  scaleDomain: [number, number | 'max']
   scalePadding: number
   label: string
 }

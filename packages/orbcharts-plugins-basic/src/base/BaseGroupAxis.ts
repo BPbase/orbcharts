@@ -10,7 +10,6 @@ import {
   shareReplay,
   Observable,
   Subject } from 'rxjs'
-import { createAxisPointScale, createAxisLinearScale } from '@orbcharts/core'
 import type { ColorType, ComputedDataGrid, GridContainerPosition } from '@orbcharts/core'
 import type { BasePluginFn } from './types'
 import type {
@@ -216,11 +215,11 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
       // 先等transition結束再處理文字，否則會被原本的文字覆蓋
       xAxisEl
         .selectAll('.tick text')
-        .each((d, groupIndex, n) => {
+        .each((groupIndex: number, i, n) => {
           // -- 將原本單行文字改為多行文字 --
           const groupLabel = groupLabels[groupIndex] ?? '' // 非整數index不顯示
           const groupLabelTspans = groupLabel.split('\n')
-          const textSelection = d3.select(n[groupIndex])
+          const textSelection = d3.select(n[i])
             .text(null) // 先清空原本的 text
 
           const textX = Number(textSelection.attr('x'))
@@ -505,10 +504,11 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
     map(data => {
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-        ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
-        : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
+      // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+      //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+      //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
+      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
         ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
         : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
 
