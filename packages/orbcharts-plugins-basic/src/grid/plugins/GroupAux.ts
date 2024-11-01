@@ -194,7 +194,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
       .attr('height', `${rectHeight}px`)
       .attr('fill', d => getColor(fullParams.labelColorType, fullChartParams))
       .attr('x', rectX)
-      .attr('y', rectY - 2) // 奇怪的偏移修正
+      .attr('y', rectY - 3) // 奇怪的偏移修正
       .attr('rx', 5)
       .attr('ry', 5)
       .style('cursor', 'pointer')
@@ -256,7 +256,18 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
     selection,
     pluginName,
     clipPathID: 'test',
-    seriesLabels$: observer.seriesLabels$,
+    seriesLabels$: observer.isSeriesSeprate$.pipe(
+      switchMap(isSeriesSeprate => {
+        return iif(
+          () => isSeriesSeprate,
+          observer.seriesLabels$,
+          // 如果沒分開的話只取一筆
+          observer.seriesLabels$.pipe(
+            map(d => [d[0]])
+          )
+        )
+      })
+    ),
     gridContainerPosition$: observer.gridContainerPosition$,
     gridAxesTransform$: observer.gridAxesTransform$,
     gridGraphicTransform$: observer.gridGraphicTransform$
@@ -417,10 +428,11 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
     map(data => {
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-        ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
-        : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
+      // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+      //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+      //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
+      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
         ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
         : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
 
@@ -574,7 +586,6 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
     takeUntil(destroy$),
   )
 
-
   // const mousemoveGroupLabel$ = combineLatest({
   //   rootMousemove: rootMousemove$,
   //   gridGroupPositionFn: gridGroupPositionFn$,
@@ -671,7 +682,10 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
     textReverseTransformWithRotate: textReverseTransformWithRotate$,
     GroupDataMap: observer.GroupDataMap$,
     textSizePx: observer.textSizePx$
-  }).subscribe(data => {
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d),
+  ).subscribe(data => {
     // // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
     // const eventData = {
     //   offsetX: data.rootMousemove.offsetX * data.columnAmount % data.layout.rootWidth,
@@ -953,7 +967,6 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
     takeUntil(destroy$),
   )
 
-
   combineLatest({
     rootRectMouseout: rootRectMouseout$,
     axesSelection: axesSelection$,
@@ -961,7 +974,6 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
     takeUntil(destroy$),
     switchMap(async d => d)
   ).subscribe(data => {
-
     setTimeout(() => {
       // @Q@ workaround - 不知為何和 label 會有衝突，當滑鼠移動到 label 上時，會觸發 mouseout 事件
       if (isLabelMouseover == true) {

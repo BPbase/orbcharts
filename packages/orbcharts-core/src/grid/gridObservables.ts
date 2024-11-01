@@ -278,10 +278,11 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
       : height
     const groupMin = 0
     const groupMax = data[0] ? data[0].length - 1 : 0
-    const groupScaleDomainMin = groupAxis.scaleDomain[0] === 'auto'
-      ? groupMin - groupAxis.scalePadding
-      : groupAxis.scaleDomain[0] as number - groupAxis.scalePadding
-    const groupScaleDomainMax = groupAxis.scaleDomain[1] === 'auto'
+    // const groupScaleDomainMin = groupAxis.scaleDomain[0] === 'min'
+    //   ? groupMin - groupAxis.scalePadding
+    //   : groupAxis.scaleDomain[0] as number - groupAxis.scalePadding
+    const groupScaleDomainMin = groupAxis.scaleDomain[0] - groupAxis.scalePadding
+    const groupScaleDomainMax = groupAxis.scaleDomain[1] === 'max'
       ? groupMax + groupAxis.scalePadding
       : groupAxis.scaleDomain[1] as number + groupAxis.scalePadding
     

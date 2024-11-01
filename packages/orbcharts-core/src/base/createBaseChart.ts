@@ -212,8 +212,25 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
     })
 
     // 監聽外層的element尺寸
-    const rootSize$ = resizeObservable(element)
-      .pipe(
+    const rootSize$: Observable<{ width: number; height: number }> = of({
+      width: options?.width ?? CHART_OPTIONS_DEFAULT.width,
+      height: options?.height ?? CHART_OPTIONS_DEFAULT.height
+    }).pipe(
+        switchMap(size => {
+          return iif(
+            () => size.width === 'auto' || size.height === 'auto',
+            // 有 'auto' 的話就監聽element的尺寸
+            resizeObservable(element).pipe(
+              map((d) => {
+                return {
+                  width: size.width === 'auto' ? d.width : size.width,
+                  height: size.height === 'auto' ? d.height : size.height
+                }
+              })
+            ),
+            of(size as { width: number; height: number })
+          )
+        }),
         takeUntil(destroy$),
         share()
       )

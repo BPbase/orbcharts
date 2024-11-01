@@ -19,6 +19,8 @@ import type { Padding } from './types/Padding'
 
 export const CHART_OPTIONS_DEFAULT: ChartOptionsPartial<any> = {
   // preset: {} // 預設為空
+  width: 'auto',
+  height: 'auto'
 }
 
 // export const GLOBAL_DEFAULT: ChartGlobalDefault = {
@@ -99,14 +101,14 @@ export const DATA_RELATIONA_DEFAULTL: DataRelationship = {
 
 export const DATA_FORMATTER_VALUE_AXIS_DEFAULT: DataFormatterValueAxis = {
   position: 'left',
-  scaleDomain: [0, 'auto'],
+  scaleDomain: ['auto', 'auto'],
   scaleRange: [0, 0.9],
   label: '',
 }
 
 export const DATA_FORMATTER_GROUP_AXIS_DEFAULT: DataFormatterGroupAxis = {
   position: 'bottom',
-  scaleDomain: [0, 'auto'],
+  scaleDomain: [0, 'max'],
   scalePadding: 0.5,
   label: ''
 }
