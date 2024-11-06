@@ -123,3 +123,53 @@ export function renderCircleText (selection: d3.Selection<any, any, any, any>, {
 
   return draw(selection, text)
 }
+
+// 圖軸上的多行tspan
+export function renderTspansOnAxis (textSelection: d3.Selection<d3.BaseType, unknown, null, undefined>, {
+  textArr,
+  textSizePx,
+  groupAxisPosition
+}: {
+  textArr: string[]
+  textSizePx: number
+  groupAxisPosition: 'top' | 'right' | 'bottom' | 'left'
+}) {
+  // -- 將原本單行文字改為多行文字 --
+  textSelection.text(null) // 先清空原本的 text
+
+  const textX = Number(textSelection.attr('x'))
+  let textY = Number(textSelection.attr('y'))
+  if (groupAxisPosition === 'top') {
+    // 當文字在上方時，要往上偏移第一行的高度
+    textY -= (textArr.length - 1) * textSizePx
+  }
+  
+  textSelection
+    .selectAll('tspan')
+    .data(textArr)
+    .join('tspan')
+    .attr('x', textX)
+    .attr('y', (_d, _i) => textY + _i * textSizePx)
+    .text(d => d)
+}
+
+// 四象限上的多行tspan
+export function renderTspansOnQuadrant (textSelection: d3.Selection<d3.BaseType, unknown, null, undefined>, {
+  textArr,
+  textSizePx,
+  quadrant
+}: {
+  textArr: string[]
+  textSizePx: number
+  quadrant: number
+}) {
+  textSelection
+    .selectAll('tspan')
+    .data(textArr)
+    .join('tspan')
+    .attr('x', 0)
+    .attr('y', (_d, _i) => quadrant == 1 || quadrant == 2
+      ? - (textArr.length - 1 - _i) * textSizePx
+      : _i * textSizePx)
+    .text(d => d)
+}

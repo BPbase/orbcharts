@@ -46,6 +46,15 @@ onMounted(() => {
 
   const dots = new Dots()
 
+  const groupAxis = new GroupAxis()
+
+  groupAxis.params$.next({
+    tickFormat: (d) => {
+      console.log(d)
+      return d === 'test2\ntest2' ? 'yes\ntest' : ''
+    }
+  })
+
   const valueAxis = new ValueAxis()
 
   const valueStackAxis = new ValueStackAxis()
@@ -59,7 +68,8 @@ onMounted(() => {
     grid: {
       groupAxis: {
         scalePadding: 0
-      }
+      },
+      columnLabels: ['test1\ntest1', 'test2\ntest2', 'test3\ntest3', 'test4\ntest4', 'test5\ntest5'],
     },
     visibleFilter: (datum, context) => {
       if (datum.id === 'grid_0_0_4') {
@@ -91,7 +101,7 @@ onMounted(() => {
     highlightTarget: 'series'
   })
   
-  chart.plugins$.next([new GroupAxis(), valueAxis, new GroupAux(), lines, lineAreas, dots, new ScalingArea(), new Tooltip()])
+  chart.plugins$.next([groupAxis, valueAxis, new GroupAux(), lines, lineAreas, dots, new ScalingArea(), new Tooltip()])
   
   chart.data$.next(gridData1)
   
