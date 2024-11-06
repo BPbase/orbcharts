@@ -25,9 +25,9 @@ import { measureTextWidth } from '../../utils/commonUtils'
 import { getColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { d3EventObservable } from '../../utils/observables'
 import { gridGroupPosition } from '../gridObservables'
-import { createAxisPointScale } from '@orbcharts/core'
 import type { GroupAuxParams } from '../types'
 import { gridSelectionsObservable } from '../gridObservables'
+import { renderTspansOnAxis } from '../../utils/d3Graphics'
 
 interface LineDatum {
   id: string
@@ -40,6 +40,9 @@ interface LineDatum {
 interface LabelDatum {
   id: string
   text: string
+  textArr: string[]
+  textWidth: number
+  textHeight: number
   x: number
   y: number
 }
@@ -60,6 +63,30 @@ function createLineData ({ groupLabel, axisX, axisHeight, fullParams }: {
       x2: axisX,
       y1: 0,
       y2: axisHeight
+    }]
+    : []
+}
+
+function createLabelData ({ groupLabel, axisX, fullParams, textSizePx }: {
+  groupLabel: string
+  axisX: number
+  fullParams: GroupAuxParams
+  textSizePx: number
+}) {
+  const text = parseTickFormatValue(groupLabel, fullParams.labelTextFormat)
+  const textArr = text.split('\n')
+  const maxLengthText = textArr.reduce((acc, current) => current.length > acc.length ? current : acc, '')
+  const textWidth = measureTextWidth(maxLengthText, textSizePx)
+  const textHeight = textSizePx * textArr.length
+  return fullParams.showLabel && groupLabel
+    ? [{
+      id: groupLabel,
+      x: axisX,
+      y: - fullParams.labelPadding,
+      text,
+      textArr,
+      textWidth,
+      textHeight
     }]
     : []
 }
@@ -114,21 +141,6 @@ function removeLine (selection: d3.Selection<any, string, any, unknown>) {
   update.exit().remove()
 }
 
-function createLabelData ({ groupLabel, axisX, fullParams }: {
-  groupLabel: string
-  axisX: number
-  fullParams: GroupAuxParams
-}) {
-  return fullParams.showLabel && groupLabel
-    ? [{
-      id: groupLabel,
-      x: axisX,
-      y: - fullParams.labelPadding,
-      text: parseTickFormatValue(groupLabel, fullParams.labelTextFormat)
-    }]
-    : []
-}
-
 function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, fullChartParams, textReverseTransformWithRotate, textSizePx }: {
   selection: d3.Selection<any, string, any, unknown>
   labelData: LabelDatum[]
@@ -139,7 +151,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
   textReverseTransformWithRotate: string
   textSizePx: number
 }) {
-  const rectHeight = textSizePx + 6
+  // const rectHeight = textSizePx + 6
 
   const gUpdate = selection
     .selectAll<SVGGElement, LabelDatum>(`g.${labelClassName}`)
@@ -163,7 +175,9 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
   gUpdate.exit().remove()
 
   axisLabelSelection.each((datum, i, n) => {
-    const rectWidth = measureTextWidth(datum.text, textSizePx) + 12
+    // const rectWidth = measureTextWidth(datum.text, textSizePx) + 12
+    const rectWidth = datum.textWidth + 12
+    const rectHeight = datum.textHeight + 6
     // -- label偏移位置 --
     let rectX = - rectWidth / 2
     let rectY = -2
@@ -214,13 +228,21 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
       .style('cursor', 'pointer')
       // .style('pointer-events', 'none')
     const text = textUpdate.merge(textEnter)
-      .text(d => d.text)
+      // .text(d => d.text)
       .style('transform', textReverseTransformWithRotate)
       .attr('fill', d => getColor(fullParams.labelTextColorType, fullChartParams))
       .attr('font-size', fullChartParams.styles.textSize)
       .attr('x', rectX + 6)
       .attr('y', rectY)
     textUpdate.exit().remove()
+
+    text.each((d, i, n) => {
+      renderTspansOnAxis(d3.select(n[i]), {
+        textArr: datum.textArr,
+        textSizePx,
+        groupAxisPosition: fullDataFormatter.grid.groupAxis.position
+      })
+    })
   })
 
   return axisLabelSelection
@@ -714,7 +736,8 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
     const labelData = createLabelData({
       groupLabel: groupLabel,
       axisX,
-      fullParams: data.fullParams
+      fullParams: data.fullParams,
+      textSizePx: data.textSizePx
     })
     const labelSelection = renderLabel({
       // selection: axisSelection,
@@ -774,29 +797,29 @@ export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(
           data: data.computedData
         })
       })
-      // .on('mouseout', (event, datum) => {
-      //   event.stopPropagation()
-      //   // const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)
+      .on('mouseout', (event, datum) => {
+        event.stopPropagation()
+        // const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)
 
-      //   isLabelMouseover = false
+        isLabelMouseover = false
 
-      //   subject.event$.next({
-      //     type: 'grid',
-      //     pluginName: name,
-      //     eventName: 'mouseout',
-      //     highlightTarget: data.highlightTarget,
-      //     datum: null,
-      //     gridIndex: 0, // @Q@ 暫不處理
-      //     series: [],
-      //     seriesIndex: -1,
-      //     seriesLabel: '',
-      //     groups: data.GroupDataMap.get(groupLabel) ?? [],
-      //     groupIndex,
-      //     groupLabel,
-      //     event,
-      //     data: data.computedData
-      //   })
-      // })
+        subject.event$.next({
+          type: 'grid',
+          pluginName: name,
+          eventName: 'mouseout',
+          highlightTarget: data.highlightTarget,
+          datum: null,
+          gridIndex: 0, // @Q@ 暫不處理
+          series: [],
+          seriesIndex: -1,
+          seriesLabel: '',
+          groups: data.GroupDataMap.get(groupLabel) ?? [],
+          groupIndex,
+          groupLabel,
+          event,
+          data: data.computedData
+        })
+      })
       .on('click', (event, datum) => {
         event.stopPropagation()
         // const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)

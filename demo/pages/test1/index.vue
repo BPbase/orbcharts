@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { SeriesChart } from '../../../packages/orbcharts-core/src'
-import { Rose, RoseLabels, Pie, PieLabels, Bubbles, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { Rose, RoseLabels, Pie, PieLabels, Bubbles, Tooltip, SeriesLegend } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
 import seriesData2 from '../../../packages/orbcharts-demo/src/data/seriesData2'
 
@@ -44,6 +44,8 @@ onMounted(() => {
   
   const roseLabels = new RoseLabels()
 
+  const seriesLegend = new SeriesLegend()
+
   rose.params$.next({
     arcScaleType: 'area'
   })
@@ -66,7 +68,9 @@ onMounted(() => {
     // }
   })
 
-  
+  seriesLegend.params$.next({
+    position: 'bottom'
+  })
 
   setTimeout(() => {
     chart.dataFormatter$.next({
@@ -95,6 +99,12 @@ onMounted(() => {
     //     }, 2000)
     //   }, 2000)
     // }, 2000)
+    chart.plugins$.next([rose, roseLabels, new Tooltip()])
+
+    setTimeout(() => {
+      chart.plugins$.next([rose, roseLabels, new SeriesLegend(), new Tooltip()])
+    }, 2000)
+
   }, 2000)
 
   chart.chartParams$.subscribe(data => {
@@ -106,7 +116,7 @@ onMounted(() => {
     // highlightTarget: 'series'
   })
   
-  chart.plugins$.next([rose, roseLabels, new Tooltip()])
+  chart.plugins$.next([rose, roseLabels, seriesLegend, new Tooltip()])
 
   // setTimeout(() => {
     pie.params$.next({

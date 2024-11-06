@@ -19,6 +19,7 @@ import type {
   TransformData } from '@orbcharts/core'
 import { parseTickFormatValue } from '../utils/d3Utils'
 import { getColor, getClassName } from '../utils/orbchartsUtils'
+import { renderTspansOnAxis } from '../utils/d3Graphics'
 
 export interface BaseGroupAxisParams {
   // xLabel: string
@@ -62,12 +63,29 @@ interface TextAlign {
   dominantBaseline: "middle" | "auto" | "hanging"
 }
 
+interface GroupLabelData {
+  text: string
+  textArr: string[]
+}
+
 // const pluginName = 'GroupAxis'
 // const containerClassName = getClassName(pluginName, 'container')
 // const xAxisGClassName = getClassName(pluginName, 'xAxisG')
 // const xAxisClassName = getClassName(pluginName, 'xAxis')
 // const groupingLabelClassName = getClassName(pluginName, 'groupingLabel')
 const defaultTickSize = 6
+
+function createGroupLabelData (groupLabels: string[], tickFormat: string | ((text: any) => string)): GroupLabelData[] {
+  return groupLabels.map((_text, i) => {
+    const text = parseTickFormatValue(_text, tickFormat)
+    const textArr = text.split('\n')
+    
+    return {
+      text,
+      textArr
+    }
+  })
+}
 
 function renderAxisLabel ({ selection, groupingLabelClassName, fullParams, axisLabelAlign, gridAxesSize, fullDataFormatter, chartParams, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
@@ -147,7 +165,7 @@ function renderAxisLabel ({ selection, groupingLabelClassName, fullParams, axisL
 
 }
 
-function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gridAxesSize, fullDataFormatter, chartParams, groupScale, groupScaleDomain, groupLabels, textReverseTransformWithRotate, textSizePx }: {
+function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gridAxesSize, fullDataFormatter, chartParams, groupScale, groupScaleDomain, groupLabelData, textReverseTransformWithRotate, textSizePx }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   xAxisClassName: string
   fullParams: BaseGroupAxisParams
@@ -157,7 +175,8 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
   chartParams: ChartParams
   groupScale: d3.ScaleLinear<number, number>
   groupScaleDomain: number[]
-  groupLabels: string[]
+  // groupLabels: string[]
+  groupLabelData: GroupLabelData[]
   textReverseTransformWithRotate: string
   textSizePx: number
 }) {
@@ -202,8 +221,9 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
     .tickSizeOuter(0)
     .tickFormat((groupIndex: number) => {
       // 用index對應到groupLabel
-      const groupLabel = groupLabels[groupIndex] ?? '' // 非整數index不顯示
-      return parseTickFormatValue(groupLabel, fullParams.tickFormat)
+      // const groupLabel = groupLabels[groupIndex] ?? '' // 非整數index不顯示
+      // return parseTickFormatValue(groupLabel, fullParams.tickFormat)
+      return groupLabelData[groupIndex]?.text ?? ''
     })
     .tickPadding(tickPadding)
 
@@ -216,26 +236,16 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
       xAxisEl
         .selectAll('.tick text')
         .each((groupIndex: number, i, n) => {
-          // -- 將原本單行文字改為多行文字 --
-          const groupLabel = groupLabels[groupIndex] ?? '' // 非整數index不顯示
-          const groupLabelTspans = groupLabel.split('\n')
-          const textSelection = d3.select(n[i])
-            .text(null) // 先清空原本的 text
+          // const groupLabel = groupLabels[groupIndex] ?? '' // 非整數index不顯示
+          // const groupLabelText = parseTickFormatValue(groupLabel, fullParams.tickFormat)
+          const textArr = groupLabelData[groupIndex]?.textArr ?? []
 
-          const textX = Number(textSelection.attr('x'))
-          let textY = Number(textSelection.attr('y'))
-          if (fullDataFormatter.grid.groupAxis.position === 'top') {
-            // 當文字在上方時，要往上偏移第一行的高度
-            textY -= (groupLabelTspans.length - 1) * textSizePx
-          }
-          
-          textSelection
-            .selectAll('tspan')
-            .data(groupLabelTspans)
-            .join('tspan')
-            .attr('x', textX)
-            .attr('y', (_d, _i) => textY + _i * textSizePx)
-            .text(d => d)
+          // 將原本單行文字改為多行文字
+          renderTspansOnAxis(d3.select(n[i]), {
+            textArr,
+            textSizePx,
+            groupAxisPosition: fullDataFormatter.grid.groupAxis.position
+          })
         })
     })
 
@@ -254,7 +264,7 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
     // .style('font-family', 'sans-serif')
     .attr('font-size', chartParams.styles.textSize)
     // .style('font-weight', 'bold')
-    .style('color', getColor(fullParams.tickTextColorType, chartParams))
+    .attr('fill', getColor(fullParams.tickTextColorType, chartParams))
     .attr('text-anchor', tickTextAlign.textAnchor)
     .attr('dominant-baseline', tickTextAlign.dominantBaseline)
     .attr('x', textX)
@@ -600,6 +610,17 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
     })
   )
 
+  const groupLabelData$ = combineLatest({
+    groupLabels: groupLabels$,
+    fullParams: fullParams$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      return createGroupLabelData(data.groupLabels, data.fullParams.tickFormat)
+    })
+  )
+
   combineLatest({
     axisSelection: axisSelection$,
     fullParams: fullParams$,
@@ -610,7 +631,8 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
     chartParams: fullChartParams$,
     groupScale: groupScale$,
     groupScaleDomain: groupScaleDomain$,
-    groupLabels: groupLabels$,
+    // groupLabels: groupLabels$,
+    groupLabelData: groupLabelData$,
     textReverseTransform: textReverseTransform$,
     textReverseTransformWithRotate: textReverseTransformWithRotate$,
     textSizePx: textSizePx$
@@ -630,7 +652,8 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
       chartParams: data.chartParams,
       groupScale: data.groupScale,
       groupScaleDomain: data.groupScaleDomain,
-      groupLabels: data.groupLabels,
+      // groupLabels: data.groupLabels,
+      groupLabelData: data.groupLabelData,
       textReverseTransformWithRotate: data.textReverseTransformWithRotate,
       textSizePx: data.textSizePx
     })

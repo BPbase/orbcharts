@@ -23,6 +23,7 @@ import { DEFAULT_ROSE_LABELS_PARAMS } from '../defaults'
 import { makeD3Arc } from '../../utils/d3Utils'
 import { getDatumColor, getClassName } from '../../utils/orbchartsUtils'
 import { seriesCenterSelectionObservable } from '../seriesObservables'
+import { renderTspansOnQuadrant } from '../../utils/d3Graphics'
 
 interface RenderDatum {
   pieDatum: PieDatum
@@ -140,15 +141,20 @@ function renderLabel ({ labelGSelection, data, fullParams, fullChartParams, text
     .attr('font-size', fullChartParams.styles.textSize)
     .attr('fill', (d, i) => getDatumColor({ datum: d.pieDatum.data, colorType: fullParams.labelColorType, fullChartParams }))
     .each((d, i, n) => {
-      const textNode = d3.select<SVGTextElement, RenderDatum>(n[i])
-        .selectAll('tspan')
-        .data(d.arcLabels)
-        .join('tspan')
-        .attr('x', 0)
-        .attr('y', (_d, _i) => d.quadrant == 1 || d.quadrant == 2
-          ? - (d.arcLabels.length - 1 - _i) * textSizePx
-          : _i * textSizePx)
-        .text(d => d)
+      // const textNode = d3.select<SVGTextElement, RenderDatum>(n[i])
+      //   .selectAll('tspan')
+      //   .data(d.arcLabels)
+      //   .join('tspan')
+      //   .attr('x', 0)
+      //   .attr('y', (_d, _i) => d.quadrant == 1 || d.quadrant == 2
+      //     ? - (d.arcLabels.length - 1 - _i) * textSizePx
+      //     : _i * textSizePx)
+      //   .text(d => d)
+      renderTspansOnQuadrant(d3.select<SVGTextElement, RenderDatum>(n[i]), {
+        textArr: d.arcLabels,
+        textSizePx,
+        quadrant: d.quadrant
+      })
     })
   textSelection
     .transition()
