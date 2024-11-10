@@ -105,7 +105,10 @@ onMounted(() => {
   
   chart.data$.next(gridData1)
   
-  
+  // setTimeout(() => {
+  //   chart.plugins$.next([groupAxis, valueAxis, new GroupAux(), lines, lineAreas, dots, new Tooltip()])
+
+  // }, 2000)
 
   
 })

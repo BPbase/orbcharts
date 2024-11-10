@@ -171,5 +171,7 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
   return () => {
     destroy$.next(undefined)
     rootRectSelection.remove()
+    
+    rootSelection.call(d3.zoom().on('zoom', null))
   }
 })
