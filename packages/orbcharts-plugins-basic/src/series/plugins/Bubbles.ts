@@ -16,9 +16,9 @@ import type {
   EventName,
   ComputedDataSeries,
   ComputedDatumSeries,
-  SeriesContainerPosition } from '@orbcharts/core'
+  SeriesContainerPosition } from '../../../lib/core-types'
 import {
-  defineSeriesPlugin } from '@orbcharts/core'
+  defineSeriesPlugin } from '../../../lib/core'
 import type { BubblesParams, ArcScaleType } from '../types'
 import { DEFAULT_BUBBLES_PARAMS } from '../defaults'
 import { renderCircleText } from '../../utils/d3Graphics'

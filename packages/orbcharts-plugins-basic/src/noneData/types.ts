@@ -1,4 +1,4 @@
-import type { ColorType, ChartType, EventTypeMap, EventBase } from '@orbcharts/core'
+import type { ColorType, ChartType, EventTypeMap, EventBase } from '../../lib/core-types'
 
 export interface ContainerPluginParams {
   header: {

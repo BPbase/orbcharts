@@ -4,8 +4,7 @@ import {
   takeUntil,
   Subject } from 'rxjs'
 import {
-  defineMultiGridPlugin } from '@orbcharts/core'
-
+  defineMultiGridPlugin } from '../../../lib/core'
 import { DEFAULT_MULTI_LINE_AREAS_PARAMS } from '../defaults'
 import { createBaseLineAreas } from '../../base/BaseLineAreas'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'

@@ -1,5 +1,5 @@
 import type { ContainerPluginParams, TooltipParams } from './types'
-import type { EventBaseSeriesValue, EventBaseGridValue, EventBaseCategoryValue } from '@orbcharts/core'
+import type { EventBaseSeriesValue, EventBaseGridValue, EventBaseCategoryValue } from '../../lib/core-types'
 
 export const CONTAINER_PLUGIN_PARAMS: ContainerPluginParams = {
   header: {

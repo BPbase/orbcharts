@@ -1,7 +1,7 @@
 import {
   map,
   shareReplay } from 'rxjs'
-import type { ContextObserverFn } from '../types'
+import type { ContextObserverFn } from '../../lib/core-types'
 import { multiGridEachDetailObservable, multiGridContainerObservable } from './multiGridObservables'
 import { textSizePxObservable } from '../utils/observables'
 

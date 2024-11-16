@@ -7,7 +7,7 @@ import {
   Observable,
   Subject } from 'rxjs'
 import {
-  defineMultiGridPlugin, mergeOptionsWithDefault } from '@orbcharts/core'
+  defineMultiGridPlugin, mergeOptionsWithDefault } from '../../../lib/core'
 import { DEFAULT_MULTI_GRID_LEGEND_PARAMS } from '../defaults'
 import { createBaseLegend } from '../../base/BaseLegend'
 import type { BaseLegendParams } from '../../base/BaseLegend'

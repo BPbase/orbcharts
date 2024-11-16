@@ -7,7 +7,7 @@ import {
   takeUntil
 } from 'rxjs'
 import {
-  defineGridPlugin } from '@orbcharts/core'
+  defineGridPlugin } from '../../../lib/core'
 import { DEFAULT_BARS_PARAMS } from '../defaults'
 import { createBaseBars } from '../../base/BaseBars'
 

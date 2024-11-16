@@ -1,6 +1,6 @@
 import type {
   ChartEntity,
-  ChartOptionsPartial } from './types'
+  ChartOptionsPartial } from '../lib/core-types'
 import { DATA_FORMATTER_GRID_DEFAULT } from './defaults'
 import { computeGridData } from './grid/computeGridData'
 import { createGridContextObserver } from './grid/createGridContextObserver'

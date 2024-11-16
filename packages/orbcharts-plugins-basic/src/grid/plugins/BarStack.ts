@@ -5,7 +5,7 @@ import {
   takeUntil,
   Subject,
   Observable } from 'rxjs'
-import { defineGridPlugin } from '@orbcharts/core'
+import { defineGridPlugin } from '../../../lib/core'
 import { DEFAULT_BAR_STACK_PARAMS } from '../defaults'
 import { createBaseBarStack } from '../../base/BaseBarStack'
 

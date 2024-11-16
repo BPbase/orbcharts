@@ -16,11 +16,11 @@ import type {
   SeriesContainerPosition,
   ChartParams,
   EventSeries,
-  Layout } from '@orbcharts/core'
+  Layout } from '../../../lib/core-types'
 import type { D3PieDatum } from '../seriesUtils'
 import type { RoseParams } from '../types'
 import {
-  defineSeriesPlugin } from '@orbcharts/core'
+  defineSeriesPlugin } from '../../../lib/core'
 import { DEFAULT_ROSE_PARAMS } from '../defaults'
 // import { makePieData } from '../seriesUtils'
 // import { getD3TransitionEase, makeD3Arc } from '../../utils/d3Utils'

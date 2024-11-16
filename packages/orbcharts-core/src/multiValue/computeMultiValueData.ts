@@ -1,7 +1,4 @@
-import type { DataMultiValue, DataMultiValueDatum } from '../types/DataMultiValue'
-import type { DataFormatterContext } from '../types/DataFormatter'
-import type { ComputedDataFn } from '../types/ComputedData'
-import type { ComputedDataMultiValue, ComputedDatumMultiValue } from '../types/ComputedDataMultiValue'
+import type { DataMultiValueDatum, ComputedDataFn, ComputedDatumMultiValue } from '../../lib/core-types'
 import { formatValueToLabel, createDefaultDatumId } from '../utils/orbchartsUtils'
 import { createAxisLinearScale, createAxisPointScale } from '../utils/d3Utils'
 import { getMinAndMaxValue } from '../utils/orbchartsUtils'

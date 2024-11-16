@@ -9,12 +9,11 @@ import {
   takeUntil,
   debounceTime,
   Subject } from 'rxjs'
-import type { DataFormatterGrid } from '@orbcharts/core'
+import type { DataFormatterGrid } from '../../../lib/core-types'
 import {
-  defineGridPlugin } from '@orbcharts/core'
+  defineGridPlugin, createAxisLinearScale } from '../../../lib/core'
 import { DEFAULT_SCALING_AREA_PARAMS } from '../defaults'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
-import { createAxisPointScale, createAxisLinearScale } from '@orbcharts/core'
 
 const pluginName = 'ScalingArea'
 const rectClassName = getClassName(pluginName, 'rect')

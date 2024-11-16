@@ -6,7 +6,7 @@ import {
   distinctUntilChanged,
   shareReplay
 } from 'rxjs'
-import { defineGridPlugin } from '@orbcharts/core'
+import { defineGridPlugin } from '../../../lib/core'
 import { DEFAULT_BARS_TRIANGLE_PARAMS } from '../defaults'
 import { createBaseBarsTriangle } from '../../base/BaseBarsTriangle'
 

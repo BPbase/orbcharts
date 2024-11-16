@@ -1,4 +1,4 @@
-import type { ColorType, ComputedDataTree } from '@orbcharts/core'
+import type { ColorType, ComputedDataTree } from '../../lib/core-types'
 
 export interface TreeMapParams {
   paddingInner: number

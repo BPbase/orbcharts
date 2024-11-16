@@ -48,8 +48,7 @@ import type {
   PluginContext,
   Preset,
   PresetPartial,
-  ContextObserverTypeMap } from '../types'
-// import type { EventTypeMap } from './types/Event'
+  ContextObserverTypeMap } from '../../lib/core-types'
 import { mergeOptionsWithDefault } from '../utils'
 import {
   CHART_OPTIONS_DEFAULT,
@@ -103,9 +102,9 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
   contextObserverFn: ContextObserverFn<T>
 }): CreateChart<T> => {
   const destroy$ = new Subject()
-  
-  const chartType: ChartType = (defaultDataFormatter as unknown as DataFormatterBase<any>).type
 
+  const chartType: ChartType = (defaultDataFormatter as unknown as DataFormatterBase<any>).type
+  
   // 建立chart實例
   return function createChart (element: HTMLElement | Element, options?: ChartOptionsPartial<T>): ChartEntity<T> {
     

@@ -1,6 +1,4 @@
-import type { DataTree, DataTreeObj, DataTreeDatum } from '../types/DataTree'
-import type { ComputedDataFn } from '../types/ComputedData'
-import type { ComputedDataTree } from '../types/ComputedDataTree'
+import type { DataTree, DataTreeObj, DataTreeDatum, ComputedDataFn, ComputedDataTree } from '../../lib/core-types'
 import { isPlainObject } from '../utils/commonUtils'
 import { seriesColorPredicate } from '../utils/orbchartsUtils'
 

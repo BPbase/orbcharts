@@ -15,7 +15,7 @@ import type {
   ComputedDataGrid,
   DataFormatterGrid,
   ContextObserverGridDetail,
-  ContextObserverMultiGridDetail } from '@orbcharts/core'
+  ContextObserverMultiGridDetail } from '../../lib/core-types'
 
 // 可設定多個gridIndex的params
 interface MultiGridPluginParams {

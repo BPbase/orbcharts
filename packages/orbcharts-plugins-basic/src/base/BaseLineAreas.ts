@@ -19,8 +19,7 @@ import type {
   GridContainerPosition,
   ChartParams, 
   Layout,
-  TransformData } from '@orbcharts/core'
-import { createAxisLinearScale } from '@orbcharts/core'
+  TransformData } from '../../lib/core-types'
 import { getD3TransitionEase } from '../utils/d3Utils'
 import { getClassName, getUniID, getMinAndMaxValue } from '../utils/orbchartsUtils'
 import { gridGroupPositionFnObservable } from '../grid/gridObservables'

@@ -7,7 +7,7 @@ import {
   Observable,
   Subject } from 'rxjs'
 import {
-  defineSeriesPlugin } from '@orbcharts/core'
+  defineSeriesPlugin } from '../../../lib/core'
 import { DEFAULT_SERIES_LEGEND_PARAMS } from '../defaults'
 import { createBaseLegend } from '../../base/BaseLegend'
 

@@ -1,6 +1,6 @@
 import type {
   ChartEntity,
-  ChartOptionsPartial } from './types'
+  ChartOptionsPartial } from '../lib/core-types'
 import { DATA_FORMATTER_MULTI_VALUE_DEFAULT } from './defaults'
 import { computeMultiValueData } from './multiValue/computeMultiValueData'
 import { createMultiValueContextObserver } from './multiValue/createMultiValueContextObserver'

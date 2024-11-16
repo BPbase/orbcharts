@@ -14,11 +14,11 @@ import type {
   SeriesContainerPosition,
   ChartParams,
   EventSeries,
-  Layout } from '@orbcharts/core'
+  Layout } from '../../../lib/core-types'
 import type { PieDatum } from '../seriesUtils'
 import type { PieParams } from '../types'
 import {
-  defineSeriesPlugin } from '@orbcharts/core'
+  defineSeriesPlugin } from '../../../lib/core'
 import { DEFAULT_PIE_PARAMS } from '../defaults'
 import { makePieData } from '../seriesUtils'
 import { getD3TransitionEase, makeD3Arc } from '../../utils/d3Utils'

@@ -10,13 +10,16 @@ import {
   shareReplay,
   Observable,
   Subject } from 'rxjs'
-import type { ColorType, ComputedDataGrid, GridContainerPosition } from '@orbcharts/core'
-import type { BasePluginFn } from './types'
 import type {
+  ColorType,
+  ComputedDataGrid,
+  GridContainerPosition,
   ComputedDatumGrid,
   DataFormatterGrid,
   ChartParams,
-  TransformData } from '@orbcharts/core'
+  TransformData
+} from '../../lib/core-types'
+import type { BasePluginFn } from './types'
 import { parseTickFormatValue } from '../utils/d3Utils'
 import { getColor, getClassName } from '../utils/orbchartsUtils'
 import { renderTspansOnAxis } from '../utils/d3Graphics'

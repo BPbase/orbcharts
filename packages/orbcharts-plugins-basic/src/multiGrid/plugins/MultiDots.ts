@@ -3,7 +3,7 @@ import {
   takeUntil,
   Subject } from 'rxjs'
 import {
-  defineMultiGridPlugin } from '@orbcharts/core'
+  defineMultiGridPlugin } from '../../../lib/core'
 import { DEFAULT_MULTI_DOTS_PARAMS } from '../defaults'
 import { createBaseDots } from '../../base/BaseDots'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'

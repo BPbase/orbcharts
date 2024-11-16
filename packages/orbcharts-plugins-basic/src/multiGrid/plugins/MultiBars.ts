@@ -7,7 +7,7 @@ import {
   takeUntil
 } from 'rxjs'
 import {
-  defineMultiGridPlugin } from '@orbcharts/core'
+  defineMultiGridPlugin } from '../../../lib/core'
 import { DEFAULT_MULTI_BARS_PARAMS } from '../defaults'
 import { createBaseBars } from '../../base/BaseBars'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'

@@ -13,7 +13,7 @@ import type {
   ChartParams,
   ComputedDataTree,
   ComputedDataTypeMap,
-  DataFormatterTree } from '../types'
+  DataFormatterTree } from '../../lib/core-types'
 
 
 // 所有節點list結構

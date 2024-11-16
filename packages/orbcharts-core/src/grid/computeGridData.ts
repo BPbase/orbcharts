@@ -1,10 +1,5 @@
-import * as d3 from 'd3'
-import type { ComputedDataFn } from '../types/ComputedData'
-import type { DataGrid, DataGridDatum } from '../types/DataGrid'
-import type { DataFormatterContext } from '../types/DataFormatter'
-import type { DataFormatterGrid, DataFormatterGridGrid } from '../types/DataFormatterGrid'
-import type { ComputedDataGrid, ComputedDatumGrid } from '../types/ComputedDataGrid'
-import type { Layout } from '../types/Layout'
+// import * as d3 from 'd3'
+import type { ComputedDataFn, DataGrid, DataGridDatum, DataFormatterGridGrid, ComputedDatumGrid } from '../../lib/core-types'
 import { formatValueToLabel, createDefaultDatumId, createDefaultSeriesLabel, createDefaultGroupLabel } from '../utils/orbchartsUtils'
 import { getMinAndMaxValue, transposeData, createGridSeriesLabels, createGridGroupLabels, seriesColorPredicate } from '../utils/orbchartsUtils'
 

@@ -12,12 +12,11 @@ import {
   Observable,
   distinctUntilChanged } from 'rxjs'
 import type {
-  EventTypeMap, PluginConstructor, ChartType } from '@orbcharts/core'
-import { defineNoneDataPlugin } from '@orbcharts/core'
+  EventTypeMap, PluginConstructor, ChartType } from '../../../lib/core-types'
+import { defineNoneDataPlugin, textSizePxObservable } from '../../../lib/core'
 import { getSvgGElementSize, appendSvg } from '../../utils/d3Utils'
 import { getColor, getClassName } from '../../utils/orbchartsUtils'
 import { TOOLTIP_PARAMS } from '../defaults'
-import { textSizePxObservable } from '@orbcharts/core'
 
 interface TooltipStyle {
   backgroundColor: string

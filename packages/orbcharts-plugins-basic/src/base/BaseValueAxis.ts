@@ -8,7 +8,7 @@ import {
   takeUntil,
   Observable,
   Subject } from 'rxjs'
-import { createAxisLinearScale } from '@orbcharts/core'
+import { createAxisLinearScale } from '../../lib/core'
 import type { BasePluginFn } from './types'
 import type {
   ComputedDataGrid,
@@ -18,7 +18,7 @@ import type {
   GridContainerPosition,
   TransformData,
   EventGrid,
-  ColorType } from '@orbcharts/core'
+  ColorType } from '../../lib/core-types'
 import { parseTickFormatValue } from '../utils/d3Utils'
 import { getColor, getMinAndMaxValue, getClassName, getUniID } from '../utils/orbchartsUtils'
 

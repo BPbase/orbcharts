@@ -20,8 +20,8 @@ import type {
   ComputedDatumGrid,
   TransformData,
   GridContainerPosition,
-  Layout } from '@orbcharts/core'
-import { createAxisQuantizeScale } from '@orbcharts/core'
+  Layout } from '../../lib/core-types'
+import { createAxisQuantizeScale } from '../../lib/core'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 import { d3EventObservable } from '../utils/observables'
 

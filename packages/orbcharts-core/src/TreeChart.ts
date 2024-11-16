@@ -1,6 +1,6 @@
 import type {
   ChartEntity,
-  ChartOptionsPartial } from './types'
+  ChartOptionsPartial } from '../lib/core-types'
 import { DATA_FORMATTER_TREE_DEFAULT } from './defaults'
 import { computeTreeData } from './tree/computeTreeData'
 import { createTreeContextObserver } from './tree/createTreeContextObserver'

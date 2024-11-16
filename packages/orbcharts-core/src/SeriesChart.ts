@@ -1,6 +1,6 @@
 import type {
   ChartEntity,
-  ChartOptionsPartial } from './types'
+  ChartOptionsPartial } from '../lib/core-types'
 import { DATA_FORMATTER_SERIES_DEFAULT } from './defaults'
 import { computeSeriesData } from './series/computeSeriesData'
 import { createSeriesContextObserver } from './series/createSeriesContextObserver'

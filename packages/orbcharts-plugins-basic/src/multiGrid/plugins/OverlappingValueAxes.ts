@@ -10,14 +10,14 @@ import {
   iif,
   Observable,
   Subject } from 'rxjs'
-import type { ContextObserverMultiGrid, DataFormatterGrid, DataFormatterTypeMap, Layout } from '@orbcharts/core'
+import type { ContextObserverMultiGrid, DataFormatterGrid, DataFormatterTypeMap, Layout } from '../../../lib/core-types'
 import {
-  defineMultiGridPlugin } from '@orbcharts/core'
+  defineMultiGridPlugin } from '../../../lib/core'
 import { DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS } from '../defaults'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
-import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '@orbcharts/core/src/grid/gridObservables'
+import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '../../../lib/core'
 
 const pluginName = 'OverlappingValueAxes'
 

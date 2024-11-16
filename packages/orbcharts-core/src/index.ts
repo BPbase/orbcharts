@@ -14,7 +14,6 @@ export { defineNoneDataPlugin } from './defineNoneDataPlugin'
 export { defineRelationshipPlugin } from './defineRelationshipPlugin'
 export { defineTreePlugin } from './defineTreePlugin'
 
-export * from './types'
 export * from './utils'
 
 

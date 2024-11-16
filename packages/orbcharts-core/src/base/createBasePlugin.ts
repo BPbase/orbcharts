@@ -1,5 +1,5 @@
 import { of, takeUntil, map, switchMap, shareReplay, startWith, Subject, BehaviorSubject, Observable } from 'rxjs'
-import type { ChartType, CreateBasePlugin, PluginInitFn, PluginContext } from '../types'
+import type { ChartType, CreateBasePlugin, PluginInitFn, PluginContext } from '../../lib/core-types'
 import { mergeOptionsWithDefault } from '../utils'
 
 // 建立plugin實例

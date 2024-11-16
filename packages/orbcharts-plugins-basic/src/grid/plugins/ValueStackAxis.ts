@@ -7,9 +7,8 @@ import {
   iif,
   Observable,
   Subject } from 'rxjs'
-import type { ComputedDataGrid } from '@orbcharts/core'
 import {
-  defineGridPlugin } from '@orbcharts/core'
+  defineGridPlugin } from '../../../lib/core'
 import { DEFAULT_VALUE_STACK_AXIS_PARAMS } from '../defaults'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
 

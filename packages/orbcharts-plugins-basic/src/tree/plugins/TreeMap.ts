@@ -10,8 +10,8 @@ import {
   debounceTime,
   distinctUntilChanged } from 'rxjs'
 import {
-  defineTreePlugin } from '@orbcharts/core'
-import type { Layout, ComputedDataTree, DataFormatterTree, ChartParams } from '@orbcharts/core'
+  defineTreePlugin } from '../../../lib/core'
+import type { Layout, ComputedDataTree, DataFormatterTree, ChartParams } from '../../../lib/core-types'
 import type { TreeMapParams } from '../types'
 import { DEFAULT_TREE_MAP_PARAMS } from '../defaults'
 import { getClassName, getColor } from '../../utils/orbchartsUtils'

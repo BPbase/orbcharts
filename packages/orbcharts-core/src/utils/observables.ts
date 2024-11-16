@@ -18,7 +18,7 @@ import type {
   EventTypeMap,
   HighlightTarget,
   Layout,
-  TransformData } from '../types'
+  TransformData } from '../../lib/core-types'
 
 // interface DatumUnknown {
 //   value: number | null

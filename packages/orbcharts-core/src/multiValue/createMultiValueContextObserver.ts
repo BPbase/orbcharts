@@ -1,4 +1,4 @@
-import type { ContextObserverFn } from '../types'
+import type { ContextObserverFn } from '../../lib/core-types'
 
 export const createMultiValueContextObserver: ContextObserverFn<'multiValue'> = ({ subject, observer }) => {
 

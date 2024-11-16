@@ -6,7 +6,7 @@ import {
   shareReplay
 } from 'rxjs'
 import {
-  defineGridPlugin } from '@orbcharts/core'
+  defineGridPlugin } from '../../../lib/core'
 import { DEFAULT_VALUE_AXIS_PARAMS } from '../defaults'
 
 import { createBaseValueAxis } from '../../base/BaseValueAxis'

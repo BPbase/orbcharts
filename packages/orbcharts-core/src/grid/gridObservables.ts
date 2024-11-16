@@ -30,13 +30,11 @@ import type {
   GridContainerPosition,
   HighlightTarget,
   Layout,
-  TransformData } from '../types'
+  TransformData } from '../../lib/core-types'
 import { getMinAndMaxGrid } from '../utils/orbchartsUtils'
 import { createAxisLinearScale, createAxisPointScale, createAxisQuantizeScale } from '../utils/d3Utils'
-import { highlightObservable } from '../utils/observables'
 import { calcGridContainerLayout } from '../utils/orbchartsUtils'
-import { DATA_FORMATTER_GRID_GRID_DEFAULT } from '../defaults'
-import { getMinAndMaxValue, transposeData, createGridSeriesLabels, createGridGroupLabels, seriesColorPredicate } from '../utils/orbchartsUtils'
+import { getMinAndMaxValue } from '../utils/orbchartsUtils'
 
 export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'grid'>>

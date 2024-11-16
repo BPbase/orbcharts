@@ -1,4 +1,4 @@
-import type { ContextObserverFn } from '../types'
+import type { ContextObserverFn } from '../../lib/core-types'
 
 export const createRelationshipContextObserver: ContextObserverFn<'relationship'> = ({ subject, observer }) => {
 

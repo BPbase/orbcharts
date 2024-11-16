@@ -1,5 +1,5 @@
 import { map, shareReplay } from 'rxjs'
-import type { ContextObserverFn } from '../types'
+import type { ContextObserverFn } from '../../lib/core-types'
 import { highlightObservable, categoryDataMapObservable, textSizePxObservable } from '../utils/observables'
 import {
   nodeListObservable,

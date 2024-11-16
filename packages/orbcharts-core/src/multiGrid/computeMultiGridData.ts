@@ -1,10 +1,4 @@
-import type { DataGrid, DataGridDatum } from '../types/DataGrid'
-import type { ComputedDataFn } from '../types/ComputedData'
-import type { ComputedDatumGrid } from '../types/ComputedDataGrid'
-import type { DataFormatterContext } from '../types/DataFormatter'
-import type { DataFormatterGridGrid } from '../types/DataFormatterGrid'
-import type { ComputedDataMultiGrid } from '../types/ComputedDataMultiGrid'
-// import { computeBaseGridData } from '../grid/computeGridData'
+import type { ComputedDataFn, ComputedDatumGrid, DataFormatterGridGrid, ComputedDataMultiGrid } from '../../lib/core-types'
 import { DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT } from '../defaults'
 import {
   createDefaultDatumId,
@@ -13,7 +7,6 @@ import {
   createMultiGridSeriesLabels,
   createMultiGridGroupLabels
 } from '../utils/orbchartsUtils'
-// import type { DataGridDatumTemp } from '../grid/computeGridData'
 import { createTransposedDataGrid } from '../grid/computeGridData'
 
 export const computeMultiGridData: ComputedDataFn<'multiGrid'> = (context) => {

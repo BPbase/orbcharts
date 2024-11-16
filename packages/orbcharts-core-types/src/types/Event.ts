@@ -1,4 +1,3 @@
-import * as d3 from 'd3'
 import type { ChartType } from './Chart'
 import type { ComputedDatumBase } from './ComputedData'
 import type { ComputedDataSeries, ComputedDatumSeries } from './ComputedDataSeries'

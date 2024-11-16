@@ -1,6 +1,6 @@
 import type {
   ChartEntity,
-  ChartOptionsPartial } from './types'
+  ChartOptionsPartial } from '../lib/core-types'
 import { DATA_FORMATTER_MULTI_GRID_DEFAULT } from './defaults'
 import { computeMultiGridData } from './multiGrid/computeMultiGridData'
 import { createMultiGridContextObserver } from './multiGrid/createMultiGridContextObserver'

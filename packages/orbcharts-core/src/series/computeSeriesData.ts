@@ -1,6 +1,4 @@
-import type { DataSeries, DataSeriesDatum } from '../types/DataSeries'
-import type { ComputedDataFn } from '../types/ComputedData'
-import type { ComputedDatumSeries } from '../types/ComputedDataSeries'
+import type { DataSeries, DataSeriesDatum, ComputedDataFn, ComputedDatumSeries } from '../../lib/core-types'
 import { formatValueToLabel, createDefaultDatumId, createDefaultSeriesLabel, seriesColorPredicate } from '../utils/orbchartsUtils'
 
 export const computeSeriesData: ComputedDataFn<'series'> = (context) => {

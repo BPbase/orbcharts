@@ -10,13 +10,13 @@ import {
   Subject } from 'rxjs'
 import type { Subscription } from 'rxjs'
 import {
-  defineSeriesPlugin} from '@orbcharts/core'
+  defineSeriesPlugin} from '../../../lib/core'
 import type {
   ComputedDatumSeries,
   ChartParams,
   SeriesContainerPosition,
   EventName,
-  EventSeries } from '@orbcharts/core'
+  EventSeries } from '../../../lib/core-types'
 import type { PieEventTextsParams } from '../types'
 import { DEFAULT_PIE_EVENT_TEXTS_PARAMS } from '../defaults'
 import { getD3TransitionEase } from '../../utils/d3Utils'

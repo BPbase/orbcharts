@@ -7,7 +7,7 @@ import type { BaseDotsParams } from '../base/BaseDots'
 import type { BaseGroupAxisParams } from '../base/BaseGroupAxis'
 import type { BaseValueAxisParams } from '../base/BaseValueAxis'
 import type {
-  ChartParams, Layout, ColorType } from '@orbcharts/core'
+  ChartParams, Layout, ColorType } from '../../lib/core-types'
 
 export interface MultiGridLegendParams {
   position: 'top' | 'bottom' | 'left' | 'right'

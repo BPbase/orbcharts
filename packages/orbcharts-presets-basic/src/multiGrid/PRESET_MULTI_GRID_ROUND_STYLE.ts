@@ -1,4 +1,4 @@
-import type { PresetPartial } from '@orbcharts/core'
+import type { PresetPartial } from '../../lib/core-types'
 import type {
   PresetMultiGridPluginParams,
   PresetNoneDataPluginParams

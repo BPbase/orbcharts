@@ -1,7 +1,7 @@
 import {
   Subject } from 'rxjs'
 import {
-  defineGridPlugin } from '@orbcharts/core'
+  defineGridPlugin } from '../../../lib/core'
 import { DEFAULT_LINES_PARAMS } from '../defaults'
 import { createBaseLines } from '../../base/BaseLines'
 

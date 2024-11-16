@@ -35,8 +35,10 @@
     "vite-plugin-dts": "^3.7.3"
   },
   "dependencies": {
+    "@orbcharts/core-types": "^3.0.0-alpha.1",
+    "@orbcharts/plugins-basic": "^3.0.0-alpha.70",
+    "@orbcharts/presets-basic": "^3.0.0-alpha.41",
     "d3": "^7.8.5",
-    "orbcharts": "^3.0.0-alpha.72",
     "rxjs": "^7.8.1"
   }
 }

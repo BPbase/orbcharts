@@ -17,15 +17,16 @@ import type {
   ChartParams,
   ComputedDataTypeMap,
   ComputedDataGrid,
+  ContextObserverMultiGridDetail,
   DataTypeMap,
   DataFormatterTypeMap,
   DataFormatterGrid,
   DataFormatterMultiGridContainer,
   EventMultiGrid,
+  GridContainerPosition,
   HighlightTarget,
   Layout,
-  TransformData } from '../types'
-import type { ContextObserverGridDetail, ContextObserverMultiGridDetail, GridContainerPosition } from '../types'
+  TransformData } from '../../lib/core-types'
 import {
   highlightObservable,
   seriesDataMapObservable,

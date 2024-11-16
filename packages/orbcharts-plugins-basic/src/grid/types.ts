@@ -1,4 +1,4 @@
-import type { ColorType } from '@orbcharts/core'
+import type { ColorType } from '../../lib/core-types'
 // import type { BaseLegendParams } from '../base/BaseLegend'
 
 // export type LineType = 'line' | 'area' | 'gradientArea'

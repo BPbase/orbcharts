@@ -1,6 +1,13 @@
-import type { DataRelationship, DataRelationshipObj, DataRelationshipList, Node, Edge } from '../types/DataRelationship'
-import type { ComputedDataFn } from '../types/ComputedData'
-import type { ComputedDataRelationship, ComputedNode, ComputedEdge } from '../types/ComputedDataRelationship'
+import type {
+  DataRelationshipObj,
+  DataRelationshipList,
+  Node,
+  Edge,
+  ComputedDataFn,
+  ComputedDataRelationship,
+  ComputedNode,
+  ComputedEdge
+} from '../../lib/core-types'
 
 export const computeRelationshipData: ComputedDataFn<'relationship'> = (context) => {
   const { data, dataFormatter, chartParams } = context

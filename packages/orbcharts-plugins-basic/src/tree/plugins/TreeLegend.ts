@@ -7,7 +7,7 @@ import {
   Observable,
   Subject } from 'rxjs'
 import {
-  defineTreePlugin } from '@orbcharts/core'
+  defineTreePlugin } from '../../../lib/core'
 import { DEFAULT_TREE_LEGEND_PARAMS } from '../defaults'
 import { createBaseLegend } from '../../base/BaseLegend'
 

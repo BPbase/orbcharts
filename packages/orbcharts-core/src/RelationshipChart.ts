@@ -1,6 +1,6 @@
 import type {
   ChartEntity,
-  ChartOptionsPartial } from './types'
+  ChartOptionsPartial } from '../lib/core-types'
 import { DATA_FORMATTER_RELATIONAL_DEFAULT} from './defaults'
 import { computeRelationshipData } from './relationship/computeRelationshipData'
 import { createRelationshipContextObserver } from './relationship/createRelationshipContextObserver'

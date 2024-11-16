@@ -1,22 +1,25 @@
 import * as d3 from 'd3'
-import type { ChartType } from '../types/Chart'
-import type { ChartParams } from '../types/ChartParams'
-import type { DatumBase, DatumValue } from '../types/Data'
-import type { DataSeries, DataSeriesDatum, DataSeriesValue } from '../types/DataSeries'
-import type { DataGrid, DataGridDatum, DataGridValue } from '../types/DataGrid'
-import type { DataMultiGrid } from '../types/DataMultiGrid'
-import type { DataMultiValue, DataMultiValueDatum, DataMultiValueValue } from '../types/DataMultiValue'
-import type { DataFormatterContainer } from '../types/DataFormatter'
-import type { SeriesDirection, DataFormatterGrid, DataFormatterGridGrid } from '../types/DataFormatterGrid'
-import type { DataFormatterMultiGrid } from '../types/DataFormatterMultiGrid'
-import type { ComputedDatumSeriesValue } from '../types/ComputedData'
-import type { ComputedDatumSeries } from '../types/ComputedDataSeries'
-import type { ComputedDatumGrid, ComputedDataGrid } from '../types/ComputedDataGrid'
-import type { ComputedDataMultiGrid } from '../types/ComputedDataMultiGrid'
-import type { SeriesContainerPosition } from '../types/ContextObserverSeries'
-import type { GridContainerPosition } from '../types/ContextObserverGrid'
-import type { Layout } from '../types/Layout'
-// import type { ComputedDatumMultiGrid } from '../types/ComputedDataMultiGrid'
+import type {
+  ChartType,
+  ChartParams,
+  DatumValue,
+  DataSeries,
+  DataSeriesDatum,
+  DataSeriesValue,
+  DataGrid,
+  DataGridDatum,
+  DataGridValue,
+  DataMultiGrid,
+  DataMultiValue,
+  DataMultiValueDatum,
+  DataMultiValueValue,
+  DataFormatterContainer,
+  SeriesDirection,
+  DataFormatterGridGrid,
+  SeriesContainerPosition,
+  GridContainerPosition,
+  Layout
+} from '../../lib/core-types'
 import { isPlainObject } from './commonUtils'
 
 export function formatValueToLabel (value: any, valueFormatter: string | ((text: d3.NumberValue) => string)) {

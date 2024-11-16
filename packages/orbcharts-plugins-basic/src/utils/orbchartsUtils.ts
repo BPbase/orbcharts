@@ -4,7 +4,7 @@ import type {
   ChartParams,
   ComputedDatumBase,
   ComputedDatumSeriesValue,
-  ComputedDatumCategoryValue } from '@orbcharts/core'
+  ComputedDatumCategoryValue } from '../../lib/core-types'
 import { getMinAndMax } from './commonUtils'
 
 // 取得最小及最大值 - datum格式陣列資料

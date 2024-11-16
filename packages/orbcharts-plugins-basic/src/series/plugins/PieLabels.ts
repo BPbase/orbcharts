@@ -10,12 +10,12 @@ import {
   Subject,
   BehaviorSubject } from 'rxjs'
 import {
-  defineSeriesPlugin } from '@orbcharts/core'
+  defineSeriesPlugin } from '../../../lib/core'
 import type {
   ComputedDatumSeries,
   SeriesContainerPosition,
   EventSeries,
-  ChartParams } from '@orbcharts/core'
+  ChartParams } from '../../../lib/core-types'
 import type { PieLabelsParams } from '../types'
 import type { PieDatum } from '../seriesUtils'
 import { DEFAULT_PIE_LABELS_PARAMS } from '../defaults'

@@ -14,11 +14,11 @@ import {
   Subject,
   Observable } from 'rxjs'
 import {
-  defineGridPlugin } from '@orbcharts/core'
+  defineGridPlugin } from '../../../lib/core'
 import type {
   TransformData,
   DataFormatterGrid,
-  ChartParams } from '@orbcharts/core'
+  ChartParams } from '../../../lib/core-types'
 import { DEFAULT_GROUP_AREA_PARAMS } from '../defaults'
 import { parseTickFormatValue } from '../../utils/d3Utils'
 import { measureTextWidth } from '../../utils/commonUtils'
