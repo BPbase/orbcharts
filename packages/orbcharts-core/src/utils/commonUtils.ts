@@ -1,4 +1,3 @@
-// import * as d3 from 'd3'
 
 // 是否為原始物件
 export function isPlainObject(variable: any) {

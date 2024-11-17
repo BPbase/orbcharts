@@ -3,7 +3,7 @@ import { formatValueToLabel, createDefaultDatumId } from '../utils/orbchartsUtil
 import { createAxisLinearScale, createAxisPointScale } from '../utils/d3Utils'
 import { getMinAndMaxValue } from '../utils/orbchartsUtils'
 
-export const computeMultiValueData: ComputedDataFn<'multiValue'> = (context) => {
+export const computedDataFn: ComputedDataFn<'multiValue'> = (context) => {
   const { data, dataFormatter, chartParams } = context
   if (!data.length) {
     return []

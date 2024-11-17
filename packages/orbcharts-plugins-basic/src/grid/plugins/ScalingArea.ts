@@ -9,16 +9,30 @@ import {
   takeUntil,
   debounceTime,
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import type { DataFormatterGrid } from '../../../lib/core-types'
 import {
   defineGridPlugin, createAxisLinearScale } from '../../../lib/core'
 import { DEFAULT_SCALING_AREA_PARAMS } from '../defaults'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
+import { LAYER_INDEX_OF_ROOT } from '../../const'
 
 const pluginName = 'ScalingArea'
 const rectClassName = getClassName(pluginName, 'rect')
 
-export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PARAMS)(({ selection, rootSelection, name, observer, subject }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_SCALING_AREA_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_SCALING_AREA_PARAMS,
+  layerIndex: LAYER_INDEX_OF_ROOT,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
+
+export const ScalingArea = defineGridPlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
 
   const destroy$ = new Subject()
 

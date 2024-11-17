@@ -28,6 +28,22 @@ import type {
 //   groupLabel?: string // 要符合每一種computedData所以不一定會有groupLabel
 // }
 
+export function resizeObservable(elem: HTMLElement | Element): Observable<DOMRectReadOnly> {
+  return new Observable(subscriber => {
+    const ro = new ResizeObserver(entries => {
+      const entry = entries[0]
+      if (entry && entry.contentRect) {
+        subscriber.next(entry.contentRect)
+      }
+    })
+
+    ro.observe(elem)
+    return function unsubscribe() {
+      ro.unobserve(elem)
+    }
+  })
+}
+
 // 通用 highlight Observable
 export const highlightObservable = <T extends ChartType, D>({ datumList$, fullChartParams$, event$ }: {
   datumList$: Observable<D[]>

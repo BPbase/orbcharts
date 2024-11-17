@@ -10,6 +10,7 @@ import {
   iif,
   Observable,
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import type { ContextObserverMultiGrid, DataFormatterGrid, DataFormatterTypeMap, Layout } from '../../../lib/core-types'
 import {
   defineMultiGridPlugin } from '../../../lib/core'
@@ -18,12 +19,25 @@ import { createBaseValueAxis } from '../../base/BaseValueAxis'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '../../../lib/core'
+import { LAYER_INDEX_OF_AXIS } from '../../const'
 
 const pluginName = 'OverlappingValueAxes'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS)(({ selection, name, subject, observer }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS,
+  layerIndex: LAYER_INDEX_OF_AXIS,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
+
+export const OverlappingValueAxes = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []

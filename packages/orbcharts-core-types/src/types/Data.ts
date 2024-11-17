@@ -5,6 +5,7 @@ import { DataMultiGrid, DataMultiGridDatum, DataMultiGridValue } from './DataMul
 import { DataMultiValue, DataMultiValueDatum, DataMultiValueValue } from './DataMultiValue'
 import { DataTree, DataTreeDatum, DataTreeObj } from './DataTree'
 import { DataRelationship, Node, Edge } from './DataRelationship'
+import type { ValidatorResult } from './Validator'
 
 // 基本欄位（皆為可選，無填寫則在計算時產生預設值）
 export interface DatumBase {
@@ -43,3 +44,5 @@ export type DatumTypeMap<T extends ChartType> = T extends 'series' ? DataSeriesD
 //   | DataMultiValue
 //   | DataTree
 //   | DataRelationship
+
+export type DataValidator<T extends ChartType> = (computedData: DataTypeMap<T>) => ValidatorResult

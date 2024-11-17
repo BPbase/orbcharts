@@ -8,12 +8,26 @@ import {
   Subject } from 'rxjs'
 import {
   defineGridPlugin } from '../../../lib/core'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import { DEFAULT_GRID_LEGEND_PARAMS } from '../defaults'
+import { LAYER_INDEX_OF_INFO } from '../../const'
 import { createBaseLegend } from '../../base/BaseLegend'
 
 const pluginName = 'GridLegend'
 
-export const GridLegend = defineGridPlugin(pluginName, DEFAULT_GRID_LEGEND_PARAMS)(({ selection, rootSelection, observer, subject }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_GRID_LEGEND_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_GRID_LEGEND_PARAMS,
+  layerIndex: LAYER_INDEX_OF_INFO,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
+
+export const GridLegend = defineGridPlugin(pluginConfig)(({ selection, rootSelection, observer, subject }) => {
   
   const destroy$ = new Subject()
 

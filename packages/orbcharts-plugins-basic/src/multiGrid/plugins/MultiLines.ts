@@ -3,18 +3,32 @@ import {
   map,
   takeUntil,
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineMultiGridPlugin } from '../../../lib/core'
 import { DEFAULT_MULTI_LINES_PARAMS } from '../defaults'
 import { createBaseLines } from '../../base/BaseLines'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
+import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 
 const pluginName = 'MultiLines'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiLines = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_LINES_PARAMS)(({ selection, rootSelection, name, subject, observer }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_LINES_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_MULTI_LINES_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
+
+export const MultiLines = defineMultiGridPlugin(pluginConfig)(({ selection, rootSelection, name, subject, observer }) => {
   const destroy$ = new Subject()
   
   const unsubscribeFnArr: (() => void)[] = []

@@ -2,12 +2,26 @@ import {
   Subject } from 'rxjs'
 import {
   defineGridPlugin } from '../../../lib/core'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import { DEFAULT_DOTS_PARAMS } from '../defaults'
+import { LAYER_INDEX_OF_GRAPHIC_COVER } from '../../const'
 import { createBaseDots } from '../../base/BaseDots'
 
 const pluginName = 'Dots'
 
-export const Dots = defineGridPlugin(pluginName, DEFAULT_DOTS_PARAMS)(({ selection, name, subject, observer }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_DOTS_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_DOTS_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC_COVER,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
+
+export const Dots = defineGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   
   const destroy$ = new Subject()
 

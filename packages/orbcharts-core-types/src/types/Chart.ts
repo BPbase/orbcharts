@@ -1,16 +1,26 @@
 import type { ChartParams, ChartParamsPartial } from './ChartParams'
 import type { ContextSubject } from './ContextSubject'
-import type { ContextObserverFn } from './ContextObserver'
-import type { ComputedDataFn } from './ComputedData'
-import type { DataFormatterTypeMap, DataFormatterPartialTypeMap } from './DataFormatter'
+import type { ContextObserverCallback } from './ContextObserver'
+import type { DataValidator } from './Data'
+import type { ComputedDataFn, ComputedDataTypeMap } from './ComputedData'
+import type { DataFormatterTypeMap, DataFormatterPartialTypeMap, DataFormatterValidator } from './DataFormatter'
+import type { Preset } from './Preset'
 
 export type ChartType = 'series' | 'grid' | 'multiGrid' | 'multiValue' | 'tree' | 'relationship'
 
 export interface CreateBaseChart {
-  <T extends ChartType>({ defaultDataFormatter, computedDataFn, contextObserverFn }: {
+  <T extends ChartType>({
+    defaultDataFormatter,
+    dataFormatterValidator,
+    computedDataFn,
+    dataValidator,
+    contextObserverCallback
+  }: {
     defaultDataFormatter: DataFormatterTypeMap<T>
+    dataFormatterValidator: DataFormatterValidator<T>
     computedDataFn: ComputedDataFn<T>
-    contextObserverFn: ContextObserverFn<T>
+    dataValidator: DataValidator<T>
+    contextObserverCallback: ContextObserverCallback<T>
   }): CreateChart<T>
 }
 
@@ -37,18 +47,3 @@ export interface ChartOptionsPartial<T extends ChartType> {
   height?: number | 'auto'
 }
 
-export interface Preset<T extends ChartType, AllPluginParams> {
-  name: string
-  description: string
-  chartParams: ChartParams
-  dataFormatter: DataFormatterTypeMap<T>
-  allPluginParams: AllPluginParams
-}
-
-export interface PresetPartial<T extends ChartType, AllPluginParams> {
-  name?: string
-  description?: string
-  chartParams?: ChartParamsPartial
-  dataFormatter?: DataFormatterPartialTypeMap<T>
-  allPluginParams?: AllPluginParams
-}

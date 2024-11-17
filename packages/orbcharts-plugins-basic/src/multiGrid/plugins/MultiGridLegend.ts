@@ -6,15 +6,29 @@ import {
   takeUntil,
   Observable,
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineMultiGridPlugin, mergeOptionsWithDefault } from '../../../lib/core'
 import { DEFAULT_MULTI_GRID_LEGEND_PARAMS } from '../defaults'
 import { createBaseLegend } from '../../base/BaseLegend'
 import type { BaseLegendParams } from '../../base/BaseLegend'
+import { LAYER_INDEX_OF_INFO } from '../../const'
 
 const pluginName = 'MultiGridLegend'
 
-export const MultiGridLegend = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GRID_LEGEND_PARAMS)(({ selection, rootSelection, observer, subject }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_GRID_LEGEND_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_MULTI_GRID_LEGEND_PARAMS,
+  layerIndex: LAYER_INDEX_OF_INFO,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
+
+export const MultiGridLegend = defineMultiGridPlugin(pluginConfig)(({ selection, rootSelection, observer, subject }) => {
   
   const destroy$ = new Subject()
 

@@ -6,18 +6,32 @@ import {
   shareReplay,
   takeUntil
 } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineMultiGridPlugin } from '../../../lib/core'
 import { DEFAULT_MULTI_BAR_STACK_PARAMS } from '../defaults'
 import { createBaseBarStack } from '../../base/BaseBarStack'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
+import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 
 const pluginName = 'MultiBarStack'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiBarStack = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_BAR_STACK_PARAMS)(({ selection, name, subject, observer }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_BAR_STACK_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_MULTI_BAR_STACK_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
+
+export const MultiBarStack = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []

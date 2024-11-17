@@ -6,14 +6,28 @@ import {
   takeUntil,
   Observable,
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineTreePlugin } from '../../../lib/core'
 import { DEFAULT_TREE_LEGEND_PARAMS } from '../defaults'
 import { createBaseLegend } from '../../base/BaseLegend'
+import { LAYER_INDEX_OF_INFO } from '../../const'
 
 const pluginName = 'TreeLegend'
 
-export const TreeLegend = defineTreePlugin(pluginName, DEFAULT_TREE_LEGEND_PARAMS)(({ selection, rootSelection, observer, subject }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_TREE_LEGEND_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_TREE_LEGEND_PARAMS,
+  layerIndex: LAYER_INDEX_OF_INFO,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
+
+export const TreeLegend = defineTreePlugin(pluginConfig)(({ selection, rootSelection, observer, subject }) => {
   
   const destroy$ = new Subject()
 

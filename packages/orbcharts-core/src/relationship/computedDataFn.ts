@@ -9,7 +9,7 @@ import type {
   ComputedEdge
 } from '../../lib/core-types'
 
-export const computeRelationshipData: ComputedDataFn<'relationship'> = (context) => {
+export const computedDataFn: ComputedDataFn<'relationship'> = (context) => {
   const { data, dataFormatter, chartParams } = context
 
   let computedNodes: ComputedNode[] = []

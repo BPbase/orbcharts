@@ -82,3 +82,4 @@ export type ComputedDatumTypeMap<T extends ChartType> = T extends 'series' ? Com
 : T extends 'relationship' ? ComputedNode
 : T extends 'tree' ? ComputedDataTree
 : unknown
+

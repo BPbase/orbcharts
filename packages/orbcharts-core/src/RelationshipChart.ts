@@ -2,8 +2,10 @@ import type {
   ChartEntity,
   ChartOptionsPartial } from '../lib/core-types'
 import { DATA_FORMATTER_RELATIONAL_DEFAULT} from './defaults'
-import { computeRelationshipData } from './relationship/computeRelationshipData'
-import { createRelationshipContextObserver } from './relationship/createRelationshipContextObserver'
+import { dataFormatterValidator } from './relationship/dataFormatterValidator'
+import { computedDataFn } from './relationship/computedDataFn'
+import { dataValidator } from './relationship/dataValidator'
+import { contextObserverCallback } from './relationship/contextObserverCallback'
 import { AbstractChart } from './AbstractChart'
 
 export class RelationshipChart extends AbstractChart<'relationship'> implements ChartEntity<'relationship'> {
@@ -11,8 +13,10 @@ export class RelationshipChart extends AbstractChart<'relationship'> implements 
     super(
       {
         defaultDataFormatter: DATA_FORMATTER_RELATIONAL_DEFAULT,
-        computedDataFn: computeRelationshipData,
-        contextObserverFn: createRelationshipContextObserver
+        dataFormatterValidator,
+        computedDataFn,
+        dataValidator,
+        contextObserverCallback
       },
       element,
       options

@@ -17,7 +17,6 @@ import type {
   ComputedDataTypeMap,
   ComputedDatumTypeMap,
   ComputedDataGrid,
-  ContextObserverFn,
   DataTypeMap,
   DataGridDatum,
   ComputedDatumGrid,
@@ -31,10 +30,10 @@ import type {
   HighlightTarget,
   Layout,
   TransformData } from '../../lib/core-types'
-import { getMinAndMaxGrid } from '../utils/orbchartsUtils'
-import { createAxisLinearScale, createAxisPointScale, createAxisQuantizeScale } from '../utils/d3Utils'
-import { calcGridContainerLayout } from '../utils/orbchartsUtils'
-import { getMinAndMaxValue } from '../utils/orbchartsUtils'
+import { getMinAndMaxGrid } from './orbchartsUtils'
+import { createAxisLinearScale, createAxisPointScale, createAxisQuantizeScale } from './d3Utils'
+import { calcGridContainerLayout } from './orbchartsUtils'
+import { getMinAndMaxValue } from './orbchartsUtils'
 
 export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'grid'>>
@@ -473,7 +472,7 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
 //   return highlightObservable ({ datumList$, fullChartParams$, event$ })
 // }
 
-export const seriesLabelsObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
+export const gridSeriesLabelsObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
   return computedData$.pipe(
     map(data => {
       return data

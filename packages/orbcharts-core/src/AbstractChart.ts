@@ -3,16 +3,18 @@ import {
   Subject } from 'rxjs'
 import type {
   ComputedDataFn,
+  DataValidator,
   ChartEntity,
   ChartType,
   ChartParamsPartial,
-  ContextObserverFn,
+  ContextObserverCallback,
   ChartOptionsPartial,
   DataTypeMap,
   DataFormatterTypeMap,
   DataFormatterPartialTypeMap,
+  DataFormatterValidator,
   EventTypeMap,
-  PluginEntity } from './types'
+  PluginEntity } from '../lib/core-types'
 import { createBaseChart } from './base/createBaseChart'
 
 export abstract class AbstractChart<T extends ChartType> implements ChartEntity<T> {
@@ -25,15 +27,17 @@ export abstract class AbstractChart<T extends ChartType> implements ChartEntity<
   event$: Subject<EventTypeMap<T>> = new Subject()
 
   constructor (
-    { defaultDataFormatter, computedDataFn, contextObserverFn }: {
+    { defaultDataFormatter, dataFormatterValidator, computedDataFn, dataValidator, contextObserverCallback }: {
       defaultDataFormatter: DataFormatterTypeMap<T>
+      dataFormatterValidator: DataFormatterValidator<T>
       computedDataFn: ComputedDataFn<T>
-      contextObserverFn: ContextObserverFn<T>
+      dataValidator: DataValidator<T>
+      contextObserverCallback: ContextObserverCallback<T>
     },
     element: HTMLElement | Element,
     options?: ChartOptionsPartial<T>
   ) {
-    const baseChart = createBaseChart({ defaultDataFormatter, computedDataFn, contextObserverFn })
+    const baseChart = createBaseChart({ defaultDataFormatter, dataFormatterValidator, computedDataFn, dataValidator, contextObserverCallback })
     const chartEntity = baseChart(element, options)
 
     this.selection = chartEntity.selection

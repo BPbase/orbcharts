@@ -12,7 +12,7 @@ import type { ContextObserverSeries } from './ContextObserverSeries'
 import type { ContextObserverTree } from './ContextObserverTree'
 import type { ContextSubject } from './ContextSubject'
 
-export interface ContextObserverFn<T extends ChartType> {
+export interface ContextObserverCallback<T extends ChartType> {
   ({ subject, observer }: {
     subject: ContextSubject<T>
     observer: ContextObserverBase<T, unknown>

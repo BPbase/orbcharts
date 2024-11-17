@@ -6,14 +6,28 @@ import {
   shareReplay,
   takeUntil
 } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineGridPlugin } from '../../../lib/core'
 import { DEFAULT_BARS_PARAMS } from '../defaults'
+import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 import { createBaseBars } from '../../base/BaseBars'
 
 const pluginName = 'Bars'
 
-export const Bars = defineGridPlugin(pluginName, DEFAULT_BARS_PARAMS)(({ selection, name, subject, observer }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BARS_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_BARS_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
+
+export const Bars = defineGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeBaseBars = createBaseBars(pluginName, {

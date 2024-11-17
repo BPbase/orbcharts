@@ -2,18 +2,32 @@ import * as d3 from 'd3'
 import {
   takeUntil,
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineMultiGridPlugin } from '../../../lib/core'
 import { DEFAULT_MULTI_DOTS_PARAMS } from '../defaults'
 import { createBaseDots } from '../../base/BaseDots'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
+import { LAYER_INDEX_OF_GRAPHIC_COVER } from '../../const'
 
 const pluginName = 'MultiDots'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiDots = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_DOTS_PARAMS)(({ selection, name, subject, observer }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_DOTS_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_MULTI_DOTS_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC_COVER,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
+
+export const MultiDots = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []

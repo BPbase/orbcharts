@@ -6,14 +6,28 @@ import {
   takeUntil,
   Observable,
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineSeriesPlugin } from '../../../lib/core'
 import { DEFAULT_SERIES_LEGEND_PARAMS } from '../defaults'
 import { createBaseLegend } from '../../base/BaseLegend'
+import { LAYER_INDEX_OF_INFO } from '../../const'
 
 const pluginName = 'SeriesLegend'
 
-export const SeriesLegend = defineSeriesPlugin(pluginName, DEFAULT_SERIES_LEGEND_PARAMS)(({ selection, rootSelection, observer, subject }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_SERIES_LEGEND_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_SERIES_LEGEND_PARAMS,
+  layerIndex: LAYER_INDEX_OF_INFO,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
+
+export const SeriesLegend = defineSeriesPlugin(pluginConfig)(({ selection, rootSelection, observer, subject }) => {
   
   const destroy$ = new Subject()
 

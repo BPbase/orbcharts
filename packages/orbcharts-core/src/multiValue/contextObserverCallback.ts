@@ -1,6 +1,6 @@
-import type { ContextObserverFn } from '../../lib/core-types'
+import type { ContextObserverCallback } from '../../lib/core-types'
 
-export const createRelationshipContextObserver: ContextObserverFn<'relationship'> = ({ subject, observer }) => {
+export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({ subject, observer }) => {
 
   return {
     fullParams$: observer.fullParams$,

@@ -1,13 +1,20 @@
 import { map, shareReplay } from 'rxjs'
-import type { ContextObserverFn } from '../../lib/core-types'
+import type { ContextObserverCallback } from '../../lib/core-types'
 import {
   seriesDataMapObservable,
   groupDataMapObservable } from '../utils/observables'
 import { highlightObservable, textSizePxObservable } from '../utils/observables'
 
-import { separateSeriesObservable, visibleComputedDataObservable, computedLayoutDataObservable, seriesLabelsObservable, seriesContainerPositionObservable, seriesContainerPositionMapObservable } from './seriesObservables'
+import {
+  separateSeriesObservable,
+  seriesVisibleComputedDataObservable,
+  seriesComputedLayoutDataObservable,
+  seriesLabelsObservable,
+  seriesContainerPositionObservable,
+  seriesContainerPositionMapObservable
+} from '../utils/seriesObservables'
 
-export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subject, observer }) => {
+export const contextObserverCallback: ContextObserverCallback<'series'> = ({ subject, observer }) => {
 
   const textSizePx$ = textSizePxObservable(observer.fullChartParams$).pipe(
     shareReplay(1)
@@ -17,18 +24,18 @@ export const createSeriesContextObserver: ContextObserverFn<'series'> = ({ subje
     fullDataFormatter$: observer.fullDataFormatter$
   })
 
-  const visibleComputedData$ = visibleComputedDataObservable({
+  const visibleComputedData$ = seriesVisibleComputedDataObservable({
     computedData$: observer.computedData$,
   })
 
-  const computedLayoutData$ = computedLayoutDataObservable({
+  const computedLayoutData$ = seriesComputedLayoutDataObservable({
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$
   }).pipe(
     shareReplay(1)
   )
 
-  const visibleComputedLayoutData$ = visibleComputedDataObservable({
+  const visibleComputedLayoutData$ = seriesVisibleComputedDataObservable({
     computedData$: computedLayoutData$,
   })
 

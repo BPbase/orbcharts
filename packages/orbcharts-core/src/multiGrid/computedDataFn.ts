@@ -7,9 +7,9 @@ import {
   createMultiGridSeriesLabels,
   createMultiGridGroupLabels
 } from '../utils/orbchartsUtils'
-import { createTransposedDataGrid } from '../grid/computeGridData'
+import { createTransposedDataGrid } from '../grid/computedDataFn'
 
-export const computeMultiGridData: ComputedDataFn<'multiGrid'> = (context) => {
+export const computedDataFn: ComputedDataFn<'multiGrid'> = (context) => {
   const { data = [], dataFormatter, chartParams } = context
   if (!data.length) {
     return []

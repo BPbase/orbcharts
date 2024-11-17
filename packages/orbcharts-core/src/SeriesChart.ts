@@ -2,8 +2,10 @@ import type {
   ChartEntity,
   ChartOptionsPartial } from '../lib/core-types'
 import { DATA_FORMATTER_SERIES_DEFAULT } from './defaults'
-import { computeSeriesData } from './series/computeSeriesData'
-import { createSeriesContextObserver } from './series/createSeriesContextObserver'
+import { dataFormatterValidator } from './series/dataFormatterValidator'
+import { computedDataFn } from './series/computedDataFn'
+import { dataValidator } from './series/dataValidator'
+import { contextObserverCallback } from './series/contextObserverCallback'
 import { AbstractChart } from './AbstractChart'
 
 export class SeriesChart extends AbstractChart<'series'> implements ChartEntity<'series'> {
@@ -11,8 +13,10 @@ export class SeriesChart extends AbstractChart<'series'> implements ChartEntity<
     super(
       {
         defaultDataFormatter: DATA_FORMATTER_SERIES_DEFAULT,
-        computedDataFn: computeSeriesData,
-        contextObserverFn: createSeriesContextObserver
+        dataFormatterValidator,
+        computedDataFn,
+        dataValidator,
+        contextObserverCallback
       },
       element,
       options

@@ -1,5 +1,5 @@
 import { map, shareReplay, distinctUntilChanged } from 'rxjs'
-import type { ContextObserverFn } from '../../lib/core-types'
+import type { ContextObserverCallback } from '../../lib/core-types'
 import {
   highlightObservable,
   seriesDataMapObservable,
@@ -12,14 +12,14 @@ import {
   gridGraphicTransformObservable,
   gridGraphicReverseScaleObservable,
   gridAxesSizeObservable,
-  seriesLabelsObservable,
+  gridSeriesLabelsObservable,
   gridVisibleComputedDataObservable,
   gridVisibleComputedLayoutDataObservable,
   // isSeriesSeprateObservable,
   gridContainerPositionObservable,
-  computedStackedDataObservables } from './gridObservables'
+  computedStackedDataObservables } from '../utils/gridObservables'
 
-export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, observer }) => {
+export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subject, observer }) => {
   
   const textSizePx$ = textSizePxObservable(observer.fullChartParams$).pipe(
     shareReplay(1)
@@ -85,7 +85,7 @@ export const createGridContextObserver: ContextObserverFn<'grid'> = ({ subject, 
     shareReplay(1)
   )
 
-  const seriesLabels$ = seriesLabelsObservable({
+  const seriesLabels$ = gridSeriesLabelsObservable({
     computedData$: observer.computedData$,
   })
 

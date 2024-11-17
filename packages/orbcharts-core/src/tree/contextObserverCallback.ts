@@ -1,13 +1,13 @@
 import { map, shareReplay } from 'rxjs'
-import type { ContextObserverFn } from '../../lib/core-types'
+import type { ContextObserverCallback } from '../../lib/core-types'
 import { highlightObservable, categoryDataMapObservable, textSizePxObservable } from '../utils/observables'
 import {
   nodeListObservable,
   existCategoryLabelsObservable,
   treeVisibleComputedDataObservable
-} from './treeObservables'
+} from '../utils/treeObservables'
 
-export const createTreeContextObserver: ContextObserverFn<'tree'> = ({ subject, observer }) => {
+export const contextObserverCallback: ContextObserverCallback<'tree'> = ({ subject, observer }) => {
 
   const textSizePx$ = textSizePxObservable(observer.fullChartParams$).pipe(
     shareReplay(1)

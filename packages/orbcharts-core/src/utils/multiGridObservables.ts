@@ -30,21 +30,21 @@ import type {
 import {
   highlightObservable,
   seriesDataMapObservable,
-  groupDataMapObservable } from '../utils/observables'
+  groupDataMapObservable } from './observables'
 import {
   gridAxesTransformObservable,
   gridGraphicTransformObservable,
   gridGraphicReverseScaleObservable,
   gridAxesReverseTransformObservable,
   gridAxesSizeObservable,
-  seriesLabelsObservable,
+  gridSeriesLabelsObservable,
   gridComputedLayoutDataObservable,
   gridVisibleComputedDataObservable,
   gridVisibleComputedLayoutDataObservable,
   // isSeriesSeprateObservable,
-  computedStackedDataObservables } from '../grid/gridObservables'
+  computedStackedDataObservables } from './gridObservables'
 import { DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT } from '../defaults'
-import { calcGridContainerLayout } from '../utils/orbchartsUtils'
+import { calcGridContainerLayout } from './orbchartsUtils'
 
 // 每一個grid計算出來的所有Observable
 export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData$, layout$, fullChartParams$, event$ }: {
@@ -197,7 +197,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
         //   shareReplay(1)
         // )
     
-        const seriesLabels$ = seriesLabelsObservable({
+        const seriesLabels$ = gridSeriesLabelsObservable({
           computedData$: gridComputedData$,
         }).pipe(
           takeUntil(destroy$),

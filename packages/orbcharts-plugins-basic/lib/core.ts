@@ -1,8 +1,6 @@
 
 
-export * from '@orbcharts/core'
-export { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '@orbcharts/core/src/grid/gridObservables'
+// export * from '@orbcharts/core'
 
 // test
-// export * from '../../orbcharts-core'
-// export { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '../../orbcharts-core/src/grid/gridObservables'
+export * from '../../orbcharts-core/src'

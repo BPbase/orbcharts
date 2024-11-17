@@ -3,5 +3,5 @@
 export * from '@orbcharts/core-types'
 
 // test
-// export * from '../../orbcharts-core-types'
+// export * from '../../orbcharts-core-types/src'
 

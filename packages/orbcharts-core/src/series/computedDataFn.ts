@@ -1,7 +1,7 @@
 import type { DataSeries, DataSeriesDatum, ComputedDataFn, ComputedDatumSeries } from '../../lib/core-types'
 import { formatValueToLabel, createDefaultDatumId, createDefaultSeriesLabel, seriesColorPredicate } from '../utils/orbchartsUtils'
 
-export const computeSeriesData: ComputedDataFn<'series'> = (context) => {
+export const computedDataFn: ComputedDataFn<'series'> = (context) => {
   const { data = [], dataFormatter, chartParams } = context
   if (!data.length) {
     return []

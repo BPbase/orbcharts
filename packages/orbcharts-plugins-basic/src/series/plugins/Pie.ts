@@ -8,6 +8,7 @@ import {
   shareReplay,
   Observable,
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import type {
   ComputedDataSeries,
   ComputedDatumSeries,
@@ -24,10 +25,21 @@ import { makePieData } from '../seriesUtils'
 import { getD3TransitionEase, makeD3Arc } from '../../utils/d3Utils'
 import { getDatumColor, getClassName } from '../../utils/orbchartsUtils'
 import { seriesCenterSelectionObservable } from '../seriesObservables'
-
+import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 
 const pluginName = 'Pie'
 
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_PIE_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_PIE_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
 
 function makeTweenPieRenderDataFn ({ enter, exit, data, lastTweenData, fullParams }: {
   enter: d3.Selection<d3.EnterElement, PieDatum, any, any>
@@ -524,7 +536,7 @@ function createEachPie (pluginName: string, context: {
   }
 }
 
-export const Pie = defineSeriesPlugin(pluginName, DEFAULT_PIE_PARAMS)(({ selection, name, subject, observer }) => {
+export const Pie = defineSeriesPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const { seriesCenterSelection$ } = seriesCenterSelectionObservable({

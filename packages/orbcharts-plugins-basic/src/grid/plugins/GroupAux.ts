@@ -15,6 +15,7 @@ import {
   Observable } from 'rxjs'
 import {
   defineGridPlugin } from '../../../lib/core'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import type {
   TransformData,
   DataFormatterGrid,
@@ -28,6 +29,7 @@ import { gridGroupPosition } from '../gridObservables'
 import type { GroupAuxParams } from '../types'
 import { gridSelectionsObservable } from '../gridObservables'
 import { renderTspansOnAxis } from '../../utils/d3Graphics'
+import { LAYER_INDEX_OF_AUX } from '../../const'
 
 interface LineDatum {
   id: string
@@ -49,6 +51,18 @@ interface LabelDatum {
 
 const pluginName = 'GroupAux'
 const labelClassName = getClassName(pluginName, 'label-box')
+
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_GROUP_AREA_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_GROUP_AREA_PARAMS,
+  layerIndex: LAYER_INDEX_OF_AUX,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
 
 function createLineData ({ groupLabel, axisX, axisHeight, fullParams }: {
   groupLabel: string
@@ -256,7 +270,8 @@ function removeLabel (selection: d3.Selection<any, string, any, unknown>) {
   gUpdate.exit().remove()
 }
 
-export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(({ selection, rootSelection, name, subject, observer }) => {
+
+export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   let isLabelMouseover = false

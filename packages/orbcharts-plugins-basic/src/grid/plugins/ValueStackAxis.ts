@@ -7,14 +7,28 @@ import {
   iif,
   Observable,
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineGridPlugin } from '../../../lib/core'
 import { DEFAULT_VALUE_STACK_AXIS_PARAMS } from '../defaults'
+import { LAYER_INDEX_OF_AXIS } from '../../const'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
 
 const pluginName = 'ValueStackAxis'
 
-export const ValueStackAxis = defineGridPlugin(pluginName, DEFAULT_VALUE_STACK_AXIS_PARAMS)(({ selection, name, observer, subject }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_VALUE_STACK_AXIS_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_VALUE_STACK_AXIS_PARAMS,
+  layerIndex: LAYER_INDEX_OF_AXIS,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
+
+export const ValueStackAxis = defineGridPlugin(pluginConfig)(({ selection, name, observer, subject }) => {
   
   const destroy$ = new Subject()
 

@@ -1,11 +1,11 @@
 import {
   map,
   shareReplay } from 'rxjs'
-import type { ContextObserverFn } from '../../lib/core-types'
-import { multiGridEachDetailObservable, multiGridContainerObservable } from './multiGridObservables'
+import type { ContextObserverCallback } from '../../lib/core-types'
+import { multiGridEachDetailObservable, multiGridContainerObservable } from '../utils/multiGridObservables'
 import { textSizePxObservable } from '../utils/observables'
 
-export const createMultiGridContextObserver: ContextObserverFn<'multiGrid'> = ({ subject, observer }) => {
+export const contextObserverCallback: ContextObserverCallback<'multiGrid'> = ({ subject, observer }) => {
 
   const textSizePx$ = textSizePxObservable(observer.fullChartParams$).pipe(
     shareReplay(1)

@@ -65,7 +65,7 @@ export function createTransposedDataGrid (data: DataGrid, dataFormatterGrid: Dat
   }
 }
 
-export const computeGridData: ComputedDataFn<'grid'> = (context) => {
+export const computedDataFn: ComputedDataFn<'grid'> = (context) => {
   const { data = [], dataFormatter, chartParams } = context
   if (!data.length) {
     return []

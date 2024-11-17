@@ -8,6 +8,7 @@ import {
   distinctUntilChanged,
   Observable,
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import type { Subscription } from 'rxjs'
 import {
   defineSeriesPlugin} from '../../../lib/core'
@@ -22,7 +23,7 @@ import { DEFAULT_PIE_EVENT_TEXTS_PARAMS } from '../defaults'
 import { getD3TransitionEase } from '../../utils/d3Utils'
 import { getClassName } from '../../utils/orbchartsUtils'
 import { seriesCenterSelectionObservable } from '../seriesObservables'
-
+import { LAYER_INDEX_OF_LABEL } from '../../const'
 
 type TextDatum = {
   text: string
@@ -32,6 +33,18 @@ type TextDatum = {
 
 const pluginName = 'PieEventTexts'
 const textClassName = getClassName(pluginName, 'text')
+
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_PIE_EVENT_TEXTS_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_PIE_EVENT_TEXTS_PARAMS,
+  layerIndex: LAYER_INDEX_OF_LABEL,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
 
 function renderText (
   selection: d3.Selection<SVGGElement, unknown, any, any>,
@@ -205,7 +218,7 @@ function createEachPieEventTexts (pluginName: string, context: {
   }
 }
 
-export const PieEventTexts = defineSeriesPlugin(pluginName, DEFAULT_PIE_EVENT_TEXTS_PARAMS)(({ selection, name, observer, subject }) => {
+export const PieEventTexts = defineSeriesPlugin(pluginConfig)(({ selection, name, observer, subject }) => {
   const destroy$ = new Subject()
 
   const { seriesCenterSelection$ } = seriesCenterSelectionObservable({

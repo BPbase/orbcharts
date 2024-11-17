@@ -1,13 +1,27 @@
 import {
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineGridPlugin } from '../../../lib/core'
 import { DEFAULT_LINE_AREAS_PARAMS } from '../defaults'
 import { createBaseLineAreas } from '../../base/BaseLineAreas'
+import { LAYER_INDEX_OF_GRAPHIC_GROUND } from '../../const'
 
 const pluginName = 'LineAreas'
 
-export const LineAreas = defineGridPlugin(pluginName, DEFAULT_LINE_AREAS_PARAMS)(({ selection, name, observer, subject }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_LINE_AREAS_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_LINE_AREAS_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC_GROUND,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
+
+export const LineAreas = defineGridPlugin(pluginConfig)(({ selection, name, observer, subject }) => {
 
   const destroy$ = new Subject()
 

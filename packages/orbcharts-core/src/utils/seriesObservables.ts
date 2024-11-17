@@ -16,7 +16,7 @@ import type {
   DataFormatterTypeMap,
   SeriesContainerPosition,
   Layout } from '../../lib/core-types'
-import { calcSeriesContainerLayout } from '../utils/orbchartsUtils'
+import { calcSeriesContainerLayout } from './orbchartsUtils'
 
 export const separateSeriesObservable = ({ fullDataFormatter$ }: { fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>> }) => {
   return fullDataFormatter$.pipe(
@@ -40,7 +40,7 @@ export const seriesLabelsObservable = ({ computedData$ }: { computedData$: Obser
   )
 }
 
-export const visibleComputedDataObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'series'>> }) => {
+export const seriesVisibleComputedDataObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'series'>> }) => {
   return computedData$.pipe(
     map(data => {
       return data.map(series => {
@@ -50,7 +50,7 @@ export const visibleComputedDataObservable = ({ computedData$ }: { computedData$
   )
 }
 
-export const computedLayoutDataObservable = ({ computedData$, fullDataFormatter$ }: {
+export const seriesComputedLayoutDataObservable = ({ computedData$, fullDataFormatter$ }: {
   computedData$: Observable<ComputedDataTypeMap<'series'>>,
   fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>>
 }) => {

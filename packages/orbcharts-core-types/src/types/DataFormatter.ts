@@ -9,7 +9,7 @@ import type { DataFormatterMultiValue, DataFormatterMultiValuePartial } from './
 import type { DataFormatterTree, DataFormatterTreePartial } from './DataFormatterTree'
 import type { DataFormatterRelationship, DataFormatterRelationshipPartial } from './DataFormatterRelationship'
 import type { AxisPosition } from './Axis'
-
+import type { ValidatorResult } from './Validator'
 
 // dataFormatter計算當中會使用的資料
 export interface DataFormatterContext<T extends ChartType> {
@@ -75,3 +75,4 @@ export interface DataFormatterContainer {
   columnAmount: number
 }
 
+export type DataFormatterValidator<T extends ChartType> = (dataFormatter: DataFormatterPartialTypeMap<T>) => ValidatorResult

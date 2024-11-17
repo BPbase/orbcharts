@@ -2,7 +2,7 @@ import type { DataTree, DataTreeObj, DataTreeDatum, ComputedDataFn, ComputedData
 import { isPlainObject } from '../utils/commonUtils'
 import { seriesColorPredicate } from '../utils/orbchartsUtils'
 
-export const computeTreeData: ComputedDataFn<'tree'> = (context) => {
+export const computedDataFn: ComputedDataFn<'tree'> = (context) => {
   const { data = [], dataFormatter, chartParams } = context
 
   // <categoryLabel, categoryIndex>

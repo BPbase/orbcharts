@@ -6,18 +6,32 @@ import {
   shareReplay,
   takeUntil
 } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineMultiGridPlugin } from '../../../lib/core'
 import { DEFAULT_MULTI_VALUE_AXIS_PARAMS } from '../defaults'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
+import { LAYER_INDEX_OF_AXIS } from '../../const'
 
 const pluginName = 'MultiValueAxis'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiValueAxis = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_VALUE_AXIS_PARAMS)(({ selection, name, subject, observer }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_VALUE_AXIS_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_MULTI_VALUE_AXIS_PARAMS,
+  layerIndex: LAYER_INDEX_OF_AXIS,
+  validator: (params) => {
+    return {
+      status: 'success',
+      message: ''
+    }
+  }
+}
+
+export const MultiValueAxis = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []
