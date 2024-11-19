@@ -62,6 +62,7 @@ import {
   CHART_PARAMS_DEFAULT,
   CHART_WIDTH_DEFAULT,
   CHART_HEIGHT_DEFAULT } from '../defaults'
+import { validator } from '../utils/validator'
 
 // 判斷dataFormatter是否需要size參數
 // const isAxesTypeMap: {[key in ChartType]: Boolean} = {
@@ -74,30 +75,19 @@ import {
 // }
 
 function chartOptionsValidator<T extends ChartType> (chartOptionsPartial: ChartOptionsPartial<T>): ValidatorResult {
-  if (chartOptionsPartial.width !== 'auto' && typeof chartOptionsPartial.width !== 'number') {
-    return {
-      status: 'error',
-      message: createValidatorErrorMessage({
-        columnName: 'width',
-        expect: 'number | "auto"',
-        at: 'Chart.constructor'
-      })
+  const rules = {
+    width: {
+      toBe: '"auto" | number',
+      test: (value: any) => value === 'auto' || typeof value === 'number'
+    },
+    height: {
+      toBe: '"auto" | number',
+      test: (value: any) => value === 'auto' || typeof value === 'number'
     }
   }
-  if (chartOptionsPartial.height !== 'auto' && typeof chartOptionsPartial.height !== 'number') {
-    return {
-      status: 'error',
-      message: createValidatorErrorMessage({
-        columnName: 'height',
-        expect: 'number | "auto"',
-        at: 'Chart.constructor'
-      })
-    }
-  }
-  return {
-    status: 'success',
-    message: ''
-  }
+  const result = validator(chartOptionsPartial, rules, 'Chart.constructor')
+  
+  return result
 }
 
 function chartParamsValidator (chartParamsPartial: ChartParamsPartial): ValidatorResult {
