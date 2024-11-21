@@ -16,6 +16,7 @@ import type {
   EventTypeMap,
   PluginEntity } from '../lib/core-types'
 import { createBaseChart } from './base/createBaseChart'
+import { createOrbChartsErrorMessage } from './utils/errorMessage'
 
 export abstract class AbstractChart<T extends ChartType> implements ChartEntity<T> {
   selection: d3.Selection<SVGGElement, unknown, HTMLElement, unknown>
@@ -37,16 +38,20 @@ export abstract class AbstractChart<T extends ChartType> implements ChartEntity<
     element: HTMLElement | Element,
     options?: ChartOptionsPartial<T>
   ) {
-    const baseChart = createBaseChart({ defaultDataFormatter, dataFormatterValidator, computedDataFn, dataValidator, contextObserverCallback })
-    const chartEntity = baseChart(element, options)
+    try {
+      const baseChart = createBaseChart({ defaultDataFormatter, dataFormatterValidator, computedDataFn, dataValidator, contextObserverCallback })
+      const chartEntity = baseChart(element, options)
 
-    this.selection = chartEntity.selection
-    this.destroy = chartEntity.destroy
-    this.data$ = chartEntity.data$
-    this.dataFormatter$ = chartEntity.dataFormatter$
-    this.plugins$ = chartEntity.plugins$
-    this.chartParams$ = chartEntity.chartParams$
-    this.event$ = chartEntity.event$
+      this.selection = chartEntity.selection
+      this.destroy = chartEntity.destroy
+      this.data$ = chartEntity.data$
+      this.dataFormatter$ = chartEntity.dataFormatter$
+      this.plugins$ = chartEntity.plugins$
+      this.chartParams$ = chartEntity.chartParams$
+      this.event$ = chartEntity.event$
+    } catch (e) {
+      console.error(createOrbChartsErrorMessage(e))
+    }
   }
   
 }

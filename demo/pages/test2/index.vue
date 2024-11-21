@@ -15,6 +15,7 @@ onMounted(() => {
   const el = document.querySelector('#chart')
 
   const chart = new GridChart(el!, {
+    width: '123'
     // preset: {
     //     "chartParams": {
             

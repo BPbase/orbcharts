@@ -55,14 +55,16 @@ import type {
   ValidatorResult,
 } from '../../lib/core-types'
 import { mergeOptionsWithDefault, resizeObservable } from '../utils'
-import { createValidatorErrorMessage } from '../utils/errorMessage'
+import { createValidatorErrorMessage, createValidatorWarningMessage, createOrbChartsErrorMessage } from '../utils/errorMessage'
+import { chartOptionsValidator } from './validators/chartOptionsValidator'
+import { elementValidator } from './validators/elementValidator'
+import { chartParamsValidator } from './validators/chartParamsValidator'
 import {
   CHART_OPTIONS_DEFAULT,
   PADDING_DEFAULT,
   CHART_PARAMS_DEFAULT,
   CHART_WIDTH_DEFAULT,
   CHART_HEIGHT_DEFAULT } from '../defaults'
-import { validator } from '../utils/validator'
 
 // 判斷dataFormatter是否需要size參數
 // const isAxesTypeMap: {[key in ChartType]: Boolean} = {
@@ -73,30 +75,6 @@ import { validator } from '../utils/validator'
 //   tree: false,
 //   relationship: false
 // }
-
-function chartOptionsValidator<T extends ChartType> (chartOptionsPartial: ChartOptionsPartial<T>): ValidatorResult {
-  const rules = {
-    width: {
-      toBe: '"auto" | number',
-      test: (value: any) => value === 'auto' || typeof value === 'number'
-    },
-    height: {
-      toBe: '"auto" | number',
-      test: (value: any) => value === 'auto' || typeof value === 'number'
-    }
-  }
-  const result = validator(chartOptionsPartial, rules, 'Chart.constructor')
-  
-  return result
-}
-
-function chartParamsValidator (chartParamsPartial: ChartParamsPartial): ValidatorResult {
-
-  return {
-    status: 'success',
-    message: ''
-  }
-}
 
 
 function mergeDataFormatter <T>(dataFormatter: any, defaultDataFormatter: T, chartType: ChartType): T {
@@ -131,14 +109,40 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
   
   // 建立chart實例
   return function createChart (element: HTMLElement | Element, options?: ChartOptionsPartial<T>): ChartEntity<T> {
-    
-    const { status, message } = chartOptionsValidator(options)
-    if (status === 'warning') {
-      console.warn(message)
-    } else if (status === 'error') {
-      console.error(message)
-      return
+    try {
+      const { status, columnName, expectToBe } = chartOptionsValidator(options)
+      if (status === 'error') {
+        throw new Error(createValidatorErrorMessage({
+          columnName,
+          expectToBe,
+          from: 'Chart.constructor'
+        }))
+      } else if (status === 'warning') {
+        console.warn(createValidatorWarningMessage({
+          columnName,
+          expectToBe,
+          from: 'Chart.constructor'
+        }))
+      } else {
+        const { status, columnName, expectToBe } = elementValidator(element)
+        if (status === 'error') {
+          throw new Error(createValidatorErrorMessage({
+            columnName,
+            expectToBe,
+            from: 'Chart.constructor'
+          }))
+        } else if (status === 'warning') {
+          console.warn(createValidatorWarningMessage({
+            columnName,
+            expectToBe,
+            from: 'Chart.constructor'
+          }))
+        }
+      }
+    } catch (e) {
+      throw new Error(e)
     }
+    
 
     // -- selections --
     // svg selection
@@ -196,20 +200,30 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
         map((dataFormatter) => {
           try {
             // 檢查 dataFormatter$ 資料格式是否正確
-            const { status, message } = dataFormatterValidator(dataFormatter)
+            const { status, columnName, expectToBe } = dataFormatterValidator(dataFormatter)
             if (status === 'error') {
-              throw new Error(message)
+              throw new Error(createValidatorErrorMessage({
+                columnName,
+                expectToBe,
+                from: 'Chart.constructor'
+              }))
             } else if (status === 'warning') {
-              console.warn(message)
+              console.warn(createValidatorWarningMessage({
+                columnName,
+                expectToBe,
+                from: 'Chart.constructor'
+              }))
             }
             
             return mergeDataFormatter(dataFormatter, mergedPresetWithDefault.dataFormatter, chartType)
           } catch (e) {
-            console.error(e)
             throw new Error(e)
           }
         }),
-        catchError(() => EMPTY),
+        catchError((e) => {
+          console.error(createOrbChartsErrorMessage(e))
+          return EMPTY
+        }),
         shareReplay(1)
       )
     const shareAndMergedChartParams$ = chartSubject.chartParams$
@@ -219,20 +233,30 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
         map((d) => {
           try {
             // 檢查 chartParams$ 資料格式是否正確
-            const { status, message } = chartParamsValidator(d)
+            const { status, columnName, expectToBe } = chartParamsValidator(d)
             if (status === 'error') {
-              throw new Error(message)
+              throw new Error(createValidatorErrorMessage({
+                columnName,
+                expectToBe,
+                from: 'Chart.constructor'
+              }))
             } else if (status === 'warning') {
-              console.warn(message)
+              console.warn(createValidatorWarningMessage({
+                columnName,
+                expectToBe,
+                from: 'Chart.constructor'
+              }))
             }
             
             return mergeOptionsWithDefault(d, mergedPresetWithDefault.chartParams)
           } catch (e) {
-            console.error(e)
             throw new Error(e)
           }
         }),
-        catchError(() => EMPTY),
+        catchError((e) => {
+          console.error(createOrbChartsErrorMessage(e))
+          return EMPTY
+        }),
         shareReplay(1)
       )
 
@@ -345,20 +369,30 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
             map(_d => {
               try {
                 // 檢查 data$ 資料格式是否正確
-                const { status, message } = dataValidator(_d.data)
+                const { status, columnName, expectToBe } = dataValidator(_d.data)
                 if (status === 'error') {
-                  throw new Error(message)
+                  throw new Error(createValidatorErrorMessage({
+                    columnName,
+                    expectToBe,
+                    from: 'Chart.constructor'
+                  }))
                 } else if (status === 'warning') {
-                  console.warn(message)
+                  console.warn(createValidatorWarningMessage({
+                    columnName,
+                    expectToBe,
+                    from: 'Chart.constructor'
+                  }))
                 }
                 
                 return computedDataFn({ data: _d.data, dataFormatter: _d.dataFormatter, chartParams: _d.chartParams })
               } catch (e) {
-                console.error(e)
                 throw new Error(e)
               }
             }),
-            catchError(() => EMPTY)
+            catchError((e) => {
+              console.error(createOrbChartsErrorMessage(e))
+              return EMPTY
+            })
           )  
       }),
       shareReplay(1)

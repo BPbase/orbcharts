@@ -19,6 +19,7 @@ import type {
   PluginContext,
   PluginEntity } from '../../lib/core-types'
 import { mergeOptionsWithDefault } from '../utils'
+import { createValidatorErrorMessage, createValidatorWarningMessage, createOrbChartsErrorMessage } from '../utils/errorMessage'
 
 // 建立plugin實例
 function createPluginEntity <T extends ChartType, PluginName, PluginParams>({ config, initFn }: {
@@ -40,20 +41,30 @@ function createPluginEntity <T extends ChartType, PluginName, PluginParams>({ co
           map(d => {
             try {
               // 檢查 data$ 資料格式是否正確
-              const { status, message } = config.validator(d)
+              const { status, columnName, expectToBe } = config.validator(d)
               if (status === 'error') {
-                throw new Error(message)
+                throw new Error(createValidatorErrorMessage({
+                  columnName,
+                  expectToBe,
+                  from: 'Chart.constructor'
+                }))
               } else if (status === 'warning') {
-                console.warn(message)
+                console.warn(createValidatorWarningMessage({
+                  columnName,
+                  expectToBe,
+                  from: 'Chart.constructor'
+                }))
               }
               
               return mergeOptionsWithDefault(d, mergedDefaultParams)
             } catch (e) {
-              console.error(e)
-              throw new Error(e)
+              throw new Error(e.message)
             }
           }),
-          catchError(() => EMPTY)
+          catchError((e) => {
+            console.error(createOrbChartsErrorMessage(e))
+            return EMPTY
+          })
         )
     }),
     shareReplay(1)

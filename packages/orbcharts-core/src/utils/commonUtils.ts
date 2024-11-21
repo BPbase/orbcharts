@@ -9,6 +9,11 @@ export function isFunction(fn: any) {
   return !!fn && !fn.nodename && fn.constructor != String && fn.constructor != RegExp && fn.constructor != Array && /function/i.test(fn + "");
 }
 
+// 是否為dom
+export function isDom(obj: any) {
+  return !!(obj && obj.nodeType);
+}
+
 // 將可選的參數和預設值合併
 export function mergeOptionsWithDefault<Options extends { [key: string]: any; }> (options: {[key: string]: any}, defaultOptions: Options): Options {
   if (isPlainObject(options) === false || isPlainObject(defaultOptions) === false) {

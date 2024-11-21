@@ -15,9 +15,10 @@ export interface ValidatorToBe {
   test: (value: any) => boolean
 }
 
-export interface ValidatorRule {
-  [key: string]: ValidatorToBeTypes | ValidatorToBe
-}
+// export interface ValidatorRule {
+//   [key: string]: ValidatorToBeTypes | ValidatorToBe
+// }
+export type ValidatorRule<T> = {[key in keyof T]: ValidatorToBeTypes | ValidatorToBe}
 
 // let test: ValidatorRule = {
 //   name: {
@@ -31,7 +32,7 @@ export interface ValidatorRule {
 //   }
 // }
 
-function getInvalidColumn (data: {[key: string]: any}, rules: ValidatorRule) {
+function getInvalidColumn<T> (data: T, rules: ValidatorRule<T>) {
   // "toBeTypes" 的測試
   const testType: {[key in ToBeTypes]: (value: any) => boolean} = {
     string: (value: any) => typeof value === 'string',
@@ -45,21 +46,22 @@ function getInvalidColumn (data: {[key: string]: any}, rules: ValidatorRule) {
     undefined: (value: any) => value === undefined
   }
 
-  const failColumn = Object.keys(data).find((columnName) => {
+  const failColumn = Object.keys(data).find((columnName: string) => {
     // 有定義規則
-    if (rules[columnName]) {
+    if (rules[columnName as keyof T]) {
+      const rule: ValidatorToBeTypes | ValidatorToBe = (rules as any)[columnName]
       // 測試 "toBeTypes"
-      if ((rules[columnName] as ValidatorToBeTypes).toBeTypes) {
-        const toBeTypes = (rules[columnName] as ValidatorToBeTypes).toBeTypes
-        const isCorrect = toBeTypes.some((toBeType) => testType[toBeType](data[columnName]))
+      if ((rule as ValidatorToBeTypes).toBeTypes) {
+        const toBeTypes = (rule as ValidatorToBeTypes).toBeTypes
+        const isCorrect = toBeTypes.some((toBeType) => testType[toBeType](rule))
         if (isCorrect === false) {
           return true
         }
       }
       // 測試 "toBe"
-      else if ((rules[columnName] as ValidatorToBe).toBe) {
-        const { toBe, test } = rules[columnName] as ValidatorToBe
-        const isCorrect = test(data[columnName])
+      else if ((rule as ValidatorToBe).toBe) {
+        const { toBe, test } = rule as ValidatorToBe
+        const isCorrect = test(rule)
         if (isCorrect === false) {
           return true
         }
@@ -71,26 +73,29 @@ function getInvalidColumn (data: {[key: string]: any}, rules: ValidatorRule) {
   return failColumn
 }
 
-export function validator (data: {[key: string]: any}, rules: ValidatorRule, at: string): ValidatorResult {
+export function validator<T> (data: T, rules: ValidatorRule<T>): ValidatorResult {
   const invalidColumn = getInvalidColumn(data, rules) === undefined
   if (invalidColumn) {
     return {
       status: 'success',
-      message: ''
+      columnName: '',
+      expectToBe: '',
     }
   } else {
-    const failColumn = getInvalidColumn(data, rules)
-    const expect = (rules[failColumn] as ValidatorToBeTypes).toBeTypes
+    const failColumn: keyof T = getInvalidColumn(data, rules) as any
+    const expectToBe = (rules[failColumn] as ValidatorToBeTypes).toBeTypes
       ? (rules[failColumn] as ValidatorToBeTypes).toBeTypes.join(' | ')
       : (rules[failColumn] as ValidatorToBe).toBe
 
     return {
       status: 'error',
-      message: createValidatorErrorMessage({
-        columnName: failColumn,
-        expect,
-        at
-      })
+      // message: createValidatorErrorMessage({
+      //   columnName: failColumn,
+      //   expect,
+      //   from
+      // })
+      columnName: failColumn as string,
+      expectToBe: expectToBe,
     }
   }
 }
