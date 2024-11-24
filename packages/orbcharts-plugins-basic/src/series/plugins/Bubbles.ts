@@ -9,6 +9,7 @@ import {
   Observable,
   distinctUntilChanged,
   shareReplay} from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import type {
   ChartParams,
   DatumValue,
@@ -16,12 +17,13 @@ import type {
   EventName,
   ComputedDataSeries,
   ComputedDatumSeries,
-  SeriesContainerPosition } from '@orbcharts/core'
+  SeriesContainerPosition } from '../../../lib/core-types'
 import {
-  defineSeriesPlugin } from '@orbcharts/core'
+  defineSeriesPlugin } from '../../../lib/core'
 import type { BubblesParams, ArcScaleType } from '../types'
 import { DEFAULT_BUBBLES_PARAMS } from '../defaults'
 import { renderCircleText } from '../../utils/d3Graphics'
+import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 
 interface BubblesDatum extends ComputedDatumSeries {
   x: number
@@ -31,6 +33,61 @@ interface BubblesDatum extends ComputedDatumSeries {
 }
 
 type BubblesSimulationDatum = BubblesDatum & d3.SimulationNodeDatum
+
+const pluginName = 'Bubbles'
+
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BUBBLES_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_BUBBLES_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      force: {
+        toBeTypes: ['object']
+      },
+      bubbleText: {
+        toBeTypes: ['object']
+      },
+      arcScaleType: {
+        toBe: '"area" | "radius"',
+        test: (value) => value === 'area' || value === 'radius'
+      }
+    })
+    if (params.force) {
+      const forceResult = validateColumns(params.force, {
+        velocityDecay: {
+          toBeTypes: ['number']
+        },
+        collisionSpacing: {
+          toBeTypes: ['number']
+        },
+        strength: {
+          toBeTypes: ['number']
+        },
+      })
+      if (forceResult.status === 'error') {
+        return forceResult
+      }
+    }
+    if (params.bubbleText) {
+      const bubbleTextResult = validateColumns(params.bubbleText, {
+        fillRate: {
+          toBeTypes: ['number']
+        },
+        lineHeight: {
+          toBeTypes: ['number']
+        },
+        lineLengthMin: {
+          toBeTypes: ['number']
+        },
+      })
+      if (bubbleTextResult.status === 'error') {
+        return bubbleTextResult
+      }
+    }
+    return result
+  }
+}
 
 let force: d3.Simulation<d3.SimulationNodeDatum, undefined> | undefined
 
@@ -320,7 +377,8 @@ function highlight ({ bubblesSelection, highlightIds, fullChartParams }: {
   })
 }
 
-export const Bubbles = defineSeriesPlugin('Bubbles', DEFAULT_BUBBLES_PARAMS)(({ selection, name, observer, subject }) => {
+
+export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, observer, subject }) => {
   
   const destroy$ = new Subject()
 

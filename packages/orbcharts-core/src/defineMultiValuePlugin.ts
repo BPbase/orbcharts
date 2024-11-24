@@ -1,3 +1,3 @@
 import { createBasePlugin } from './base/createBasePlugin'
 
-export const defineMultiValuePlugin = createBasePlugin<'multiValue'>()
+export const defineMultiValuePlugin = createBasePlugin('multiValue')

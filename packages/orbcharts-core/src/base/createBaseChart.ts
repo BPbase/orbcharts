@@ -34,23 +34,32 @@ import type {
   ChartEntity,
   ChartType,
   ChartParams,
+  ChartParamsPartial,
   ContextSubject,
   ComputedDataTypeMap,
-  ContextObserverFn,
+  ContextObserverCallback,
   ChartOptionsPartial,
   DataTypeMap,
   DataFormatterTypeMap,
   DataFormatterPartialTypeMap,
   DataFormatterBase,
   DataFormatterContext,
+  DataFormatterValidator,
+  DataValidator,
   Layout,
   PluginEntity,
   PluginContext,
   Preset,
   PresetPartial,
-  ContextObserverTypeMap } from '../types'
-// import type { EventTypeMap } from './types/Event'
-import { mergeOptionsWithDefault } from '../utils'
+  ContextObserverTypeMap,
+  ValidatorResult,
+} from '../../lib/core-types'
+import { mergeOptionsWithDefault, resizeObservable } from '../utils'
+import { createValidatorErrorMessage, createValidatorWarningMessage, createOrbChartsErrorMessage } from '../utils/errorMessage'
+import { chartOptionsValidator } from './validators/chartOptionsValidator'
+import { elementValidator } from './validators/elementValidator'
+import { chartParamsValidator } from './validators/chartParamsValidator'
+import { pluginsValidator } from './validators/pluginsValidator'
 import {
   CHART_OPTIONS_DEFAULT,
   PADDING_DEFAULT,
@@ -68,21 +77,6 @@ import {
 //   relationship: false
 // }
 
-function resizeObservable(elem: HTMLElement | Element): Observable<DOMRectReadOnly> {
-  return new Observable(subscriber => {
-    const ro = new ResizeObserver(entries => {
-      const entry = entries[0]
-      if (entry && entry.contentRect) {
-        subscriber.next(entry.contentRect)
-      }
-    })
-
-    ro.observe(elem)
-    return function unsubscribe() {
-      ro.unobserve(elem)
-    }
-  })
-}
 
 function mergeDataFormatter <T>(dataFormatter: any, defaultDataFormatter: T, chartType: ChartType): T {
   const mergedData = mergeOptionsWithDefault(dataFormatter, defaultDataFormatter)
@@ -97,18 +91,60 @@ function mergeDataFormatter <T>(dataFormatter: any, defaultDataFormatter: T, cha
   return mergedData
 }
 
-export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultDataFormatter, computedDataFn, contextObserverFn }: {
+export const createBaseChart: CreateBaseChart = <T extends ChartType>({
+  defaultDataFormatter,
+  dataFormatterValidator,
+  computedDataFn,
+  dataValidator,
+  contextObserverCallback
+}: {
   defaultDataFormatter: DataFormatterTypeMap<T>
+  dataFormatterValidator: DataFormatterValidator<T>
   computedDataFn: ComputedDataFn<T>
-  contextObserverFn: ContextObserverFn<T>
+  dataValidator: DataValidator<T>
+  contextObserverCallback: ContextObserverCallback<T>
 }): CreateChart<T> => {
   const destroy$ = new Subject()
-  
-  const chartType: ChartType = (defaultDataFormatter as unknown as DataFormatterBase<any>).type
 
+  const chartType: ChartType = (defaultDataFormatter as unknown as DataFormatterBase<any>).type
+  
   // 建立chart實例
   return function createChart (element: HTMLElement | Element, options?: ChartOptionsPartial<T>): ChartEntity<T> {
+    try {
+      const { status, columnName, expectToBe } = chartOptionsValidator(options)
+      if (status === 'error') {
+        throw new Error(createValidatorErrorMessage({
+          columnName,
+          expectToBe,
+          from: 'Chart.constructor'
+        }))
+      } else if (status === 'warning') {
+        console.warn(createValidatorWarningMessage({
+          columnName,
+          expectToBe,
+          from: 'Chart.constructor'
+        }))
+      } else {
+        const { status, columnName, expectToBe } = elementValidator(element)
+        if (status === 'error') {
+          throw new Error(createValidatorErrorMessage({
+            columnName,
+            expectToBe,
+            from: 'Chart.constructor'
+          }))
+        } else if (status === 'warning') {
+          console.warn(createValidatorWarningMessage({
+            columnName,
+            expectToBe,
+            from: 'Chart.constructor'
+          }))
+        }
+      }
+    } catch (e) {
+      throw new Error(e)
+    }
     
+
     // -- selections --
     // svg selection
     d3.select(element).selectAll('svg').remove()
@@ -161,18 +197,33 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
     const shareAndMergedDataFormatter$ = chartSubject.dataFormatter$
       .pipe(
         takeUntil(destroy$),
-        startWith({}),
+        startWith({} as DataFormatterPartialTypeMap<T>),
         map((dataFormatter) => {
-          // const mergedData = mergeOptionsWithDefault(dataFormatter, mergedPresetWithDefault.dataFormatter)
-
-          // if (chartType === 'multiGrid' && (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList != null) {
-          //   // multiGrid欄位為陣列，需要各別來merge預設值
-          //   (mergedData as DataFormatterTypeMap<'multiGrid'>).gridList = (dataFormatter as DataFormatterPartialTypeMap<'multiGrid'>).gridList.map(d => {
-          //     return mergeOptionsWithDefault(d, (mergedPresetWithDefault.dataFormatter as DataFormatterTypeMap<'multiGrid'>).gridList[0])
-          //   })
-          // }
-          // return mergedData
-          return mergeDataFormatter(dataFormatter, mergedPresetWithDefault.dataFormatter, chartType)
+          try {
+            // 檢查 dataFormatter$ 資料格式是否正確
+            const { status, columnName, expectToBe } = dataFormatterValidator(dataFormatter)
+            if (status === 'error') {
+              throw new Error(createValidatorErrorMessage({
+                columnName,
+                expectToBe,
+                from: 'Chart.constructor'
+              }))
+            } else if (status === 'warning') {
+              console.warn(createValidatorWarningMessage({
+                columnName,
+                expectToBe,
+                from: 'Chart.constructor'
+              }))
+            }
+            
+            return mergeDataFormatter(dataFormatter, mergedPresetWithDefault.dataFormatter, chartType)
+          } catch (e) {
+            throw new Error(e)
+          }
+        }),
+        catchError((e) => {
+          console.error(createOrbChartsErrorMessage(e))
+          return EMPTY
         }),
         shareReplay(1)
       )
@@ -181,7 +232,31 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
         takeUntil(destroy$),
         startWith({}),
         map((d) => {
-          return mergeOptionsWithDefault(d, mergedPresetWithDefault.chartParams)
+          try {
+            // 檢查 chartParams$ 資料格式是否正確
+            const { status, columnName, expectToBe } = chartParamsValidator(chartType, d)
+            if (status === 'error') {
+              throw new Error(createValidatorErrorMessage({
+                columnName,
+                expectToBe,
+                from: 'Chart.constructor'
+              }))
+            } else if (status === 'warning') {
+              console.warn(createValidatorWarningMessage({
+                columnName,
+                expectToBe,
+                from: 'Chart.constructor'
+              }))
+            }
+            
+            return mergeOptionsWithDefault(d, mergedPresetWithDefault.chartParams)
+          } catch (e) {
+            throw new Error(e)
+          }
+        }),
+        catchError((e) => {
+          console.error(createOrbChartsErrorMessage(e))
+          return EMPTY
         }),
         shareReplay(1)
       )
@@ -294,13 +369,31 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
           .pipe(
             map(_d => {
               try {
+                // 檢查 data$ 資料格式是否正確
+                const { status, columnName, expectToBe } = dataValidator(_d.data)
+                if (status === 'error') {
+                  throw new Error(createValidatorErrorMessage({
+                    columnName,
+                    expectToBe,
+                    from: 'Chart.constructor'
+                  }))
+                } else if (status === 'warning') {
+                  console.warn(createValidatorWarningMessage({
+                    columnName,
+                    expectToBe,
+                    from: 'Chart.constructor'
+                  }))
+                }
+                
                 return computedDataFn({ data: _d.data, dataFormatter: _d.dataFormatter, chartParams: _d.chartParams })
               } catch (e) {
-                console.error(e)
                 throw new Error(e)
               }
             }),
-            catchError(() => EMPTY)
+            catchError((e) => {
+              console.error(createOrbChartsErrorMessage(e))
+              return EMPTY
+            })
           )  
       }),
       shareReplay(1)
@@ -312,64 +405,85 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({ defaultD
     // -- plugins --
     const pluginEntityMap: any = {}  // 用於destroy
     chartSubject.plugins$.subscribe(plugins => {
-      if (!plugins) {
-        return
+      try {
+        // 檢查 plugins$ 資料格式是否正確
+        const { status, columnName, expectToBe } = pluginsValidator(chartType, plugins)
+        if (status === 'error') {
+          throw new Error(createValidatorErrorMessage({
+            columnName,
+            expectToBe,
+            from: 'Chart.plugins$'
+          }))
+        } else if (status === 'warning') {
+          console.warn(createValidatorWarningMessage({
+            columnName,
+            expectToBe,
+            from: 'Chart.plugins$'
+          }))
+        }
+      } catch (e) {
+        throw new Error(e)
       }
-      // 建立<g>
-      const update = selectionPlugins
+
+      selectionPlugins
         .selectAll<SVGGElement, PluginEntity<T, any, any>>('g.orbcharts__plugin')
         .data(plugins, d => d.name as string)
-      const enter = update.enter()
-        .append('g')
-        .attr('class', plugin => {
-          return `orbcharts__plugin orbcharts__${plugin.name}`
-        })
-      const exit = update.exit()
-        .remove()
-      
-      // destroy entity
-      exit.each((plugin: PluginEntity<T, unknown, unknown>, i, n) => {
-        if (pluginEntityMap[plugin.name as string]) {
-          pluginEntityMap[plugin.name as string].destroy()
-          pluginEntityMap[plugin.name as string] = undefined
-        }
-      })
-
-      enter.each((plugin, i, n) => {
-        const _pluginObserverBase = {
-          fullParams$: new Observable(),
-          fullChartParams$: shareAndMergedChartParams$,
-          fullDataFormatter$: shareAndMergedDataFormatter$,
-          computedData$,
-          layout$
-        }
-        const pluginObserver: ContextObserverTypeMap<T, typeof plugin.defaultParams> = contextObserverFn({
-          observer: _pluginObserverBase,
-          subject: chartSubject
-        })
-
-        // -- createPlugin(plugin) --
-        const pluginSelection = d3.select(n[i])
-        const pluginContext: PluginContext<T, typeof plugin.name, typeof plugin.defaultParams> = {
-          selection: pluginSelection,
-          rootSelection: svgSelection,
-          name: plugin.name,
-          chartType,
-          subject: chartSubject,
-          observer: pluginObserver
-        }
-
-        plugin.setPresetParams(mergedPresetWithDefault.allPluginParams[plugin.name] ?? {})
-        // 傳入context
-        plugin.setContext(pluginContext)
-  
-        // 紀錄起來
-        pluginEntityMap[pluginContext.name as string] = plugin
-
-        // init plugin
-        plugin.init()
-
-      })
+        .join(
+          enter => {
+            return enter
+              .append('g')
+              .attr('class', plugin => {
+                return `orbcharts__plugin orbcharts__${plugin.name}`
+              })
+              .each((plugin, i, n) => {
+                const _pluginObserverBase = {
+                  fullParams$: new Observable(),
+                  fullChartParams$: shareAndMergedChartParams$,
+                  fullDataFormatter$: shareAndMergedDataFormatter$,
+                  computedData$,
+                  layout$
+                }
+                const pluginObserver: ContextObserverTypeMap<T, typeof plugin.defaultParams> = contextObserverCallback({
+                  observer: _pluginObserverBase,
+                  subject: chartSubject
+                })
+        
+                // -- createPlugin(plugin) --
+                const pluginSelection = d3.select(n[i])
+                const pluginContext: PluginContext<T, typeof plugin.name, typeof plugin.defaultParams> = {
+                  selection: pluginSelection,
+                  rootSelection: svgSelection,
+                  name: plugin.name,
+                  chartType,
+                  subject: chartSubject,
+                  observer: pluginObserver
+                }
+        
+                plugin.setPresetParams(mergedPresetWithDefault.allPluginParams[plugin.name] ?? {})
+                // 傳入context
+                plugin.setContext(pluginContext)
+          
+                // 紀錄起來
+                pluginEntityMap[pluginContext.name as string] = plugin
+        
+                // init plugin
+                plugin.init()
+        
+              })
+          },
+          update => update,
+          exit => {
+            return exit
+              .each((plugin: PluginEntity<T, unknown, unknown>, i, n) => {
+                if (pluginEntityMap[plugin.name as string]) {
+                  pluginEntityMap[plugin.name as string].destroy()
+                  pluginEntityMap[plugin.name as string] = undefined
+                }
+              })
+              .remove()
+          }
+        )
+        .sort((a, b) => a.layerIndex - b.layerIndex)
 
     })
 

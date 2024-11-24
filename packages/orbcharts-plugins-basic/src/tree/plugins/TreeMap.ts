@@ -9,16 +9,44 @@ import {
   combineLatest,
   debounceTime,
   distinctUntilChanged } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
-  defineTreePlugin } from '@orbcharts/core'
-import type { Layout, ComputedDataTree, DataFormatterTree, ChartParams } from '@orbcharts/core'
+  defineTreePlugin } from '../../../lib/core'
+import type { Layout, ComputedDataTree, DataFormatterTree, ChartParams } from '../../../lib/core-types'
 import type { TreeMapParams } from '../types'
 import { DEFAULT_TREE_MAP_PARAMS } from '../defaults'
 import { getClassName, getColor } from '../../utils/orbchartsUtils'
+import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 
 const pluginName = 'TreeMap'
 const treeClassName = getClassName(pluginName, 'tree')
 const tileClassName = getClassName(pluginName, 'tile')
+
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_TREE_MAP_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_TREE_MAP_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      paddingInner: {
+        toBeTypes: ['number']
+      },
+      paddingOuter: {
+        toBeTypes: ['number']
+      },
+      labelColorType: {
+        toBeOption: 'ColorType'
+      },
+      squarifyRatio: {
+        toBeTypes: ['number']
+      },
+      sort: {
+        toBeTypes: ['Function']
+      }
+    })
+    return result
+  }
+}
 
 function renderTree ({ selection, treeData, fullParams, fullChartParams, textSizePx }: {
   selection: d3.Selection<any, any, any, any>
@@ -144,7 +172,7 @@ function highlight ({ selection, ids, fullChartParams }: {
     })
 }
 
-export const TreeMap = defineTreePlugin(pluginName, DEFAULT_TREE_MAP_PARAMS)(({ selection, name, subject, observer }) => {
+export const TreeMap = defineTreePlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const treeData$ = combineLatest({

@@ -10,22 +10,24 @@ import {
   Observable,
   Subject,
   BehaviorSubject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import type {
   ComputedDataSeries,
   ComputedDatumSeries,
   SeriesContainerPosition,
   ChartParams,
   EventSeries,
-  Layout } from '@orbcharts/core'
+  Layout } from '../../../lib/core-types'
 import type { D3PieDatum } from '../seriesUtils'
 import type { RoseParams } from '../types'
 import {
-  defineSeriesPlugin } from '@orbcharts/core'
+  defineSeriesPlugin } from '../../../lib/core'
 import { DEFAULT_ROSE_PARAMS } from '../defaults'
 // import { makePieData } from '../seriesUtils'
 // import { getD3TransitionEase, makeD3Arc } from '../../utils/d3Utils'
 import { getDatumColor, getClassName } from '../../utils/orbchartsUtils'
 import { seriesCenterSelectionObservable } from '../seriesObservables'
+import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 
 // @Q@ 暫時先寫在這裡，之後pie一起重構後再放到seriesUtils
 export interface PieDatum extends D3PieDatum {
@@ -39,6 +41,39 @@ const pluginName = 'Rose'
 const roseInnerRadius = 0
 const roseStartAngle = 0
 const roseEndAngle = Math.PI * 2
+
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_ROSE_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_ROSE_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      outerRadius: {
+        toBeTypes: ['number'],
+      },
+      padAngle: {
+        toBeTypes: ['number'],
+      },
+      strokeColorType: {
+        toBeOption: 'ColorType'
+      },
+      strokeWidth: {
+        toBeTypes: ['number']
+      },
+      cornerRadius: {
+        toBeTypes: ['number']
+      },
+      arcScaleType: {
+        toBe: '"area" | "radius"',
+        test: (value: any) => value === 'area' || value === 'radius'
+      },
+      angleIncreaseWhileHighlight: {
+        toBeTypes: ['number']
+      }
+    })
+    return result
+  }
+}
 
 function makeTweenArcFn ({ cornerRadius, outerRadius, axisWidth, maxValue, arcScaleType, fullParams }: {
   // interpolateRadius: (t: number) => number
@@ -424,7 +459,7 @@ function createEachRose (pluginName: string, context: {
   }
 }
 
-export const Rose = defineSeriesPlugin(pluginName, DEFAULT_ROSE_PARAMS)(({ selection, name, subject, observer }) => {
+export const Rose = defineSeriesPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const { seriesCenterSelection$ } = seriesCenterSelectionObservable({

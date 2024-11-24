@@ -1,4 +1,3 @@
-// import * as d3 from 'd3'
 
 // 是否為原始物件
 export function isPlainObject(variable: any) {
@@ -7,7 +6,13 @@ export function isPlainObject(variable: any) {
 
 // 是否為function
 export function isFunction(fn: any) {
-  return !!fn && !fn.nodename && fn.constructor != String && fn.constructor != RegExp && fn.constructor != Array && /function/i.test(fn + "");
+  // return !!fn && !fn.nodename && fn.constructor != String && fn.constructor != RegExp && fn.constructor != Array && /function/i.test(fn + "");
+  return Object.prototype.toString.call(fn) === '[object Function]'
+}
+
+// 是否為dom
+export function isDom(obj: any) {
+  return !!(obj && obj.nodeType);
 }
 
 // 將可選的參數和預設值合併

@@ -10,20 +10,149 @@ import {
   iif,
   Observable,
   Subject } from 'rxjs'
-import type { ContextObserverMultiGrid, DataFormatterGrid, DataFormatterTypeMap, Layout } from '@orbcharts/core'
+import type { DefinePluginConfig } from '../../../lib/core-types'
+import type { ContextObserverMultiGrid, DataFormatterGrid, DataFormatterTypeMap, Layout } from '../../../lib/core-types'
 import {
-  defineMultiGridPlugin } from '@orbcharts/core'
+  defineMultiGridPlugin } from '../../../lib/core'
 import { DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS } from '../defaults'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
-import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '@orbcharts/core/src/grid/gridObservables'
+import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '../../../lib/core'
+import { LAYER_INDEX_OF_AXIS } from '../../const'
 
 const pluginName = 'OverlappingValueAxes'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const OverlappingValueAxes = defineMultiGridPlugin(pluginName, DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS)(({ selection, name, subject, observer }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS,
+  layerIndex: LAYER_INDEX_OF_AXIS,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      firstAxis: {
+        toBeTypes: ['object']
+      },
+      secondAxis: {
+        toBeTypes: ['object']
+      },
+      gridIndexes: {
+        toBe: '[number, number]',
+        test: (value: any) => {
+          return Array.isArray(value) && value.length === 2
+        }
+      }
+    })
+    if (params.firstAxis) {
+      const firstAxisResult = validateColumns(params.firstAxis, {
+        labelOffset: {
+          toBe: '[number, number]',
+          test: (value: any) => {
+            return Array.isArray(value)
+              && value.length === 2
+              && typeof value[0] === 'number'
+              && typeof value[1] === 'number'
+          }
+        },
+        labelColorType: {
+          toBeOption: 'ColorType',
+        },
+        axisLineVisible: {
+          toBeTypes: ['boolean']
+        },
+        axisLineColorType: {
+          toBeOption: 'ColorType',
+        },
+        ticks: {
+          toBeTypes: ['number']
+        },
+        tickFormat: {
+          toBeTypes: ['string', 'Function']
+        },
+        tickLineVisible: {
+          toBeTypes: ['boolean']
+        },
+        tickPadding: {
+          toBeTypes: ['number']
+        },
+        tickFullLine: {
+          toBeTypes: ['boolean']
+        },
+        tickFullLineDasharray: {
+          toBeTypes: ['string']
+        },
+        tickColorType: {
+          toBeOption: 'ColorType',
+        },
+        tickTextRotate: {
+          toBeTypes: ['number']
+        },
+        tickTextColorType: {
+          toBeOption: 'ColorType',
+        }
+      })
+      if (firstAxisResult.status === 'error') {
+        return firstAxisResult
+      }
+    }
+    if (params.secondAxis) {
+      const secondAxisResult = validateColumns(params.secondAxis, {
+        labelOffset: {
+          toBe: '[number, number]',
+          test: (value: any) => {
+            return Array.isArray(value)
+              && value.length === 2
+              && typeof value[0] === 'number'
+              && typeof value[1] === 'number'
+          }
+        },
+        labelColorType: {
+          toBeOption: 'ColorType',
+        },
+        axisLineVisible: {
+          toBeTypes: ['boolean']
+        },
+        axisLineColorType: {
+          toBeOption: 'ColorType',
+        },
+        ticks: {
+          toBeTypes: ['number']
+        },
+        tickFormat: {
+          toBeTypes: ['string', 'Function']
+        },
+        tickLineVisible: {
+          toBeTypes: ['boolean']
+        },
+        tickPadding: {
+          toBeTypes: ['number']
+        },
+        tickFullLine: {
+          toBeTypes: ['boolean']
+        },
+        tickFullLineDasharray: {
+          toBeTypes: ['string']
+        },
+        tickColorType: {
+          toBeOption: 'ColorType',
+        },
+        tickTextRotate: {
+          toBeTypes: ['number']
+        },
+        tickTextColorType: {
+          toBeOption: 'ColorType',
+        }
+      })
+      if (secondAxisResult.status === 'error') {
+        return secondAxisResult
+      }
+    }
+    return result
+  }
+}
+
+export const OverlappingValueAxes = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []

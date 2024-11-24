@@ -1,9 +1,11 @@
 import type {
   ChartEntity,
-  ChartOptionsPartial } from './types'
+  ChartOptionsPartial } from '../lib/core-types'
 import { DATA_FORMATTER_GRID_DEFAULT } from './defaults'
-import { computeGridData } from './grid/computeGridData'
-import { createGridContextObserver } from './grid/createGridContextObserver'
+import { dataFormatterValidator } from './grid/dataFormatterValidator'
+import { computedDataFn } from './grid/computedDataFn'
+import { dataValidator } from './grid/dataValidator'
+import { contextObserverCallback } from './grid/contextObserverCallback'
 import { AbstractChart } from './AbstractChart'
 
 export class GridChart extends AbstractChart<'grid'> implements ChartEntity<'grid'> {
@@ -11,8 +13,10 @@ export class GridChart extends AbstractChart<'grid'> implements ChartEntity<'gri
     super(
       {
         defaultDataFormatter: DATA_FORMATTER_GRID_DEFAULT,
-        computedDataFn: computeGridData,
-        contextObserverFn: createGridContextObserver
+        dataFormatterValidator,
+        computedDataFn,
+        dataValidator,
+        contextObserverCallback
       },
       element,
       options

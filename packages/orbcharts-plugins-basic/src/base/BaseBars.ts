@@ -18,7 +18,7 @@ import type {
   EventGrid,
   ChartParams, 
   Layout,
-  TransformData } from '@orbcharts/core'
+  TransformData } from '../../lib/core-types'
 import { getD3TransitionEase } from '../utils/d3Utils'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 import { gridSelectionsObservable } from '../grid/gridObservables'

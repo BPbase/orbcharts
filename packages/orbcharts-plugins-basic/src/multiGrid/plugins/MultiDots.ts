@@ -2,18 +2,55 @@ import * as d3 from 'd3'
 import {
   takeUntil,
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
-  defineMultiGridPlugin } from '@orbcharts/core'
+  defineMultiGridPlugin } from '../../../lib/core'
 import { DEFAULT_MULTI_DOTS_PARAMS } from '../defaults'
 import { createBaseDots } from '../../base/BaseDots'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
+import { LAYER_INDEX_OF_GRAPHIC_COVER } from '../../const'
 
 const pluginName = 'MultiDots'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiDots = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_DOTS_PARAMS)(({ selection, name, subject, observer }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_DOTS_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_MULTI_DOTS_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC_COVER,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      gridIndexes: {
+        toBe: 'number[] | "all"',
+        test: (value: any) => {
+          return value === 'all' || (Array.isArray(value) && value.every((v: any) => typeof v === 'number'))
+        }
+      },
+      radius: {
+        toBeTypes: ['number']
+      },
+      fillColorType: {
+        toBeOption: 'ColorType',
+      },
+      strokeColorType: {
+        toBeOption: 'ColorType',
+      },
+      strokeWidth: {
+        toBeTypes: ['number']
+      },
+      // strokeWidthWhileHighlight: {
+      //   toBeTypes: ['number']
+      // },
+      onlyShowHighlighted: {
+        toBeTypes: ['boolean']
+      }
+    })
+    return result
+  }
+}
+
+export const MultiDots = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []

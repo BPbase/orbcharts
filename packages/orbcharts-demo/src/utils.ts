@@ -1,12 +1,11 @@
-import * as core from '@orbcharts/core'
-import * as pluginsBasic from '@orbcharts/plugins-basic'
-import * as presetsBasic from '@orbcharts/presets-basic'
+import * as pluginsBasic from '../lib/plugins-basic'
+import * as presetsBasic from '../lib/presets-basic'
 import type { DemoItem, DemoData } from './types'
-import type { ChartType } from 'orbcharts'
+import type { ChartType, PluginConstructor } from '../lib/core-types'
 import { DEMO_LIST } from './demo'
 
 // 取得demo資料
-export async function getDemoData <T extends core.ChartType>({ chartType, pluginNames, presetName }: {
+export async function getDemoData <T extends ChartType>({ chartType, pluginNames, presetName }: {
   chartType: T
   pluginNames: (keyof typeof pluginsBasic)[]
   presetName: keyof typeof presetsBasic
@@ -20,7 +19,7 @@ export async function getDemoData <T extends core.ChartType>({ chartType, plugin
 
   // plugins
   const plugins = demoItem.allPluginNames.map((plugin) => {
-    const Plugin = pluginsBasic[plugin] as core.PluginConstructor<any, string, any>
+    const Plugin = pluginsBasic[plugin] as PluginConstructor<any, string, any>
     return new Plugin()
   })
   // data

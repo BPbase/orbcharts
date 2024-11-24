@@ -9,7 +9,7 @@ import {
   Subject } from 'rxjs'
 import type { BasePluginFn } from './types'
 import type {
-  ChartParams, Layout, ColorType } from '@orbcharts/core'
+  ChartParams, Layout, ColorType } from '../../lib/core-types'
 import { getClassName, getColor, getDatumColor } from '../utils/orbchartsUtils'
 import { measureTextWidth } from '../utils/commonUtils'
 

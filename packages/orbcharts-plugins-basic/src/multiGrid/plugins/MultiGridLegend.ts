@@ -6,15 +6,74 @@ import {
   takeUntil,
   Observable,
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
-  defineMultiGridPlugin, mergeOptionsWithDefault } from '@orbcharts/core'
+  defineMultiGridPlugin, mergeOptionsWithDefault } from '../../../lib/core'
 import { DEFAULT_MULTI_GRID_LEGEND_PARAMS } from '../defaults'
 import { createBaseLegend } from '../../base/BaseLegend'
 import type { BaseLegendParams } from '../../base/BaseLegend'
+import { LAYER_INDEX_OF_INFO } from '../../const'
 
 const pluginName = 'MultiGridLegend'
 
-export const MultiGridLegend = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_GRID_LEGEND_PARAMS)(({ selection, rootSelection, observer, subject }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_GRID_LEGEND_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_MULTI_GRID_LEGEND_PARAMS,
+  layerIndex: LAYER_INDEX_OF_INFO,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      padding: {
+        toBeTypes: ['number']
+      },
+      backgroundFill: {
+        toBeOption: 'ColorType',
+      },
+      backgroundStroke: {
+        toBeOption: 'ColorType',
+      },
+      gap: {
+        toBeTypes: ['number']
+      },
+      listRectWidth: {
+        toBeTypes: ['number']
+      },
+      listRectHeight: {
+        toBeTypes: ['number']
+      },
+      listRectRadius: {
+        toBeTypes: ['number']
+      },
+      gridList: {
+        toBeTypes: ['object[]']
+      },
+      textColorType: {
+        toBeOption: 'ColorType',
+      }
+    })
+    if (params.gridList) {
+      const gridListResult = params.gridList.map((grid, gridIndex) => {
+        return validateColumns(grid, {
+          listRectWidth: {
+            toBeTypes: ['number']
+          },
+          listRectHeight: {
+            toBeTypes: ['number']
+          },
+          listRectRadius: {
+            toBeTypes: ['number']
+          }
+        })
+      })
+      const errorResult = gridListResult.find(r => r.status === 'error')
+      if (errorResult) {
+        return errorResult
+      }
+    }
+    return result
+  }
+}
+
+export const MultiGridLegend = defineMultiGridPlugin(pluginConfig)(({ selection, rootSelection, observer, subject }) => {
   
   const destroy$ = new Subject()
 

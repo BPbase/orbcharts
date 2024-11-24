@@ -1,3 +1,3 @@
 import { createBasePlugin } from './base/createBasePlugin'
 
-export const defineMultiGridPlugin = createBasePlugin<'multiGrid'>()
+export const defineMultiGridPlugin = createBasePlugin('multiGrid')

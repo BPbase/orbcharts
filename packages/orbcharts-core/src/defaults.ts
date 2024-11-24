@@ -1,21 +1,25 @@
-// import type { ChartGlobalDefault } from './types/Chart'
-// import { ChartRenderOptions } from './types/Chart'
-import type { ChartType, ChartOptionsPartial } from './types/Chart'
-import type { DataSeries } from './types/DataSeries'
-import type { DataGrid, DataGridDatum } from './types/DataGrid'
-import type { DataMultiGrid } from './types/DataMultiGrid'
-import type { DataMultiValue } from './types/DataMultiValue'
-import type { DataTree } from './types/DataTree'
-import type { DataRelationship } from './types/DataRelationship'
-import type { DataFormatterBase, DataFormatterValueAxis, DataFormatterGroupAxis, DataFormatterContainer } from './types/DataFormatter'
-import type { DataFormatterSeries } from './types/DataFormatterSeries'
-import type { DataFormatterGrid, DataFormatterGridGrid } from './types/DataFormatterGrid'
-import type { DataFormatterMultiGrid, DataFormatterMultiGridGrid } from './types/DataFormatterMultiGrid'
-import type { DataFormatterMultiValue } from './types/DataFormatterMultiValue'
-import type { DataFormatterTree } from './types/DataFormatterTree'
-import type { DataFormatterRelationship } from './types/DataFormatterRelationship'
-import type { ChartParams } from './types/ChartParams'
-import type { Padding } from './types/Padding'
+import type {
+  ChartOptionsPartial,
+  DataSeries,
+  DataGrid,
+  DataMultiGrid,
+  DataMultiValue,
+  DataTree,
+  DataRelationship,
+  DataFormatterValueAxis,
+  DataFormatterGroupAxis,
+  DataFormatterContainer,
+  DataFormatterSeries,
+  DataFormatterGrid,
+  DataFormatterGridGrid,
+  DataFormatterMultiGrid,
+  DataFormatterMultiGridGrid,
+  DataFormatterMultiValue,
+  DataFormatterTree,
+  DataFormatterRelationship,
+  ChartParams,
+  Padding
+} from '../lib/core-types'
 
 export const CHART_OPTIONS_DEFAULT: ChartOptionsPartial<any> = {
   // preset: {} // 預設為空

@@ -9,13 +9,14 @@ import {
   distinctUntilChanged,
   Subject,
   BehaviorSubject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
-  defineSeriesPlugin } from '@orbcharts/core'
+  defineSeriesPlugin } from '../../../lib/core'
 import type {
   ComputedDatumSeries,
   SeriesContainerPosition,
   EventSeries,
-  ChartParams } from '@orbcharts/core'
+  ChartParams } from '../../../lib/core-types'
 import type { RoseLabelsParams } from '../types'
 import type { PieDatum } from '../seriesUtils'
 import { DEFAULT_ROSE_LABELS_PARAMS } from '../defaults'
@@ -24,6 +25,7 @@ import { makeD3Arc } from '../../utils/d3Utils'
 import { getDatumColor, getClassName } from '../../utils/orbchartsUtils'
 import { seriesCenterSelectionObservable } from '../seriesObservables'
 import { renderTspansOnQuadrant } from '../../utils/d3Graphics'
+import { LAYER_INDEX_OF_LABEL } from '../../const'
 
 interface RenderDatum {
   pieDatum: PieDatum
@@ -49,6 +51,33 @@ const lineGClassName = getClassName(pluginName, 'line-g')
 const textClassName = getClassName(pluginName, 'text')
 
 const pieOuterCentroid = 2
+
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_ROSE_LABELS_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_ROSE_LABELS_PARAMS,
+  layerIndex: LAYER_INDEX_OF_LABEL,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      outerRadius: {
+        toBeTypes: ['number'],
+      },
+      labelCentroid: {
+        toBeTypes: ['number'],
+      },
+      labelFn: {
+        toBeTypes: ['Function'],
+      },
+      labelColorType: {
+        toBeOption: 'ColorType'
+      },
+      arcScaleType: {
+        toBe: '"area" | "radius"',
+        test: (value: any) => value === 'area' || value === 'radius'
+      },
+    })
+    return result
+  }
+}
 
 function makeRenderData ({ pieData, labelCentroid, arcScaleType, maxValue, axisWidth, outerRadius, lineStartCentroid, fullParams }: {
   pieData: PieDatum[]
@@ -512,7 +541,7 @@ function createEachPieLabel (pluginName: string, context: {
 }
 
 
-export const RoseLabels = defineSeriesPlugin(pluginName, DEFAULT_ROSE_LABELS_PARAMS)(({ selection, observer, subject }) => {
+export const RoseLabels = defineSeriesPlugin(pluginConfig)(({ selection, observer, subject }) => {
   
   const destroy$ = new Subject()
 

@@ -6,13 +6,44 @@ import {
   distinctUntilChanged,
   shareReplay
 } from 'rxjs'
-import { defineGridPlugin } from '@orbcharts/core'
+import type { DefinePluginConfig } from '../../../lib/core-types'
+import { defineGridPlugin } from '../../../lib/core'
 import { DEFAULT_BARS_TRIANGLE_PARAMS } from '../defaults'
+import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 import { createBaseBarsTriangle } from '../../base/BaseBarsTriangle'
 
 const pluginName = 'BarsTriangle'
 
-export const BarsTriangle = defineGridPlugin(pluginName, DEFAULT_BARS_TRIANGLE_PARAMS)(({ selection, name, subject, observer }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BARS_TRIANGLE_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_BARS_TRIANGLE_PARAMS,
+  layerIndex: 5,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      barWidth: {
+        toBeTypes: ['number']
+      },
+      barPadding: {
+        toBeTypes: ['number']
+      },
+      barGroupPadding: {
+        toBeTypes: ['number']
+      },
+      linearGradientOpacity: {
+        toBe: '[number, number]',
+        test: (value: any) => {
+          return Array.isArray(value)
+            && value.length === 2
+            && typeof value[0] === 'number'
+            && typeof value[1] === 'number'
+        }
+      }
+    })
+    return result
+  }
+}
+
+export const BarsTriangle = defineGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeBaseBars = createBaseBarsTriangle(pluginName, {

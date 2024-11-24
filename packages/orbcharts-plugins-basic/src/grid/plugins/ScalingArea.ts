@@ -9,27 +9,38 @@ import {
   takeUntil,
   debounceTime,
   Subject } from 'rxjs'
-import type { DataFormatterGrid } from '@orbcharts/core'
+import type { DefinePluginConfig } from '../../../lib/core-types'
+import type { DataFormatterGrid } from '../../../lib/core-types'
 import {
-  defineGridPlugin } from '@orbcharts/core'
+  defineGridPlugin, createAxisLinearScale } from '../../../lib/core'
 import { DEFAULT_SCALING_AREA_PARAMS } from '../defaults'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
-import { createAxisPointScale, createAxisLinearScale } from '@orbcharts/core'
+import { LAYER_INDEX_OF_ROOT } from '../../const'
 
 const pluginName = 'ScalingArea'
 const rectClassName = getClassName(pluginName, 'rect')
 
-export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PARAMS)(({ selection, rootSelection, name, observer, subject }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_SCALING_AREA_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_SCALING_AREA_PARAMS,
+  layerIndex: LAYER_INDEX_OF_ROOT,
+  validator: (params, { validateColumns }) => {
+    return {
+      status: 'success',
+      columnName: '',
+      expectToBe: ''
+    }
+  }
+}
+
+export const ScalingArea = defineGridPlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
 
   const destroy$ = new Subject()
 
-  const rootRectSelection: d3.Selection<SVGRectElement, any, any, any> = rootSelection
-    .insert('rect', 'g')
-    .classed(rectClassName, true)
-    .attr('opacity', 0)
-    // .attr('pointer-events', 'none')
-  //   .attr('clip-path', 'url(#bpcharts__clipPath-box)')
-  // const dataAreaSelection: d3.Selection<SVGGElement, any, any, any> = axisSelection.append('g')
+  // const rootRectSelection: d3.Selection<SVGRectElement, any, any, any> = rootSelection
+  //   .append('rect')
+  //   .classed(rectClassName, true)
+  //   .attr('opacity', 0)
 
   // 紀錄zoom最後一次的transform
   let lastTransform = {
@@ -37,18 +48,19 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
     x: 0,
     y: 0
   }
+  // let lastDomain: [number, number] = [0, 0]
 
-  observer.layout$.pipe(
-    takeUntil(destroy$),
-  ).subscribe(d => {
-    rootRectSelection
-      .attr('width', d.width)
-      .attr('height', d.height)
-      .attr('x', d.left)
-      .attr('y', d.top)
-  })
+  // observer.layout$.pipe(
+  //   takeUntil(destroy$),
+  // ).subscribe(d => {
+  //   rootRectSelection
+  //     .attr('width', d.width)
+  //     .attr('height', d.height)
+  //     .attr('x', d.left)
+  //     .attr('y', d.top)
+  // })
 
-  const groupMaxIndex$ = observer.computedData$.pipe(
+  const groupMax$ = observer.computedData$.pipe(
     map(d => d[0] ? d[0].length - 1 : 0),
     distinctUntilChanged()
   )
@@ -63,45 +75,56 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
   //     store.fullDataFormatter$.next(fullDataFormatter)
   //   })
 
-  combineLatest({
-    initGroupAxis: observer.fullDataFormatter$.pipe(
-      map(d => d.grid.groupAxis),
-      // 只用第一次資料來計算scale才不會造成每次變動都受到影響
-      first()
-    ),
-    // fullDataFormatter: fullDataFormatter$.pipe(first()), // 只用第一次資料來計算scale才不會造成每次變動都受到影響
+  const initGroupAxis$ = observer.fullDataFormatter$.pipe(
+    map(d => d.grid.groupAxis),
+    // 只用第一次資料來計算scale才不會造成每次變動都受到影響
+    first()
+  )
+
+
+  const groupScale$ = combineLatest({
+    initGroupAxis: initGroupAxis$,
     fullDataFormatter: observer.fullDataFormatter$,
-    groupMaxIndex: groupMaxIndex$,
+    groupMax: groupMax$,
     layout: observer.layout$,
     axisSize: observer.gridAxesSize$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
+    map(data => {
+      // const groupMin = 0
+      const groupScaleDomainMin = data.initGroupAxis.scaleDomain[0] - data.initGroupAxis.scalePadding
+      const groupScaleDomainMax = data.initGroupAxis.scaleDomain[1] === 'max'
+        ? data.groupMax + data.initGroupAxis.scalePadding
+        : data.initGroupAxis.scaleDomain[1] as number + data.initGroupAxis.scalePadding
+
+      const groupScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+        maxValue: data.groupMax,
+        minValue: 0,
+        axisWidth: data.axisSize.width,
+        scaleDomain: [groupScaleDomainMin, groupScaleDomainMax],
+        scaleRange: [0, 1]
+      })
+
+      return groupScale
+    })
+  )
+
+  combineLatest({
+    groupScale: groupScale$,
+    // initGroupAxis: initGroupAxis$,
+    // fullDataFormatter: fullDataFormatter$.pipe(first()), // 只用第一次資料來計算scale才不會造成每次變動都受到影響
+    fullDataFormatter: observer.fullDataFormatter$,
+    groupMax: groupMax$,
+    // layout: observer.layout$,
+    // axisSize: observer.gridAxesSize$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
   ).subscribe(data => {
     const groupMin = 0
-    const groupMax = data.groupMaxIndex
-    // const groupScaleDomainMin = data.initGroupAxis.scaleDomain[0] === 'min'
-    //   ? groupMin - data.initGroupAxis.scalePadding
-    //   : data.initGroupAxis.scaleDomain[0] as number - data.initGroupAxis.scalePadding
-    const groupScaleDomainMin = data.initGroupAxis.scaleDomain[0] - data.initGroupAxis.scalePadding
-    const groupScaleDomainMax = data.initGroupAxis.scaleDomain[1] === 'max'
-      ? groupMax + data.initGroupAxis.scalePadding
-      : data.initGroupAxis.scaleDomain[1] as number + data.initGroupAxis.scalePadding
 
-    // const scaleRange: [number, number] = data.fullDataFormatter.grid.valueAxis.position === 'left' || data.fullDataFormatter.grid.valueAxis.position === 'top'
-    //   ? [0, 1]
-    //   : [1, 0]
-
-    const groupScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
-      maxValue: data.groupMaxIndex,
-      minValue: 0,
-      axisWidth: data.axisSize.width,
-      scaleDomain: [groupScaleDomainMin, groupScaleDomainMax],
-      // scaleDomain: [groupMin, groupMax],
-      scaleRange: [0, 1]
-    })
-
-    const shadowScale = groupScale.copy()
+    const shadowScale = data.groupScale.copy()
 
     const zoom = d3.zoom()
       // .scaleExtent([1, data.groupMaxIndex])
@@ -110,11 +133,29 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
         // debugger
         // console.log('event', event)
         const t = event.transform;
-        // console.log('t', t)
+
+        // if (event.sourceEvent.type === 'mousemove') {
+        //   // 當進行平移時，反向計算 x 軸
+        //   const dx = event.transform.x - currentTransform.x; // 本次平移增量
+        //   const reversedX = currentTransform.x - dx;         // 反向累積平移
+        //   // 更新變換狀態
+        //   currentTransform = d3.zoomIdentity
+        //     .translate(reversedX, event.transform.y)
+        //     .scale(event.transform.k);
+        // } else {
+        //   // 縮放操作：只更新縮放比例
+        //   currentTransform = d3.zoomIdentity
+        //     .translate(currentTransform.x, currentTransform.y)
+        //     .scale(event.transform.k);
+        // }
+        // console.log('currentTransform', currentTransform)
+
+        // console.log('t.x', t.x)
         const mapGroupindex = (d: number) => {
           const n = Math.round(d)
-          return Math.min(groupMax, Math.max(groupMin, n));
+          return Math.min(data.groupMax, Math.max(groupMin, n));
         }
+        
         const zoomedDomain = data.fullDataFormatter.grid.groupAxis.position === 'bottom' || data.fullDataFormatter.grid.groupAxis.position === 'top'
           ? t.rescaleX(shadowScale)
             .domain()
@@ -123,8 +164,9 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
           .domain()
           .map(mapGroupindex)
 
+
         // domain超過極限值
-        if (zoomedDomain[0] <= groupMin && zoomedDomain[1] >= groupMax) {
+        if (zoomedDomain[0] <= groupMin && zoomedDomain[1] >= data.groupMax) {
           // 繼續縮小
           if (t.k < lastTransform.k) {
             // 維持前一次的transform
@@ -142,12 +184,12 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
             t.y = lastTransform.y
           }
         }
+
         // 紀錄transform
         lastTransform.k = t.k
         lastTransform.x = t.x
         lastTransform.y = t.y
-// console.log(String(data.fullDataFormatter.visibleFilter))
-        // console.log('zoomedDomain', zoomedDomain)
+
 
         const newDataFormatter: DataFormatterGrid = {
           ...data.fullDataFormatter,
@@ -157,20 +199,20 @@ export const ScalingArea = defineGridPlugin(pluginName, DEFAULT_SCALING_AREA_PAR
               ...data.fullDataFormatter.grid.groupAxis,
               scaleDomain: zoomedDomain
             }
-          },
+          }
         }
         subject.dataFormatter$.next(newDataFormatter)
       })
 
     // 傳入外層selection
     // subject.selection.call(zoom as any)
-    rootSelection.call(zoom as any)
+    rootSelection.call(zoom)
 
   })
   
   return () => {
     destroy$.next(undefined)
-    rootRectSelection.remove()
+    // rootRectSelection.remove()
     
     rootSelection.call(d3.zoom().on('zoom', null))
   }

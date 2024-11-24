@@ -1,6 +1,6 @@
-import * as orbChartsCore from '@orbcharts/core'
-import * as orbChartsPluginsBasic from '@orbcharts/plugins-basic/src/index'
-import * as orbChartsPresetsBasic from '@orbcharts/presets-basic/src/index'
+import type { ChartType, PresetPartial, PluginEntity, DataTypeMap } from '../lib/core-types'
+import * as orbChartsPluginsBasic from '../lib/plugins-basic'
+import * as orbChartsPresetsBasic from '../lib/presets-basic'
 
 type KeyOfOrbChartsPluginsBasic = keyof typeof orbChartsPluginsBasic
 type KeyOfOrbChartsPresetsBasic = keyof typeof orbChartsPresetsBasic
@@ -8,7 +8,7 @@ type KeyOfOrbChartsPresetsBasic = keyof typeof orbChartsPresetsBasic
 // -- demo清單的資料 --
 export interface DemoChartTypeItem {
   title: string
-  chartType: orbChartsCore.ChartType
+  chartType: ChartType
   list: DemoMainPluginsItem[]
 }
 
@@ -32,8 +32,8 @@ export interface DemoItem {
 }
 
 // -- 建立demo用的資料 --
-export interface DemoData<T extends orbChartsCore.ChartType> {
-  preset: orbChartsCore.PresetPartial<T, any>
-  plugins: orbChartsCore.PluginEntity<T, string, any>[]
-  data: orbChartsCore.DataTypeMap<T>
+export interface DemoData<T extends ChartType> {
+  preset: PresetPartial<T, any>
+  plugins: PluginEntity<T, string, any>[]
+  data: DataTypeMap<T>
 }

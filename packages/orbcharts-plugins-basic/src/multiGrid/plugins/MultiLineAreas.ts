@@ -3,19 +3,49 @@ import {
   map,
   takeUntil,
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
-  defineMultiGridPlugin } from '@orbcharts/core'
-
+  defineMultiGridPlugin } from '../../../lib/core'
 import { DEFAULT_MULTI_LINE_AREAS_PARAMS } from '../defaults'
 import { createBaseLineAreas } from '../../base/BaseLineAreas'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
+import { LAYER_INDEX_OF_GRAPHIC_GROUND } from '../../const'
 
 const pluginName = 'MultiLineAreas'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiLineAreas = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_LINE_AREAS_PARAMS)(({ selection, name, subject, observer }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_LINE_AREAS_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_MULTI_LINE_AREAS_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC_GROUND,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      gridIndexes: {
+        toBe: 'number[] | "all"',
+        test: (value: any) => {
+          return value === 'all' || (Array.isArray(value) && value.every((v: any) => typeof v === 'number'))
+        }
+      },
+      lineCurve: {
+        toBeTypes: ['string']
+      },
+      linearGradientOpacity: {
+        toBe: '[number, number]',
+        test: (value: any) => {
+          return Array.isArray(value)
+            && value.length === 2
+            && typeof value[0] === 'number'
+            && typeof value[1] === 'number'
+        }
+      },
+    })
+    return result
+  }
+}
+
+export const MultiLineAreas = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
   
   const unsubscribeFnArr: (() => void)[] = []

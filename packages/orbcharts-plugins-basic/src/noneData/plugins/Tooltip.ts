@@ -11,13 +11,14 @@ import {
   Subject, 
   Observable,
   distinctUntilChanged } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import type {
-  EventTypeMap, PluginConstructor, ChartType } from '@orbcharts/core'
-import { defineNoneDataPlugin } from '@orbcharts/core'
+  EventTypeMap, PluginConstructor, ChartType } from '../../../lib/core-types'
+import { defineNoneDataPlugin, textSizePxObservable } from '../../../lib/core'
 import { getSvgGElementSize, appendSvg } from '../../utils/d3Utils'
 import { getColor, getClassName } from '../../utils/orbchartsUtils'
 import { TOOLTIP_PARAMS } from '../defaults'
-import { textSizePxObservable } from '@orbcharts/core'
+import { LAYER_INDEX_OF_TOOLTIP } from '../../const'
 
 interface TooltipStyle {
   backgroundColor: string
@@ -205,7 +206,48 @@ function renderTooltip ({ rootSelection, pluginName, rootWidth, rootHeight, svgS
 
 }
 
-export const Tooltip: PluginConstructor<any, string, any> = defineNoneDataPlugin(pluginName, TOOLTIP_PARAMS)(({ selection, rootSelection, name, chartType, observer, subject }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof TOOLTIP_PARAMS> = {
+  name: pluginName,
+  defaultParams: TOOLTIP_PARAMS,
+  layerIndex: LAYER_INDEX_OF_TOOLTIP,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      backgroundColorType: {
+        toBeOption: 'ColorType',
+      },
+      backgroundOpacity: {
+        toBeTypes: ['number']
+      },
+      strokeColorType: {
+        toBeOption: 'ColorType',
+      },
+      offset: {
+        toBe: '[number, number]',
+        test: (value: any) => {
+          return Array.isArray(value)
+            && value.length === 2
+            && typeof value[0] === 'number'
+            && typeof value[1] === 'number'
+        }
+      },
+      padding: {
+        toBeTypes: ['number']
+      },
+      textColorType: {
+        toBeOption: 'ColorType',
+      },
+      textRenderFn: {
+        toBeTypes: ['Function']
+      },
+      svgRenderFn: {
+        toBeTypes: ['Function']
+      }
+    })
+    return result
+  }
+}
+
+export const Tooltip = defineNoneDataPlugin(pluginConfig)(({ selection, rootSelection, name, chartType, observer, subject }) => {
   const destroy$ = new Subject()
 
   // 事件觸發

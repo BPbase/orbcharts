@@ -6,18 +6,55 @@ import {
   shareReplay,
   takeUntil
 } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
-  defineMultiGridPlugin } from '@orbcharts/core'
+  defineMultiGridPlugin } from '../../../lib/core'
 import { DEFAULT_MULTI_BARS_TRIANGLE_PARAMS } from '../defaults'
 import { createBaseBarsTriangle } from '../../base/BaseBarsTriangle'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
+import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 
 const pluginName = 'MultiBarsTriangle'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-export const MultiBarsTriangle = defineMultiGridPlugin(pluginName, DEFAULT_MULTI_BARS_TRIANGLE_PARAMS)(({ selection, name, subject, observer }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_BARS_TRIANGLE_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_MULTI_BARS_TRIANGLE_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      gridIndexes: {
+        toBe: 'number[] | "all"',
+        test: (value: any) => {
+          return value === 'all' || (Array.isArray(value) && value.every((v: any) => typeof v === 'number'))
+        }
+      },
+      barWidth: {
+        toBeTypes: ['number']
+      },
+      barPadding: {
+        toBeTypes: ['number']
+      },
+      barGroupPadding: {
+        toBeTypes: ['number']
+      },
+      linearGradientOpacity: {
+        toBe: '[number, number]',
+        test: (value: any) => {
+          return Array.isArray(value)
+            && value.length === 2
+            && typeof value[0] === 'number'
+            && typeof value[1] === 'number'
+        }
+      }
+    })
+    return result
+  }
+}
+
+export const MultiBarsTriangle = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
   
   const unsubscribeFnArr: (() => void)[] = []

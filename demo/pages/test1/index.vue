@@ -53,6 +53,12 @@ onMounted(() => {
     
   // })
 
+  // roseLabels.params$.next({
+  //   labelColorType: 'series'
+  // })
+
+  
+
   chart.dataFormatter$.next({
     // sumSeries: true,
     // separateSeries: true

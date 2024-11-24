@@ -10,13 +10,16 @@ import {
   shareReplay,
   Observable,
   Subject } from 'rxjs'
-import type { ColorType, ComputedDataGrid, GridContainerPosition } from '@orbcharts/core'
-import type { BasePluginFn } from './types'
 import type {
+  ColorType,
+  ComputedDataGrid,
+  GridContainerPosition,
   ComputedDatumGrid,
   DataFormatterGrid,
   ChartParams,
-  TransformData } from '@orbcharts/core'
+  TransformData
+} from '../../lib/core-types'
+import type { BasePluginFn } from './types'
 import { parseTickFormatValue } from '../utils/d3Utils'
 import { getColor, getClassName } from '../utils/orbchartsUtils'
 import { renderTspansOnAxis } from '../utils/d3Graphics'
@@ -233,7 +236,7 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
     .call(xAxis)
     .on('end', (self, t) => {
       // 先等transition結束再處理文字，否則會被原本的文字覆蓋
-      xAxisEl
+      xAxisSelection
         .selectAll('.tick text')
         .each((groupIndex: number, i, n) => {
           // const groupLabel = groupLabels[groupIndex] ?? '' // 非整數index不顯示

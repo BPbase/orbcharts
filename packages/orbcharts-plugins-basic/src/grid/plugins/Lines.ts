@@ -1,13 +1,32 @@
 import {
   Subject } from 'rxjs'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
-  defineGridPlugin } from '@orbcharts/core'
+  defineGridPlugin } from '../../../lib/core'
 import { DEFAULT_LINES_PARAMS } from '../defaults'
 import { createBaseLines } from '../../base/BaseLines'
+import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 
 const pluginName = 'Lines'
 
-export const Lines = defineGridPlugin(pluginName, DEFAULT_LINES_PARAMS)(({ selection, rootSelection, name, observer, subject }) => {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_LINES_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_LINES_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      lineCurve: {
+        toBeTypes: ['string']
+      },
+      lineWidth: {
+        toBeTypes: ['number']
+      },
+    })
+    return result
+  }
+}
+
+export const Lines = defineGridPlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
 
   const destroy$ = new Subject()
 

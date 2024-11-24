@@ -17,7 +17,7 @@ import type {
   GridContainerPosition,
   Layout,
   TransformData,
-  ColorType } from '@orbcharts/core'
+  ColorType } from '../../lib/core-types'
 import { getDatumColor, getClassName, getUniID } from '../utils/orbchartsUtils'
 import { gridSelectionsObservable } from '../grid/gridObservables'
 

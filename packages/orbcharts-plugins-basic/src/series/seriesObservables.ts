@@ -14,7 +14,7 @@ import {
   distinctUntilChanged
 } from 'rxjs'
 import type {
-  SeriesContainerPosition } from '@orbcharts/core'
+  SeriesContainerPosition } from '../../lib/core-types'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 
 function createSeriesSelection ({ selection, pluginName, separateSeries$, seriesLabels$ }: {

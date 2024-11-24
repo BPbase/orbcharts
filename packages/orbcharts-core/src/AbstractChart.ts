@@ -3,17 +3,20 @@ import {
   Subject } from 'rxjs'
 import type {
   ComputedDataFn,
+  DataValidator,
   ChartEntity,
   ChartType,
   ChartParamsPartial,
-  ContextObserverFn,
+  ContextObserverCallback,
   ChartOptionsPartial,
   DataTypeMap,
   DataFormatterTypeMap,
   DataFormatterPartialTypeMap,
+  DataFormatterValidator,
   EventTypeMap,
-  PluginEntity } from './types'
+  PluginEntity } from '../lib/core-types'
 import { createBaseChart } from './base/createBaseChart'
+import { createOrbChartsErrorMessage } from './utils/errorMessage'
 
 export abstract class AbstractChart<T extends ChartType> implements ChartEntity<T> {
   selection: d3.Selection<SVGGElement, unknown, HTMLElement, unknown>
@@ -25,24 +28,30 @@ export abstract class AbstractChart<T extends ChartType> implements ChartEntity<
   event$: Subject<EventTypeMap<T>> = new Subject()
 
   constructor (
-    { defaultDataFormatter, computedDataFn, contextObserverFn }: {
+    { defaultDataFormatter, dataFormatterValidator, computedDataFn, dataValidator, contextObserverCallback }: {
       defaultDataFormatter: DataFormatterTypeMap<T>
+      dataFormatterValidator: DataFormatterValidator<T>
       computedDataFn: ComputedDataFn<T>
-      contextObserverFn: ContextObserverFn<T>
+      dataValidator: DataValidator<T>
+      contextObserverCallback: ContextObserverCallback<T>
     },
     element: HTMLElement | Element,
     options?: ChartOptionsPartial<T>
   ) {
-    const baseChart = createBaseChart({ defaultDataFormatter, computedDataFn, contextObserverFn })
-    const chartEntity = baseChart(element, options)
+    try {
+      const baseChart = createBaseChart({ defaultDataFormatter, dataFormatterValidator, computedDataFn, dataValidator, contextObserverCallback })
+      const chartEntity = baseChart(element, options)
 
-    this.selection = chartEntity.selection
-    this.destroy = chartEntity.destroy
-    this.data$ = chartEntity.data$
-    this.dataFormatter$ = chartEntity.dataFormatter$
-    this.plugins$ = chartEntity.plugins$
-    this.chartParams$ = chartEntity.chartParams$
-    this.event$ = chartEntity.event$
+      this.selection = chartEntity.selection
+      this.destroy = chartEntity.destroy
+      this.data$ = chartEntity.data$
+      this.dataFormatter$ = chartEntity.dataFormatter$
+      this.plugins$ = chartEntity.plugins$
+      this.chartParams$ = chartEntity.chartParams$
+      this.event$ = chartEntity.event$
+    } catch (e) {
+      console.error(createOrbChartsErrorMessage(e))
+    }
   }
   
 }

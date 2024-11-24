@@ -12,13 +12,14 @@ import {
 import type {
   ChartType,
   ChartParams,
+  ComputedDatumBase,
   ComputedDataTypeMap,
   ComputedDatumTypeMap,
   DataFormatterTypeMap,
   EventTypeMap,
   HighlightTarget,
   Layout,
-  TransformData } from '../types'
+  TransformData } from '../../lib/core-types'
 
 // interface DatumUnknown {
 //   value: number | null
@@ -27,6 +28,22 @@ import type {
 //   seriesLabel?: string // 要符合每一種computedData所以不一定會有seriesLabel
 //   groupLabel?: string // 要符合每一種computedData所以不一定會有groupLabel
 // }
+
+export function resizeObservable(elem: HTMLElement | Element): Observable<DOMRectReadOnly> {
+  return new Observable(subscriber => {
+    const ro = new ResizeObserver(entries => {
+      const entry = entries[0]
+      if (entry && entry.contentRect) {
+        subscriber.next(entry.contentRect)
+      }
+    })
+
+    ro.observe(elem)
+    return function unsubscribe() {
+      ro.unobserve(elem)
+    }
+  })
+}
 
 // 通用 highlight Observable
 export const highlightObservable = <T extends ChartType, D>({ datumList$, fullChartParams$, event$ }: {
@@ -58,12 +75,12 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
     filter(d => d.eventName === 'mouseover'),
     // distinctUntilChanged((prev, current) => prev.eventName === current.eventName)
     map(d => {
-      return d.datum
+      return (d as any).datum
         ? {
-          id: (d.datum as any).id,
-          seriesLabel: (d.datum as any).seriesLabel,
-          groupLabel: (d.datum as any).groupLabel,
-          categoryLabel: (d.datum as any).categoryLabel,
+          id: ((d as any).datum as any).id,
+          seriesLabel: ((d as any).datum as any).seriesLabel,
+          groupLabel: ((d as any).datum as any).groupLabel,
+          categoryLabel: ((d as any).datum as any).categoryLabel,
           highlightDefault: null
         }
         : {
@@ -86,7 +103,7 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
   )
 
   function getDatumIds (datumList: ComputedDatumTypeMap<T>[], id: string | null) {
-    const datum = datumList.find(d => d.id === id)
+    const datum = datumList.find(d => (d as ComputedDatumBase).id === id)
     return datum ? [datum] : []
   }
 

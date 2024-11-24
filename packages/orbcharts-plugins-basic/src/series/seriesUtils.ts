@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import type { ComputedDataSeries, ComputedDatumSeries, EventName, EventSeries, HighlightTarget } from '@orbcharts/core'
+import type { ComputedDataSeries, ComputedDatumSeries, EventName, EventSeries, HighlightTarget } from '../../lib/core-types'
 // import type { D3PieDatum, PieDatum } from '../types'
 
 // 由d3.pie()建出來的資料格式

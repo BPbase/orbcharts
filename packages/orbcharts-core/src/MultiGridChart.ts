@@ -1,9 +1,11 @@
 import type {
   ChartEntity,
-  ChartOptionsPartial } from './types'
+  ChartOptionsPartial } from '../lib/core-types'
 import { DATA_FORMATTER_MULTI_GRID_DEFAULT } from './defaults'
-import { computeMultiGridData } from './multiGrid/computeMultiGridData'
-import { createMultiGridContextObserver } from './multiGrid/createMultiGridContextObserver'
+import { dataFormatterValidator } from './multiGrid/dataFormatterValidator'
+import { computedDataFn } from './multiGrid/computedDataFn'
+import { dataValidator } from './multiGrid/dataValidator'
+import { contextObserverCallback } from './multiGrid/contextObserverCallback'
 import { AbstractChart } from './AbstractChart'
 
 export class MultiGridChart extends AbstractChart<'multiGrid'> implements ChartEntity<'multiGrid'> {
@@ -11,8 +13,10 @@ export class MultiGridChart extends AbstractChart<'multiGrid'> implements ChartE
     super(
       {
         defaultDataFormatter: DATA_FORMATTER_MULTI_GRID_DEFAULT,
-        computedDataFn: computeMultiGridData,
-        contextObserverFn: createMultiGridContextObserver
+        dataFormatterValidator,
+        computedDataFn,
+        dataValidator,
+        contextObserverCallback
       },
       element,
       options

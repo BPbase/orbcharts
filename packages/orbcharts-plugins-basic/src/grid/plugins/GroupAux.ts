@@ -14,11 +14,12 @@ import {
   Subject,
   Observable } from 'rxjs'
 import {
-  defineGridPlugin } from '@orbcharts/core'
+  defineGridPlugin } from '../../../lib/core'
+import type { DefinePluginConfig } from '../../../lib/core-types'
 import type {
   TransformData,
   DataFormatterGrid,
-  ChartParams } from '@orbcharts/core'
+  ChartParams } from '../../../lib/core-types'
 import { DEFAULT_GROUP_AREA_PARAMS } from '../defaults'
 import { parseTickFormatValue } from '../../utils/d3Utils'
 import { measureTextWidth } from '../../utils/commonUtils'
@@ -28,6 +29,7 @@ import { gridGroupPosition } from '../gridObservables'
 import type { GroupAuxParams } from '../types'
 import { gridSelectionsObservable } from '../gridObservables'
 import { renderTspansOnAxis } from '../../utils/d3Graphics'
+import { LAYER_INDEX_OF_AUX } from '../../const'
 
 interface LineDatum {
   id: string
@@ -49,6 +51,44 @@ interface LabelDatum {
 
 const pluginName = 'GroupAux'
 const labelClassName = getClassName(pluginName, 'label-box')
+
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_GROUP_AREA_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_GROUP_AREA_PARAMS,
+  layerIndex: LAYER_INDEX_OF_AUX,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      showLine: {
+        toBeTypes: ['boolean']
+      },
+      showLabel: {
+        toBeTypes: ['boolean']
+      },
+      lineDashArray: {
+        toBeTypes: ['string']
+      },
+      lineColorType: {
+        toBeOption: 'ColorType'
+      },
+      labelColorType: {
+        toBeOption: 'ColorType'
+      },
+      labelTextColorType: {
+        toBeOption: 'ColorType'
+      },
+      labelTextFormat: {
+        toBeTypes: ['string', 'Function']
+      },
+      labelPadding: {
+        toBeTypes: ['number']
+      },
+      labelRotate: {
+        toBeTypes: ['number']
+      }
+    })
+    return result
+  }
+}
 
 function createLineData ({ groupLabel, axisX, axisHeight, fullParams }: {
   groupLabel: string
@@ -199,50 +239,93 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
       rectY = - rectHeight + 2
     }
 
-    const rectUpdate = d3.select(n[i])
+    // -- rect --
+    d3.select(n[i])
       .selectAll<SVGRectElement, LabelDatum>('rect')
       .data([datum])
-    const rectEnter = rectUpdate
-      .enter()
-      .append('rect')
+      .join(
+        enter => enter.append('rect')
+          .style('cursor', 'pointer')
+          .attr('rx', 5)
+          .attr('ry', 5),
+        update => update,
+        exit => exit.remove()
+      )
+      .attr('width', d => `${rectWidth}px`)
       .attr('height', `${rectHeight}px`)
       .attr('fill', d => getColor(fullParams.labelColorType, fullChartParams))
       .attr('x', rectX)
       .attr('y', rectY - 3) // 奇怪的偏移修正
-      .attr('rx', 5)
-      .attr('ry', 5)
-      .style('cursor', 'pointer')
-      // .style('pointer-events', 'none')
-    const rect = rectUpdate.merge(rectEnter)
-      .attr('width', d => `${rectWidth}px`)
       .style('transform', textReverseTransformWithRotate)
-    rectUpdate.exit().remove()
 
-    const textUpdate = d3.select(n[i])
+    // const rectUpdate = d3.select(n[i])
+    //   .selectAll<SVGRectElement, LabelDatum>('rect')
+    //   .data([datum])
+    // const rectEnter = rectUpdate
+    //   .enter()
+    //   .append('rect')
+    //   .attr('height', `${rectHeight}px`)
+    //   .attr('fill', d => getColor(fullParams.labelColorType, fullChartParams))
+    //   .attr('x', rectX)
+    //   .attr('y', rectY - 3) // 奇怪的偏移修正
+    //   .attr('rx', 5)
+    //   .attr('ry', 5)
+    //   .style('cursor', 'pointer')
+    //   // .style('pointer-events', 'none')
+    // const rect = rectUpdate.merge(rectEnter)
+    //   .attr('width', d => `${rectWidth}px`)
+    //   .style('transform', textReverseTransformWithRotate)
+    // rectUpdate.exit().remove()
+
+    // -- text --
+    d3.select(n[i])
       .selectAll<SVGTextElement, LabelDatum>('text')
       .data([datum])
-    const textEnter = textUpdate
-      .enter()
-      .append('text')
-      .style('dominant-baseline', 'hanging')
-      .style('cursor', 'pointer')
-      // .style('pointer-events', 'none')
-    const text = textUpdate.merge(textEnter)
-      // .text(d => d.text)
+      .join(
+        enter => enter.append('text')
+          .style('dominant-baseline', 'hanging')
+          .style('cursor', 'pointer'),
+        update => update,
+        exit => exit.remove()
+      )
       .style('transform', textReverseTransformWithRotate)
       .attr('fill', d => getColor(fullParams.labelTextColorType, fullChartParams))
       .attr('font-size', fullChartParams.styles.textSize)
       .attr('x', rectX + 6)
       .attr('y', rectY)
-    textUpdate.exit().remove()
-
-    text.each((d, i, n) => {
-      renderTspansOnAxis(d3.select(n[i]), {
-        textArr: datum.textArr,
-        textSizePx,
-        groupAxisPosition: fullDataFormatter.grid.groupAxis.position
+      .each((d, i, n) => {
+        renderTspansOnAxis(d3.select(n[i]), {
+          textArr: datum.textArr,
+          textSizePx,
+          groupAxisPosition: fullDataFormatter.grid.groupAxis.position
+        })
       })
-    })
+
+    // const textUpdate = d3.select(n[i])
+    //   .selectAll<SVGTextElement, LabelDatum>('text')
+    //   .data([datum])
+    // const textEnter = textUpdate
+    //   .enter()
+    //   .append('text')
+    //   .style('dominant-baseline', 'hanging')
+    //   .style('cursor', 'pointer')
+    //   // .style('pointer-events', 'none')
+    // const text = textUpdate.merge(textEnter)
+    //   // .text(d => d.text)
+    //   .style('transform', textReverseTransformWithRotate)
+    //   .attr('fill', d => getColor(fullParams.labelTextColorType, fullChartParams))
+    //   .attr('font-size', fullChartParams.styles.textSize)
+    //   .attr('x', rectX + 6)
+    //   .attr('y', rectY)
+    // textUpdate.exit().remove()
+
+    // text.each((d, i, n) => {
+    //   renderTspansOnAxis(d3.select(n[i]), {
+    //     textArr: datum.textArr,
+    //     textSizePx,
+    //     groupAxisPosition: fullDataFormatter.grid.groupAxis.position
+    //   })
+    // })
   })
 
   return axisLabelSelection
@@ -256,7 +339,8 @@ function removeLabel (selection: d3.Selection<any, string, any, unknown>) {
   gUpdate.exit().remove()
 }
 
-export const GroupAux = defineGridPlugin(pluginName, DEFAULT_GROUP_AREA_PARAMS)(({ selection, rootSelection, name, subject, observer }) => {
+
+export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   let isLabelMouseover = false

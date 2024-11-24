@@ -1,4 +1,4 @@
-import type { ComputedDatumSeries, EventSeries, EventName, ColorType } from '@orbcharts/core'
+import type { ComputedDatumSeries, EventSeries, EventName, ColorType } from '../../lib/core-types'
 import type {
   BubblesParams,
   PieParams,

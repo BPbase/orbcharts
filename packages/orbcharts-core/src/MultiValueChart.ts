@@ -1,9 +1,11 @@
 import type {
   ChartEntity,
-  ChartOptionsPartial } from './types'
+  ChartOptionsPartial } from '../lib/core-types'
 import { DATA_FORMATTER_MULTI_VALUE_DEFAULT } from './defaults'
-import { computeMultiValueData } from './multiValue/computeMultiValueData'
-import { createMultiValueContextObserver } from './multiValue/createMultiValueContextObserver'
+import { dataFormatterValidator } from './multiValue/dataFormatterValidator'
+import { computedDataFn } from './multiValue/computedDataFn'
+import { dataValidator } from './multiValue/dataValidator'
+import { contextObserverCallback } from './multiValue/contextObserverCallback'
 import { AbstractChart } from './AbstractChart'
 
 export class MultiValueChart extends AbstractChart<'multiValue'> implements ChartEntity<'multiValue'> {
@@ -11,8 +13,10 @@ export class MultiValueChart extends AbstractChart<'multiValue'> implements Char
     super(
       {
         defaultDataFormatter: DATA_FORMATTER_MULTI_VALUE_DEFAULT,
-        computedDataFn: computeMultiValueData,
-        contextObserverFn: createMultiValueContextObserver
+        dataFormatterValidator,
+        computedDataFn,
+        dataValidator,
+        contextObserverCallback
       },
       element,
       options
