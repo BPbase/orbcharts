@@ -206,13 +206,13 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
               throw new Error(createValidatorErrorMessage({
                 columnName,
                 expectToBe,
-                from: 'Chart.constructor'
+                from: 'Chart.dataFormatter$'
               }))
             } else if (status === 'warning') {
               console.warn(createValidatorWarningMessage({
                 columnName,
                 expectToBe,
-                from: 'Chart.constructor'
+                from: 'Chart.dataFormatter$'
               }))
             }
             
@@ -239,13 +239,13 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
               throw new Error(createValidatorErrorMessage({
                 columnName,
                 expectToBe,
-                from: 'Chart.constructor'
+                from: 'Chart.chartParams$'
               }))
             } else if (status === 'warning') {
               console.warn(createValidatorWarningMessage({
                 columnName,
                 expectToBe,
-                from: 'Chart.constructor'
+                from: 'Chart.chartParams$'
               }))
             }
             
@@ -375,13 +375,13 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
                   throw new Error(createValidatorErrorMessage({
                     columnName,
                     expectToBe,
-                    from: 'Chart.constructor'
+                    from: 'Chart.data$'
                   }))
                 } else if (status === 'warning') {
                   console.warn(createValidatorWarningMessage({
                     columnName,
                     expectToBe,
-                    from: 'Chart.constructor'
+                    from: 'Chart.data$'
                   }))
                 }
                 
