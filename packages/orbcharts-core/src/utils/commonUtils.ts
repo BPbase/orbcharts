@@ -6,7 +6,8 @@ export function isPlainObject(variable: any) {
 
 // 是否為function
 export function isFunction(fn: any) {
-  return !!fn && !fn.nodename && fn.constructor != String && fn.constructor != RegExp && fn.constructor != Array && /function/i.test(fn + "");
+  // return !!fn && !fn.nodename && fn.constructor != String && fn.constructor != RegExp && fn.constructor != Array && /function/i.test(fn + "");
+  return Object.prototype.toString.call(fn) === '[object Function]'
 }
 
 // 是否為dom
