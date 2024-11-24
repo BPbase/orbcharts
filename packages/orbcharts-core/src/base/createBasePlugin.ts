@@ -50,13 +50,13 @@ function createPluginEntity <T extends ChartType, PluginName, PluginParams>({ ch
                 throw new Error(createValidatorErrorMessage({
                   columnName,
                   expectToBe,
-                  from: 'Chart.constructor'
+                  from: `${config.name}.params$`
                 }))
               } else if (status === 'warning') {
                 console.warn(createValidatorWarningMessage({
                   columnName,
                   expectToBe,
-                  from: 'Chart.constructor'
+                  from: `${config.name}.params$`
                 }))
               }
               

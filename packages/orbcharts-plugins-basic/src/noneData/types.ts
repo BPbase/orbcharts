@@ -20,7 +20,7 @@ export type TooltipParams = {
   textColorType: ColorType
   offset: [number, number]
   padding: number
-  textRenderFn: <T extends ChartType> (eventData: EventTypeMap<T>) => string[] | string | null
-  svgRenderFn: (<T extends ChartType> (eventData: EventTypeMap<T>) => string) | null
+  textRenderFn: (<T extends ChartType>(eventData: EventTypeMap<T>) => string[] | string) | null
+  svgRenderFn: (<T extends ChartType>(eventData: EventTypeMap<T>) => string) | null
 }
 
