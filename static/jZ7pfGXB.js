@@ -1,0 +1,6 @@
+import"./D7osWch-.js";import{G as m}from"./C0ykeIGw.js";import{L as p}from"./D4APlAhz.js";import{L as c,D as l,V as u,G as d}from"./DqhJpQco.js";import{B as f}from"./d5eLX8xY.js";import{B as x}from"./YQnbOfJG.js";import{B as g}from"./CjEbPkmr.js";import{G as h,V as w}from"./2tTyEAZu.js";import{S as _}from"./Cf08CQOB.js";import{T as A}from"./CCaZHz5Q.js";import B from"./fFN4KK-3.js";import{e as G,f as L,o as S,c as $}from"./CKS46zor.js";import"./CtfRwFoZ.js";import"./D_qe6Wwi.js";import"./BT_98vuZ.js";import"./BnZeenac.js";import"./Db_esdnc.js";import"./DGCW5vlG.js";import"./DUAMOw3U.js";import"./DdT0iQQs.js";import"./Bp4PgOGH.js";const b={id:"chart",style:{width:"100%",height:"100%"}},W=G({__name:"index",setup(k){return L(()=>{const r=document.querySelector("#chart"),t=new m(r,{});new f,new x,new g;const o=new p,s=new c,i=new l,a=new h,n=new w;new u,t.dataFormatter$.next({grid:{groupAxis:{scalePadding:0},valueAxis:{position:"left"},columnLabels:[`test1
+test1`,`test2
+test2`,`test3
+test3`,`test4
+test4`,`test5
+test5`]},visibleFilter:(e,v)=>e.id!=="grid_0_0_4"}),t.chartParams$.subscribe(e=>{console.log(e)}),t.chartParams$.next({highlightTarget:"series"}),t.plugins$.next([a,n,new d,o,s,i,new _,new A]),t.data$.next(B)}),(r,t)=>(S(),$("div",b))}});export{W as default};
