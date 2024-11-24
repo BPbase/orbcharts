@@ -92,7 +92,7 @@ export const dataFormatterValidator: DataFormatterValidator<'multiGrid'> = (data
       }
     })
     const gridListResult = gridListResultArr.find((gridResult) => gridResult.status === 'error')
-    if (gridListResult.status === 'error') {
+    if (gridListResult) {
       return gridListResult
     }
   }
