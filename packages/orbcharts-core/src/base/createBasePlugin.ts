@@ -20,9 +20,11 @@ import type {
   PluginEntity } from '../../lib/core-types'
 import { mergeOptionsWithDefault } from '../utils'
 import { createValidatorErrorMessage, createValidatorWarningMessage, createOrbChartsErrorMessage } from '../utils/errorMessage'
+import { validateColumns } from '../utils/validator'
 
 // 建立plugin實例
-function createPluginEntity <T extends ChartType, PluginName, PluginParams>({ config, initFn }: {
+function createPluginEntity <T extends ChartType, PluginName, PluginParams>({ chartType, config, initFn }: {
+  chartType: T
   config: DefinePluginConfig<PluginName, PluginParams>
   initFn: PluginInitFn<T, PluginName, PluginParams>
 }): PluginEntity<T, PluginName, PluginParams> {
@@ -41,7 +43,9 @@ function createPluginEntity <T extends ChartType, PluginName, PluginParams>({ co
           map(d => {
             try {
               // 檢查 data$ 資料格式是否正確
-              const { status, columnName, expectToBe } = config.validator(d)
+              const { status, columnName, expectToBe } = config.validator(d, {
+                validateColumns
+              })
               if (status === 'error') {
                 throw new Error(createValidatorErrorMessage({
                   columnName,
@@ -74,6 +78,7 @@ function createPluginEntity <T extends ChartType, PluginName, PluginParams>({ co
   return {
     params$,
     name: config.name,
+    chartType,
     defaultParams: config.defaultParams,
     layerIndex: config.layerIndex,
     init () {
@@ -104,7 +109,7 @@ function createPluginEntity <T extends ChartType, PluginName, PluginParams>({ co
 }
 
 // 建立plugin類別
-export const createBasePlugin: CreateBasePlugin = <T extends ChartType>() => {
+export const createBasePlugin: CreateBasePlugin = <T extends ChartType>(chartType: T) => {
   
   // 定義plugin
   return function definePlugin<PluginName, PluginParams>(config: DefinePluginConfig<PluginName, PluginParams>) {
@@ -115,6 +120,7 @@ export const createBasePlugin: CreateBasePlugin = <T extends ChartType>() => {
       return class Plugin {
         params$: Subject<Partial<PluginParams>>
         name: PluginName
+        chartType: T
         defaultParams: PluginParams
         layerIndex: number
         // presetParams: Partial<PluginParams>
@@ -124,12 +130,14 @@ export const createBasePlugin: CreateBasePlugin = <T extends ChartType>() => {
         setContext: (pluginContext: PluginContext<T, PluginName, PluginParams>) => void
         constructor () {
           const pluginEntity = createPluginEntity<T, PluginName, PluginParams>({
+            chartType,
             config,
             initFn
           })
           
           this.params$ = pluginEntity.params$
           this.name = pluginEntity.name
+          this.chartType = pluginEntity.chartType
           this.defaultParams = pluginEntity.defaultParams
           this.layerIndex = pluginEntity.layerIndex
           // this.presetParams = pluginEntity.presetParams

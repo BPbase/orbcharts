@@ -33,11 +33,38 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_PIE_PAR
   name: pluginName,
   defaultParams: DEFAULT_PIE_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      outerRadius: {
+        toBeTypes: ['number'],
+      },
+      innerRadius: {
+        toBeTypes: ['number'],
+      },
+      outerRadiusWhileHighlight: {
+        toBeTypes: ['number'],
+      },
+      startAngle: {
+        toBeTypes: ['number'],
+      },
+      endAngle: {
+        toBeTypes: ['number'],
+      },
+      padAngle: {
+        toBeTypes: ['number'],
+      },
+      strokeColorType: {
+        toBeTypes: ['string'],
+      },
+      strokeWidth: {
+        toBeTypes: ['number'],
+      },
+      cornerRadius: {
+        toBeTypes: ['number'],
+      }
+    })
+
+    return result
   }
 }
 

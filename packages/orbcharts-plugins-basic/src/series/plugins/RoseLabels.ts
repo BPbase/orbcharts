@@ -56,11 +56,26 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_ROSE_LA
   name: pluginName,
   defaultParams: DEFAULT_ROSE_LABELS_PARAMS,
   layerIndex: LAYER_INDEX_OF_LABEL,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      outerRadius: {
+        toBeTypes: ['number'],
+      },
+      labelCentroid: {
+        toBeTypes: ['number'],
+      },
+      labelFn: {
+        toBeTypes: ['Function'],
+      },
+      labelColorType: {
+        toBeOption: 'ColorType'
+      },
+      arcScaleType: {
+        toBe: '"area" | "radius"',
+        test: (value: any) => value === 'area' || value === 'radius'
+      },
+    })
+    return result
   }
 }
 

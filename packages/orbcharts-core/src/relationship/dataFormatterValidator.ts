@@ -4,6 +4,7 @@ export const dataFormatterValidator: DataFormatterValidator<'relationship'> = (d
   
   return {
     status: 'success',
-    message: ''
+    columnName: '',
+    expectToBe: ''
   }
 }

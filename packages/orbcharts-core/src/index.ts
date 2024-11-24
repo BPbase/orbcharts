@@ -15,6 +15,6 @@ export { defineRelationshipPlugin } from './defineRelationshipPlugin'
 export { defineTreePlugin } from './defineTreePlugin'
 
 export * from './utils'
-
+export * from './defaults'
 
 

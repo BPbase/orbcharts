@@ -236,7 +236,7 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
     .call(xAxis)
     .on('end', (self, t) => {
       // 先等transition結束再處理文字，否則會被原本的文字覆蓋
-      xAxisEl
+      xAxisSelection
         .selectAll('.tick text')
         .each((groupIndex: number, i, n) => {
           // const groupLabel = groupLabels[groupIndex] ?? '' // 非整數index不顯示

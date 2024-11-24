@@ -12,6 +12,7 @@ import {
 import type {
   ChartType,
   ChartParams,
+  ComputedDatumBase,
   ComputedDataTypeMap,
   ComputedDatumTypeMap,
   DataFormatterTypeMap,
@@ -74,12 +75,12 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
     filter(d => d.eventName === 'mouseover'),
     // distinctUntilChanged((prev, current) => prev.eventName === current.eventName)
     map(d => {
-      return d.datum
+      return (d as any).datum
         ? {
-          id: (d.datum as any).id,
-          seriesLabel: (d.datum as any).seriesLabel,
-          groupLabel: (d.datum as any).groupLabel,
-          categoryLabel: (d.datum as any).categoryLabel,
+          id: ((d as any).datum as any).id,
+          seriesLabel: ((d as any).datum as any).seriesLabel,
+          groupLabel: ((d as any).datum as any).groupLabel,
+          categoryLabel: ((d as any).datum as any).categoryLabel,
           highlightDefault: null
         }
         : {
@@ -102,7 +103,7 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
   )
 
   function getDatumIds (datumList: ComputedDatumTypeMap<T>[], id: string | null) {
-    const datum = datumList.find(d => d.id === id)
+    const datum = datumList.find(d => (d as ComputedDatumBase).id === id)
     return datum ? [datum] : []
   }
 

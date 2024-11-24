@@ -13,11 +13,16 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_LINES_P
   name: pluginName,
   defaultParams: DEFAULT_LINES_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      lineCurve: {
+        toBeTypes: ['string']
+      },
+      lineWidth: {
+        toBeTypes: ['number']
+      },
+    })
+    return result
   }
 }
 

@@ -19,11 +19,22 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BARS_PA
   name: pluginName,
   defaultParams: DEFAULT_BARS_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      barWidth: {
+        toBeTypes: ['number']
+      },
+      barPadding: {
+        toBeTypes: ['number']
+      },
+      barGroupPadding: {
+        toBeTypes: ['number']
+      },
+      barRadius: {
+        toBeTypes: ['number', 'boolean']
+      }
+    })
+    return result
   }
 }
 

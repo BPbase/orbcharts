@@ -18,11 +18,55 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_VALUE_A
   name: pluginName,
   defaultParams: DEFAULT_VALUE_AXIS_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      labelOffset: {
+        toBe: '[number, number]',
+        test: (value: any) => {
+          return Array.isArray(value)
+            && value.length === 2
+            && typeof value[0] === 'number'
+            && typeof value[1] === 'number'
+        }
+      },
+      labelColorType: {
+        toBeOption: 'ColorType',
+      },
+      axisLineVisible: {
+        toBeTypes: ['boolean']
+      },
+      axisLineColorType: {
+        toBeOption: 'ColorType',
+      },
+      ticks: {
+        toBeTypes: ['number', 'null']
+      },
+      tickFormat: {
+        toBeTypes: ['string', 'Function']
+      },
+      tickLineVisible: {
+        toBeTypes: ['boolean']
+      },
+      tickPadding: {
+        toBeTypes: ['number']
+      },
+      tickFullLine: {
+        toBeTypes: ['boolean']
+      },
+      tickFullLineDasharray: {
+        toBeTypes: ['string']
+      },
+      tickColorType: {
+        toBeOption: 'ColorType',
+      },
+      tickTextRotate: {
+        toBeTypes: ['number']
+      },
+      tickTextColorType: {
+        toBeOption: 'ColorType',
+      }
+    })
+    return result
   }
 }
 

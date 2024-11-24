@@ -6,7 +6,8 @@
 import { GridChart } from '../../../packages/orbcharts-core/src'
 import { Bars, BarStack, BarsTriangle, Lines, LineAreas, Dots, GroupAux, GroupAxis, ValueAxis, ValueStackAxis, ScalingArea, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
-import gridData1 from '../../../packages/orbcharts-demo/src/data/gridData1'
+// import gridData1 from '../../../packages/orbcharts-demo/src/data/gridData1'
+import gridData5 from '../../../packages/orbcharts-demo/src/data/gridData5'
 
 // import { GridChart, PRESET_GRID_HORIZONTAL, MultiBars } from 'orbcharts'
 
@@ -15,7 +16,6 @@ onMounted(() => {
   const el = document.querySelector('#chart')
 
   const chart = new GridChart(el!, {
-    width: '123'
     // preset: {
     //     "chartParams": {
             
@@ -49,12 +49,12 @@ onMounted(() => {
 
   const groupAxis = new GroupAxis()
 
-  groupAxis.params$.next({
-    tickFormat: (d) => {
-      console.log(d)
-      return d === 'test2\ntest2' ? 'yes\ntest' : ''
-    }
-  })
+  // groupAxis.params$.next({
+  //   tickFormat: (d) => {
+  //     console.log(d)
+  //     return d === 'test2\ntest2' ? 'yes\ntest' : ''
+  //   }
+  // })
 
   const valueAxis = new ValueAxis()
 
@@ -69,6 +69,9 @@ onMounted(() => {
     grid: {
       groupAxis: {
         scalePadding: 0
+      },
+      valueAxis: {
+        position: 'left'
       },
       columnLabels: ['test1\ntest1', 'test2\ntest2', 'test3\ntest3', 'test4\ntest4', 'test5\ntest5'],
     },
@@ -104,7 +107,7 @@ onMounted(() => {
   
   chart.plugins$.next([groupAxis, valueAxis, new GroupAux(), lines, lineAreas, dots, new ScalingArea(), new Tooltip()])
   
-  chart.data$.next(gridData1)
+  chart.data$.next(gridData5)
   
   // setTimeout(() => {
   //   chart.plugins$.next([groupAxis, valueAxis, new GroupAux(), lines, lineAreas, dots, new Tooltip()])

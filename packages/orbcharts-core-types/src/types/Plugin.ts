@@ -3,7 +3,7 @@ import { Subject } from 'rxjs'
 import type { ChartType } from './Chart'
 import type { ContextSubject } from './ContextSubject'
 import type { ContextObserverTypeMap } from './ContextObserver'
-import type { ValidatorResult } from './Validator'
+import type { ValidatorResult, ValidatorUtils, ValidatorRule, } from './Validator'
 
 // // 透過類型選擇Plugin
 // export type PluginParamsMap<T extends ChartType, PluginParams> = T extends 'series' ? Plugin<DataSeries, DataFormatterSeries, ComputedDataSeries, PluginParams>
@@ -15,7 +15,7 @@ import type { ValidatorResult } from './Validator'
 //   : Plugin<unknown, unknown, unknown, unknown>
 
 export interface CreateBasePlugin {
-  <T extends ChartType>(): DefinePlugin<T>
+  <T extends ChartType>(chartType: T): DefinePlugin<T>
 }
 
 export interface DefinePlugin<T extends ChartType> {
@@ -26,7 +26,7 @@ export interface DefinePluginConfig<PluginName, PluginParams> {
   name: PluginName
   defaultParams: PluginParams
   layerIndex: number
-  validator: (params: Partial<PluginParams>) => ValidatorResult
+  validator: (params: Partial<PluginParams>, utils: ValidatorUtils) => ValidatorResult
 }
 
 export interface DefinePluginInitFn<T extends ChartType, PluginName, PluginParams> {
@@ -43,6 +43,7 @@ export interface PluginConstructor<T extends ChartType, PluginName, PluginParams
 
 export interface PluginEntity<T extends ChartType, PluginName, PluginParams> {
   params$: Subject<Partial<PluginParams>>
+  chartType: T
   name: PluginName
   defaultParams: PluginParams
   layerIndex: number

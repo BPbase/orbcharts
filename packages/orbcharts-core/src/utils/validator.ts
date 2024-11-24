@@ -1,24 +1,16 @@
-import type { ValidatorResult } from '../../lib/core-types'
+import type {
+  ValidatorResult,
+  ToBeTypes,
+  ToBeOption,
+  ValidatorRuleToBeTypes,
+  ValidatorRuleToBe,
+  ValidatorRuleToBeOption,
+  ValidatorRule
+} from '../../lib/core-types'
 import { isFunction, isPlainObject } from './commonUtils'
 import { createValidatorErrorMessage } from './errorMessage'
 
-export type ToBeTypes = 'string' | 'number' | 'boolean' | 'object' | 'string[]' | 'number[]' | 'Function' | 'null' | 'undefined'
 
-// 有使用定義好的型別則不需寫 validate
-export interface ValidatorToBeTypes {
-  toBeTypes: ToBeTypes[]
-}
-
-// 自訂規則
-export interface ValidatorToBe {
-  toBe: string
-  test: (value: any) => boolean
-}
-
-// export interface ValidatorRule {
-//   [key: string]: ValidatorToBeTypes | ValidatorToBe
-// }
-export type ValidatorRule<T> = {[key in keyof T]: ValidatorToBeTypes | ValidatorToBe}
 
 // let test: ValidatorRule = {
 //   name: {
@@ -32,36 +24,57 @@ export type ValidatorRule<T> = {[key in keyof T]: ValidatorToBeTypes | Validator
 //   }
 // }
 
-function getInvalidColumn<T> (data: T, rules: ValidatorRule<T>) {
+function getInvalidColumn<T> (data: T, rules: Partial<ValidatorRule<T>>) {
   // "toBeTypes" 的測試
   const testType: {[key in ToBeTypes]: (value: any) => boolean} = {
     string: (value: any) => typeof value === 'string',
     number: (value: any) => typeof value === 'number',
     boolean: (value: any) => typeof value === 'boolean',
     object: (value: any) => isPlainObject(value), // 嚴格判斷是否為純物件
+    'object[]': (value: any) => Array.isArray(value) && value.every((v: any) => isPlainObject(v)),
     'string[]': (value: any) => Array.isArray(value) && value.every((v: any) => typeof v === 'string'),
     'number[]': (value: any) => Array.isArray(value) && value.every((v: any) => typeof v === 'number'),
     Function: (value: any) => isFunction(value),
     null: (value: any) => value === null,
     undefined: (value: any) => value === undefined
   }
+  // "toBeOption" 的測試
+  const testOption: {[key in ToBeOption]: (value: any) => boolean} = {
+    ColorType: (value: any) => {
+      return value === 'none'
+        || value === 'series'
+        || value === 'primary'
+        || value === 'secondary'
+        || value === 'white'
+        || value === 'background'
+    }
+  }
 
   const failColumn = Object.keys(data).find((columnName: string) => {
     // 有定義規則
     if (rules[columnName as keyof T]) {
-      const rule: ValidatorToBeTypes | ValidatorToBe = (rules as any)[columnName]
+      const rule: ValidatorRuleToBeTypes | ValidatorRuleToBe | ValidatorRuleToBeOption = rules[columnName as keyof T]
+      const value = data[columnName as keyof T]
       // 測試 "toBeTypes"
-      if ((rule as ValidatorToBeTypes).toBeTypes) {
-        const toBeTypes = (rule as ValidatorToBeTypes).toBeTypes
-        const isCorrect = toBeTypes.some((toBeType) => testType[toBeType](rule))
+      if ((rule as ValidatorRuleToBeTypes).toBeTypes) {
+        const toBeTypes = (rule as ValidatorRuleToBeTypes).toBeTypes
+        const isCorrect = toBeTypes.some((toBeType) => testType[toBeType](value))
         if (isCorrect === false) {
           return true
         }
       }
       // 測試 "toBe"
-      else if ((rule as ValidatorToBe).toBe) {
-        const { toBe, test } = rule as ValidatorToBe
-        const isCorrect = test(rule)
+      else if ((rule as ValidatorRuleToBe).toBe) {
+        const { toBe, test } = rule as ValidatorRuleToBe
+        const isCorrect = test(value)
+        if (isCorrect === false) {
+          return true
+        }
+      }
+      // 測試 "toBeOption"
+      else if ((rule as ValidatorRuleToBeOption).toBeOption) {
+        const toBeOption = (rule as ValidatorRuleToBeOption).toBeOption
+        const isCorrect = testOption[toBeOption](value)
         if (isCorrect === false) {
           return true
         }
@@ -73,19 +86,25 @@ function getInvalidColumn<T> (data: T, rules: ValidatorRule<T>) {
   return failColumn
 }
 
-export function validator<T> (data: T, rules: ValidatorRule<T>): ValidatorResult {
-  const invalidColumn = getInvalidColumn(data, rules) === undefined
+export function validateColumns<T> (data: T, rules: Partial<ValidatorRule<T>>): ValidatorResult {
+  // if (data === undefined || data === null) {
+  //   // orbcharts所有的options都是允許空值的
+  //   return {
+  //     status: 'success',
+  //     columnName: '',
+  //     expectToBe: '',
+  //   }
+  // }
+  const invalidColumn = getInvalidColumn(data, rules)
   if (invalidColumn) {
-    return {
-      status: 'success',
-      columnName: '',
-      expectToBe: '',
-    }
-  } else {
-    const failColumn: keyof T = getInvalidColumn(data, rules) as any
-    const expectToBe = (rules[failColumn] as ValidatorToBeTypes).toBeTypes
-      ? (rules[failColumn] as ValidatorToBeTypes).toBeTypes.join(' | ')
-      : (rules[failColumn] as ValidatorToBe).toBe
+    const rule = rules[invalidColumn as keyof T]
+    const expectToBe = (rule as ValidatorRuleToBeTypes).toBeTypes
+      ? (rule as ValidatorRuleToBeTypes).toBeTypes.join(' | ')
+      : (rule as ValidatorRuleToBe).toBe
+        ? (rule as ValidatorRuleToBe).toBe
+        : (rule as ValidatorRuleToBeOption).toBeOption
+          ? (rule as ValidatorRuleToBeOption).toBeOption
+          : ''
 
     return {
       status: 'error',
@@ -94,8 +113,14 @@ export function validator<T> (data: T, rules: ValidatorRule<T>): ValidatorResult
       //   expect,
       //   from
       // })
-      columnName: failColumn as string,
+      columnName: invalidColumn as string,
       expectToBe: expectToBe,
+    }
+  } else {
+    return {
+      status: 'success',
+      columnName: '',
+      expectToBe: '',
     }
   }
 }

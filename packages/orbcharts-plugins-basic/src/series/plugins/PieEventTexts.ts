@@ -38,11 +38,19 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_PIE_EVE
   name: pluginName,
   defaultParams: DEFAULT_PIE_EVENT_TEXTS_PARAMS,
   layerIndex: LAYER_INDEX_OF_LABEL,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      eventFn: {
+        toBeTypes: ['Function'],
+      },
+      textAttrs: {
+        toBeTypes: ['object[]'],
+      },
+      textStyles: {
+        toBeTypes: ['object[]'],
+      }
+    })
+    return result
   }
 }
 

@@ -13,11 +13,28 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_DOTS_PA
   name: pluginName,
   defaultParams: DEFAULT_DOTS_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC_COVER,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      radius: {
+        toBeTypes: ['number']
+      },
+      fillColorType: {
+        toBeOption: 'ColorType',
+      },
+      strokeColorType: {
+        toBeOption: 'ColorType',
+      },
+      strokeWidth: {
+        toBeTypes: ['number']
+      },
+      // strokeWidthWhileHighlight: {
+      //   toBeTypes: ['number']
+      // },
+      onlyShowHighlighted: {
+        toBeTypes: ['boolean']
+      }
+    })
+    return result
   }
 }
 

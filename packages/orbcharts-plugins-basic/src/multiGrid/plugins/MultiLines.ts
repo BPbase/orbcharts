@@ -20,11 +20,22 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_L
   name: pluginName,
   defaultParams: DEFAULT_MULTI_LINES_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      gridIndexes: {
+        toBe: 'number[] | "all"',
+        test: (value: any) => {
+          return value === 'all' || (Array.isArray(value) && value.every((v: any) => typeof v === 'number'))
+        }
+      },
+      lineCurve: {
+        toBeTypes: ['string']
+      },
+      lineWidth: {
+        toBeTypes: ['number']
+      },
+    })
+    return result
   }
 }
 

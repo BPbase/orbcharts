@@ -26,11 +26,25 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_TREE_MA
   name: pluginName,
   defaultParams: DEFAULT_TREE_MAP_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      paddingInner: {
+        toBeTypes: ['number']
+      },
+      paddingOuter: {
+        toBeTypes: ['number']
+      },
+      labelColorType: {
+        toBeOption: 'ColorType'
+      },
+      squarifyRatio: {
+        toBeTypes: ['number']
+      },
+      sort: {
+        toBeTypes: ['Function']
+      }
+    })
+    return result
   }
 }
 

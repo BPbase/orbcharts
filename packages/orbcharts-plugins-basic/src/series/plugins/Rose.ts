@@ -46,11 +46,32 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_ROSE_PA
   name: pluginName,
   defaultParams: DEFAULT_ROSE_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      outerRadius: {
+        toBeTypes: ['number'],
+      },
+      padAngle: {
+        toBeTypes: ['number'],
+      },
+      strokeColorType: {
+        toBeOption: 'ColorType'
+      },
+      strokeWidth: {
+        toBeTypes: ['number']
+      },
+      cornerRadius: {
+        toBeTypes: ['number']
+      },
+      arcScaleType: {
+        toBe: '"area" | "radius"',
+        test: (value: any) => value === 'area' || value === 'radius'
+      },
+      angleIncreaseWhileHighlight: {
+        toBeTypes: ['number']
+      }
+    })
+    return result
   }
 }
 

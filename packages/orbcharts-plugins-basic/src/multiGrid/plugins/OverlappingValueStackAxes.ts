@@ -29,11 +29,126 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_OVERLAP
   name: pluginName,
   defaultParams: DEFAULT_OVERLAPPING_VALUE_STACK_AXES_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      firstAxis: {
+        toBeTypes: ['object']
+      },
+      secondAxis: {
+        toBeTypes: ['object']
+      },
+      gridIndexes: {
+        toBe: '[number, number]',
+        test: (value: any) => {
+          return Array.isArray(value) && value.length === 2
+        }
+      }
+    })
+    if (params.firstAxis) {
+      const firstAxisResult = validateColumns(params.firstAxis, {
+        labelOffset: {
+          toBe: '[number, number]',
+          test: (value: any) => {
+            return Array.isArray(value)
+              && value.length === 2
+              && typeof value[0] === 'number'
+              && typeof value[1] === 'number'
+          }
+        },
+        labelColorType: {
+          toBeOption: 'ColorType',
+        },
+        axisLineVisible: {
+          toBeTypes: ['boolean']
+        },
+        axisLineColorType: {
+          toBeOption: 'ColorType',
+        },
+        ticks: {
+          toBeTypes: ['number']
+        },
+        tickFormat: {
+          toBeTypes: ['string', 'Function']
+        },
+        tickLineVisible: {
+          toBeTypes: ['boolean']
+        },
+        tickPadding: {
+          toBeTypes: ['number']
+        },
+        tickFullLine: {
+          toBeTypes: ['boolean']
+        },
+        tickFullLineDasharray: {
+          toBeTypes: ['string']
+        },
+        tickColorType: {
+          toBeOption: 'ColorType',
+        },
+        tickTextRotate: {
+          toBeTypes: ['number']
+        },
+        tickTextColorType: {
+          toBeOption: 'ColorType',
+        }
+      })
+      if (firstAxisResult.status === 'error') {
+        return firstAxisResult
+      }
     }
+    if (params.secondAxis) {
+      const secondAxisResult = validateColumns(params.secondAxis, {
+        labelOffset: {
+          toBe: '[number, number]',
+          test: (value: any) => {
+            return Array.isArray(value)
+              && value.length === 2
+              && typeof value[0] === 'number'
+              && typeof value[1] === 'number'
+          }
+        },
+        labelColorType: {
+          toBeOption: 'ColorType',
+        },
+        axisLineVisible: {
+          toBeTypes: ['boolean']
+        },
+        axisLineColorType: {
+          toBeOption: 'ColorType',
+        },
+        ticks: {
+          toBeTypes: ['number']
+        },
+        tickFormat: {
+          toBeTypes: ['string', 'Function']
+        },
+        tickLineVisible: {
+          toBeTypes: ['boolean']
+        },
+        tickPadding: {
+          toBeTypes: ['number']
+        },
+        tickFullLine: {
+          toBeTypes: ['boolean']
+        },
+        tickFullLineDasharray: {
+          toBeTypes: ['string']
+        },
+        tickColorType: {
+          toBeOption: 'ColorType',
+        },
+        tickTextRotate: {
+          toBeTypes: ['number']
+        },
+        tickTextColorType: {
+          toBeOption: 'ColorType',
+        }
+      })
+      if (secondAxisResult.status === 'error') {
+        return secondAxisResult
+      }
+    }
+    return result
   }
 }
 

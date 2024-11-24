@@ -19,11 +19,34 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_SERIES_
   name: pluginName,
   defaultParams: DEFAULT_SERIES_LEGEND_PARAMS,
   layerIndex: LAYER_INDEX_OF_INFO,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      padding: {
+        toBeTypes: ['number']
+      },
+      backgroundFill: {
+        toBeOption: 'ColorType',
+      },
+      backgroundStroke: {
+        toBeOption: 'ColorType',
+      },
+      gap: {
+        toBeTypes: ['number']
+      },
+      listRectWidth: {
+        toBeTypes: ['number']
+      },
+      listRectHeight: {
+        toBeTypes: ['number']
+      },
+      listRectRadius: {
+        toBeTypes: ['number']
+      },
+      textColorType: {
+        toBeOption: 'ColorType',
+      }
+    })
+    return result
   }
 }
 

@@ -18,11 +18,28 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BARS_TR
   name: pluginName,
   defaultParams: DEFAULT_BARS_TRIANGLE_PARAMS,
   layerIndex: 5,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      barWidth: {
+        toBeTypes: ['number']
+      },
+      barPadding: {
+        toBeTypes: ['number']
+      },
+      barGroupPadding: {
+        toBeTypes: ['number']
+      },
+      linearGradientOpacity: {
+        toBe: '[number, number]',
+        test: (value: any) => {
+          return Array.isArray(value)
+            && value.length === 2
+            && typeof value[0] === 'number'
+            && typeof value[1] === 'number'
+        }
+      }
+    })
+    return result
   }
 }
 

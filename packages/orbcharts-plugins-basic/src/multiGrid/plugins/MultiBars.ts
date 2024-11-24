@@ -23,11 +23,28 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_B
   name: pluginName,
   defaultParams: DEFAULT_MULTI_BARS_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      gridIndexes: {
+        toBe: 'number[] | "all"',
+        test: (value: any) => {
+          return value === 'all' || (Array.isArray(value) && value.every((v: any) => typeof v === 'number'))
+        }
+      },
+      barWidth: {
+        toBeTypes: ['number']
+      },
+      barPadding: {
+        toBeTypes: ['number']
+      },
+      barGroupPadding: {
+        toBeTypes: ['number']
+      },
+      barRadius: {
+        toBeTypes: ['number', 'boolean']
+      }
+    })
+    return result
   }
 }
 

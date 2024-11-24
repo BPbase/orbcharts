@@ -4,6 +4,7 @@ export const dataValidator: DataValidator<'multiValue'> = (data: DataTypeMap<'mu
 
   return {
     status: 'success',
-    message: ''
+    columnName: '',
+    expectToBe: ''
   }
 }

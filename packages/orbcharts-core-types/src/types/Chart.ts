@@ -6,7 +6,7 @@ import type { ComputedDataFn, ComputedDataTypeMap } from './ComputedData'
 import type { DataFormatterTypeMap, DataFormatterPartialTypeMap, DataFormatterValidator } from './DataFormatter'
 import type { Preset } from './Preset'
 
-export type ChartType = 'series' | 'grid' | 'multiGrid' | 'multiValue' | 'tree' | 'relationship'
+export type ChartType = 'series' | 'grid' | 'multiGrid' | 'multiValue' | 'tree' | 'relationship' | 'noneData'
 
 export interface CreateBaseChart {
   <T extends ChartType>({

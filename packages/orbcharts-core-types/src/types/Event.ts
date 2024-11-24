@@ -1,11 +1,12 @@
 import type { ChartType } from './Chart'
-import type { ComputedDatumBase } from './ComputedData'
-import type { ComputedDataSeries, ComputedDatumSeries } from './ComputedDataSeries'
-import type { ComputedDataGrid, ComputedDatumGrid } from './ComputedDataGrid'
-import type { ComputedDataMultiGrid } from './ComputedDataMultiGrid'
-import type { ComputedDataMultiValue, ComputedDatumMultiValue } from './ComputedDataMultiValue'
-import type { ComputedDataRelationship, ComputedNode } from './ComputedDataRelationship'
-import type { ComputedDataTree } from './ComputedDataTree'
+import type { ComputedDatumTypeMap } from './ComputedData'
+import type { ComputedDataTypeMap } from './ComputedData'
+// import type { ComputedDataSeries, ComputedDatumSeries } from './ComputedDataSeries'
+// import type { ComputedDataGrid, ComputedDatumGrid } from './ComputedDataGrid'
+// import type { ComputedDataMultiGrid } from './ComputedDataMultiGrid'
+// import type { ComputedDataMultiValue, ComputedDatumMultiValue } from './ComputedDataMultiValue'
+// import type { ComputedDataRelationship, ComputedNode } from './ComputedDataRelationship'
+// import type { ComputedDataTree } from './ComputedDataTree'
 import type { HighlightTarget } from './ChartParams'
 
 export type EventName = 'click'
@@ -48,105 +49,60 @@ export interface EventBase<T extends ChartType> {
   pluginName: string
   event: MouseEvent | undefined
   highlightTarget: HighlightTarget
-  // datum: ComputedDatumBase | null
+  datum: ComputedDatumTypeMap<T> | null
+  data: ComputedDataTypeMap<T>
   tween?: number
 }
 
-export interface EventBaseSeriesValue<DatumType, DataType> {
-  data: DataType
-  series: DatumType[]
+export interface EventBaseSeriesValue {
+  // data: ComputedDataTypeMap<T>
+  series: ComputedDatumTypeMap<'series'>[]
   seriesIndex: number
   seriesLabel: string
-  datum: DatumType | null
+  // datum: ComputedDatumTypeMap<T> | null
 }
 
-export interface EventBaseGridValue<DatumType, DataType> {
-  data: DataType
+export interface EventBaseGridValue<T extends 'grid' | 'multiGrid'> {
+  // data: ComputedDataTypeMap<T>
   gridIndex: number
-  series: DatumType[]
+  series: ComputedDatumTypeMap<T>[]
   seriesIndex: number
   seriesLabel: string
-  groups: DatumType[]
+  groups: ComputedDatumTypeMap<T>[]
   groupIndex: number
   groupLabel: string
-  datum: DatumType | null
+  // datum: ComputedDatumTypeMap<T> | null
 }
 
-export interface EventBaseCategoryValue<DatumType, DataType> {
-  data: DataType
-  category: DatumType[]
+export interface EventBaseCategoryValue<T extends 'multiValue' | 'relationship' | 'tree'> {
+  // data: ComputedDataTypeMap<T>
+  category: ComputedDatumTypeMap<T>[]
   categoryIndex: number
   categoryLabel: string
-  datum: DatumType | null
+  // datum: ComputedDatumTypeMap<T> | null
 }
 
-export interface EventSeries extends EventBase<'series'>, EventBaseSeriesValue<ComputedDatumSeries, ComputedDataSeries> {
-  // type: 'series'
-  // data: ComputedDataSeries
-  // series: ComputedDatumSeries[]
-  // seriesIndex: number
-  // seriesLabel: string
-  // datum: ComputedDatumSeries | null
-  // // highlightTarget: 'series' | 'datum' | 'none'
-  // // highlightLabel: string | null
-  // // highlightId: string | null
+export interface EventSeries extends EventBase<'series'>, EventBaseSeriesValue {
+
 }
 
-export interface EventGrid extends EventBase<'grid'>, EventBaseGridValue<ComputedDatumGrid, ComputedDataGrid> {
-  // type: 'grid'
-  // data: ComputedDataGrid
-  // series: ComputedDatumGrid[]
-  // seriesIndex: number
-  // seriesLabel: string
-  // groups: ComputedDatumGrid[]
-  // groupIndex: number
-  // groupLabel: string
-  // datum: ComputedDatumGrid | null
-  // // highlightTarget: 'series' | 'group' | 'datum' | 'none'
-  // // highlightLabel: string | null
-  // // highlightId: string | null
+export interface EventGrid extends EventBase<'grid'>, EventBaseGridValue<'grid'> {
+
 }
 
-export interface EventMultiGrid extends EventBase<'multiGrid'>, EventBaseGridValue<ComputedDatumGrid, ComputedDataMultiGrid> {
-  // type: 'multiGrid'
-  // data: ComputedDataMultiGrid
-  // gridIndex: number
-  // series: ComputedDatumGrid[]
-  // seriesIndex: number
-  // seriesLabel: string
-  // group: ComputedDatumGrid[]
-  // groupIndex: number
-  // groupLabel: string
-  // datum: ComputedDatumGrid | null
-  // // highlightTarget: 'series' | 'group' | 'datum' | 'none'
-  // // highlightLabel: string | null
-  // // highlightId: string | null
+export interface EventMultiGrid extends EventBase<'multiGrid'>, EventBaseGridValue<'multiGrid'> {
+
 }
 
-export interface EventMultiValue extends EventBase<'multiValue'>, EventBaseCategoryValue<ComputedDatumMultiValue, ComputedDataMultiValue> {
-  // type: 'multiValue'
-  // data: ComputedDataMultiValue
-  // category: ComputedDatumMultiValue[]
-  // categoryIndex: number
-  // categoryLabel: string
-  // datum: ComputedDatumMultiValue | null
+export interface EventMultiValue extends EventBase<'multiValue'>, EventBaseCategoryValue<'multiValue'> {
+
 }
 
-export interface EventRelationship extends EventBase<'relationship'>, EventBaseCategoryValue<ComputedNode, ComputedDataRelationship> {
-  // type: 'relationship'
-  // data: ComputedDataRelationship
-  // category: ComputedNode[]
-  // categoryIndex: number
-  // categoryLabel: string
-  // datum: ComputedNode | null
+export interface EventRelationship extends EventBase<'relationship'>, EventBaseCategoryValue<'relationship'> {
+
 }
 
-export interface EventTree extends EventBase<'tree'>, EventBaseCategoryValue<ComputedDataTree, ComputedDataTree> {
-  // type: 'tree'
-  // data: ComputedDataTree
-  // category: ComputedDataTree[]
-  // categoryIndex: number
-  // categoryLabel: string
-  // datum: ComputedDataTree | null
+export interface EventTree extends EventBase<'tree'>, EventBaseCategoryValue<'tree'> {
+
 }
 

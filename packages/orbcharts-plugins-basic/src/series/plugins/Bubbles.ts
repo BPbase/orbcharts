@@ -40,11 +40,52 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BUBBLES
   name: pluginName,
   defaultParams: DEFAULT_BUBBLES_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      force: {
+        toBeTypes: ['object']
+      },
+      bubbleText: {
+        toBeTypes: ['object']
+      },
+      arcScaleType: {
+        toBe: '"area" | "radius"',
+        test: (value) => value === 'area' || value === 'radius'
+      }
+    })
+    if (params.force) {
+      const forceResult = validateColumns(params.force, {
+        velocityDecay: {
+          toBeTypes: ['number']
+        },
+        collisionSpacing: {
+          toBeTypes: ['number']
+        },
+        strength: {
+          toBeTypes: ['number']
+        },
+      })
+      if (forceResult.status === 'error') {
+        return forceResult
+      }
     }
+    if (params.bubbleText) {
+      const bubbleTextResult = validateColumns(params.bubbleText, {
+        fillRate: {
+          toBeTypes: ['number']
+        },
+        lineHeight: {
+          toBeTypes: ['number']
+        },
+        lineLengthMin: {
+          toBeTypes: ['number']
+        },
+      })
+      if (bubbleTextResult.status === 'error') {
+        return bubbleTextResult
+      }
+    }
+    return result
   }
 }
 

@@ -11,10 +11,11 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof CONTAINER_PLUGI
   name: pluginName,
   defaultParams: CONTAINER_PLUGIN_PARAMS,
   layerIndex: LAYER_INDEX_OF_BG,
-  validator: (params) => {
+  validator: (params, { validateColumns }) => {
     return {
       status: 'success',
-      message: ''
+      columnName: '',
+      expectToBe: '',
     }
   }
 }

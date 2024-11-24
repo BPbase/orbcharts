@@ -274,6 +274,7 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
       axisSize: gridAxesSize$,
       fullChartParams: fullChartParams$,
       scaleRangeGroupLabels: scaleRangeGroupLabels$,
+      groupLabels: groupLabels$,
       groupScaleDomain: groupScaleDomain$,
       columnAmount: columnAmount$,
       rowAmount: rowAmount$,
@@ -315,9 +316,10 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
         const xIndex = xIndexScale(axisValue)
         const currentxIndexStart = Math.ceil(data.groupScaleDomain[0]) // 因為有padding所以會有小數點，所以要無條件進位
         const groupIndex =  xIndex + currentxIndexStart
+        
         return {
           groupIndex,
-          groupLabel: data.scaleRangeGroupLabels[groupIndex] ?? ''
+          groupLabel: data.groupLabels[groupIndex] ?? ''
         }
       }
 

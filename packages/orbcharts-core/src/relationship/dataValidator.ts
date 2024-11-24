@@ -4,6 +4,7 @@ export const dataValidator: DataValidator<'relationship'> = (data: DataTypeMap<'
 
   return {
     status: 'success',
-    message: ''
+    columnName: '',
+    expectToBe: ''
   }
 }

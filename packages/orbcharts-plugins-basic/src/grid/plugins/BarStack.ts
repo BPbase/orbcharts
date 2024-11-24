@@ -17,11 +17,19 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BAR_STA
   name: pluginName,
   defaultParams: DEFAULT_BAR_STACK_PARAMS,
   layerIndex: 5,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      barWidth: {
+        toBeTypes: ['number']
+      },
+      barGroupPadding: {
+        toBeTypes: ['number']
+      },
+      barRadius: {
+        toBeTypes: ['number', 'boolean']
+      }
+    })
+    return result
   }
 }
 

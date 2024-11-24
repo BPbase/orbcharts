@@ -1,3 +1,3 @@
 import { createBasePlugin } from './base/createBasePlugin'
 
-export const defineTreePlugin = createBasePlugin<'tree'>()
+export const defineTreePlugin = createBasePlugin('tree')

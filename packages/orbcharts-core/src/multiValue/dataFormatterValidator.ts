@@ -4,6 +4,7 @@ export const dataFormatterValidator: DataFormatterValidator<'multiValue'> = (dat
   
   return {
     status: 'success',
-    message: ''
+    columnName: '',
+    expectToBe: ''
   }
 }

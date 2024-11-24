@@ -59,6 +59,7 @@ import { createValidatorErrorMessage, createValidatorWarningMessage, createOrbCh
 import { chartOptionsValidator } from './validators/chartOptionsValidator'
 import { elementValidator } from './validators/elementValidator'
 import { chartParamsValidator } from './validators/chartParamsValidator'
+import { pluginsValidator } from './validators/pluginsValidator'
 import {
   CHART_OPTIONS_DEFAULT,
   PADDING_DEFAULT,
@@ -233,7 +234,7 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
         map((d) => {
           try {
             // 檢查 chartParams$ 資料格式是否正確
-            const { status, columnName, expectToBe } = chartParamsValidator(d)
+            const { status, columnName, expectToBe } = chartParamsValidator(chartType, d)
             if (status === 'error') {
               throw new Error(createValidatorErrorMessage({
                 columnName,
@@ -404,8 +405,24 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
     // -- plugins --
     const pluginEntityMap: any = {}  // 用於destroy
     chartSubject.plugins$.subscribe(plugins => {
-      if (!plugins) {
-        return
+      try {
+        // 檢查 plugins$ 資料格式是否正確
+        const { status, columnName, expectToBe } = pluginsValidator(chartType, plugins)
+        if (status === 'error') {
+          throw new Error(createValidatorErrorMessage({
+            columnName,
+            expectToBe,
+            from: 'Chart.plugins$'
+          }))
+        } else if (status === 'warning') {
+          console.warn(createValidatorWarningMessage({
+            columnName,
+            expectToBe,
+            from: 'Chart.plugins$'
+          }))
+        }
+      } catch (e) {
+        throw new Error(e)
       }
 
       selectionPlugins

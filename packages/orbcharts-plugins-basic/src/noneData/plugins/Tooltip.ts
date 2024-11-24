@@ -210,15 +210,44 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof TOOLTIP_PARAMS>
   name: pluginName,
   defaultParams: TOOLTIP_PARAMS,
   layerIndex: LAYER_INDEX_OF_TOOLTIP,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      backgroundColorType: {
+        toBeOption: 'ColorType',
+      },
+      backgroundOpacity: {
+        toBeTypes: ['number']
+      },
+      strokeColorType: {
+        toBeOption: 'ColorType',
+      },
+      offset: {
+        toBe: '[number, number]',
+        test: (value: any) => {
+          return Array.isArray(value)
+            && value.length === 2
+            && typeof value[0] === 'number'
+            && typeof value[1] === 'number'
+        }
+      },
+      padding: {
+        toBeTypes: ['number']
+      },
+      textColorType: {
+        toBeOption: 'ColorType',
+      },
+      textRenderFn: {
+        toBeTypes: ['Function']
+      },
+      svgRenderFn: {
+        toBeTypes: ['Function']
+      }
+    })
+    return result
   }
 }
 
-export const Tooltip: PluginConstructor<any, string, any> = defineNoneDataPlugin(pluginConfig)(({ selection, rootSelection, name, chartType, observer, subject }) => {
+export const Tooltip = defineNoneDataPlugin(pluginConfig)(({ selection, rootSelection, name, chartType, observer, subject }) => {
   const destroy$ = new Subject()
 
   // 事件觸發

@@ -20,11 +20,56 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_G
   name: pluginName,
   defaultParams: DEFAULT_MULTI_GRID_LEGEND_PARAMS,
   layerIndex: LAYER_INDEX_OF_INFO,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      padding: {
+        toBeTypes: ['number']
+      },
+      backgroundFill: {
+        toBeOption: 'ColorType',
+      },
+      backgroundStroke: {
+        toBeOption: 'ColorType',
+      },
+      gap: {
+        toBeTypes: ['number']
+      },
+      listRectWidth: {
+        toBeTypes: ['number']
+      },
+      listRectHeight: {
+        toBeTypes: ['number']
+      },
+      listRectRadius: {
+        toBeTypes: ['number']
+      },
+      gridList: {
+        toBeTypes: ['object[]']
+      },
+      textColorType: {
+        toBeOption: 'ColorType',
+      }
+    })
+    if (params.gridList) {
+      const gridListResult = params.gridList.map((grid, gridIndex) => {
+        return validateColumns(grid, {
+          listRectWidth: {
+            toBeTypes: ['number']
+          },
+          listRectHeight: {
+            toBeTypes: ['number']
+          },
+          listRectRadius: {
+            toBeTypes: ['number']
+          }
+        })
+      })
+      const errorResult = gridListResult.find(r => r.status === 'error')
+      if (errorResult) {
+        return errorResult
+      }
     }
+    return result
   }
 }
 

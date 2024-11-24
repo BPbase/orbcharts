@@ -19,11 +19,34 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_D
   name: pluginName,
   defaultParams: DEFAULT_MULTI_DOTS_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC_COVER,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      gridIndexes: {
+        toBe: 'number[] | "all"',
+        test: (value: any) => {
+          return value === 'all' || (Array.isArray(value) && value.every((v: any) => typeof v === 'number'))
+        }
+      },
+      radius: {
+        toBeTypes: ['number']
+      },
+      fillColorType: {
+        toBeOption: 'ColorType',
+      },
+      strokeColorType: {
+        toBeOption: 'ColorType',
+      },
+      strokeWidth: {
+        toBeTypes: ['number']
+      },
+      // strokeWidthWhileHighlight: {
+      //   toBeTypes: ['number']
+      // },
+      onlyShowHighlighted: {
+        toBeTypes: ['boolean']
+      }
+    })
+    return result
   }
 }
 

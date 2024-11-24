@@ -26,6 +26,7 @@ import { getDatumColor, getClassName } from '../../utils/orbchartsUtils'
 import { seriesCenterSelectionObservable } from '../seriesObservables'
 import { renderTspansOnQuadrant } from '../../utils/d3Graphics'
 import { LAYER_INDEX_OF_LABEL } from '../../const'
+import {} from '../../../lib/core'
 
 interface RenderDatum {
   pieDatum: PieDatum
@@ -56,11 +57,31 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_PIE_LAB
   name: pluginName,
   defaultParams: DEFAULT_PIE_LABELS_PARAMS,
   layerIndex: LAYER_INDEX_OF_LABEL,
-  validator: (params) => {
-    return {
-      status: 'success',
-      message: ''
-    }
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      outerRadius: {
+        toBeTypes: ['number'],
+      },
+      outerRadiusWhileHighlight: {
+        toBeTypes: ['number'],
+      },
+      startAngle: {
+        toBeTypes: ['number'],
+      },
+      endAngle: {
+        toBeTypes: ['number'],
+      },
+      labelCentroid: {
+        toBeTypes: ['number'],
+      },
+      labelFn: {
+        toBeTypes: ['Function'],
+      },
+      labelColorType: {
+        toBeOption: 'ColorType'
+      }
+    })
+    return result
   }
 }
 
