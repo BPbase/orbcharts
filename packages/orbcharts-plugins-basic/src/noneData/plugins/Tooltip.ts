@@ -35,6 +35,48 @@ const pluginName = 'Tooltip'
 const gClassName = getClassName(pluginName, 'g')
 const boxClassName = getClassName(pluginName, 'box')
 
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof TOOLTIP_PARAMS> = {
+  name: pluginName,
+  defaultParams: TOOLTIP_PARAMS,
+  layerIndex: LAYER_INDEX_OF_TOOLTIP,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      backgroundColorType: {
+        toBeOption: 'ColorType',
+      },
+      backgroundOpacity: {
+        toBeTypes: ['number']
+      },
+      strokeColorType: {
+        toBeOption: 'ColorType',
+      },
+      offset: {
+        toBe: '[number, number]',
+        test: (value: any) => {
+          return Array.isArray(value)
+            && value.length === 2
+            && typeof value[0] === 'number'
+            && typeof value[1] === 'number'
+        }
+      },
+      padding: {
+        toBeTypes: ['number']
+      },
+      textColorType: {
+        toBeOption: 'ColorType',
+      },
+      textRenderFn: {
+        toBeTypes: ['Function', 'null']
+      },
+      svgRenderFn: {
+        toBeTypes: ['Function', 'null']
+      }
+    })
+    return result
+  }
+}
+
+
 function textToSvg (_textArr: string[] | string | null | undefined, textStyle: TooltipStyle) {
   const lineHeight = textStyle.textSizePx * 1.5
 
@@ -206,46 +248,6 @@ function renderTooltip ({ rootSelection, pluginName, rootWidth, rootHeight, svgS
 
 }
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof TOOLTIP_PARAMS> = {
-  name: pluginName,
-  defaultParams: TOOLTIP_PARAMS,
-  layerIndex: LAYER_INDEX_OF_TOOLTIP,
-  validator: (params, { validateColumns }) => {
-    const result = validateColumns(params, {
-      backgroundColorType: {
-        toBeOption: 'ColorType',
-      },
-      backgroundOpacity: {
-        toBeTypes: ['number']
-      },
-      strokeColorType: {
-        toBeOption: 'ColorType',
-      },
-      offset: {
-        toBe: '[number, number]',
-        test: (value: any) => {
-          return Array.isArray(value)
-            && value.length === 2
-            && typeof value[0] === 'number'
-            && typeof value[1] === 'number'
-        }
-      },
-      padding: {
-        toBeTypes: ['number']
-      },
-      textColorType: {
-        toBeOption: 'ColorType',
-      },
-      textRenderFn: {
-        toBeTypes: ['Function']
-      },
-      svgRenderFn: {
-        toBeTypes: ['Function']
-      }
-    })
-    return result
-  }
-}
 
 export const Tooltip = defineNoneDataPlugin(pluginConfig)(({ selection, rootSelection, name, chartType, observer, subject }) => {
   const destroy$ = new Subject()
@@ -299,7 +301,9 @@ export const Tooltip = defineNoneDataPlugin(pluginConfig)(({ selection, rootSele
       }
       // 將textRenderFn回傳的資料使用<text>包裝起來
       return (eventData: EventTypeMap<any>) => {
-        const textArr = data.fullParams.textRenderFn(eventData as any)
+        const textArr: string | string[] | null = data.fullParams.textRenderFn
+          ? data.fullParams.textRenderFn(eventData as any)
+          : null
         return textToSvg(textArr, data.tooltipStyle)
       }
     })
