@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="chart" style="width: 500px; height: 500px;"></div>
+    <script type="module">
+        import { SeriesChart, Pie } from './packages/orbcharts/src/orbcharts.es.js'
+
+        const element = document.querySelector('#chart')
+
+        const chart = new SeriesChart(element)
+
+        chart.plugins$.next([new Pie()])
+
+        chart.data$.next([
+        [80,120,45],
+        [50,30,15,28],
+        [55,13,38,10,5]
+        ])
+
+
+    </script>
+</body>
+</html>

@@ -215,16 +215,17 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
                 from: 'Chart.dataFormatter$'
               }))
             }
-            
-            return mergeDataFormatter(dataFormatter, mergedPresetWithDefault.dataFormatter, chartType)
           } catch (e) {
-            throw new Error(e)
+            // throw new Error(e)
+            // 驗證失敗仍繼續執行，才不會把 Observable 資料流給中斷掉
+            console.error(createOrbChartsErrorMessage(e))
           }
+          return mergeDataFormatter(dataFormatter, mergedPresetWithDefault.dataFormatter, chartType)
         }),
-        catchError((e) => {
-          console.error(createOrbChartsErrorMessage(e))
-          return EMPTY
-        }),
+        // catchError((e) => {
+        //   console.error(createOrbChartsErrorMessage(e))
+        //   return EMPTY
+        // }),
         shareReplay(1)
       )
     const shareAndMergedChartParams$ = chartSubject.chartParams$
@@ -248,16 +249,17 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
                 from: 'Chart.chartParams$'
               }))
             }
-            
-            return mergeOptionsWithDefault(d, mergedPresetWithDefault.chartParams)
           } catch (e) {
-            throw new Error(e)
+            // throw new Error(e)
+            // 驗證失敗仍繼續執行，才不會把 Observable 資料流給中斷掉
+            console.error(createOrbChartsErrorMessage(e))
           }
+          return mergeOptionsWithDefault(d, mergedPresetWithDefault.chartParams)
         }),
-        catchError((e) => {
-          console.error(createOrbChartsErrorMessage(e))
-          return EMPTY
-        }),
+        // catchError((e) => {
+        //   console.error(createOrbChartsErrorMessage(e))
+        //   return EMPTY
+        // }),
         shareReplay(1)
       )
 
@@ -384,16 +386,17 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
                     from: 'Chart.data$'
                   }))
                 }
-                
-                return computedDataFn({ data: _d.data, dataFormatter: _d.dataFormatter, chartParams: _d.chartParams })
               } catch (e) {
-                throw new Error(e)
+                // throw new Error(e)
+                // 驗證失敗仍繼續執行，才不會把 Observable 資料流給中斷掉
+                console.error(createOrbChartsErrorMessage(e))
               }
+              return computedDataFn({ data: _d.data, dataFormatter: _d.dataFormatter, chartParams: _d.chartParams })
             }),
-            catchError((e) => {
-              console.error(createOrbChartsErrorMessage(e))
-              return EMPTY
-            })
+            // catchError((e) => {
+            //   console.error(createOrbChartsErrorMessage(e))
+            //   return EMPTY
+            // })
           )  
       }),
       shareReplay(1)
@@ -422,7 +425,9 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
           }))
         }
       } catch (e) {
-        throw new Error(e)
+        console.error(createOrbChartsErrorMessage(e))
+        return
+        // throw new Error(e)
       }
 
       selectionPlugins
