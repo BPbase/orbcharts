@@ -81,7 +81,7 @@ const defaultTickSize = 6
 function createGroupLabelData (groupLabels: string[], tickFormat: string | ((text: any) => string)): GroupLabelData[] {
   return groupLabels.map((_text, i) => {
     const text = parseTickFormatValue(_text, tickFormat)
-    const textArr = text.split('\n')
+    const textArr = typeof text === 'string' ? text.split('\n') : [text]
     
     return {
       text,

@@ -59,16 +59,17 @@ function createPluginEntity <T extends ChartType, PluginName, PluginParams>({ ch
                   from: `${config.name}.params$`
                 }))
               }
-              
-              return mergeOptionsWithDefault(d, mergedDefaultParams)
             } catch (e) {
-              throw new Error(e.message)
+              // throw new Error(e.message)
+              // 驗證失敗仍繼續執行，才不會把 Observable 資料流給中斷掉
+              console.error(createOrbChartsErrorMessage(e))
             }
+            return mergeOptionsWithDefault(d, mergedDefaultParams)
           }),
-          catchError((e) => {
-            console.error(createOrbChartsErrorMessage(e))
-            return EMPTY
-          })
+          // catchError((e) => {
+          //   console.error(createOrbChartsErrorMessage(e))
+          //   return EMPTY
+          // })
         )
     }),
     shareReplay(1)
