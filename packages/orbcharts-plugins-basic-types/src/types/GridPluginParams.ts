@@ -106,7 +106,7 @@ export interface ValueAxisParams {
 
 export interface ValueStackAxisParams extends ValueAxisParams {}
 
-export interface ScalingAreaParams {
+export interface GridZoomParams {
 
 }
 

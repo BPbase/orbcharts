@@ -9,7 +9,7 @@ import type {
   GroupAxisParams,
   ValueAxisParams,
   ValueStackAxisParams,
-  ScalingAreaParams,
+  GridZoomParams,
   GridLegendParams } from '../../lib/plugins-basic-types'
 
 export const DEFAULT_LINES_PARAMS: LinesParams = {
@@ -108,7 +108,7 @@ export const DEFAULT_VALUE_STACK_AXIS_PARAMS: ValueStackAxisParams = {
   ...DEFAULT_VALUE_AXIS_PARAMS
 }
 
-export const DEFAULT_SCALING_AREA_PARAMS: ScalingAreaParams = {
+export const DEFAULT_GRID_ZOOM_PARAMS: GridZoomParams = {
 
 }
 

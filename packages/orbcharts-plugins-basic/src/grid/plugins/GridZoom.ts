@@ -13,16 +13,16 @@ import type { DefinePluginConfig } from '../../../lib/core-types'
 import type { DataFormatterGrid } from '../../../lib/core-types'
 import {
   defineGridPlugin, createAxisLinearScale } from '../../../lib/core'
-import { DEFAULT_SCALING_AREA_PARAMS } from '../defaults'
+import { DEFAULT_GRID_ZOOM_PARAMS } from '../defaults'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { LAYER_INDEX_OF_ROOT } from '../../const'
 
-const pluginName = 'ScalingArea'
+const pluginName = 'GridZoom'
 const rectClassName = getClassName(pluginName, 'rect')
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_SCALING_AREA_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_GRID_ZOOM_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_SCALING_AREA_PARAMS,
+  defaultParams: DEFAULT_GRID_ZOOM_PARAMS,
   layerIndex: LAYER_INDEX_OF_ROOT,
   validator: (params, { validateColumns }) => {
     return {
@@ -33,7 +33,7 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_SCALING
   }
 }
 
-export const ScalingArea = defineGridPlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
+export const GridZoom = defineGridPlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
 
   const destroy$ = new Subject()
 

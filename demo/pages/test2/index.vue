@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { GridChart } from '../../../packages/orbcharts-core/src'
-import { Bars, BarStack, BarsTriangle, Lines, LineAreas, Dots, GroupAux, GroupAxis, ValueAxis, ValueStackAxis, ScalingArea, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { Bars, BarStack, BarsTriangle, Lines, LineAreas, Dots, GroupAux, GroupAxis, ValueAxis, ValueStackAxis, GridZoom, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
 // import gridData1 from '../../../packages/orbcharts-demo/src/data/gridData1'
 import gridData5 from '../../../packages/orbcharts-demo/src/data/gridData5'
@@ -105,7 +105,7 @@ onMounted(() => {
     highlightTarget: 'series'
   })
   
-  chart.plugins$.next([groupAxis, valueAxis, new GroupAux(), lines, lineAreas, dots, new ScalingArea(), new Tooltip()])
+  chart.plugins$.next([groupAxis, valueAxis, new GroupAux(), lines, lineAreas, dots, new GridZoom(), new Tooltip()])
   
   chart.data$.next(gridData5)
   

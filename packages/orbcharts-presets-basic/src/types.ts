@@ -19,7 +19,7 @@ import type {
   GroupAxisParams,
   LineAreasParams,
   LinesParams,
-  ScalingAreaParams,
+  GridZoomParams,
   ValueAxisParams,
   ValueStackAxisParams,
 
@@ -97,7 +97,7 @@ export type PresetGridPluginParams = PresetBarsParams
   & PresetGroupAxisParams
   & PresetLineAreasParams
   & PresetLinesParams
-  & PresetScalingAreaParams
+  & PresetGridZoomParams
   & PresetValueAxisParams
   & PresetValueStackAxisParams
 
@@ -141,8 +141,8 @@ export interface PresetLinesParams {
   Lines: Partial<LinesParams>
 }
 
-export interface PresetScalingAreaParams {
-  ScalingArea: Partial<ScalingAreaParams>
+export interface PresetGridZoomParams {
+  GridZoom: Partial<GridZoomParams>
 }
 
 export interface PresetValueAxisParams {

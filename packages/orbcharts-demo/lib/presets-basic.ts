@@ -1,6 +1,6 @@
 
 
-export * from '@orbcharts/presets-basic'
+// export * from '@orbcharts/presets-basic'
 
 // test
-// export * from '../../orbcharts-presets-basic/src'
+export * from '../../orbcharts-presets-basic/src'

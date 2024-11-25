@@ -27,7 +27,7 @@ export const ALL_PLUGIN_PARAMS_GRID: PresetGridPluginParams = {
   GroupAxis: {},
   LineAreas: {},
   Lines: {},
-  ScalingArea: {},
+  GridZoom: {},
   ValueAxis: {},
   ValueStackAxis: {},
 }

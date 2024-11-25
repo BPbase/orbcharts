@@ -147,43 +147,43 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_GRID_BASIC',
             presetName: 'PRESET_GRID_BASIC',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_GRID_ROTATE_AXIS_LABEL',
             presetName: 'PRESET_GRID_ROTATE_AXIS_LABEL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_GRID_HORIZONTAL',
             presetName: 'PRESET_GRID_HORIZONTAL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_BARS_ROUND',
             presetName: 'PRESET_BARS_ROUND',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_BARS_HORIZONTAL_AND_ROUND',
             presetName: 'PRESET_BARS_HORIZONTAL_AND_ROUND',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_BARS_THIN',
             presetName: 'PRESET_BARS_THIN',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_BARS_HORIZONTAL_AND_THIN',
             presetName: 'PRESET_BARS_HORIZONTAL_AND_THIN',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           // {
@@ -204,7 +204,7 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_GRID_SEPARATE_SERIES',
             presetName: 'PRESET_GRID_SEPARATE_SERIES',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
         ]
@@ -218,7 +218,7 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_GRID_PN_SCALE',
             presetName: 'PRESET_GRID_PN_SCALE',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsPN', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsPN', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData4')
           },
         ]
@@ -232,19 +232,19 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_GRID_BASIC',
             presetName: 'PRESET_GRID_BASIC',
-            allPluginNames: ['GroupAxis', 'ValueStackAxis', 'BarStack', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueStackAxis', 'BarStack', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_GRID_ROTATE_AXIS_LABEL',
             presetName: 'PRESET_GRID_ROTATE_AXIS_LABEL',
-            allPluginNames: ['GroupAxis', 'ValueStackAxis', 'BarStack', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueStackAxis', 'BarStack', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_GRID_HORIZONTAL',
             presetName: 'PRESET_GRID_HORIZONTAL',
-            allPluginNames: ['GroupAxis', 'ValueStackAxis', 'BarStack', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueStackAxis', 'BarStack', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           // {
@@ -265,7 +265,7 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_GRID_SEPARATE_SERIES',
             presetName: 'PRESET_GRID_SEPARATE_SERIES',
-            allPluginNames: ['GroupAxis', 'ValueStackAxis', 'BarStack', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueStackAxis', 'BarStack', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
         ]
@@ -279,19 +279,19 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_GRID_BASIC',
             presetName: 'PRESET_GRID_BASIC',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_GRID_ROTATE_AXIS_LABEL',
             presetName: 'PRESET_GRID_ROTATE_AXIS_LABEL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_GRID_HORIZONTAL',
             presetName: 'PRESET_GRID_HORIZONTAL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           // {
@@ -312,7 +312,7 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_GRID_SEPARATE_SERIES',
             presetName: 'PRESET_GRID_SEPARATE_SERIES',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
         ]
@@ -326,13 +326,13 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_LINES_BASIC',
             presetName: 'PRESET_LINES_BASIC',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_LINES_ROTATE_AXIS_LABEL',
             presetName: 'PRESET_LINES_ROTATE_AXIS_LABEL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData5')
           },
           // {
@@ -343,25 +343,25 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_LINES_LOOSE_TICKS',
             presetName: 'PRESET_LINES_LOOSE_TICKS',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData5')
           },
           {
             title: 'PRESET_LINES_HORIZONTAL',
             presetName: 'PRESET_LINES_HORIZONTAL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_LINES_CURVE',
             presetName: 'PRESET_LINES_CURVE',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_LINES_HIGHLIGHT_GROUP_DOTS',
             presetName: 'PRESET_LINES_HIGHLIGHT_GROUP_DOTS',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           // {
@@ -382,7 +382,7 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_GRID_SEPARATE_SERIES',
             presetName: 'PRESET_GRID_SEPARATE_SERIES',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
         ]
@@ -396,13 +396,13 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_LINE_AREAS_BASIC',
             presetName: 'PRESET_LINE_AREAS_BASIC',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_LINE_AREAS_ROTATE_AXIS_LABEL',
             presetName: 'PRESET_LINE_AREAS_ROTATE_AXIS_LABEL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData5')
           },
           // {
@@ -413,25 +413,25 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_LINE_AREAS_LOOSE_TICKS',
             presetName: 'PRESET_LINE_AREAS_LOOSE_TICKS',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData5')
           },
           {
             title: 'PRESET_LINE_AREAS_HORIZONTAL',
             presetName: 'PRESET_LINE_AREAS_HORIZONTAL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_LINE_AREAS_CURVE',
             presetName: 'PRESET_LINE_AREAS_CURVE',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS',
             presetName: 'PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
           // {
@@ -452,7 +452,7 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_LINE_AREAS_SEPARATE_SERIES',
             presetName: 'PRESET_LINE_AREAS_SEPARATE_SERIES',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'ScalingArea', 'GridLegend', 'Tooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'Tooltip'],
             getData: () => import('./data/gridData1')
           },
         ]
