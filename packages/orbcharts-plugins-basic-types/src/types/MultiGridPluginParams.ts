@@ -1,13 +1,14 @@
-import type { BaseBarsParams } from '../base/BaseBars'
-import type { BaseBarStackParams } from '../base/BaseBarStack'
-import type { BaseBarsTriangleParams } from '../base/BaseBarsTriangle'
-import type { BaseLinesParams } from '../base/BaseLines'
-import type { BaseLineAreasParams } from '../base/BaseLineAreas'
-import type { BaseDotsParams } from '../base/BaseDots'
-import type { BaseGroupAxisParams } from '../base/BaseGroupAxis'
-import type { BaseValueAxisParams } from '../base/BaseValueAxis'
-import type {
-  ChartParams, Layout, ColorType } from '../../lib/core-types'
+import type { 
+  BaseBarsParams, 
+  BaseBarStackParams, 
+  BaseBarsTriangleParams, 
+  BaseLinesParams, 
+  BaseLineAreasParams, 
+  BaseDotsParams, 
+  BaseGroupAxisParams, 
+  BaseValueAxisParams 
+} from './BasePluginParams'
+import type { ColorType } from '../../lib/core-types'
 
 export interface MultiGridLegendParams {
   position: 'top' | 'bottom' | 'left' | 'right'

@@ -19,17 +19,19 @@ import type {
   GridContainerPosition,
   ChartParams, 
   Layout,
-  TransformData } from '../../lib/core-types'
+  TransformData
+} from '../../lib/core-types'
+import type { BaseLineAreasParams } from '../../lib/plugins-basic-types'
 import { getD3TransitionEase } from '../utils/d3Utils'
 import { getClassName, getUniID, getMinAndMaxValue } from '../utils/orbchartsUtils'
 import { gridGroupPositionFnObservable } from '../grid/gridObservables'
 import { gridSelectionsObservable } from '../grid/gridObservables'
 
-export interface BaseLineAreasParams {
-  lineCurve: string
-  // lineWidth: number
-  linearGradientOpacity: [number, number]
-}
+// export interface BaseLineAreasParams {
+//   lineCurve: string
+//   // lineWidth: number
+//   linearGradientOpacity: [number, number]
+// }
 
 interface BaseLineAreasContext {
   selection: d3.Selection<any, unknown, any, unknown>

@@ -20,7 +20,7 @@ import type {
   SeriesContainerPosition } from '../../../lib/core-types'
 import {
   defineSeriesPlugin } from '../../../lib/core'
-import type { BubblesParams, ArcScaleType } from '../types'
+import type { BubblesParams, ArcScaleType } from '../../../lib/plugins-basic-types'
 import { DEFAULT_BUBBLES_PARAMS } from '../defaults'
 import { renderCircleText } from '../../utils/d3Graphics'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../const'

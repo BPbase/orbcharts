@@ -18,25 +18,27 @@ import type {
   GridContainerPosition,
   TransformData,
   EventGrid,
-  ColorType } from '../../lib/core-types'
+  ColorType
+} from '../../lib/core-types'
+import type { BaseValueAxisParams } from '../../lib/plugins-basic-types'
 import { parseTickFormatValue } from '../utils/d3Utils'
 import { getColor, getMinAndMaxValue, getClassName, getUniID } from '../utils/orbchartsUtils'
 
-export interface BaseValueAxisParams {
-  labelOffset: [number, number]
-  labelColorType: ColorType
-  axisLineVisible: boolean
-  axisLineColorType: ColorType
-  ticks: number
-  tickFormat: string | ((text: d3.NumberValue) => string)
-  tickLineVisible: boolean
-  tickPadding: number
-  tickFullLine: boolean
-  tickFullLineDasharray: string
-  tickColorType: ColorType
-  tickTextRotate: number
-  tickTextColorType: ColorType
-}
+// export interface BaseValueAxisParams {
+//   labelOffset: [number, number]
+//   labelColorType: ColorType
+//   axisLineVisible: boolean
+//   axisLineColorType: ColorType
+//   ticks: number
+//   tickFormat: string | ((text: d3.NumberValue) => string)
+//   tickLineVisible: boolean
+//   tickPadding: number
+//   tickFullLine: boolean
+//   tickFullLineDasharray: string
+//   tickColorType: ColorType
+//   tickTextRotate: number
+//   tickTextColorType: ColorType
+// }
 
 interface BaseLinesContext {
   selection: d3.Selection<any, unknown, any, unknown>

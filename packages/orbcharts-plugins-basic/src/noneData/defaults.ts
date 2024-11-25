@@ -1,4 +1,4 @@
-import type { ContainerPluginParams, TooltipParams } from './types'
+import type { ContainerPluginParams, TooltipParams } from '../../lib/plugins-basic-types'
 import type { EventTypeMap, EventBaseSeriesValue, EventBaseGridValue, EventBaseCategoryValue } from '../../lib/core-types'
 
 export const CONTAINER_PLUGIN_PARAMS: ContainerPluginParams = {

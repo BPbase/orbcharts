@@ -20,16 +20,17 @@ import type {
   GridContainerPosition,
   Layout,
   TransformData } from '../../lib/core-types'
+import type { BaseBarStackParams } from '../../lib/plugins-basic-types'
 import { getD3TransitionEase } from '../utils/d3Utils'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 import { gridSelectionsObservable } from '../grid/gridObservables'
 import { shareReplay } from 'rxjs/operators'
 
-export interface BaseBarStackParams {
-  barWidth: number
-  barGroupPadding: number
-  barRadius: number | boolean
-}
+// export interface BaseBarStackParams {
+//   barWidth: number
+//   barGroupPadding: number
+//   barRadius: number | boolean
+// }
 
 interface BaseBarStackContext {
   selection: d3.Selection<any, unknown, any, unknown>

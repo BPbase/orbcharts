@@ -19,7 +19,7 @@ import type {
   EventSeries,
   Layout } from '../../../lib/core-types'
 import type { D3PieDatum } from '../seriesUtils'
-import type { RoseParams } from '../types'
+import type { RoseParams } from '../../../lib/plugins-basic-types'
 import {
   defineSeriesPlugin } from '../../../lib/core'
 import { DEFAULT_ROSE_PARAMS } from '../defaults'

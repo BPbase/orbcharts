@@ -1,4 +1,4 @@
-import type { TreeMapParams, TreeLegendParams } from './types'
+import type { TreeMapParams, TreeLegendParams } from '../../lib/plugins-basic-types'
 
 export const DEFAULT_TREE_MAP_PARAMS: TreeMapParams = {
   paddingInner: 2,

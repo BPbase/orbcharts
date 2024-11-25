@@ -17,7 +17,7 @@ import type {
   EventSeries,
   Layout } from '../../../lib/core-types'
 import type { PieDatum } from '../seriesUtils'
-import type { PieParams } from '../types'
+import type { PieParams } from '../../../lib/plugins-basic-types'
 import {
   defineSeriesPlugin } from '../../../lib/core'
 import { DEFAULT_PIE_PARAMS } from '../defaults'

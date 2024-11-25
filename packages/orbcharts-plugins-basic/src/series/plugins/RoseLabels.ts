@@ -17,7 +17,7 @@ import type {
   SeriesContainerPosition,
   EventSeries,
   ChartParams } from '../../../lib/core-types'
-import type { RoseLabelsParams } from '../types'
+import type { RoseLabelsParams } from '../../../lib/plugins-basic-types'
 import type { PieDatum } from '../seriesUtils'
 import { DEFAULT_ROSE_LABELS_PARAMS } from '../defaults'
 // import { makePieData } from '../seriesUtils'

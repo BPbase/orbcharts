@@ -18,7 +18,7 @@ import type {
   SeriesContainerPosition,
   EventName,
   EventSeries } from '../../../lib/core-types'
-import type { PieEventTextsParams } from '../types'
+import type { PieEventTextsParams } from '../../../lib/plugins-basic-types'
 import { DEFAULT_PIE_EVENT_TEXTS_PARAMS } from '../defaults'
 import { getD3TransitionEase } from '../../utils/d3Utils'
 import { getClassName } from '../../utils/orbchartsUtils'

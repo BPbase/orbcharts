@@ -19,23 +19,25 @@ import type {
   GridContainerPosition,
   ChartParams, 
   Layout,
-  TransformData } from '../../lib/core-types'
+  TransformData
+} from '../../lib/core-types'
+import type { BaseLinesParams } from '../../lib/plugins-basic-types'
 import { getD3TransitionEase } from '../utils/d3Utils'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 import { gridGroupPositionFnObservable } from '../grid/gridObservables'
 import { gridSelectionsObservable } from '../grid/gridObservables'
 
-export interface BaseLinesParams {
-  // lineType: LineType
-  lineCurve: string
-  lineWidth: number
-  // labelFn: (d: ComputedDatumSeries) => string
-  // labelPositionFn: (d: ComputedDatumSeries) => 'top' | 'bottom' | 'left' | 'right' | 'center'
-  // labelStyleFn: (d: ComputedDatumSeries) => string
-  // labelFontSizeFn: (d: ComputedDatumSeries) => number
-  // labelColorFn: (d: ComputedDatumSeries) => string
-  // labelPadding: number
-}
+// export interface BaseLinesParams {
+//   // lineType: LineType
+//   lineCurve: string
+//   lineWidth: number
+//   // labelFn: (d: ComputedDatumSeries) => string
+//   // labelPositionFn: (d: ComputedDatumSeries) => 'top' | 'bottom' | 'left' | 'right' | 'center'
+//   // labelStyleFn: (d: ComputedDatumSeries) => string
+//   // labelFontSizeFn: (d: ComputedDatumSeries) => number
+//   // labelColorFn: (d: ComputedDatumSeries) => string
+//   // labelPadding: number
+// }
 
 interface BaseLinesContext {
   selection: d3.Selection<any, unknown, any, unknown>
