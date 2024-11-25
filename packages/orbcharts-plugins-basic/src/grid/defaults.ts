@@ -113,8 +113,9 @@ export const DEFAULT_SCALING_AREA_PARAMS: ScalingAreaParams = {
 }
 
 export const DEFAULT_GRID_LEGEND_PARAMS: GridLegendParams = {
-  position: 'right',
-  justify: 'end',
+  // position: 'right',
+  // justify: 'end',
+  placement: 'bottom',
   padding: 28,
   // offset: [0, 0],
   backgroundFill: 'none',

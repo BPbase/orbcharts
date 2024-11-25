@@ -35,8 +35,9 @@ export const PRESET_BARS_THIN: PresetPartial<'grid', PresetBarsParams
     ValueAxis: {},
     GroupAux: {},
     GridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
     }
   }

@@ -40,8 +40,9 @@ export const PRESET_LINES_ROTATE_AXIS_LABEL: PresetPartial<'grid', PresetLinesPa
       labelRotate: -30
     },
     GridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
       listRectHeight: 2
     }

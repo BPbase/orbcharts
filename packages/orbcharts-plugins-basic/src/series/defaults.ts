@@ -134,8 +134,9 @@ export const DEFAULT_ROSE_LABELS_PARAMS: RoseLabelsParams = {
 DEFAULT_ROSE_LABELS_PARAMS.labelFn.toString = () => `d => String(d.label)`
 
 export const DEFAULT_SERIES_LEGEND_PARAMS: SeriesLegendParams = {
-  position: 'right',
-  justify: 'end',
+  // position: 'right',
+  // justify: 'end',
+  placement: 'right-end',
   padding: 28,
   // offset: [0, 0],
   backgroundFill: 'none',

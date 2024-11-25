@@ -43,7 +43,7 @@ import type {
 
   // -- noneData --
   TooltipParams
-} from '@orbcharts/plugins-basic-types'
+} from '../lib/plugins-basic-types'
 
 type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>
 

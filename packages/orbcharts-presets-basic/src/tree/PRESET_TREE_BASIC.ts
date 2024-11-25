@@ -17,8 +17,9 @@ export const PRESET_TREE_BASIC: PresetPartial<'tree', PresetTreeLegendParams & P
     ...ALL_PLUGIN_PARAMS_NONE_DATA,
     TreeMap: {},
     TreeLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
     }
   }

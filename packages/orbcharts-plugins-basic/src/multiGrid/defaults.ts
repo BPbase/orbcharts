@@ -14,8 +14,9 @@ import type {
 } from '../../lib/plugins-basic-types'
 
 export const DEFAULT_MULTI_GRID_LEGEND_PARAMS: MultiGridLegendParams = {
-  position: 'right',
-  justify: 'end',
+  // position: 'right',
+  // justify: 'end',
+  placement: 'bottom',
   padding: 28,
   backgroundFill: 'none',
   backgroundStroke: 'none',

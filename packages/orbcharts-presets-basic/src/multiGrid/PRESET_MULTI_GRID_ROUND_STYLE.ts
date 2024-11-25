@@ -31,8 +31,9 @@ export const PRESET_MULTI_GRID_ROUND_STYLE: PresetPartial<'multiGrid', PresetMul
     MultiBarStack: {},
     MultiDots: {},
     MultiGridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
       gridList: [
         {

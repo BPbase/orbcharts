@@ -37,8 +37,9 @@ export const PRESET_BARS_ROUND: PresetPartial<'grid', PresetBarsParams
     GroupAux: {},
     GridLegend: {
       // 底部圖例及圓弧列點
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
       listRectRadius: 7,
     }

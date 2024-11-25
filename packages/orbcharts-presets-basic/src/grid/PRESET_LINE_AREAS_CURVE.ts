@@ -50,8 +50,9 @@ export const PRESET_LINE_AREAS_CURVE: PresetPartial<'grid', PresetLinesParams
     ValueAxis: {},
     GroupAux: {},
     GridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
       listRectHeight: 2
     }

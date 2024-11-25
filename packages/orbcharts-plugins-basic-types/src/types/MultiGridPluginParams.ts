@@ -11,8 +11,9 @@ import type {
 import type { ColorType } from '../../lib/core-types'
 
 export interface MultiGridLegendParams {
-  position: 'top' | 'bottom' | 'left' | 'right'
-  justify: 'start' | 'center' | 'end'
+  // position: 'top' | 'bottom' | 'left' | 'right'
+  // justify: 'start' | 'center' | 'end'
+  placement: 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end'
   padding: number
   backgroundFill: ColorType
   backgroundStroke: ColorType

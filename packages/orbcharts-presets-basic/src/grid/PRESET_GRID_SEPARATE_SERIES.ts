@@ -30,8 +30,9 @@ export const PRESET_GRID_SEPARATE_SERIES: PresetPartial<'grid', PresetGridPlugin
       tickTextRotate: -30
     },
     GridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
     }
   }

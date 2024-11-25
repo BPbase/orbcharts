@@ -51,8 +51,9 @@ export const PRESET_MULTI_GRID_SEPARATE_GRID: PresetPartial<'multiGrid', PresetM
       gridIndexes: 'all'
     },
     MultiGridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
     }
   }

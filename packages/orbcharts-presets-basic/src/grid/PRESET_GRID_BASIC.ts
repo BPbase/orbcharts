@@ -17,8 +17,9 @@ export const PRESET_GRID_BASIC: PresetPartial<'grid', PresetGridPluginParams & P
     ...ALL_PLUGIN_PARAMS_GRID,
     ...ALL_PLUGIN_PARAMS_NONE_DATA,
     GridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
     }
   }

@@ -37,8 +37,9 @@ export const PRESET_LINES_LOOSE_TICKS: PresetPartial<'grid', PresetLinesParams
     ValueAxis: {},
     GroupAux: {},
     GridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
       listRectHeight: 2
     }

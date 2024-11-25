@@ -77,8 +77,9 @@ export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', PresetMulti
       gridIndexes: [0, 1]
     },
     MultiGridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
     }
   }

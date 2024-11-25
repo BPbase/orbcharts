@@ -25,8 +25,9 @@ export const PRESET_GRID_ROTATE_AXIS_LABEL: PresetPartial<'grid', PresetGridPlug
       tickTextRotate: -30
     },
     GridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
     }
   }

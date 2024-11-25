@@ -87,8 +87,9 @@ export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID: PresetPartial<'multiGrid', P
       gridIndexes: 'all'
     },
     MultiGridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
       gridList: [
         {

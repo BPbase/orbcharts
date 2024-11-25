@@ -39,8 +39,9 @@ export const PRESET_LINES_WITH_SOLID_DOTS: PresetPartial<'grid', PresetLinesPara
     ValueAxis: {},
     GroupAux: {},
     GridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
       listRectHeight: 2
     }

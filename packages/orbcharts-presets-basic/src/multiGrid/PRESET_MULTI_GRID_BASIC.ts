@@ -21,8 +21,9 @@ export const PRESET_MULTI_GRID_BASIC: PresetPartial<'multiGrid', PresetMultiGrid
     ...ALL_PLUGIN_PARAMS_MULTI_GRID,
     ...ALL_PLUGIN_PARAMS_NONE_DATA,
     MultiGridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
       gridList: [
         {

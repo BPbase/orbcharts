@@ -52,8 +52,9 @@ export const PRESET_LINE_AREAS_SEPARATE_SERIES: PresetPartial<'grid', PresetLine
       labelRotate: -30
     },
     GridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
       listRectHeight: 2
     }

@@ -47,8 +47,9 @@ export const PRESET_LINE_AREAS_LOOSE_TICKS: PresetPartial<'grid', PresetLinesPar
     ValueAxis: {},
     GroupAux: {},
     GridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
       listRectHeight: 2
     }

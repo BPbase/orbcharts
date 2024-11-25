@@ -5,6 +5,7 @@ import {
   switchMap,
   takeUntil,
   shareReplay,
+  distinctUntilChanged,
   Observable,
   Subject } from 'rxjs'
 import type { BasePluginFn } from './types'
@@ -166,17 +167,52 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
     })
   )
 
-  const lineDirection$ = fullParams$.pipe(
+  const position$: Observable<"top" | "bottom" | "left" | "right"> = fullParams$.pipe(
     takeUntil(destroy$),
     map(data => {
-      return data.position === 'bottom' || data.position === 'top'
+      const position: "top" | "bottom" | "left" | "right" = data.placement === 'top' || data.placement === 'top-start' || data.placement === 'top-end'
+        ? 'top'
+        : data.placement === 'bottom' || data.placement === 'bottom-start' || data.placement === 'bottom-end'
+          ? 'bottom'
+          : data.placement === 'left' || data.placement === 'left-start' || data.placement === 'left-end'
+            ? 'left'
+            : 'right'
+      return position
+    }),
+    distinctUntilChanged((a, b) => a === b),
+    shareReplay(1)
+  )
+
+  const justify$: Observable<"start" | "center" | "end"> = fullParams$.pipe(
+    takeUntil(destroy$),
+    map(data => {
+      const justify: "start" | "center" | "end" = data.placement === 'top-start' || data.placement === 'bottom-start' || data.placement === 'left-start' || data.placement === 'right-start'
+        ? 'start'
+        : data.placement === 'top-end' || data.placement === 'bottom-end' || data.placement === 'left-end' || data.placement === 'right-end'
+          ? 'end'
+          : data.placement === 'top' || data.placement === 'bottom' || data.placement === 'left' || data.placement === 'right'
+          ? 'center'
+          : 'center'
+      return justify
+    }),
+    distinctUntilChanged((a, b) => a === b),
+    shareReplay(1)
+  )
+
+  const lineDirection$ = position$.pipe(
+    takeUntil(destroy$),
+    map(data => {
+      return data === 'bottom' || data === 'top'
         ? 'row'
         : 'column'
-    })
+    }),
+    distinctUntilChanged((a, b) => a === b),
+    shareReplay(1)
   )
 
   const lineMaxSize$ = combineLatest({
     fullParams: fullParams$,
+    position: position$,
     layout: layout$
   }).pipe(
     takeUntil(destroy$),
@@ -184,7 +220,7 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
     map(data => {
       const ourterSize = (data.fullParams.padding) * 2 + (data.fullParams.gap * 2) // 卡片離場景的間距 & 卡片內的間距
 
-      return data.fullParams.position === 'bottom' || data.fullParams.position === 'top'
+      return data.position === 'bottom' || data.position === 'top'
         ? data.layout.rootWidth - ourterSize
         : data.layout.rootHeight - ourterSize
     })
@@ -192,47 +228,48 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
 
   const rootPosition$ = combineLatest({
     layout: layout$,
-    fullParams: fullParams$,
+    position: position$,
+    justify: justify$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
     map(data => {
       let x = 0
       let y = 0
-      if (data.fullParams.position === 'bottom') {
+      if (data.position === 'bottom') {
         y = data.layout.rootHeight
-        if (data.fullParams.justify === 'start') {
+        if (data.justify === 'start') {
           x = 0
-        } else if (data.fullParams.justify === 'center') {
+        } else if (data.justify === 'center') {
           x = data.layout.rootWidth / 2
-        } else if (data.fullParams.justify === 'end') {
+        } else if (data.justify === 'end') {
           x = data.layout.rootWidth
         }
-      } else if (data.fullParams.position === 'right') {
+      } else if (data.position === 'right') {
         x = data.layout.rootWidth
-        if (data.fullParams.justify === 'start') {
+        if (data.justify === 'start') {
           y = 0
-        } else if (data.fullParams.justify === 'center') {
+        } else if (data.justify === 'center') {
           y = data.layout.rootHeight / 2
-        } else if (data.fullParams.justify === 'end') {
+        } else if (data.justify === 'end') {
           y = data.layout.rootHeight
         }
-      } else if (data.fullParams.position === 'top') {
+      } else if (data.position === 'top') {
         y = 0
-        if (data.fullParams.justify === 'start') {
+        if (data.justify === 'start') {
           x = 0
-        } else if (data.fullParams.justify === 'center') {
+        } else if (data.justify === 'center') {
           x = data.layout.rootWidth / 2
-        } else if (data.fullParams.justify === 'end') {
+        } else if (data.justify === 'end') {
           x = data.layout.rootWidth
         }
-      } else if (data.fullParams.position === 'left') {
+      } else if (data.position === 'left') {
         x = 0
-        if (data.fullParams.justify === 'start') {
+        if (data.justify === 'start') {
           y = 0
-        } else if (data.fullParams.justify === 'center') {
+        } else if (data.justify === 'center') {
           y = data.layout.rootHeight / 2
-        } else if (data.fullParams.justify === 'end') {
+        } else if (data.justify === 'end') {
           y = data.layout.rootHeight
         }
       }
@@ -432,6 +469,8 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
 
   const legendCard$: Observable<LegendCard> = combineLatest({
     fullParams: fullParams$,
+    position: position$,
+    justify: justify$,
     lengendList: lengendList$
   }).pipe(
     takeUntil(destroy$),
@@ -442,47 +481,47 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
       let translateX = 0
       let translateY = 0
 
-      if (data.fullParams.position === 'left') {
-        if (data.fullParams.justify === 'start') {
+      if (data.position === 'left') {
+        if (data.justify === 'start') {
           translateX = data.fullParams.padding
           translateY = data.fullParams.padding
-        } else if (data.fullParams.justify === 'center') {
+        } else if (data.justify === 'center') {
           translateX = data.fullParams.padding
           translateY = - height / 2
-        } else if (data.fullParams.justify === 'end') {
+        } else if (data.justify === 'end') {
           translateX = data.fullParams.padding
           translateY = - height - data.fullParams.padding
         }
-      } else if (data.fullParams.position === 'right') {
-        if (data.fullParams.justify === 'start') {
+      } else if (data.position === 'right') {
+        if (data.justify === 'start') {
           translateX = - width - data.fullParams.padding
           translateY = data.fullParams.padding
-        } else if (data.fullParams.justify === 'center') {
+        } else if (data.justify === 'center') {
           translateX = - width - data.fullParams.padding
           translateY = - height / 2
-        } else if (data.fullParams.justify === 'end') {
+        } else if (data.justify === 'end') {
           translateX = - width - data.fullParams.padding
           translateY = - height - data.fullParams.padding
         }
-      } else if (data.fullParams.position === 'top') {
-        if (data.fullParams.justify === 'start') {
+      } else if (data.position === 'top') {
+        if (data.justify === 'start') {
           translateX = data.fullParams.padding
           translateY = data.fullParams.padding
-        } else if (data.fullParams.justify === 'center') {
+        } else if (data.justify === 'center') {
           translateX = - width / 2
           translateY = data.fullParams.padding
-        } else if (data.fullParams.justify === 'end') {
+        } else if (data.justify === 'end') {
           translateX = - width - data.fullParams.padding
           translateY = data.fullParams.padding
         }
       } else {
-        if (data.fullParams.justify === 'start') {
+        if (data.justify === 'start') {
           translateX = data.fullParams.padding
           translateY = - height - data.fullParams.padding
-        } else if (data.fullParams.justify === 'center') {
+        } else if (data.justify === 'center') {
           translateX = - width / 2
           translateY = - height - data.fullParams.padding
-        } else if (data.fullParams.justify === 'end') {
+        } else if (data.justify === 'end') {
           translateX = - width - data.fullParams.padding
           translateY = - height - data.fullParams.padding
         }
