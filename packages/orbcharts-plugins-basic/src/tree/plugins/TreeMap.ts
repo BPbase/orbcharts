@@ -13,7 +13,7 @@ import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineTreePlugin } from '../../../lib/core'
 import type { Layout, ComputedDataTree, DataFormatterTree, ChartParams } from '../../../lib/core-types'
-import type { TreeMapParams } from '../types'
+import type { TreeMapParams } from '../../../lib/plugins-basic-types'
 import { DEFAULT_TREE_MAP_PARAMS } from '../defaults'
 import { getClassName, getColor } from '../../utils/orbchartsUtils'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../const'

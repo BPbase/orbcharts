@@ -17,18 +17,20 @@ import type {
   GridContainerPosition,
   Layout,
   TransformData,
-  ColorType } from '../../lib/core-types'
+  ColorType
+} from '../../lib/core-types'
+import type { BaseDotsParams } from '../../lib/plugins-basic-types'
 import { getDatumColor, getClassName, getUniID } from '../utils/orbchartsUtils'
 import { gridSelectionsObservable } from '../grid/gridObservables'
 
-export interface BaseDotsParams {
-  radius: number
-  fillColorType: ColorType
-  strokeColorType: ColorType
-  strokeWidth: number
-  // strokeWidthWhileHighlight: number
-  onlyShowHighlighted: boolean
-}
+// export interface BaseDotsParams {
+//   radius: number
+//   fillColorType: ColorType
+//   strokeColorType: ColorType
+//   strokeWidth: number
+//   // strokeWidthWhileHighlight: number
+//   onlyShowHighlighted: boolean
+// }
 
 interface BaseDotsContext {
   selection: d3.Selection<any, unknown, any, unknown>

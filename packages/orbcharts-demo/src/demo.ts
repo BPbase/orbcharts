@@ -1,7 +1,7 @@
 import type { DemoChartTypeItem } from './types'
 // type nonePresetTitle = '[none preset]'
 
-export const DEMO_LIST: DemoChartTypeItem[] = [
+export const DEMO_LIST: DemoChartTypeItem<any>[] = [
   {
     title: 'Series',
     chartType: 'series',

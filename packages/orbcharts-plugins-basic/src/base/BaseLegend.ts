@@ -9,26 +9,28 @@ import {
   Subject } from 'rxjs'
 import type { BasePluginFn } from './types'
 import type {
-  ChartParams, Layout, ColorType } from '../../lib/core-types'
+  ChartParams, Layout, ColorType
+} from '../../lib/core-types'
+import type { BaseLegendParams } from '../../lib/plugins-basic-types'
 import { getClassName, getColor, getDatumColor } from '../utils/orbchartsUtils'
 import { measureTextWidth } from '../utils/commonUtils'
 
-export interface BaseLegendParams {
-  position: 'top' | 'bottom' | 'left' | 'right'
-  justify: 'start' | 'center' | 'end'
-  padding: number
-  // offset: [number, number]
-  backgroundFill: ColorType
-  backgroundStroke: ColorType
-  textColorType: ColorType
-  gap: number
-  seriesList: Array<{
-    listRectWidth: number
-    listRectHeight: number
-    listRectRadius: number
-  }>
-  // highlightEvent: boolean
-}
+// export interface BaseLegendParams {
+//   position: 'top' | 'bottom' | 'left' | 'right'
+//   justify: 'start' | 'center' | 'end'
+//   padding: number
+//   // offset: [number, number]
+//   backgroundFill: ColorType
+//   backgroundStroke: ColorType
+//   textColorType: ColorType
+//   gap: number
+//   seriesList: Array<{
+//     listRectWidth: number
+//     listRectHeight: number
+//     listRectRadius: number
+//   }>
+//   // highlightEvent: boolean
+// }
 
 interface BaseLegendContext {
   rootSelection: d3.Selection<any, unknown, any, unknown>

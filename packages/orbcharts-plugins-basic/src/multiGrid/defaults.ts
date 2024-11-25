@@ -11,7 +11,7 @@ import type {
   MultiValueStackAxisParams,
   OverlappingValueAxesParams,
   OverlappingValueStackAxesParams
-} from './types'
+} from '../../lib/plugins-basic-types'
 
 export const DEFAULT_MULTI_GRID_LEGEND_PARAMS: MultiGridLegendParams = {
   position: 'right',

@@ -19,17 +19,18 @@ import type {
   ChartParams, 
   Layout,
   TransformData } from '../../lib/core-types'
+import type { BaseBarsParams } from '../../lib/plugins-basic-types'
 import { getD3TransitionEase } from '../utils/d3Utils'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 import { gridSelectionsObservable } from '../grid/gridObservables'
 
-export interface BaseBarsParams {
-  // barType: BarType
-  barWidth: number
-  barPadding: number
-  barGroupPadding: number // 群組和群組間的間隔
-  barRadius: number | boolean
-}
+// export interface BaseBarsParams {
+//   // barType: BarType
+//   barWidth: number
+//   barPadding: number
+//   barGroupPadding: number // 群組和群組間的間隔
+//   barRadius: number | boolean
+// }
 
 interface BaseBarsContext {
   selection: d3.Selection<any, unknown, any, unknown>

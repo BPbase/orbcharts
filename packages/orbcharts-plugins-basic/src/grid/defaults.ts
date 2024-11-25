@@ -10,7 +10,7 @@ import type {
   ValueAxisParams,
   ValueStackAxisParams,
   ScalingAreaParams,
-  GridLegendParams } from './types'
+  GridLegendParams } from '../../lib/plugins-basic-types'
 
 export const DEFAULT_LINES_PARAMS: LinesParams = {
   lineCurve: 'curveLinear',

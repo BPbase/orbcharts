@@ -11,7 +11,7 @@ import {
   defineMultiGridPlugin, mergeOptionsWithDefault } from '../../../lib/core'
 import { DEFAULT_MULTI_GRID_LEGEND_PARAMS } from '../defaults'
 import { createBaseLegend } from '../../base/BaseLegend'
-import type { BaseLegendParams } from '../../base/BaseLegend'
+import type { BaseLegendParams } from '../../../lib/plugins-basic-types'
 import { LAYER_INDEX_OF_INFO } from '../../const'
 
 const pluginName = 'MultiGridLegend'

@@ -6,7 +6,7 @@ import type {
   PieLabelsParams,
   RoseParams,
   RoseLabelsParams,
-  SeriesLegendParams } from './types'
+  SeriesLegendParams } from '../../lib/plugins-basic-types'
 
   
 export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {

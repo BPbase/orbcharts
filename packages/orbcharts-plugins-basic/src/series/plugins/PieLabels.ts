@@ -17,7 +17,7 @@ import type {
   SeriesContainerPosition,
   EventSeries,
   ChartParams } from '../../../lib/core-types'
-import type { PieLabelsParams } from '../types'
+import type { PieLabelsParams } from '../../../lib/plugins-basic-types'
 import type { PieDatum } from '../seriesUtils'
 import { DEFAULT_PIE_LABELS_PARAMS } from '../defaults'
 import { makePieData } from '../seriesUtils'

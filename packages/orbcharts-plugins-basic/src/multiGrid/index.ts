@@ -1,5 +1,5 @@
 export * from './defaults'
-export * from './types'
+// export * from './types'
 export { MultiGridLegend } from './plugins/MultiGridLegend'
 export { MultiBars } from './plugins/MultiBars'
 export { MultiBarStack } from './plugins/MultiBarStack'

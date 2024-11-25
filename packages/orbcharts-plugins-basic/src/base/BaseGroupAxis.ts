@@ -19,30 +19,31 @@ import type {
   ChartParams,
   TransformData
 } from '../../lib/core-types'
+import type { BaseGroupAxisParams } from '../../lib/plugins-basic-types'
 import type { BasePluginFn } from './types'
 import { parseTickFormatValue } from '../utils/d3Utils'
 import { getColor, getClassName } from '../utils/orbchartsUtils'
 import { renderTspansOnAxis } from '../utils/d3Graphics'
 
-export interface BaseGroupAxisParams {
-  // xLabel: string
-  // labelAnchor: 'start' | 'end'
-  labelOffset: [number, number]
-  labelColorType: ColorType
-  axisLineVisible: boolean
-  axisLineColorType: ColorType
-  ticks: number | null | 'all'
-  tickFormat: string | ((text: any) => string)
-  tickLineVisible: boolean
-  tickPadding: number
-  tickFullLine: boolean
-  tickFullLineDasharray: string
-  tickColorType: ColorType
-  // axisLineColor: string
-  // axisLabelColor: string
-  tickTextRotate: number
-  tickTextColorType: ColorType
-}
+// export interface BaseGroupAxisParams {
+//   // xLabel: string
+//   // labelAnchor: 'start' | 'end'
+//   labelOffset: [number, number]
+//   labelColorType: ColorType
+//   axisLineVisible: boolean
+//   axisLineColorType: ColorType
+//   ticks: number | null | 'all'
+//   tickFormat: string | ((text: any) => string)
+//   tickLineVisible: boolean
+//   tickPadding: number
+//   tickFullLine: boolean
+//   tickFullLineDasharray: string
+//   tickColorType: ColorType
+//   // axisLineColor: string
+//   // axisLabelColor: string
+//   tickTextRotate: number
+//   tickTextColorType: ColorType
+// }
 
 interface BaseGroupAxisContext {
   selection: d3.Selection<any, unknown, any, unknown>
