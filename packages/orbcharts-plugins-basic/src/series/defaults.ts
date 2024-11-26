@@ -6,7 +6,9 @@ import type {
   PieLabelsParams,
   RoseParams,
   RoseLabelsParams,
-  SeriesLegendParams } from '../../lib/plugins-basic-types'
+  SeriesLegendParams,
+  SeriesTooltipParams
+} from '../../lib/plugins-basic-types'
 
   
 export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
@@ -148,3 +150,24 @@ export const DEFAULT_SERIES_LEGEND_PARAMS: SeriesLegendParams = {
   // highlightEvent: false
   textColorType: 'primary'
 }
+
+export const DEFAULT_SERIES_TOOLTIP_PARAMS: SeriesTooltipParams = {
+  backgroundColorType: 'background',
+  strokeColorType: 'primary',
+  backgroundOpacity: 0.8,
+  textColorType: 'primary',
+  offset: [20, 5],
+  padding: 10,
+  renderFn: (eventData, { styles }) => {
+    return `<g>
+  <rect width="${styles.textSizePx}" height="${styles.textSizePx}" rx="${styles.textSizePx / 2}" fill="${eventData.datum.color}></rect>
+  <text x="${styles.textSizePx * 1.5}" font-size="${styles.textSizePx}" fill="${styles.textColor}">${eventData.datum.label}</text>
+</g>`
+  },
+}
+DEFAULT_SERIES_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles }) => {
+    return \`<g>
+  <rect width="\${styles.textSizePx}" height="\${styles.textSizePx}" rx="\${styles.textSizePx / 2}" fill="\${eventData.datum.color}></rect>
+  <text x="\${styles.textSizePx * 1.5}" font-size="\${styles.textSizePx}" fill="\${styles.textColor}">\${eventData.datum.label}</text>
+</g>\`
+}`

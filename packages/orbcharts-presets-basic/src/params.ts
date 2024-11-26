@@ -14,6 +14,7 @@ export const ALL_PLUGIN_PARAMS_SERIES: PresetSeriesPluginParams = {
   Rose: {},
   RoseLabels: {},
   SeriesLegend: {},
+  SeriesTooltip: {},
 }
 
 export const ALL_PLUGIN_PARAMS_GRID: PresetGridPluginParams = {
@@ -23,6 +24,7 @@ export const ALL_PLUGIN_PARAMS_GRID: PresetGridPluginParams = {
   BarsTriangle: {},
   Dots: {},
   GridLegend: {},
+  GridTooltip: {},
   GroupAux: {},
   GroupAxis: {},
   LineAreas: {},
@@ -38,6 +40,7 @@ export const ALL_PLUGIN_PARAMS_MULTI_GRID: PresetMultiGridPluginParams = {
   MultiBarsTriangle: {},
   MultiDots: {},
   MultiGridLegend: {},
+  MultiGridTooltip: {},
   MultiGroupAxis: {},
   MultiLineAreas: {},
   MultiLines: {},
@@ -50,8 +53,9 @@ export const ALL_PLUGIN_PARAMS_MULTI_GRID: PresetMultiGridPluginParams = {
 export const ALL_PLUGIN_PARAMS_TREE: PresetTreePluginParams = {
   TreeLegend: {},
   TreeMap: {},
+  TreeTooltip: {},
 }
 
 export const ALL_PLUGIN_PARAMS_NONE_DATA: PresetNoneDataPluginParams = {
-  Tooltip: {},
+  // Tooltip: {},
 }

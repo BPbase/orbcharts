@@ -9,6 +9,7 @@ import type {
   GroupAxisParams,
   ValueAxisParams,
   ValueStackAxisParams,
+  GridTooltipParams,
   GridZoomParams,
   GridLegendParams } from '../../lib/plugins-basic-types'
 
@@ -127,3 +128,24 @@ export const DEFAULT_GRID_LEGEND_PARAMS: GridLegendParams = {
   // highlightEvent: false
   textColorType: 'primary'
 }
+
+export const DEFAULT_GRID_TOOLTIP_PARAMS: GridTooltipParams = {
+  backgroundColorType: 'background',
+  strokeColorType: 'primary',
+  backgroundOpacity: 0.8,
+  textColorType: 'primary',
+  offset: [20, 5],
+  padding: 10,
+  renderFn: (eventData, { styles }) => {
+    return `<g>
+  <rect width="${styles.textSizePx}" height="${styles.textSizePx}" rx="${styles.textSizePx / 2}" fill="${eventData.datum.color}></rect>
+  <text x="${styles.textSizePx * 1.5}" font-size="${styles.textSizePx}" fill="${styles.textColor}">${eventData.datum.label}</text>
+</g>`
+  },
+}
+DEFAULT_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles }) => {
+    return \`<g>
+  <rect width="\${styles.textSizePx}" height="\${styles.textSizePx}" rx="\${styles.textSizePx / 2}" fill="\${eventData.datum.color}></rect>
+  <text x="\${styles.textSizePx * 1.5}" font-size="\${styles.textSizePx}" fill="\${styles.textColor}">\${eventData.datum.label}</text>
+</g>\`
+}`

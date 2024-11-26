@@ -102,9 +102,6 @@ function getSeriesColor (seriesIndex: number, fullChartParams: ChartParams) {
   return fullChartParams.colors[fullChartParams.colorScheme].series[colorIndex]
 }
 
-function getLegendColor () {
-
-}
 
 export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: string, {
   rootSelection,

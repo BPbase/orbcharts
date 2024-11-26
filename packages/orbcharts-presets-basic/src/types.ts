@@ -7,6 +7,7 @@ import type {
   RoseParams,
   RoseLabelsParams,
   SeriesLegendParams,
+  SeriesTooltipParams,
 
   // -- grid --
   BarsParams,
@@ -19,6 +20,7 @@ import type {
   GroupAxisParams,
   LineAreasParams,
   LinesParams,
+  GridTooltipParams,
   GridZoomParams,
   ValueAxisParams,
   ValueStackAxisParams,
@@ -29,6 +31,7 @@ import type {
   MultiBarsTriangleParams,
   MultiDotsParams,
   MultiGridLegendParams,
+  MultiGridTooltipParams,
   MultiGroupAxisParams,
   MultiLineAreasParams,
   MultiLinesParams,
@@ -40,9 +43,10 @@ import type {
   // -- tree --
   TreeLegendParams,
   TreeMapParams,
+  TreeTooltipParams,
 
   // -- noneData --
-  TooltipParams
+  // TooltipParams
 } from '../lib/plugins-basic-types'
 
 type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>
@@ -56,6 +60,7 @@ export type PresetSeriesPluginParams = PresetBubblesParams
   & PresetRoseParams
   & PresetRoseLabelsParams
   & PresetSeriesLegendParams
+  & PresetSeriesTooltipParams
 
 export interface PresetBubblesParams {
   Bubbles: Partial<BubblesParams>
@@ -85,6 +90,10 @@ export interface PresetSeriesLegendParams {
   SeriesLegend: Partial<SeriesLegendParams>
 }
 
+export interface PresetSeriesTooltipParams {
+  SeriesTooltip: Partial<SeriesTooltipParams>
+}
+
 // -- grid --
 // grid的全部plugin參數
 export type PresetGridPluginParams = PresetBarsParams
@@ -93,6 +102,7 @@ export type PresetGridPluginParams = PresetBarsParams
   & PresetBarsTriangleParams
   & PresetDotsParams
   & PresetGridLegendParams
+  & PresetGridTooltipParams
   & PresetGroupAuxParams
   & PresetGroupAxisParams
   & PresetLineAreasParams
@@ -123,6 +133,10 @@ export interface PresetDotsParams {
 
 export interface PresetGridLegendParams {
   GridLegend: Partial<GridLegendParams>
+}
+
+export interface PresetGridTooltipParams {
+  GridTooltip: Partial<GridTooltipParams>
 }
 
 export interface PresetGroupAuxParams {
@@ -160,6 +174,7 @@ export type PresetMultiGridPluginParams = PresetMultiBarsParams
   & PresetMultiBarsTriangleParams
   & PresetMultiDotsParams
   & PresetMultiGridLegendParams
+  & PresetMultiGridTooltipParams
   & PresetMultiGroupAxisParams
   & PresetMultiLineAreasParams
   & PresetMultiLinesParams
@@ -194,6 +209,10 @@ export interface PresetMultiGridLegendParams {
   MultiGridLegend: DeepPartial<MultiGridLegendParams>
 }
 
+export interface PresetMultiGridTooltipParams {
+  MultiGridTooltip: Partial<MultiGridTooltipParams>
+}
+
 export interface PresetMultiGroupAxisParams {
   MultiGroupAxis: Partial<MultiGroupAxisParams>
 }
@@ -223,7 +242,9 @@ export interface PresetOverlappingValueStackAxesParams {
 }
 
 // -- tree --
-export type PresetTreePluginParams = PresetTreeLegendParams & PresetTreeMapParams
+export type PresetTreePluginParams = PresetTreeLegendParams
+  & PresetTreeMapParams
+  & PresetTreeTooltipParams
 
 export interface PresetTreeLegendParams {
   TreeLegend: Partial<TreeLegendParams>
@@ -233,10 +254,15 @@ export interface PresetTreeMapParams {
   TreeMap: Partial<TreeMapParams>
 }
 
+export interface PresetTreeTooltipParams {
+  TreeTooltip: Partial<TreeTooltipParams>
+}
+
 // -- noneData --
 // noneData的全部plugin參數
-export type PresetNoneDataPluginParams = PresetTooltipParams
+export type PresetNoneDataPluginParams = {}
+// export type PresetNoneDataPluginParams = PresetTooltipParams
 
-export interface PresetTooltipParams {
-  Tooltip: Partial<TooltipParams>
-}
+// export interface PresetTooltipParams {
+//   Tooltip: Partial<TooltipParams>
+// }

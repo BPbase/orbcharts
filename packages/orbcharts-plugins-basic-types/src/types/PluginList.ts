@@ -7,6 +7,7 @@ export type PluginListSeries = 'Bubbles'
   | 'Rose'
   | 'RoseLabels'
   | 'SeriesLegend'
+  | 'SeriesTooltip'
 
 export type PluginListGrid = 'Bars'
   | 'BarsPN'
@@ -14,6 +15,7 @@ export type PluginListGrid = 'Bars'
   | 'BarsTriangle'
   | 'Dots'
   | 'GridLegend'
+  | 'GridTooltip'
   | 'GridZoom'
   | 'GroupAux'
   | 'GroupAxis'
@@ -28,6 +30,7 @@ export type PluginListMultiGrid = 'MultiBars'
   | 'MultiBarsTriangle'
   | 'MultiDots'
   | 'MultiGridLegend'
+  | 'MultiGridTooltip'
   | 'MultiGroupAxis'
   | 'MultiLineAreas'
   | 'MultiLines'
@@ -38,8 +41,9 @@ export type PluginListMultiGrid = 'MultiBars'
 
 export type PluginListTree = 'TreeLegend'
   | 'TreeMap'
+  | 'TreeTooltip'
 
-export type PluginListNoneData = 'Tooltip'
+// export type PluginListNoneData = 'Tooltip'
 
 export type PluginList<T extends ChartType> = T extends 'series'
   ? PluginListSeries
@@ -49,6 +53,6 @@ export type PluginList<T extends ChartType> = T extends 'series'
       ? PluginListMultiGrid
       : T extends 'tree'
         ? PluginListTree
-        : T extends 'noneData'
-          ? PluginListNoneData
+        // : T extends 'noneData'
+        //   ? PluginListNoneData
           : never

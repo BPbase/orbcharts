@@ -1,4 +1,5 @@
-import type { ColorType, ComputedDataTree } from '../../lib/core-types'
+import type { ColorType, ComputedDataTree, EventTree } from '../../lib/core-types'
+import type { BaseTooltipStyle } from './BasePluginParams'
 
 export interface TreeMapParams {
   paddingInner: number
@@ -22,3 +23,21 @@ export interface TreeLegendParams {
   textColorType: ColorType
 }
 
+export interface TreeTooltipParams {
+  backgroundColorType: ColorType
+  backgroundOpacity: number
+  strokeColorType: ColorType
+  textColorType: ColorType
+  offset: [number, number]
+  padding: number
+  // textRenderFn: (<T extends ChartType>(eventData: EventTypeMap<T>) => string[] | string) | null
+  // svgRenderFn: (<T extends ChartType>(eventData: EventTypeMap<T>) => string) | null
+  renderFn: (
+    (
+      eventData: EventTree,
+      context: {
+        styles: BaseTooltipStyle
+      }
+    ) => string[] | string
+  )
+}

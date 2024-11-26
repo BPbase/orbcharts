@@ -1,5 +1,5 @@
-import type { ColorType } from '../../lib/core-types'
-// import type { BaseLegendParams } from '../base/BaseLegend'
+import type { ColorType, EventGrid } from '../../lib/core-types'
+import type { BaseTooltipStyle } from './BasePluginParams'
 
 // export type LineType = 'line' | 'area' | 'gradientArea'
 // export type BarType = 'rect' | 'triangle'
@@ -122,4 +122,23 @@ export interface GridLegendParams {
   listRectHeight: number
   listRectRadius: number
   textColorType: ColorType
+}
+
+export interface GridTooltipParams {
+  backgroundColorType: ColorType
+  backgroundOpacity: number
+  strokeColorType: ColorType
+  textColorType: ColorType
+  offset: [number, number]
+  padding: number
+  // textRenderFn: (<T extends ChartType>(eventData: EventTypeMap<T>) => string[] | string) | null
+  // svgRenderFn: (<T extends ChartType>(eventData: EventTypeMap<T>) => string) | null
+  renderFn: (
+    (
+      eventData: EventGrid,
+      context: {
+        styles: BaseTooltipStyle
+      }
+    ) => string[] | string
+  )
 }

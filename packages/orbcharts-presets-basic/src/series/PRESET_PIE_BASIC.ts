@@ -1,8 +1,8 @@
 import type { PresetPartial } from '../../lib/core-types'
-import type { PresetSeriesPluginParams, PresetNoneDataPluginParams } from '../types'
+import type { PresetSeriesPluginParams, PresetSeriesTooltipParams, PresetNoneDataPluginParams } from '../types'
 import { ALL_PLUGIN_PARAMS_SERIES, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_PIE_BASIC: PresetPartial<'series', PresetSeriesPluginParams & PresetNoneDataPluginParams> = {
+export const PRESET_PIE_BASIC: PresetPartial<'series', PresetSeriesPluginParams & PresetSeriesTooltipParams & PresetNoneDataPluginParams> = {
   name: 'PRESET_PIE_BASIC',
   description: '基本Pie參數',
   dataFormatter: {

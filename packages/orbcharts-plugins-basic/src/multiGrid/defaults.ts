@@ -7,6 +7,7 @@ import type {
   MultiLineAreasParams,
   MultiDotsParams,
   MultiGroupAxisParams,
+  MultiGridTooltipParams,
   MultiValueAxisParams,
   MultiValueStackAxisParams,
   OverlappingValueAxesParams,
@@ -158,3 +159,24 @@ export const DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS: OverlappingValueAxesParams =
 export const DEFAULT_OVERLAPPING_VALUE_STACK_AXES_PARAMS: OverlappingValueStackAxesParams = {
   ...DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS
 }
+
+export const DEFAULT_MULTI_GRID_TOOLTIP_PARAMS: MultiGridTooltipParams = {
+  backgroundColorType: 'background',
+  strokeColorType: 'primary',
+  backgroundOpacity: 0.8,
+  textColorType: 'primary',
+  offset: [20, 5],
+  padding: 10,
+  renderFn: (eventData, { styles }) => {
+    return `<g>
+  <rect width="${styles.textSizePx}" height="${styles.textSizePx}" rx="${styles.textSizePx / 2}" fill="${eventData.datum.color}></rect>
+  <text x="${styles.textSizePx * 1.5}" font-size="${styles.textSizePx}" fill="${styles.textColor}">${eventData.datum.label}</text>
+</g>`
+  },
+}
+DEFAULT_MULTI_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles }) => {
+    return \`<g>
+  <rect width="\${styles.textSizePx}" height="\${styles.textSizePx}" rx="\${styles.textSizePx / 2}" fill="\${eventData.datum.color}></rect>
+  <text x="\${styles.textSizePx * 1.5}" font-size="\${styles.textSizePx}" fill="\${styles.textColor}">\${eventData.datum.label}</text>
+</g>\`
+}`
