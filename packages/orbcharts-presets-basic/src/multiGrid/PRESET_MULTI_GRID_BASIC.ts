@@ -1,11 +1,12 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { 
-  PresetMultiGridLegendParams,
+  PresetMultiGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-import { ALL_PLUGIN_PARAMS_MULTI_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
+// import { ALL_PLUGIN_PARAMS_MULTI_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_MULTI_GRID_BASIC: PresetPartial<'multiGrid', PresetMultiGridLegendParams & PresetNoneDataPluginParams> = {
+export const PRESET_MULTI_GRID_BASIC: PresetPartial<'multiGrid', Partial<PresetMultiGridPluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_MULTI_GRID_BASIC',
   description: '基本MultiGrid參數',
   chartParams: {
@@ -18,8 +19,8 @@ export const PRESET_MULTI_GRID_BASIC: PresetPartial<'multiGrid', PresetMultiGrid
     highlightTarget: 'series'
   },
   allPluginParams: {
-    ...ALL_PLUGIN_PARAMS_MULTI_GRID,
-    ...ALL_PLUGIN_PARAMS_NONE_DATA,
+    // ...ALL_PLUGIN_PARAMS_MULTI_GRID,
+    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     MultiGridLegend: {
       // position: 'bottom',
       // justify: 'center',

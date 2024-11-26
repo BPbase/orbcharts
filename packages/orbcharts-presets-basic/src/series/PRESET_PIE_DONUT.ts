@@ -1,19 +1,16 @@
 import type { PresetPartial } from '../../lib/core-types'
-import type { PresetPieParams, PresetPieLabelsParams, PresetPieEventTextsParams, PresetSeriesLegendParams, PresetNoneDataPluginParams } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
+import type { PresetSeriesPluginParams, PresetNoneDataPluginParams } from '../types'
+// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_PIE_DONUT: PresetPartial<'series', PresetPieParams
-& PresetPieLabelsParams
-& PresetPieEventTextsParams
-& PresetSeriesLegendParams
-& PresetNoneDataPluginParams> = {
+export const PRESET_PIE_DONUT: PresetPartial<'series', Partial<PresetSeriesPluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_PIE_DONUT',
   description: '甜甜圈圖',
   dataFormatter: {
     sort: (a, b) => b.value - a.value
   },
   allPluginParams: {
-    ...ALL_PLUGIN_PARAMS_NONE_DATA,
+    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Pie: {
       innerRadius: 0.5
     },

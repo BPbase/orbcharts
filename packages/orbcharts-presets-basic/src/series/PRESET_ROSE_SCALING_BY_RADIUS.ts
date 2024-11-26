@@ -1,18 +1,16 @@
 import type { PresetPartial } from '../../lib/core-types'
-import type { PresetRoseParams, PresetRoseLabelsParams, PresetSeriesLegendParams, PresetNoneDataPluginParams } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
+import type { PresetSeriesPluginParams, PresetNoneDataPluginParams } from '../types'
+// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_ROSE_SCALING_BY_RADIUS: PresetPartial<'series', PresetRoseParams
-& PresetRoseLabelsParams
-& PresetSeriesLegendParams
-& PresetNoneDataPluginParams> = {
+export const PRESET_ROSE_SCALING_BY_RADIUS: PresetPartial<'series', Partial<PresetSeriesPluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_ROSE_SCALING_BY_RADIUS',
   description: '以半徑尺寸為比例的玫瑰圖',
   dataFormatter: {
     sort: (a, b) => b.value - a.value
   },
   allPluginParams: {
-    ...ALL_PLUGIN_PARAMS_NONE_DATA,
+    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Rose: {
       arcScaleType: 'radius'
     },

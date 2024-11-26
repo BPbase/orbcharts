@@ -1,11 +1,9 @@
 import type { PresetPartial } from '../../lib/core-types'
-import type { PresetBubblesParams, PresetSeriesLegendParams, PresetSeriesTooltipParams, PresetNoneDataPluginParams } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
+import type { PresetSeriesPluginParams, PresetNoneDataPluginParams } from '../types'
+// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_BUBBLES_SEPARATE_SERIES: PresetPartial<'series', PresetBubblesParams
-& PresetSeriesLegendParams
-& PresetSeriesTooltipParams
-& PresetNoneDataPluginParams> = {
+export const PRESET_BUBBLES_SEPARATE_SERIES: PresetPartial<'series', Partial<PresetSeriesPluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_BUBBLES_SEPARATE_SERIES',
   description: '分開顯示Series泡泡',
   chartParams: {
@@ -21,7 +19,7 @@ export const PRESET_BUBBLES_SEPARATE_SERIES: PresetPartial<'series', PresetBubbl
     separateSeries: true,
   },
   allPluginParams: {
-    ...ALL_PLUGIN_PARAMS_NONE_DATA,
+    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Bubbles: {},
     SeriesLegend: {
       listRectRadius: 7 // 圓型圖例列點

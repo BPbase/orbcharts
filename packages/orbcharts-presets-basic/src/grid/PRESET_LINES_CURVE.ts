@@ -1,21 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
-import type { PresetLinesParams,
-  PresetDotsParams,
-  PresetGroupAxisParams,
-  PresetValueAxisParams,
-  PresetGroupAuxParams,
-  PresetGridLegendParams,
+import type { PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
 import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_LINES_CURVE: PresetPartial<'grid', PresetLinesParams
-& PresetDotsParams
-& PresetGridLegendParams
-& PresetGroupAxisParams
-& PresetValueAxisParams
-& PresetGroupAuxParams
-& PresetNoneDataPluginParams> = {
+export const PRESET_LINES_CURVE: PresetPartial<'grid', Partial<PresetGridPluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_LINES_CURVE',
   description: '弧線折線圖',
   chartParams: {
@@ -28,7 +18,7 @@ export const PRESET_LINES_CURVE: PresetPartial<'grid', PresetLinesParams
     highlightTarget: 'series'
   },
   allPluginParams: {
-    ...ALL_PLUGIN_PARAMS_NONE_DATA,
+    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Lines: {
       lineCurve: 'curveMonotoneX',
       lineWidth: 3

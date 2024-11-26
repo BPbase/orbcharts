@@ -1,23 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
-import type { PresetLinesParams,
-  PresetLineAreasParams,
-  PresetDotsParams,
-  PresetGroupAxisParams,
-  PresetValueAxisParams,
-  PresetGroupAuxParams,
-  PresetGridLegendParams,
+import type { PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
+// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS: PresetPartial<'grid', PresetLinesParams
-& PresetLineAreasParams
-& PresetDotsParams
-& PresetGridLegendParams
-& PresetGroupAxisParams
-& PresetValueAxisParams
-& PresetGroupAuxParams
-& PresetNoneDataPluginParams> = {
+export const PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS: PresetPartial<'grid', Partial<PresetGridPluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS',
   description: '折線圖及Highlight Group圓點',
   chartParams: {
@@ -37,7 +25,7 @@ export const PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS: PresetPartial<'grid', Prese
     }
   },
   allPluginParams: {
-    ...ALL_PLUGIN_PARAMS_NONE_DATA,
+    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Lines: {
       lineWidth: 3
     },

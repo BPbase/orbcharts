@@ -137,15 +137,37 @@ export const DEFAULT_GRID_TOOLTIP_PARAMS: GridTooltipParams = {
   offset: [20, 5],
   padding: 10,
   renderFn: (eventData, { styles }) => {
-    return `<g>
-  <rect width="${styles.textSizePx}" height="${styles.textSizePx}" rx="${styles.textSizePx / 2}" fill="${eventData.datum.color}></rect>
-  <text x="${styles.textSizePx * 1.5}" font-size="${styles.textSizePx}" fill="${styles.textColor}">${eventData.datum.label}</text>
+    const bulletWidth = styles.textSizePx * 0.75
+    const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
+    if (eventData.highlightTarget === 'group') {
+      return eventData.groups
+        .map((group, i) => {
+          const y = i * styles.textSizePx * 1.5
+          return `<g>
+  <rect width="${bulletWidth}" height="${bulletWidth}" x="${offset}" y="${y + offset - 1}" rx="${bulletWidth / 2}" fill="${group.color}"></rect>
+  <text x="${styles.textSizePx * 1.5}" y="${y}" font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
+    <tspan>${group.seriesLabel}</tspan>  <tspan font-weight="bold" text-anchor="end">${group.value}</tspan>
+  </text>
 </g>`
+        })
+        .join('')
+    } else {
+      return `<g>
+  <rect width="${bulletWidth}" height="${bulletWidth}" x="${offset}" y="${offset - 1}" rx="${bulletWidth / 2}" fill="${eventData.datum.color}"></rect>
+  <text x="${styles.textSizePx * 1.5}" font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
+    <tspan>${eventData.datum.label}</tspan>  <tspan font-weight="bold">${eventData.datum.value}</tspan>
+  </text>
+</g>`
+    }
   },
 }
 DEFAULT_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles }) => {
+    const bulletWidth = styles.textSizePx * 0.75
+    const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
     return \`<g>
-  <rect width="\${styles.textSizePx}" height="\${styles.textSizePx}" rx="\${styles.textSizePx / 2}" fill="\${eventData.datum.color}></rect>
-  <text x="\${styles.textSizePx * 1.5}" font-size="\${styles.textSizePx}" fill="\${styles.textColor}">\${eventData.datum.label}</text>
+  <rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${offset - 1}" rx="\${bulletWidth / 2}" fill="\${eventData.datum.color}"></rect>
+  <text x="\${styles.textSizePx * 1.5}" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
+    \${eventData.datum.label} \${eventData.datum.value}
+  </text>
 </g>\`
 }`

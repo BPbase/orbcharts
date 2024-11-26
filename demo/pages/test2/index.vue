@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { GridChart } from '../../../packages/orbcharts-core/src'
-import { Bars, BarStack, BarsTriangle, Lines, LineAreas, Dots, GroupAux, GroupAxis, ValueAxis, ValueStackAxis, GridZoom, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { Bars, BarStack, BarsTriangle, Lines, LineAreas, Dots, GroupAux, GroupAxis, ValueAxis, ValueStackAxis, GridZoom, GridTooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
 // import gridData1 from '../../../packages/orbcharts-demo/src/data/gridData1'
 import gridData5 from '../../../packages/orbcharts-demo/src/data/gridData5'
@@ -73,6 +73,7 @@ onMounted(() => {
       valueAxis: {
         position: 'left'
       },
+      rowLabels: ['a'],
       columnLabels: ['test1\ntest1', 'test2\ntest2', 'test3\ntest3', 'test4\ntest4', 'test5\ntest5'],
     },
     visibleFilter: (datum, context) => {
@@ -102,10 +103,10 @@ onMounted(() => {
 
 
   chart.chartParams$.next({
-    highlightTarget: 'series'
+    highlightTarget: 'group'
   })
   
-  chart.plugins$.next([groupAxis, valueAxis, new GroupAux(), lines, lineAreas, dots, new GridZoom(), new Tooltip()])
+  chart.plugins$.next([groupAxis, valueAxis, new GroupAux(), lines, lineAreas, dots, new GridZoom(), new GridTooltip()])
   
   chart.data$.next(gridData5)
   

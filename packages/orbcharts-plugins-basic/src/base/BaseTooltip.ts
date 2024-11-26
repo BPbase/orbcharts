@@ -296,7 +296,7 @@ export const createBaseTooltip: BasePluginFn<BaseTooltipContext> = (pluginName: 
           const isSvgText = trimText.slice(0, 1) === '<' && trimText.slice(trimText.length - 1, trimText.length) === '>'
 
           if (isSvgText) {
-            renderText // svg字串
+            return renderText // svg字串
           } else {
             const textArr = renderText.split('\n')
             return textToSvg(textArr, data.tooltipStyle) // 多行文字轉svg字串
@@ -344,7 +344,6 @@ export const createBaseTooltip: BasePluginFn<BaseTooltipContext> = (pluginName: 
     takeUntil(destroy$),
     switchMap(async d => d),
   ).subscribe(data => {
-    // console.log('svgString', data.svgString)
     renderTooltip({
       rootSelection,
       pluginName,

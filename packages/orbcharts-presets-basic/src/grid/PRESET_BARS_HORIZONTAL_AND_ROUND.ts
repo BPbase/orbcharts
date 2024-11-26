@@ -1,19 +1,12 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetBarsParams,
-  PresetGroupAxisParams,
-  PresetValueAxisParams,
-  PresetGroupAuxParams,
-  PresetGridLegendParams,
+  PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
+// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_BARS_HORIZONTAL_AND_ROUND: PresetPartial<'grid', PresetBarsParams
-& PresetGroupAxisParams
-& PresetValueAxisParams
-& PresetGroupAuxParams
-& PresetGridLegendParams
-& PresetNoneDataPluginParams> = {
+export const PRESET_BARS_HORIZONTAL_AND_ROUND: PresetPartial<'grid', Partial<PresetGridPluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_BARS_HORIZONTAL_AND_ROUND',
   description: '橫向圓角長條圖',
   chartParams: {
@@ -41,7 +34,7 @@ export const PRESET_BARS_HORIZONTAL_AND_ROUND: PresetPartial<'grid', PresetBarsP
     }
   },
   allPluginParams: {
-    ...ALL_PLUGIN_PARAMS_NONE_DATA,
+    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Bars: {
       barWidth: 0,
       barPadding: 1,
