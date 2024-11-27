@@ -30,7 +30,7 @@ export const DEFAULT_TREE_TOOLTIP_PARAMS: TreeTooltipParams = {
   textColorType: 'primary',
   offset: [20, 5],
   padding: 10,
-  renderFn: (eventData, { styles }) => {
+  renderFn: (eventData, { styles, utils }) => {
     const hasCategoryLabel = eventData.categoryLabel ? true : false
     const hasDatumLabel = eventData.datum.label ? true : false
     const bulletWidth = styles.textSizePx * 0.7
@@ -54,7 +54,7 @@ export const DEFAULT_TREE_TOOLTIP_PARAMS: TreeTooltipParams = {
   </g>`
   },
 }
-DEFAULT_TREE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles }) => {
+DEFAULT_TREE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils }) => {
     const hasCategoryLabel = eventData.categoryLabel ? true : false
     const hasDatumLabel = eventData.datum.label ? true : false
     const bulletWidth = styles.textSizePx * 0.7

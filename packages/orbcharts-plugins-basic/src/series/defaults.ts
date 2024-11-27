@@ -158,7 +158,7 @@ export const DEFAULT_SERIES_TOOLTIP_PARAMS: SeriesTooltipParams = {
   textColorType: 'primary',
   offset: [20, 5],
   padding: 10,
-  renderFn: (eventData, { styles }) => {
+  renderFn: (eventData, { styles, utils }) => {
     const hasSeriesLabel = eventData.seriesLabel.slice(0, 7) === 'series_' ? false : true
     const hasDatumLabel = eventData.datum.label.slice(0, 7) === 'series_' ? false : true
     const bulletWidth = styles.textSizePx * 0.7
@@ -182,7 +182,7 @@ export const DEFAULT_SERIES_TOOLTIP_PARAMS: SeriesTooltipParams = {
   </g>`
   },
 }
-DEFAULT_SERIES_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles }) => {
+DEFAULT_SERIES_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils }) => {
     const hasSeriesLabel = eventData.seriesLabel.slice(0, 7) === 'series_' ? false : true
     const hasDatumLabel = eventData.datum.label.slice(0, 7) === 'series_' ? false : true
     const bulletWidth = styles.textSizePx * 0.7

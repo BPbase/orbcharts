@@ -1,5 +1,5 @@
 import type { ColorType, ComputedDataTree, EventTree } from '../../lib/core-types'
-import type { BaseTooltipStyle } from './BasePluginParams'
+import type { BaseTooltipStyle, BaseTooltipUtils } from './BasePluginParams'
 
 export interface TreeMapParams {
   paddingInner: number
@@ -37,6 +37,7 @@ export interface TreeTooltipParams {
       eventData: EventTree,
       context: {
         styles: BaseTooltipStyle
+        utils: BaseTooltipUtils
       }
     ) => string[] | string
   )

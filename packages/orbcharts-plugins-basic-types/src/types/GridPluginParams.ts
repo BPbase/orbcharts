@@ -1,5 +1,5 @@
 import type { ColorType, EventGrid } from '../../lib/core-types'
-import type { BaseTooltipStyle } from './BasePluginParams'
+import type { BaseTooltipStyle, BaseTooltipUtils } from './BasePluginParams'
 
 // export type LineType = 'line' | 'area' | 'gradientArea'
 // export type BarType = 'rect' | 'triangle'
@@ -138,6 +138,7 @@ export interface GridTooltipParams {
       eventData: EventGrid,
       context: {
         styles: BaseTooltipStyle
+        utils: BaseTooltipUtils
       }
     ) => string[] | string
   )
