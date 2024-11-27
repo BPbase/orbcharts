@@ -1,30 +1,12 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { 
-  PresetMultiGroupAxisParams,
-  PresetMultiValueAxisParams,
-  PresetMultiValueStackAxisParams,
-  PresetMultiBarsParams,
-  PresetMultiBarStackParams,
-  PresetMultiBarsTriangleParams,
-  PresetMultiLinesParams,
-  PresetMultiLineAreasParams,
-  PresetMultiDotsParams,
-  PresetMultiGridLegendParams,
+  PresetMultiGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
 import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_MULTI_LINES_SEPARATE_GRID: PresetPartial<'multiGrid', PresetMultiGroupAxisParams
-& PresetMultiValueAxisParams
-& PresetMultiValueStackAxisParams
-& PresetMultiBarsParams
-& PresetMultiBarStackParams
-& PresetMultiBarsTriangleParams
-& PresetMultiLinesParams
-& PresetMultiLineAreasParams
-& PresetMultiDotsParams
-& PresetMultiGridLegendParams
-& PresetNoneDataPluginParams> = {
+export const PRESET_MULTI_LINES_SEPARATE_GRID: PresetPartial<'multiGrid', Partial<PresetMultiGridPluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_MULTI_LINES_SEPARATE_GRID',
   description: '多組分開折線圖表',
   chartParams: {
@@ -69,8 +51,9 @@ export const PRESET_MULTI_LINES_SEPARATE_GRID: PresetPartial<'multiGrid', Preset
       gridIndexes: 'all'
     },
     MultiGridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
       gridList: [
         {

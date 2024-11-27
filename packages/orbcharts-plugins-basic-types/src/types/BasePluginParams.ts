@@ -1,4 +1,4 @@
-import type { ColorType } from '../../lib/core-types'
+import type { ChartType, EventTypeMap, ColorType } from '../../lib/core-types'
 
 export interface BaseBarsParams {
   // barType: BarType
@@ -51,8 +51,9 @@ export interface BaseGroupAxisParams {
 }
 
 export interface BaseLegendParams {
-  position: 'top' | 'bottom' | 'left' | 'right'
-  justify: 'start' | 'center' | 'end'
+  // position: 'top' | 'bottom' | 'left' | 'right'
+  // justify: 'start' | 'center' | 'end'
+  placement: 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end'
   padding: number
   // offset: [number, number]
   backgroundFill: ColorType
@@ -83,6 +84,37 @@ export interface BaseLinesParams {
   // labelFontSizeFn: (d: ComputedDatumSeries) => number
   // labelColorFn: (d: ComputedDatumSeries) => string
   // labelPadding: number
+}
+
+export interface BaseTooltipStyle {
+  backgroundColor: string
+  backgroundOpacity: number
+  strokeColor: string
+  offset: [number, number]
+  padding: number
+  textColor: string
+  textSize: number | string // chartParams上的設定
+  textSizePx: number
+  seriesColors: string[]
+}
+
+export type BaseTooltipParams = {
+  backgroundColorType: ColorType
+  backgroundOpacity: number
+  strokeColorType: ColorType
+  textColorType: ColorType
+  offset: [number, number]
+  padding: number
+  // textRenderFn: (<T extends ChartType>(eventData: EventTypeMap<T>) => string[] | string) | null
+  // svgRenderFn: (<T extends ChartType>(eventData: EventTypeMap<T>) => string) | null
+  renderFn: (
+    (
+      eventData: EventTypeMap<any>,
+      context: {
+        styles: BaseTooltipStyle
+      }
+    ) => string[] | string
+  )
 }
 
 export interface BaseValueAxisParams {

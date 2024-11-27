@@ -21,6 +21,17 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_TREE_LE
   layerIndex: LAYER_INDEX_OF_INFO,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {
+      placement: {
+        toBe: '"top" | "top-start" | "top-end" | "bottom" | "bottom-start" | "bottom-end" | "left" | "left-start" | "left-end" | "right" | "right-start" | "right-end"',
+        test: (value) => {
+          return [
+            'top', 'top-start', 'top-end',
+            'bottom', 'bottom-start', 'bottom-end',
+            'left', 'left-start', 'left-end',
+            'right', 'right-start', 'right-end'
+          ].includes(value)
+        }
+      },
       padding: {
         toBeTypes: ['number']
       },

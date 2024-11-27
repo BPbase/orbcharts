@@ -3,12 +3,12 @@ import type {
   PresetMultiGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
+// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 type PresetMultiGridRoundPluginParams = Omit<PresetMultiGridPluginParams, 'MultiBarsTriangle'>
 
-export const PRESET_MULTI_GRID_ROUND_STYLE: PresetPartial<'multiGrid', PresetMultiGridRoundPluginParams
-& PresetNoneDataPluginParams> = {
+export const PRESET_MULTI_GRID_ROUND_STYLE: PresetPartial<'multiGrid', Partial<PresetMultiGridPluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_MULTI_GRID_ROUND_STYLE',
   description: 'MultiGrid圓弧風格',
   chartParams: {
@@ -21,7 +21,7 @@ export const PRESET_MULTI_GRID_ROUND_STYLE: PresetPartial<'multiGrid', PresetMul
     highlightTarget: 'series'
   },
   allPluginParams: {
-    ...ALL_PLUGIN_PARAMS_NONE_DATA,
+    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     MultiBars: {
       barWidth: 0,
       barPadding: 1,
@@ -31,8 +31,9 @@ export const PRESET_MULTI_GRID_ROUND_STYLE: PresetPartial<'multiGrid', PresetMul
     MultiBarStack: {},
     MultiDots: {},
     MultiGridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
       gridList: [
         {

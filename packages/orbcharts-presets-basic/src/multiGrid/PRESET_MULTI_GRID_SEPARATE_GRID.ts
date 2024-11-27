@@ -1,12 +1,12 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { 
-  PresetMultiGridSepratedPluginParams,
+  PresetMultiGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
+// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_MULTI_GRID_SEPARATE_GRID: PresetPartial<'multiGrid', PresetMultiGridSepratedPluginParams
-& PresetNoneDataPluginParams> = {
+export const PRESET_MULTI_GRID_SEPARATE_GRID: PresetPartial<'multiGrid', Partial<PresetMultiGridPluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_MULTI_GRID_SEPARATE_GRID',
   description: '2組Grid圖表',
   chartParams: {
@@ -21,7 +21,7 @@ export const PRESET_MULTI_GRID_SEPARATE_GRID: PresetPartial<'multiGrid', PresetM
     separateGrid: true,
   },
   allPluginParams: {
-    ...ALL_PLUGIN_PARAMS_NONE_DATA,
+    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     MultiGroupAxis: {
       tickTextRotate: -30,
       gridIndexes: 'all'
@@ -51,8 +51,9 @@ export const PRESET_MULTI_GRID_SEPARATE_GRID: PresetPartial<'multiGrid', PresetM
       gridIndexes: 'all'
     },
     MultiGridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
     }
   }

@@ -1,8 +1,9 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetGridPluginParams, PresetNoneDataPluginParams } from '../types'
-import { ALL_PLUGIN_PARAMS_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
+// import { ALL_PLUGIN_PARAMS_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_GRID_HORIZONTAL: PresetPartial<'grid', PresetGridPluginParams & PresetNoneDataPluginParams> = {
+export const PRESET_GRID_HORIZONTAL: PresetPartial<'grid', Partial<PresetGridPluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_GRID_HORIZONTAL',
   description: '橫向圖',
   chartParams: {
@@ -31,11 +32,12 @@ export const PRESET_GRID_HORIZONTAL: PresetPartial<'grid', PresetGridPluginParam
     }
   },
   allPluginParams: {
-    ...ALL_PLUGIN_PARAMS_GRID,
-    ...ALL_PLUGIN_PARAMS_NONE_DATA,
+    // ...ALL_PLUGIN_PARAMS_GRID,
+    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     GridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
     }
   }

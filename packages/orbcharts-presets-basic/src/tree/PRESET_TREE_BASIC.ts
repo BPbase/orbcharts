@@ -1,8 +1,9 @@
 import type { PresetPartial } from '../../lib/core-types'
-import type { PresetTreeLegendParams, PresetTreeMapParams, PresetNoneDataPluginParams } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
+import type { PresetTreePluginParams, PresetNoneDataPluginParams } from '../types'
+// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_TREE_BASIC: PresetPartial<'tree', PresetTreeLegendParams & PresetTreeMapParams & PresetNoneDataPluginParams> = {
+export const PRESET_TREE_BASIC: PresetPartial<'tree', Partial<PresetTreePluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_TREE_BASIC',
   description: '基本Tree參數',
   chartParams: {
@@ -14,11 +15,12 @@ export const PRESET_TREE_BASIC: PresetPartial<'tree', PresetTreeLegendParams & P
     },
   },
   allPluginParams: {
-    ...ALL_PLUGIN_PARAMS_NONE_DATA,
+    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     TreeMap: {},
     TreeLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
     }
   }

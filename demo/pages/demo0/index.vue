@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { GridChart } from '../../../packages/orbcharts-core/src'
-import { GroupAxis, ValueAxis, Bars, ScalingArea, Tooltip, GridLegend } from '../../../packages/orbcharts-plugins-basic/src'
+import { GroupAxis, ValueAxis, Bars, GridZoom, GridTooltip, GridLegend } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_SEPARATE_SERIES } from '../../../packages/orbcharts-presets-basic/src/index'
 import gridData3 from '../../../packages/orbcharts-demo/src/data/gridData3'
 
@@ -117,7 +117,7 @@ onMounted(() => {
   //   },
   // })
 
-  chart!.plugins$.next([ new GroupAxis(), new ValueAxis(), new Bars(), new ScalingArea(), new Tooltip(), new GridLegend() ])
+  chart!.plugins$.next([ new GroupAxis(), new ValueAxis(), new Bars(), new GridZoom(), new GridTooltip(), new GridLegend() ])
 
   chart!.data$.next(gridData3)
 

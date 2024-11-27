@@ -1,12 +1,12 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { 
-  PresetMultiGridSepratedPluginParams,
+  PresetMultiGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
 import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', PresetMultiGridSepratedPluginParams
-& PresetNoneDataPluginParams> = {
+export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', Partial<PresetMultiGridPluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_MULTI_GRID_DIVERGING',
   description: '雙向折線圖',
   chartParams: {
@@ -47,7 +47,7 @@ export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', PresetMulti
     separateGrid: true // 將兩個grid拆分
   },
   allPluginParams: {
-    ...ALL_PLUGIN_PARAMS_NONE_DATA,
+    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     MultiGroupAxis: {
       tickPadding: 60, // 加長間距
       gridIndexes: [0] // 只顯示一個
@@ -77,8 +77,9 @@ export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', PresetMulti
       gridIndexes: [0, 1]
     },
     MultiGridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
     }
   }

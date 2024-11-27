@@ -1,6 +1,6 @@
 {
   "name": "@orbcharts/plugins-basic",
-  "version": "3.0.0-alpha.79",
+  "version": "3.0.0-beta.1",
   "description": "plugins for OrbCharts",
   "author": "Blue Planet Inc.",
   "license": "Apache-2.0",
@@ -35,9 +35,9 @@
     "vite-plugin-dts": "^3.7.3"
   },
   "dependencies": {
-    "@orbcharts/core": "^3.0.0-alpha.68",
-    "@orbcharts/core-types": "^3.0.0-alpha.3",
-    "@orbcharts/plugins-basic-types": "^3.0.0-alpha.3",
+    "@orbcharts/core": "^3.0.0-beta.1",
+    "@orbcharts/core-types": "^3.0.0-beta.1",
+    "@orbcharts/plugins-basic-types": "^3.0.0-beta.1",
     "d3": "^7.8.5",
     "rxjs": "^7.8.1"
   }

@@ -1,23 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
-import type { PresetLinesParams,
-  PresetLineAreasParams,
-  PresetDotsParams,
-  PresetGroupAxisParams,
-  PresetValueAxisParams,
-  PresetGroupAuxParams,
-  PresetGridLegendParams,
+import type { PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
+// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_LINE_AREAS_HORIZONTAL: PresetPartial<'grid', PresetLinesParams
-& PresetLineAreasParams
-& PresetDotsParams
-& PresetGridLegendParams
-& PresetGroupAxisParams
-& PresetValueAxisParams
-& PresetGroupAuxParams
-& PresetNoneDataPluginParams> = {
+export const PRESET_LINE_AREAS_HORIZONTAL: PresetPartial<'grid', Partial<PresetGridPluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_LINE_AREAS_HORIZONTAL',
   description: '橫向折線圖',
   chartParams: {
@@ -41,7 +29,7 @@ export const PRESET_LINE_AREAS_HORIZONTAL: PresetPartial<'grid', PresetLinesPara
     }
   },
   allPluginParams: {
-    ...ALL_PLUGIN_PARAMS_NONE_DATA,
+    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Lines: {},
     LineAreas: {},
     Dots: {},
@@ -49,8 +37,9 @@ export const PRESET_LINE_AREAS_HORIZONTAL: PresetPartial<'grid', PresetLinesPara
     ValueAxis: {},
     GroupAux: {},
     GridLegend: {
-      position: 'bottom',
-      justify: 'center',
+      // position: 'bottom',
+      // justify: 'center',
+      placement: 'bottom',
       padding: 14,
       listRectHeight: 2
     }
