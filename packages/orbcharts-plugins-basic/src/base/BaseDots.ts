@@ -394,7 +394,7 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
 
     data.graphicSelection
       .on('mouseover', (event, datum) => {
-        event.stopPropagation()
+        // event.stopPropagation()
   
         event$.next({
           type: 'grid',
@@ -414,7 +414,7 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
         })
       })
       .on('mousemove', (event, datum) => {
-        event.stopPropagation()
+        // event.stopPropagation()
 
         event$.next({
           type: 'grid',
@@ -434,7 +434,7 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
         })
       })
       .on('mouseout', (event, datum) => {
-        event.stopPropagation()
+        // event.stopPropagation()
 
         event$.next({
           type: 'grid',
@@ -454,7 +454,7 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
         })
       })
       .on('click', (event, datum) => {
-        event.stopPropagation()
+        // event.stopPropagation()
 
         event$.next({
           type: 'grid',

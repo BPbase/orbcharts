@@ -358,12 +358,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
-          {
-            title: 'PRESET_LINES_HIGHLIGHT_GROUP_DOTS',
-            presetName: 'PRESET_LINES_HIGHLIGHT_GROUP_DOTS',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
-            getData: () => import('./data/gridData1')
-          },
+          // {
+          //   title: 'PRESET_LINES_HIGHLIGHT_GROUP_DOTS',
+          //   presetName: 'PRESET_LINES_HIGHLIGHT_GROUP_DOTS',
+          //   allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+          //   getData: () => import('./data/gridData1')
+          // },
           // {
           //   chartType: 'grid',
           //   pluginName: 'Lines',
@@ -428,12 +428,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
-          {
-            title: 'PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS',
-            presetName: 'PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
-            getData: () => import('./data/gridData1')
-          },
+          // {
+          //   title: 'PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS',
+          //   presetName: 'PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS',
+          //   allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+          //   getData: () => import('./data/gridData1')
+          // },
           // {
           //   chartType: 'grid',
           //   pluginName: 'LineAreas',

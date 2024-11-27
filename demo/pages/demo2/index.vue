@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { MultiGridChart } from '../../../packages/orbcharts-core/src'
-import { MultiBars, MultiLines, MultiDots, MultiGridLegend, MultiGroupAxis, MultiValueAxis, OverlappingValueAxes, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { MultiBars, MultiLines, MultiDots, MultiGridLegend, MultiGroupAxis, MultiValueAxis, OverlappingValueAxes, MultiGridTooltip } from '../../../packages/orbcharts-plugins-basic/src'
 // import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 import multiGridData1 from '../../../packages/orbcharts-demo/src/data/multiGridData1'
 
@@ -47,7 +47,7 @@ onMounted(() => {
   const multiGroupAxis = new MultiGroupAxis()
   const multiValueAxis = new MultiValueAxis()
   const overlappingValueAxes = new OverlappingValueAxes()
-  // const tooltip = new Tooltip()
+  // const tooltip = new MultiGridTooltip()
   // chart!.plugins$.next([ multiGroupAxis, overlappingValueAxes, multiBars, multiLines, multiDots, multiGridLegend])
 
   chart.chartParams$.next({

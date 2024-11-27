@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { TreeChart } from '../../../packages/orbcharts-core/src'
-import { TreeMap, TreeLegend, Tooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { TreeMap, TreeLegend, TreeTooltip } from '../../../packages/orbcharts-plugins-basic/src'
 // import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 import treeData1 from '../../../packages/orbcharts-demo/src/data/treeData1'
 
@@ -30,7 +30,7 @@ onMounted(() => {
   //     })
   const treeMap = new TreeMap()
   const treeLegend = new TreeLegend()
-  const tooltip = new Tooltip()
+  const tooltip = new TreeTooltip()
   chart!.plugins$.next([ treeMap, treeLegend, tooltip])
 
 

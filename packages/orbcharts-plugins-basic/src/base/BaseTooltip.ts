@@ -325,6 +325,12 @@ export const createBaseTooltip: BasePluginFn<BaseTooltipContext> = (pluginName: 
     map(d => '')
   )
 
+  const svgString$ = merge(mouseoverTooltipSvg$, mouseoutTooltipSvg$)
+    .pipe(
+      takeUntil(destroy$),
+      distinctUntilChanged((a, b) => a === b)      
+    )
+
   const eventTooltip$ = merge(eventMouseover$, eventMouseout$)
     .pipe(
       takeUntil(destroy$),
@@ -336,7 +342,7 @@ export const createBaseTooltip: BasePluginFn<BaseTooltipContext> = (pluginName: 
     )
 
   combineLatest({
-    svgString: merge(mouseoverTooltipSvg$, mouseoutTooltipSvg$),
+    svgString: svgString$,
     eventTooltip: eventTooltip$,
     layout: layout$,
     tooltipStyle: tooltipStyle$,

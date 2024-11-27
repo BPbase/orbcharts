@@ -31,23 +31,49 @@ export const DEFAULT_TREE_TOOLTIP_PARAMS: TreeTooltipParams = {
   offset: [20, 5],
   padding: 10,
   renderFn: (eventData, { styles }) => {
-    const bulletWidth = styles.textSizePx * 0.75
+    const hasCategoryLabel = eventData.categoryLabel ? true : false
+    const hasDatumLabel = eventData.datum.label ? true : false
+    const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
-    return `<g>
-  <rect width="${bulletWidth}" height="${bulletWidth}" x="${offset}" y="${offset - 1}" rx="${bulletWidth / 2}" fill="${eventData.datum.color}"></rect>
+    const categorySvg = hasCategoryLabel
+      ? `<rect width="${bulletWidth}" height="${bulletWidth}" x="${offset}" y="${offset - 1}" rx="${bulletWidth / 2}" fill="${eventData.datum.color}"></rect>
   <text x="${styles.textSizePx * 1.5}" font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
-    <tspan>${eventData.datum.label}</tspan>  <tspan font-weight="bold">${eventData.datum.value}</tspan>
-  </text>
-</g>`
+    <tspan>${eventData.categoryLabel}</tspan>
+  </text>`
+      : ''
+    const datumLabelSvg = hasDatumLabel
+      ? `<tspan>${eventData.datum.label}</tspan>  `
+      : ''
+    const datumSvg = `<text font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
+    ${datumLabelSvg}<tspan font-weight="bold">${eventData.datum.value}</tspan>
+  </text>`
+
+    return `${categorySvg}
+  <g ${hasCategoryLabel ? `transform="translate(0, ${styles.textSizePx * 2})"` : ''}>
+    ${datumSvg}
+  </g>`
   },
 }
 DEFAULT_TREE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles }) => {
-    const bulletWidth = styles.textSizePx * 0.75
+    const hasCategoryLabel = eventData.categoryLabel ? true : false
+    const hasDatumLabel = eventData.datum.label ? true : false
+    const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
-    return \`<g>
-  <rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${offset - 1}" rx="\${bulletWidth / 2}" fill="\${eventData.datum.color}"></rect>
+    const categorySvg = hasCategoryLabel
+      ? \`<rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${offset - 1}" rx="\${bulletWidth / 2}" fill="\${eventData.datum.color}"></rect>
   <text x="\${styles.textSizePx * 1.5}" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
-    <tspan>\${eventData.datum.label}</tspan>  <tspan font-weight="bold">\${eventData.datum.value}</tspan>
-  </text>
-</g>\`
+    <tspan>\${eventData.categoryLabel}</tspan>
+  </text>\`
+      : ''
+    const datumLabelSvg = hasDatumLabel
+      ? \`<tspan>\${eventData.datum.label}</tspan>  \`
+      : ''
+    const datumSvg = \`<text font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
+    \${datumLabelSvg}<tspan font-weight="bold">\${eventData.datum.value}</tspan>
+  </text>\`
+
+    return \`\${categorySvg}
+  <g \${hasCategoryLabel ? \`transform="translate(0, \${styles.textSizePx * 2})"\` : ''}>
+    \${datumSvg}
+  </g>\`
 }`
