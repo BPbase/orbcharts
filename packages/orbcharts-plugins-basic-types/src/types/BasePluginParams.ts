@@ -98,6 +98,10 @@ export interface BaseTooltipStyle {
   seriesColors: string[]
 }
 
+export interface BaseTooltipUtils {
+  measureTextWidth (text: string, size?: number): number
+}
+
 export type BaseTooltipParams = {
   backgroundColorType: ColorType
   backgroundOpacity: number
@@ -112,6 +116,7 @@ export type BaseTooltipParams = {
       eventData: EventTypeMap<any>,
       context: {
         styles: BaseTooltipStyle
+        utils: BaseTooltipUtils
       }
     ) => string[] | string
   )

@@ -9,7 +9,7 @@ import type {
   BaseValueAxisParams 
 } from './BasePluginParams'
 import type { ColorType, EventMultiGrid } from '../../lib/core-types'
-import type { BaseTooltipStyle } from './BasePluginParams'
+import type { BaseTooltipStyle, BaseTooltipUtils } from './BasePluginParams'
 
 export interface MultiGridLegendParams {
   // position: 'top' | 'bottom' | 'left' | 'right'
@@ -45,6 +45,7 @@ export interface MultiGridTooltipParams {
       eventData: EventMultiGrid,
       context: {
         styles: BaseTooltipStyle
+        utils: BaseTooltipUtils
       }
     ) => string[] | string
   )

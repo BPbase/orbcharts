@@ -188,7 +188,7 @@ export const DEFAULT_GRID_TOOLTIP_PARAMS: GridTooltipParams = {
 // </g>`
 //     }
 //   },
-  renderFn: (eventData, { styles }) => {
+  renderFn: (eventData, { styles, utils }) => {
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
 
@@ -197,7 +197,7 @@ export const DEFAULT_GRID_TOOLTIP_PARAMS: GridTooltipParams = {
       const text = `${group.seriesLabel}${group.value}`
       return text.length > acc.length ? text : acc
     }, '')
-    const maxTextWidth = measureTextWidth(maxLengthText, styles.textSizePx)
+    const maxTextWidth = utils.measureTextWidth(maxLengthText, styles.textSizePx)
     const lineEndX = maxTextWidth + styles.textSizePx * 2
     const contentSvg = eventData.groups
       .map((group, i) => {
@@ -216,7 +216,7 @@ export const DEFAULT_GRID_TOOLTIP_PARAMS: GridTooltipParams = {
 ${contentSvg}`
   }
 }
-DEFAULT_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles }) => {
+DEFAULT_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils }) => {
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
 
@@ -225,7 +225,7 @@ DEFAULT_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles }) =
       const text = \`\${group.seriesLabel}\${group.value}\`
       return text.length > acc.length ? text : acc
     }, '')
-    const maxTextWidth = measureTextWidth(maxLengthText, styles.textSizePx)
+    const maxTextWidth = utils.measureTextWidth(maxLengthText, styles.textSizePx)
     const lineEndX = maxTextWidth + styles.textSizePx * 2
     const contentSvg = eventData.groups
       .map((group, i) => {

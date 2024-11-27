@@ -168,7 +168,7 @@ export const DEFAULT_MULTI_GRID_TOOLTIP_PARAMS: MultiGridTooltipParams = {
   textColorType: 'primary',
   offset: [20, 5],
   padding: 10,
-  renderFn: (eventData, { styles }) => {
+  renderFn: (eventData, { styles, utils }) => {
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
 
@@ -177,7 +177,7 @@ export const DEFAULT_MULTI_GRID_TOOLTIP_PARAMS: MultiGridTooltipParams = {
       const text = `${group.seriesLabel}${group.value}`
       return text.length > acc.length ? text : acc
     }, '')
-    const maxTextWidth = measureTextWidth(maxLengthText, styles.textSizePx)
+    const maxTextWidth = utils.measureTextWidth(maxLengthText, styles.textSizePx)
     const lineEndX = maxTextWidth + styles.textSizePx * 2
     const contentSvg = eventData.groups
       .map((group, i) => {
@@ -196,7 +196,7 @@ export const DEFAULT_MULTI_GRID_TOOLTIP_PARAMS: MultiGridTooltipParams = {
 ${contentSvg}`
   }
 }
-DEFAULT_MULTI_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles }) => {
+DEFAULT_MULTI_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils }) => {
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
 
@@ -205,7 +205,7 @@ DEFAULT_MULTI_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { style
       const text = \`\${group.seriesLabel}\${group.value}\`
       return text.length > acc.length ? text : acc
     }, '')
-    const maxTextWidth = measureTextWidth(maxLengthText, styles.textSizePx)
+    const maxTextWidth = utils.measureTextWidth(maxLengthText, styles.textSizePx)
     const lineEndX = maxTextWidth + styles.textSizePx * 2
     const contentSvg = eventData.groups
       .map((group, i) => {

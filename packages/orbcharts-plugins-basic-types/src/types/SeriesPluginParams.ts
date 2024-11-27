@@ -1,5 +1,5 @@
 import type { ChartType, ComputedDatumSeries, EventSeries, EventName, ColorType } from '../../lib/core-types'
-import type { BaseTooltipStyle } from './BasePluginParams'
+import type { BaseTooltipStyle, BaseTooltipUtils } from './BasePluginParams'
 
 export type ArcScaleType = 'area' | 'radius'
 
@@ -101,6 +101,7 @@ export interface SeriesTooltipParams {
       eventData: EventSeries,
       context: {
         styles: BaseTooltipStyle
+        utils: BaseTooltipUtils
       }
     ) => string[] | string
   )
