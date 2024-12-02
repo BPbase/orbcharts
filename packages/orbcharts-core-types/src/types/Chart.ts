@@ -4,7 +4,7 @@ import type { ContextObserverCallback } from './ContextObserver'
 import type { DataValidator } from './Data'
 import type { ComputedDataFn, ComputedDataTypeMap } from './ComputedData'
 import type { DataFormatterTypeMap, DataFormatterPartialTypeMap, DataFormatterValidator } from './DataFormatter'
-import type { Preset } from './Preset'
+import type { Preset, PresetPartial } from './Preset'
 
 export type ChartType = 'series' | 'grid' | 'multiGrid' | 'multiValue' | 'tree' | 'relationship' | 'noneData'
 
@@ -42,7 +42,7 @@ export interface ChartOptions<T extends ChartType> {
 }
 
 export interface ChartOptionsPartial<T extends ChartType> {
-  preset?: Preset<T, unknown>
+  preset?: PresetPartial<T, unknown>
   width?: number | 'auto'
   height?: number | 'auto'
 }
