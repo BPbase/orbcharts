@@ -127,7 +127,7 @@ function calctransitionItem (barGroupAmount: number, totalDuration: number) {
 function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedLayoutData, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesSeprate }: RenderBarParams) {
 
   const barHalfWidth = barWidth! / 2
-
+// console.log(visibleComputedLayoutData)
   graphicGSelection
     .each((seriesData, seriesIndex, g) => {
       d3.select(g[seriesIndex])
