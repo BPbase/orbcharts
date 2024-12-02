@@ -14,7 +14,7 @@ import type {
   ComputedLayoutDataGrid,
   EventGrid,
   ChartParams, 
-  GridContainerPosition,
+  ContainerPositionScaled,
   Layout,
   TransformData,
   ColorType
@@ -51,7 +51,7 @@ interface BaseDotsContext {
     height: number;
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
-  gridContainerPosition$: Observable<GridContainerPosition[]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
   event$: Subject<EventGrid>
 }
 

@@ -17,7 +17,7 @@ import type {
   EventName,
   ComputedDataSeries,
   ComputedDatumSeries,
-  SeriesContainerPosition } from '../../../lib/core-types'
+  ContainerPosition } from '../../../lib/core-types'
 import {
   defineSeriesPlugin } from '../../../lib/core'
 import type { BubblesParams, ArcScaleType } from '../../../lib/plugins-basic-types'
@@ -147,7 +147,7 @@ function createBubblesData ({ visibleComputedLayoutData, LastBubbleDataMap, grap
   LastBubbleDataMap: Map<string, BubblesDatum>
   graphicWidth: number
   graphicHeight: number
-  SeriesContainerPositionMap: Map<string, SeriesContainerPosition>
+  SeriesContainerPositionMap: Map<string, ContainerPosition>
   scaleType: ArcScaleType
   // highlightIds: string[]
 }): BubblesDatum[] {
@@ -330,7 +330,7 @@ function groupBubbles ({ fullParams, SeriesContainerPositionMap }: {
   fullParams: BubblesParams
   // graphicWidth: number
   // graphicHeight: number
-  SeriesContainerPositionMap: Map<string, SeriesContainerPosition>
+  SeriesContainerPositionMap: Map<string, ContainerPosition>
 }) {
   // console.log('groupBubbles')
   force!

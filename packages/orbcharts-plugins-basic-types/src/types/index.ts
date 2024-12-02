@@ -1,6 +1,7 @@
 export * from './BasePluginParams'
 export * from './GridPluginParams'
 export * from './MultiGridPluginParams'
+export * from './MultiValuePluginParams'
 export * from './NoneDataPluginParams'
 export * from './PluginList'
 export * from './SeriesPluginParams'

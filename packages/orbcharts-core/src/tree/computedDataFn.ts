@@ -15,8 +15,8 @@ export const computedDataFn: ComputedDataFn<'tree'> = (context) => {
     index: 0,
     label: '',
     description: '',
-    categoryIndex: 0,
-    categoryLabel: '',
+    categoryIndex: -1,
+    categoryLabel: null,
     color: '',
     visible: true,
     // tooltipContent: '',
@@ -85,12 +85,12 @@ export const computedDataFn: ComputedDataFn<'tree'> = (context) => {
     const formatBranchData = (branch: DataTreeObj, level: number, seq: number): ComputedDataTree => {
       const childLayer = level + 1
       const categoryLabel: string | null = branch.categoryLabel ?? null
-      let categoryIndex = 0
-      if (categoryLabel != null) {
+      let categoryIndex = -1
+      if (categoryLabel != null && categoryLabel !== '') {
         if (!CategoryIndexMap.has(categoryLabel)) {
           CategoryIndexMap.set(categoryLabel, CategoryIndexMap.size)
         }
-        categoryIndex = CategoryIndexMap.get(categoryLabel) ?? 0
+        categoryIndex = CategoryIndexMap.get(categoryLabel) ?? -1
       }
 
       const currentIndex = index

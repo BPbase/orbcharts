@@ -2,6 +2,7 @@ import { Observable } from 'rxjs'
 import type { ContextObserverBase } from './ContextObserver'
 import type { ComputedDataGrid, ComputedDatumGrid } from './ComputedDataGrid'
 import type { TransformData } from './TransformData'
+import type { ContainerPositionScaled } from './ContextObserver'
 
 export interface ContextObserverGrid<PluginParams> extends
 ContextObserverBase<'grid', PluginParams>, ContextObserverGridDetail {
@@ -10,7 +11,7 @@ ContextObserverBase<'grid', PluginParams>, ContextObserverGridDetail {
 
 export interface ContextObserverGridDetail {
   isSeriesSeprate$: Observable<boolean>
-  gridContainerPosition$: Observable<GridContainerPosition[]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
   gridAxesTransform$: Observable<TransformData>
   gridAxesReverseTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>
@@ -34,10 +35,10 @@ export interface ComputedLayoutDatumGrid extends ComputedDatumGrid {
   axisYFromZero: number
 }
 
-export interface GridContainerPosition {
-  slotIndex: number
-  rowIndex: number
-  columnIndex: number
-  translate: [number, number]
-  scale: [number, number]
-}
+// export interface GridContainerPosition {
+//   slotIndex: number
+//   rowIndex: number
+//   columnIndex: number
+//   translate: [number, number]
+//   scale: [number, number]
+// }

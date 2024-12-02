@@ -20,6 +20,10 @@ export interface DatumValue {
   value: number | null
 }
 
+export interface DatumMultiValue {
+  value: number[]
+}
+
 // 透過類型選擇Data
 export type DataTypeMap<T extends ChartType> = T extends 'series' ? DataSeries
   : T extends 'grid' ? DataGrid

@@ -23,7 +23,7 @@ import type {
   DataFormatterGrid,
   DataFormatterMultiGridContainer,
   EventMultiGrid,
-  GridContainerPosition,
+  ContainerPositionScaled,
   HighlightTarget,
   Layout,
   TransformData } from '../../lib/core-types'
@@ -278,7 +278,7 @@ export const multiGridContainerObservable = ({ computedData$, fullDataFormatter$
   computedData$: Observable<ComputedDataTypeMap<'multiGrid'>>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiGrid'>>
   layout$: Observable<Layout>
-}): Observable<GridContainerPosition[][]> => {
+}): Observable<ContainerPositionScaled[][]> => {
 
   return combineLatest({
     computedData: computedData$,

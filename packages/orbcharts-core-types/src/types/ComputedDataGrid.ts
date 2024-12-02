@@ -1,7 +1,7 @@
-import { ComputedDatumBase, ComputedDatumGridValue } from './ComputedData'
+import { ComputedDatumBase, ComputedDatumBaseGrid, ComputedDatumBaseValue } from './ComputedData'
 
 export interface ComputedDatumGrid
-  extends ComputedDatumBase, ComputedDatumGridValue {
+  extends ComputedDatumBase, ComputedDatumBaseGrid, ComputedDatumBaseValue {
   // accSeriesIndex: number // 每一個grid累加的seriesIndex
   // gridIndex: number
   // groupIndex: number

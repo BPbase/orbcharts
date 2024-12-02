@@ -16,7 +16,7 @@ import type {
   ComputedLayoutDataGrid,
   DataFormatterGrid,
   EventGrid,
-  GridContainerPosition,
+  ContainerPositionScaled,
   ChartParams, 
   Layout,
   TransformData
@@ -52,8 +52,8 @@ interface BaseLineAreasContext {
     height: number;
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
-  gridContainerPosition$: Observable<GridContainerPosition[]>
-  allContainerPosition$: Observable<GridContainerPosition[]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
+  allContainerPosition$: Observable<ContainerPositionScaled[]>
   layout$: Observable<Layout>
   event$: Subject<EventGrid>
 }

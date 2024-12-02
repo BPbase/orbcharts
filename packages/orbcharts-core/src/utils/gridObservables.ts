@@ -26,7 +26,7 @@ import type {
   DataFormatterGroupAxis,
   ComputedLayoutDatumGrid,
   ComputedLayoutDataGrid,
-  GridContainerPosition,
+  ContainerPositionScaled,
   HighlightTarget,
   Layout,
   TransformData } from '../../lib/core-types'
@@ -377,7 +377,7 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
 }
 
 export const gridGraphicReverseScaleObservable = ({ gridContainerPosition$, gridAxesTransform$, gridGraphicTransform$ }: {
-  gridContainerPosition$: Observable<GridContainerPosition[]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
   gridAxesTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>
 }): Observable<[number, number][]> => {
@@ -522,7 +522,7 @@ export const gridContainerPositionObservable = ({ computedData$, fullDataFormatt
   computedData$: Observable<ComputedDataTypeMap<'grid'>>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
   layout$: Observable<Layout>
-}): Observable<GridContainerPosition[]> => {
+}): Observable<ContainerPositionScaled[]> => {
 
   const gridContainerPosition$ = combineLatest({
     computedData: computedData$,
