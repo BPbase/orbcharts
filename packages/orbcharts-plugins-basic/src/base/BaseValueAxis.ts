@@ -15,7 +15,7 @@ import type {
   DataFormatterGrid,
   ChartParams,
   ComputedDatumGrid,
-  GridContainerPosition,
+  ContainerPositionScaled,
   TransformData,
   EventGrid,
   ColorType
@@ -52,7 +52,7 @@ interface BaseLinesContext {
     width: number;
     height: number;
   }>
-  gridContainerPosition$: Observable<GridContainerPosition[]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
   isSeriesSeprate$: Observable<boolean>
 }
 

@@ -14,7 +14,7 @@ import type {
   ComputedDataGrid,
   ComputedLayoutDataGrid,
   DataFormatterTypeMap,
-  GridContainerPosition,
+  ContainerPositionScaled,
   EventGrid,
   ChartParams, 
   Layout,
@@ -51,7 +51,7 @@ interface BaseBarsContext {
     height: number;
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
-  gridContainerPosition$: Observable<GridContainerPosition[]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
   isSeriesSeprate$: Observable<boolean>
   event$: Subject<EventGrid>
 }

@@ -36,3 +36,25 @@ export interface ContextObserverBase<T extends ChartType, PluginParams> {
   layout$: Observable<Layout>
 }
 
+
+export interface ContainerPosition {
+  slotIndex: number
+  rowIndex: number
+  columnIndex: number
+  // translate: [number, number]
+  startX: number
+  startY: number
+  centerX: number
+  centerY: number
+  width: number
+  height: number
+}
+
+// container - 有縮放的
+export interface ContainerPositionScaled {
+  slotIndex: number
+  rowIndex: number
+  columnIndex: number
+  translate: [number, number]
+  scale: [number, number]
+}

@@ -16,8 +16,8 @@ import type {
   DataFormatterContainer,
   SeriesDirection,
   DataFormatterGridGrid,
-  SeriesContainerPosition,
-  GridContainerPosition,
+  ContainerPosition,
+  ContainerPositionScaled,
   Layout
 } from '../../lib/core-types'
 import { isPlainObject } from './commonUtils'
@@ -29,8 +29,11 @@ export function formatValueToLabel (value: any, valueFormatter: string | ((text:
   return d3.format(valueFormatter as string)!(value)
 }
 
-export function createDefaultDatumId (chartTypeOrPrefix: string, levelOneIndex: number, levelTwoIndex: number, levelThreeIndex?: number) {
-  let text = `${chartTypeOrPrefix}_${levelOneIndex}_${levelTwoIndex}`
+export function createDefaultDatumId (chartTypeOrPrefix: string, levelOneIndex: number, levelTwoIndex?: number, levelThreeIndex?: number) {
+  let text = `${chartTypeOrPrefix}_${levelOneIndex}`
+  if (levelTwoIndex != null) {
+    text += `_${levelTwoIndex}`
+  }
   if (levelThreeIndex != null) {
     text += `_${levelThreeIndex}`
   }
@@ -167,11 +170,18 @@ export function getMinAndMaxMultiGrid (data: DataMultiGrid): [number, number] {
 }
 
 // 取得最小及最大值 - MultiValue Data
-export function getMinAndMaxMultiValue (data: DataMultiValue, valueIndex: number = 2): [number, number] {
-  const flatData: (DataMultiValueDatum | DataMultiValueValue)[] = data.flat().filter((d, i) => i == valueIndex)
-  const arr = flatData
-    .filter(d => (d == null || (isPlainObject(d) && (d as DataMultiValueDatum).value == null)) === false) // 過濾掉null
-    .map(d => typeof d === 'number' ? d : d.value )
+export function getMinAndMaxMultiValue (data: DataMultiValue, valueIndex: number): [number, number] {
+  const arr: number[] = data
+    .map(d => {
+      if (Array.isArray(d)) {
+        return d[valueIndex] ?? null
+      } else if (isPlainObject(d)) {
+        return (d as DataMultiValueDatum).value[valueIndex] ?? null
+      } else {
+        return null
+      }
+    })
+    .filter(d => d != null)
   return getMinAndMax(arr)
 }
 
@@ -251,7 +261,7 @@ function calcGridDimensions (amount: number): { rowAmount: number; columnAmount:
   return { rowAmount, columnAmount }
 }
 
-export function calcSeriesContainerLayout (layout: Layout, container: DataFormatterContainer, amount: number): SeriesContainerPosition[] {
+export function calcSeriesContainerLayout (layout: Layout, container: DataFormatterContainer, amount: number): ContainerPosition[] {
   const { gap } = container
   const { rowAmount, columnAmount } = (container.rowAmount * container.columnAmount) >= amount
     // 如果container設定的rowAmount和columnAmount的乘積大於或等於amount，則使用目前設定
@@ -299,7 +309,7 @@ export function calcSeriesContainerLayout (layout: Layout, container: DataFormat
 //   }
 // }
 
-export function calcGridContainerLayout (layout: Layout, container: DataFormatterContainer, amount: number): GridContainerPosition[] {
+export function calcGridContainerLayout (layout: Layout, container: DataFormatterContainer, amount: number): ContainerPositionScaled[] {
   const { gap } = container
   const { rowAmount, columnAmount } = (container.rowAmount * container.columnAmount) >= amount
     // 如果container設定的rowAmount和columnAmount的乘積大於或等於amount，則使用目前設定
@@ -318,7 +328,7 @@ export function calcGridContainerLayout (layout: Layout, container: DataFormatte
     const translate: [number, number] = [x, y]
     const scale: [number, number] = [width / layout.width, height / layout.height]
 
-    return {
+    return {                      
       slotIndex: index,
       rowIndex,
       columnIndex,

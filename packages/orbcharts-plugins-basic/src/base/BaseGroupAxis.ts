@@ -13,7 +13,7 @@ import {
 import type {
   ColorType,
   ComputedDataGrid,
-  GridContainerPosition,
+  ContainerPositionScaled,
   ComputedDatumGrid,
   DataFormatterGrid,
   ChartParams,
@@ -57,7 +57,7 @@ interface BaseGroupAxisContext {
     width: number;
     height: number;
   }>
-  gridContainerPosition$: Observable<GridContainerPosition[]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
   isSeriesSeprate$: Observable<boolean>
   textSizePx$: Observable<number>
 }

@@ -1,21 +1,31 @@
-import { DataMultiValueDatum, DataMultiValue } from './DataMultiValue'
-import { DataFormatterBase, DataFormatterBasePartial, DataFormatterValueAxis, VisibleFilter } from './DataFormatter'
+// import { DataMultiValueDatum, DataMultiValue } from './DataMultiValue'
+import {
+  DataFormatterBase,
+  DataFormatterBasePartial,
+  DataFormatterAxis,
+  VisibleFilter,
+  DataFormatterContainer
+} from './DataFormatter'
 
 export interface DataFormatterMultiValue extends DataFormatterBase<'multiValue'> {
   visibleFilter: VisibleFilter<'multiValue'>
   // labelFormat: (datum: unknown) => string
   categoryLabels: string[]
-  multiValue: Array<DataFormatterMultiValueMultiValue>
-  xAxis: DataFormatterValueAxis
-  yAxis: DataFormatterValueAxis
+  // multiValue: Array<DataFormatterMultiValueMultiValue>
+  xAxis: DataFormatterAxis
+  yAxis: DataFormatterAxis
+  container: DataFormatterContainer
+  separateCategory: boolean
 }
 
 export interface DataFormatterMultiValuePartial extends DataFormatterBasePartial<'multiValue'> {
   visibleFilter?: VisibleFilter<'multiValue'>
   categoryLabels?: string[]
-  multiValue?: Array<Partial<DataFormatterMultiValueMultiValue>>
-  xAxis?: Partial<DataFormatterValueAxis>
-  yAxis?: Partial<DataFormatterValueAxis>
+  // multiValue?: Array<Partial<DataFormatterMultiValueMultiValue>>
+  xAxis?: Partial<DataFormatterAxis>
+  yAxis?: Partial<DataFormatterAxis>
+  container?: Partial<DataFormatterContainer>
+  separateCategory?: boolean
 }
 
 // multiValue欄位
