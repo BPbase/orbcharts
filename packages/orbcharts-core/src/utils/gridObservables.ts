@@ -41,7 +41,7 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
   layout$: Observable<Layout>
 }): Observable<ComputedLayoutDatumGrid[][]> => {
 
-  // 未篩選group範圍前的group scale
+  // 未篩選group範圍前的group scale（ * 不受到dataFormatter設定影響）
   function createOriginGroupScale (computedData: ComputedDatumGrid[][], dataFormatter: DataFormatterGrid, layout: Layout) {
     const groupAxisWidth = (dataFormatter.grid.groupAxis.position === 'top' || dataFormatter.grid.groupAxis.position === 'bottom')
       ? layout.width
@@ -55,78 +55,25 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
       scaleRange: [0, 1] // 不使用dataFormatter設定
     })
 
-    // const groupAxisWidth = (dataFormatter.grid.groupAxis.position === 'top' || dataFormatter.grid.groupAxis.position === 'bottom')
-    //   ? layout.width
-    //   : layout.height
-    // const groupMin = 0
-    // const groupMax = computedData[0] ? computedData[0].length - 1 : 0
-    // // const groupScaleDomainMin = groupAxis.scaleDomain[0] === 'min'
-    // //   ? groupMin - groupAxis.scalePadding
-    // //   : groupAxis.scaleDomain[0] as number - groupAxis.scalePadding
-    // const groupScaleDomainMin = dataFormatter.grid.groupAxis.scaleDomain[0] - dataFormatter.grid.groupAxis.scalePadding
-    // const groupScaleDomainMax = dataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
-    //   ? groupMax + dataFormatter.grid.groupAxis.scalePadding
-    //   : dataFormatter.grid.groupAxis.scaleDomain[1] as number + dataFormatter.grid.groupAxis.scalePadding
-    
-    // const groupScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
-    //   maxValue: groupMax,
-    //   minValue: groupMin,
-    //   axisWidth: groupAxisWidth,
-    //   // scaleDomain: groupAxis.scaleDomain,
-    //   scaleDomain: [groupScaleDomainMin, groupScaleDomainMax],
-    //   scaleRange: [0, 1]
-    // })
-
     return groupScale
   }
 
-  // 未篩選group範圍及visible前的value scale
+  // 未篩選group範圍及visible前的value scale（ * 不受到dataFormatter設定影響）
   function createOriginValueScale (computedData: ComputedDatumGrid[][], dataFormatter: DataFormatterGrid, layout: Layout) {
-    // const valueAxisWidth = (dataFormatter.grid.valueAxis.position === 'left' || dataFormatter.grid.valueAxis.position === 'right')
-    //   ? layout.height
-    //   : layout.width
-  
-    // const listData = computedData.flat()
-    // const [minValue, maxValue] = getMinAndMaxValue(listData)
-
-    // const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
-    //   maxValue,
-    //   minValue,
-    //   axisWidth: valueAxisWidth,
-    //   scaleDomain: [minValue, maxValue], // 不使用dataFormatter設定
-    //   scaleRange: [0, 1] // 不使用dataFormatter設定
-    // })
-
-    const groupMax = computedData[0] ? computedData[0].length - 1 : 0
-
-    const groupScaleDomainMin = dataFormatter.grid.groupAxis.scaleDomain[0] - dataFormatter.grid.groupAxis.scalePadding
-    const groupScaleDomainMax = dataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
-      ? groupMax + dataFormatter.grid.groupAxis.scalePadding
-      : dataFormatter.grid.groupAxis.scaleDomain[1] as number + dataFormatter.grid.groupAxis.scalePadding
-
-    const filteredData = computedData.map((d, i) => {
-      return d.filter((_d, _i) => {
-        return _i >= groupScaleDomainMin && _i <= groupScaleDomainMax && _d.visible == true
-      })
-    })
-
-    const listData = computedData.flat()
-  
-    const filteredMinAndMax = getMinAndMaxGrid(computedData)
-    if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
-      filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
-    }
-  
     const valueAxisWidth = (dataFormatter.grid.valueAxis.position === 'left' || dataFormatter.grid.valueAxis.position === 'right')
       ? layout.height
       : layout.width
   
+    const listData = computedData.flat()
+    const [minValue, maxValue] = getMinAndMaxValue(listData)
+
     const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
-      maxValue: filteredMinAndMax[1],
-      minValue: filteredMinAndMax[0],
+      maxValue,
+      minValue,
       axisWidth: valueAxisWidth,
-      scaleDomain: dataFormatter.grid.valueAxis.scaleDomain,
-      scaleRange: dataFormatter.grid.valueAxis.scaleRange
+      // scaleDomain: [minValue, maxValue], // 不使用dataFormatter設定
+      scaleDomain: ['auto', 'auto'], // 不使用dataFormatter設定 --> 以0為基準到最大或最小值為範圍（ * 如果是使用[minValue, maxValue]的話，在兩者很接近的情況下有可能造成scale倍率過高而svg變型時失真的情況）
+      scaleRange: [0, 1] // 不使用dataFormatter設定
     })
     
     return valueScale
@@ -346,25 +293,6 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
       scaleDomain: [groupScaleDomainMin, groupScaleDomainMax],
       scaleRange: [0, 1]
     })
-
-    // const groupAxisWidth = (groupAxis.position === 'top' || groupAxis.position === 'bottom')
-    //   ? width
-    //   : height
-    // const groupEndIndex = data[0] ? data[0].length - 1 : 0
-    // const groupScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
-    //   maxValue: groupEndIndex,
-    //   minValue: 0,
-    //   axisWidth: groupAxisWidth,
-    //   scaleDomain: [0, groupEndIndex], // 不使用dataFormatter設定
-    //   scaleRange: [0, 1] // 不使用dataFormatter設定
-    // })
-
-    // const groupMin = 0
-    // const groupMax = data[0] ? data[0].length - 1 : 0
-    // const groupScaleDomainMin = groupAxis.scaleDomain[0] - groupAxis.scalePadding
-    // const groupScaleDomainMax = groupAxis.scaleDomain[1] === 'max'
-    //   ? groupMax + groupAxis.scalePadding
-    //   : groupAxis.scaleDomain[1] as number + groupAxis.scalePadding
   
     // -- translateX, scaleX --
     const rangeMinX = groupScale(groupMin)
@@ -380,48 +308,27 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
     }
 
     // -- valueScale --
-    // const filteredData = data.map((d, i) => {
-    //   return d.filter((_d, _i) => {
-    //     return _i >= groupScaleDomainMin && _i <= groupScaleDomainMax && _d.visible == true
-    //   })
-    // })
-  
-    // const filteredMinAndMax = getMinAndMaxGrid(filteredData)
-    // if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
-    //   filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
-    // }
-  
-    // const valueAxisWidth = (valueAxis.position === 'left' || valueAxis.position === 'right')
-    //   ? height
-    //   : width
-  
-    // const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
-    //   maxValue: filteredMinAndMax[1],
-    //   minValue: filteredMinAndMax[0],
-    //   axisWidth: valueAxisWidth,
-    //   scaleDomain: valueAxis.scaleDomain,
-    //   scaleRange: valueAxis.scaleRange
-    // })
-
     const filteredData = data.map((d, i) => {
       return d.filter((_d, _i) => {
         return _i >= groupScaleDomainMin && _i <= groupScaleDomainMax && _d.visible == true
       })
     })
-
+  
+    const filteredMinAndMax = getMinAndMaxGrid(filteredData)
+    if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
+      filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+    }
+  
     const valueAxisWidth = (valueAxis.position === 'left' || valueAxis.position === 'right')
       ? height
       : width
   
-    const listData = filteredData.flat()
-    const [minValue, maxValue] = getMinAndMaxValue(listData)
-
     const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
-      maxValue,
-      minValue,
+      maxValue: filteredMinAndMax[1],
+      minValue: filteredMinAndMax[0],
       axisWidth: valueAxisWidth,
-      scaleDomain: [minValue, maxValue], // 不使用dataFormatter設定
-      scaleRange: [0, 1] // 不使用dataFormatter設定
+      scaleDomain: valueAxis.scaleDomain,
+      scaleRange: valueAxis.scaleRange
     })
   
     // -- translateY, scaleY --
@@ -429,8 +336,9 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
     if (minAndMax[0] === minAndMax[1]) {
       minAndMax[0] = minAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
     }
-    const rangeMinY = valueScale(minAndMax[0])
-    const rangeMaxY = valueScale(minAndMax[1])
+    // const rangeMinY = valueScale(minAndMax[0])
+    const rangeMinY = valueScale(minAndMax[0] > 0 ? 0 : minAndMax[0]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
+    const rangeMaxY = valueScale(minAndMax[1] < 0 ? 0 : minAndMax[1]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
     translateY = rangeMinY
     const gHeight = rangeMaxY - rangeMinY
     scaleY = gHeight / valueAxisWidth

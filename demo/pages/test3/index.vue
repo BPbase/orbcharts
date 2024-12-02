@@ -14,7 +14,9 @@ onMounted(() => {
 
   console.log(PRESET_MULTI_GRID_SEPARATE_GRID)
 
-  const chart = new GridChart(el!)
+  const chart = new GridChart(el!, {
+    preset: PRESET_MULTI_GRID_SEPARATE_GRID
+  })
 
   // chart!.dataFormatter$.next({
   //       container: {
