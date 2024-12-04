@@ -10,12 +10,6 @@ export const computedDataFn: ComputedDataFn<'multiValue'> = (context) => {
     return []
   }
 
-  // @Q@ 假資料待改寫
-  const layout = {
-    width: 1000,
-    height: 1000
-  }
-
   // <categoryLabel, categoryIndex>
   const CategoryIndexMap = new Map<string, number>(
     dataFormatter.categoryLabels.map((label, index) => [label, index])

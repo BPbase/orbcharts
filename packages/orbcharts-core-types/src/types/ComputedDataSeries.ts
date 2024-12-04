@@ -1,7 +1,7 @@
-import { ComputedDatumBase, ComputedDatumSeriesValue } from './ComputedData'
+import { ComputedDatumBase, ComputedDatumBaseSeries, ComputedDatumBaseValue } from './ComputedData'
 
 export interface ComputedDatumSeries
-  extends ComputedDatumBase, ComputedDatumSeriesValue {
+  extends ComputedDatumBase, ComputedDatumBaseSeries, ComputedDatumBaseValue {
   
 }
 

@@ -16,9 +16,9 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
   multiValueHighlight$: Observable<ComputedDatumMultiValue[]>
   categoryLabels$: Observable<string[]>
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
-  visibleComputedData$: Observable<ComputedDatumMultiValue[][]>
-  computedLayoutData$: Observable<ComputedDatumMultiValue[][]>
-  visibleComputedLayoutData$: Observable<ComputedDatumMultiValue[][]>
+  visibleComputedData$: Observable<ComputedDataMultiValue>
+  computedLayoutData$: Observable<ComputedDataMultiValue>
+  visibleComputedLayoutData$: Observable<ComputedDataMultiValue>
 }
 
 export type ComputedLayoutDataMultiValue = ComputedLayoutDatumMultiValue[]
