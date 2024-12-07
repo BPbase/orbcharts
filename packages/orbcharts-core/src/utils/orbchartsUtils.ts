@@ -48,6 +48,10 @@ export function createDefaultGroupLabel (chartTypeOrPrefix: string, groupIndex: 
   return `${chartTypeOrPrefix}_group${groupIndex}`
 }
 
+export function createDefaultCategoryLabel (chartTypeOrPrefix: string) {
+  return `${chartTypeOrPrefix}_category`
+}
+
 export function createGridSeriesLabels ({ transposedDataGrid, dataFormatterGrid, chartType = 'grid' }: {
   transposedDataGrid: DataGridDatum[][],
   dataFormatterGrid: DataFormatterGridGrid

@@ -7,11 +7,10 @@ import {
 } from '../utils/observables'
 import {
   multiValueComputedLayoutDataObservable,
-  multiValueAxesTransformObservable,
-  multiValueAxesReverseTransformObservable,
+  // multiValueAxesTransformObservable,
+  // multiValueAxesReverseTransformObservable,
   multiValueGraphicTransformObservable,
   multiValueGraphicReverseScaleObservable,
-  multiValueAxesSizeObservable,
   multiValueCategoryLabelsObservable,
   multiValueVisibleComputedDataObservable,
   multiValueVisibleComputedLayoutDataObservable,
@@ -37,18 +36,18 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     layout$: observer.layout$,
   })
 
-  const multiValueAxesTransform$ = multiValueAxesTransformObservable({
-    fullDataFormatter$: observer.fullDataFormatter$,
-    layout$: observer.layout$
-  }).pipe(
-    shareReplay(1)
-  )
+  // const multiValueAxesTransform$ = multiValueAxesTransformObservable({
+  //   fullDataFormatter$: observer.fullDataFormatter$,
+  //   layout$: observer.layout$
+  // }).pipe(
+  //   shareReplay(1)
+  // )
 
-  const multiValueAxesReverseTransform$ = multiValueAxesReverseTransformObservable({
-    multiValueAxesTransform$
-  }).pipe(
-    shareReplay(1)
-  )
+  // const multiValueAxesReverseTransform$ = multiValueAxesReverseTransformObservable({
+  //   multiValueAxesTransform$
+  // }).pipe(
+  //   shareReplay(1)
+  // )
   
   const multiValueGraphicTransform$ = multiValueGraphicTransformObservable({
     computedData$: observer.computedData$,
@@ -60,16 +59,16 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
 
   const multiValueGraphicReverseScale$ = multiValueGraphicReverseScaleObservable({
     multiValueContainerPosition$: multiValueContainerPosition$,
-    multiValueAxesTransform$: multiValueAxesTransform$,
+    // multiValueAxesTransform$: multiValueAxesTransform$,
     multiValueGraphicTransform$: multiValueGraphicTransform$,
   })
 
-  const multiValueAxesSize$ = multiValueAxesSizeObservable({
-    fullDataFormatter$: observer.fullDataFormatter$,
-    layout$: observer.layout$
-  }).pipe(
-    shareReplay(1)
-  )
+  // const multiValueAxesSize$ = multiValueAxesSizeObservable({
+  //   fullDataFormatter$: observer.fullDataFormatter$,
+  //   layout$: observer.layout$
+  // }).pipe(
+  //   shareReplay(1)
+  // )
 
   const datumList$ = observer.computedData$.pipe(
     map(d => d.flat())
@@ -126,11 +125,11 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     textSizePx$,
     isCategorySeprate$,
     multiValueContainerPosition$,
-    multiValueAxesTransform$,
-    multiValueAxesReverseTransform$,
+    // multiValueAxesTransform$,
+    // multiValueAxesReverseTransform$,
     multiValueGraphicTransform$,
     multiValueGraphicReverseScale$,
-    multiValueAxesSize$,
+    // multiValueAxesSize$,
     multiValueHighlight$,
     categoryLabels$,
     CategoryDataMap$,

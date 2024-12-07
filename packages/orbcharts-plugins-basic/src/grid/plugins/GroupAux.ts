@@ -25,7 +25,7 @@ import { parseTickFormatValue } from '../../utils/d3Utils'
 import { measureTextWidth } from '../../utils/commonUtils'
 import { getColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { d3EventObservable } from '../../utils/observables'
-import { gridGroupPosition } from '../gridObservables'
+import { gridGroupPositionObservable } from '../gridObservables'
 import type { GroupAuxParams } from '../../../lib/plugins-basic-types'
 import { gridSelectionsObservable } from '../gridObservables'
 import { renderTspansOnAxis } from '../../utils/d3Graphics'
@@ -757,7 +757,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
     distinctUntilChanged()
   )
 
-  const gridGroupPosition$ = gridGroupPosition({
+  const gridGroupPosition$ = gridGroupPositionObservable({
     rootSelection,
     fullDataFormatter$: observer.fullDataFormatter$,
     gridAxesSize$: observer.gridAxesSize$,

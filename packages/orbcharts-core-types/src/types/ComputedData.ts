@@ -70,7 +70,7 @@ export interface ComputedDatumBaseGrid {
 export interface ComputedDatumBaseCategory {
   color: string
   categoryIndex: number
-  categoryLabel: string | null
+  categoryLabel: string
 }
 
 // 透過類型選擇ComputedData

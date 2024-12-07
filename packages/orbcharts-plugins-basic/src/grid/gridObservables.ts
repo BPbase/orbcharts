@@ -19,20 +19,20 @@ import type {
   ComputedDataGrid,
   ComputedDatumGrid,
   TransformData,
-  GridContainerPosition,
+  ContainerPositionScaled,
   Layout } from '../../lib/core-types'
 import { createAxisQuantizeScale } from '../../lib/core'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 import { d3EventObservable } from '../utils/observables'
 
-// grid選取器
+// 建立 grid 主要的 selection 
 export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, seriesLabels$, gridContainerPosition$, gridAxesTransform$, gridGraphicTransform$ }: {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
   clipPathID: string
   // computedData$: Observable<ComputedDataGrid>
   seriesLabels$: Observable<string[]>
-  gridContainerPosition$: Observable<GridContainerPosition[]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
   gridAxesTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>
 }) => {
@@ -40,6 +40,10 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, se
   const axesClassName = getClassName(pluginName, 'axes')
   const graphicClassName = getClassName(pluginName, 'graphic')
 
+  // <g> series selection（container排放位置）
+  //   <g> axes selection（旋轉圖軸方向）
+  //     <defs> clipPath selection
+  //     <g> graphic selection（圖形 scale 範圍的變形）
   const seriesSelection$ = seriesLabels$.pipe(
     map((existSeriesLabels, i) => {
       return selection
@@ -85,6 +89,7 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, se
     shareReplay(1)
   )
 
+  // <g> series selection
   combineLatest({
     seriesSelection: seriesSelection$,
     gridContainerPosition: gridContainerPosition$                                                                                                                                                                                       
@@ -101,6 +106,7 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, se
       })
   })
 
+  // <g> axes selection
   const axesSelection$ = combineLatest({
     seriesSelection: seriesSelection$,
     gridAxesTransform: gridAxesTransform$
@@ -113,12 +119,16 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, se
     }),
     shareReplay(1)
   )
+
+  // <defs> clipPath selection
   const defsSelection$ = axesSelection$.pipe(
     map(axesSelection => {
       return axesSelection.select<SVGDefsElement>('defs')
     }),
     shareReplay(1)
   )
+
+  // <g> graphic selection
   const graphicGSelection$ = combineLatest({
     axesSelection: axesSelection$,
     gridGraphicTransform: gridGraphicTransform$
@@ -145,7 +155,6 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, se
 }
 
 // 由事件取得group data的function
-// @Q@ 之後重構改用 gridGroupPosition
 export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize$, computedData$, fullChartParams$, gridContainerPosition$, layout$ }: {
   fullDataFormatter$: Observable<DataFormatterGrid>
   gridAxesSize$: Observable<{
@@ -155,7 +164,7 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
   computedData$: Observable<ComputedDataGrid>
   // GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   fullChartParams$: Observable<ChartParams>
-  gridContainerPosition$: Observable<GridContainerPosition[]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
   layout$: Observable<Layout>
 }): Observable<(event: any) => { groupIndex: number; groupLabel: string }> => {
   const destroy$ = new Subject()
@@ -305,7 +314,7 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
       }
 
       // 比例尺座標取得groupData的function
-      const createEventGroupData: (event: any) => { groupIndex: number; groupLabel: string } = (event: any) => {
+      const createEventGroupData: (event: MouseEvent) => { groupIndex: number; groupLabel: string } = (event: any) => {
         // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
         const eventData = {
           offsetX: event.offsetX * data.columnAmount % data.layout.rootWidth,
@@ -332,7 +341,7 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
   })
 }
 
-export const gridGroupPosition = ({ rootSelection, fullDataFormatter$, gridAxesSize$, computedData$, fullChartParams$, gridContainerPosition$, layout$ }: {
+export const gridGroupPositionObservable = ({ rootSelection, fullDataFormatter$, gridAxesSize$, computedData$, fullChartParams$, gridContainerPosition$, layout$ }: {
   rootSelection: d3.Selection<any, unknown, any, unknown>
   fullDataFormatter$: Observable<DataFormatterGrid>
   gridAxesSize$: Observable<{
@@ -341,10 +350,10 @@ export const gridGroupPosition = ({ rootSelection, fullDataFormatter$, gridAxesS
   }>
   computedData$: Observable<ComputedDataGrid>
   fullChartParams$: Observable<ChartParams>
-  gridContainerPosition$: Observable<GridContainerPosition[]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
   layout$: Observable<Layout>
 }) => {
-  const rootMousemove$: Observable<any> = d3EventObservable(rootSelection, 'mousemove')
+  const rootMousemove$ = d3EventObservable(rootSelection, 'mousemove')
 
   const groupScaleDomain$ = combineLatest({
     fullDataFormatter: fullDataFormatter$,
@@ -500,7 +509,7 @@ export const gridGroupPosition = ({ rootSelection, fullDataFormatter$, gridAxesS
 
 // const gridContainerEventData$ = ({ eventData$, gridContainerPosition$, layout$ }: {
 //   eventData$: Observable<any>
-//   gridContainerPosition$: Observable<GridContainerPosition[]>
+//   gridContainerPosition$: Observable<ContainerPositionScaled[]>
 //   layout$: Observable<Layout>
 // }): Observable<{
 //   offsetX: number;

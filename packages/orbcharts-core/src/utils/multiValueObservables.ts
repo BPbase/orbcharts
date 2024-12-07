@@ -37,9 +37,9 @@ export const multiValueComputedLayoutDataObservable = ({ computedData$, fullData
   layout$: Observable<Layout>
 }): Observable<ComputedLayoutDataMultiValue> => {
 
-  // 未篩選group範圍前的group scale
+  // 未篩選範圍前的 scale
   function createOriginXScale (computedData: ComputedDataTypeMap<'multiValue'>, layout: Layout) {
-    const listData = computedData.map(datum => datum.value[0]).flat()
+    const listData = computedData.flat().map(datum => datum.value[0])
     const [minValue, maxValue] = getMinAndMax(listData)
 
     const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
@@ -53,9 +53,9 @@ export const multiValueComputedLayoutDataObservable = ({ computedData$, fullData
     return valueScale
   }
 
-  // 未篩選group範圍及visible前的value scale
+  // 未篩選範圍及visible前的 scale
   function createOriginYScale (computedData: ComputedDataTypeMap<'multiValue'>, layout: Layout) {
-    const listData = computedData.map(datum => datum.value[1]).flat()
+    const listData = computedData.flat().map(datum => datum.value[1])
     const [minValue, maxValue] = getMinAndMax(listData)
 
     const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
@@ -80,104 +80,107 @@ export const multiValueComputedLayoutDataObservable = ({ computedData$, fullData
       const xScale = createOriginXScale(data.computedData, data.layout)
       const yScale = createOriginYScale(data.computedData, data.layout)
 
-      return data.computedData.map((datum, datumIndex) => {
-        return {
-          ...datum,
-          axisX: xScale(datum.value[0] ?? 0),
-          axisY: yScale(datum.value[1] ?? 0),
-        }
-      })
+      return data.computedData
+        .map((categoryData, categoryIndex) => {
+          return categoryData.map((datum, datumIndex) => {
+            return {
+              ...datum,
+              axisX: xScale(datum.value[0] ?? 0),
+              axisY: data.layout.height - yScale(datum.value[1] ?? 0), // y軸的繪圖座標是從上到下，所以反轉
+            }
+          })
+        })
     })
   )
 }
 
-export const multiValueAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
-  fullDataFormatter$: Observable<DataFormatterTypeMap<'multiValue'>>
-  layout$: Observable<Layout>
-}): Observable<TransformData> => {
-  const destroy$ = new Subject()
+// export const multiValueAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
+//   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiValue'>>
+//   layout$: Observable<Layout>
+// }): Observable<TransformData> => {
+//   const destroy$ = new Subject()
 
-  function calcAxesTransform ({ xAxis, yAxis, width, height }: {
-    xAxis: DataFormatterAxis,
-    yAxis: DataFormatterAxis,
-    width: number,
-    height: number
-  }): TransformData {
-    if (!xAxis || !yAxis) {
-      return {
-        translate: [0, 0],
-        scale: [1, 1],
-        rotate: 0,
-        rotateX: 0,
-        rotateY: 0,
-        value: ''
-      }
-    }
-    // const width = size.width - fullChartParams.layout.left - fullChartParams.layout.right
-    // const height = size.height - fullChartParams.layout.top - fullChartParams.layout.bottom
-    let translateX = 0
-    let translateY = height
-    let rotate = 0
-    let rotateX = 180
-    let rotateY = 0
+//   function calcAxesTransform ({ xAxis, yAxis, width, height }: {
+//     xAxis: DataFormatterAxis,
+//     yAxis: DataFormatterAxis,
+//     width: number,
+//     height: number
+//   }): TransformData {
+//     if (!xAxis || !yAxis) {
+//       return {
+//         translate: [0, 0],
+//         scale: [1, 1],
+//         rotate: 0,
+//         rotateX: 0,
+//         rotateY: 0,
+//         value: ''
+//       }
+//     }
+//     // const width = size.width - fullChartParams.layout.left - fullChartParams.layout.right
+//     // const height = size.height - fullChartParams.layout.top - fullChartParams.layout.bottom
+//     let translateX = 0
+//     let translateY = height
+//     let rotate = 0
+//     let rotateX = 180
+//     let rotateY = 0
 
-    return {
-      translate: [translateX, translateY],
-      scale: [1, 1],
-      rotate,
-      rotateX,
-      rotateY,
-      value: `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
-    }
-  }
+//     return {
+//       translate: [translateX, translateY],
+//       scale: [1, 1],
+//       rotate,
+//       rotateX,
+//       rotateY,
+//       value: `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
+//     }
+//   }
 
-  return new Observable(subscriber => {
-    combineLatest({
-      fullDataFormatter: fullDataFormatter$,
-      layout: layout$
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async (d) => d),
-    ).subscribe(data => {
-      const axesTransformData = calcAxesTransform({
-        xAxis: data.fullDataFormatter.xAxis,
-        yAxis: data.fullDataFormatter.yAxis,
-        width: data.layout.width,
-        height: data.layout.height
-      })
+//   return new Observable(subscriber => {
+//     combineLatest({
+//       fullDataFormatter: fullDataFormatter$,
+//       layout: layout$
+//     }).pipe(
+//       takeUntil(destroy$),
+//       switchMap(async (d) => d),
+//     ).subscribe(data => {
+//       const axesTransformData = calcAxesTransform({
+//         xAxis: data.fullDataFormatter.xAxis,
+//         yAxis: data.fullDataFormatter.yAxis,
+//         width: data.layout.width,
+//         height: data.layout.height
+//       })
     
-      subscriber.next(axesTransformData)
-    })
+//       subscriber.next(axesTransformData)
+//     })
 
-    return function unscbscribe () {
-      destroy$.next(undefined)
-    }
-  })
-}
+//     return function unscbscribe () {
+//       destroy$.next(undefined)
+//     }
+//   })
+// }
 
 
-export const multiValueAxesReverseTransformObservable = ({ multiValueAxesTransform$ }: {
-  multiValueAxesTransform$: Observable<TransformData>
-}): Observable<TransformData> => {
-  return multiValueAxesTransform$.pipe(
-    map(d => {
-      // const translate: [number, number] = [d.translate[0] * -1, d.translate[1] * -1]
-      const translate: [number, number] = [0, 0] // 無需逆轉
-      const scale: [number, number] = [1 / d.scale[0], 1 / d.scale[1]]
-      const rotate = d.rotate * -1
-      const rotateX = d.rotateX * -1
-      const rotateY = d.rotateY * -1
-      return {
-        translate,
-        scale,
-        rotate,
-        rotateX,
-        rotateY,
-        value: `translate(${translate[0]}px, ${translate[1]}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotate(${rotate}deg)`
-      }
-    }),
-  )
-}
+// export const multiValueAxesReverseTransformObservable = ({ multiValueAxesTransform$ }: {
+//   multiValueAxesTransform$: Observable<TransformData>
+// }): Observable<TransformData> => {
+//   return multiValueAxesTransform$.pipe(
+//     map(d => {
+//       // const translate: [number, number] = [d.translate[0] * -1, d.translate[1] * -1]
+//       const translate: [number, number] = [0, 0] // 無需逆轉
+//       const scale: [number, number] = [1 / d.scale[0], 1 / d.scale[1]]
+//       const rotate = d.rotate * -1
+//       const rotateX = d.rotateX * -1
+//       const rotateY = d.rotateY * -1
+//       return {
+//         translate,
+//         scale,
+//         rotate,
+//         rotateX,
+//         rotateY,
+//         value: `translate(${translate[0]}px, ${translate[1]}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotate(${rotate}deg)`
+//       }
+//     }),
+//   )
+// }
 
 export const multiValueGraphicTransformObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
@@ -193,6 +196,8 @@ export const multiValueGraphicTransformObservable = ({ computedData$, fullDataFo
     width: number
     height: number
   }): TransformData {
+    const flatData = data.flat()
+
     let translateX = 0
     let translateY = 0
     let scaleX = 0
@@ -201,7 +206,7 @@ export const multiValueGraphicTransformObservable = ({ computedData$, fullDataFo
     // minX, maxX, filteredMinX, filteredMaxX
     let filteredMinX = 0
     let filteredMaxX = 0
-    let [minX, maxX] = getMinAndMaxMultiValue(data, 0)
+    let [minX, maxX] = getMinAndMax(flatData.map(d => d.value[0]))
     if (minX === maxX) {
       minX = maxX - 1 // 避免最大及最小值相同造成無法計算scale
     }
@@ -226,7 +231,7 @@ export const multiValueGraphicTransformObservable = ({ computedData$, fullDataFo
     // minY, maxY, filteredMinY, filteredMaxY
     let filteredMinY = 0
     let filteredMaxY = 0
-    let [minY, maxY] = getMinAndMaxMultiValue(data, 1)
+    let [minY, maxY] = getMinAndMax(flatData.map(d => d.value[1]))
     if (minY === maxY) {
       minY = maxY - 1 // 避免最大及最小值相同造成無法計算scale
     }
@@ -316,90 +321,90 @@ export const multiValueGraphicTransformObservable = ({ computedData$, fullDataFo
   })
 }
 
-export const multiValueGraphicReverseScaleObservable = ({ multiValueContainerPosition$, multiValueAxesTransform$, multiValueGraphicTransform$ }: {
+export const multiValueGraphicReverseScaleObservable = ({ multiValueContainerPosition$, multiValueGraphicTransform$ }: {
   multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
-  multiValueAxesTransform$: Observable<TransformData>
+  // multiValueAxesTransform$: Observable<TransformData>
   multiValueGraphicTransform$: Observable<TransformData>
 }): Observable<[number, number][]> => {
   return combineLatest({
     multiValueContainerPosition: multiValueContainerPosition$,
-    multiValueAxesTransform: multiValueAxesTransform$,
+    // multiValueAxesTransform: multiValueAxesTransform$,
     multiValueGraphicTransform: multiValueGraphicTransform$,
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-      if (data.multiValueAxesTransform.rotate == 0 || data.multiValueAxesTransform.rotate == 180) {
+      // if (data.multiValueAxesTransform.rotate == 0 || data.multiValueAxesTransform.rotate == 180) {
         return data.multiValueContainerPosition.map((series, seriesIndex) => {
           return [
             1 / data.multiValueGraphicTransform.scale[0] / data.multiValueContainerPosition[seriesIndex].scale[0],
             1 / data.multiValueGraphicTransform.scale[1] / data.multiValueContainerPosition[seriesIndex].scale[1],
           ]
         })
-      } else {
-        return data.multiValueContainerPosition.map((series, seriesIndex) => {
-          // 由於有垂直的旋轉，所以外層 (container) x和y的scale要互換
-          return [
-            1 / data.multiValueGraphicTransform.scale[0] / data.multiValueContainerPosition[seriesIndex].scale[1],
-            1 / data.multiValueGraphicTransform.scale[1] / data.multiValueContainerPosition[seriesIndex].scale[0],
-          ]
-        })
-      }
+      // } else {
+      //   return data.multiValueContainerPosition.map((series, seriesIndex) => {
+      //     // 由於有垂直的旋轉，所以外層 (container) x和y的scale要互換
+      //     return [
+      //       1 / data.multiValueGraphicTransform.scale[0] / data.multiValueContainerPosition[seriesIndex].scale[1],
+      //       1 / data.multiValueGraphicTransform.scale[1] / data.multiValueContainerPosition[seriesIndex].scale[0],
+      //     ]
+      //   })
+      // }
     }),
   )
 }
 
-export const multiValueAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
-  fullDataFormatter$: Observable<DataFormatterMultiValue>
-  layout$: Observable<Layout>
-}): Observable<{
-  width: number;
-  height: number;
-}> => {
-  const destroy$ = new Subject()
+// export const multiValueAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
+//   fullDataFormatter$: Observable<DataFormatterMultiValue>
+//   layout$: Observable<Layout>
+// }): Observable<{
+//   width: number;
+//   height: number;
+// }> => {
+//   const destroy$ = new Subject()
 
-  function calcAxesSize ({ xAxisPosition, yAxisPosition, width, height }: {
-    xAxisPosition: AxisPosition
-    yAxisPosition: AxisPosition
-    width: number
-    height: number
-  }) {
-    if ((xAxisPosition === 'bottom' || xAxisPosition === 'top') && (yAxisPosition === 'left' || yAxisPosition === 'right')) {
-      return { width, height }
-    } else if ((xAxisPosition === 'left' || xAxisPosition === 'right') && (yAxisPosition === 'bottom' || yAxisPosition === 'top')) {
-      return {
-        width: height,
-        height: width
-      }
-    } else {
-      // default
-      return { width, height }
-    }
-  }
+//   function calcAxesSize ({ xAxisPosition, yAxisPosition, width, height }: {
+//     xAxisPosition: AxisPosition
+//     yAxisPosition: AxisPosition
+//     width: number
+//     height: number
+//   }) {
+//     if ((xAxisPosition === 'bottom' || xAxisPosition === 'top') && (yAxisPosition === 'left' || yAxisPosition === 'right')) {
+//       return { width, height }
+//     } else if ((xAxisPosition === 'left' || xAxisPosition === 'right') && (yAxisPosition === 'bottom' || yAxisPosition === 'top')) {
+//       return {
+//         width: height,
+//         height: width
+//       }
+//     } else {
+//       // default
+//       return { width, height }
+//     }
+//   }
 
-  return new Observable(subscriber => {
-    combineLatest({
-      fullDataFormatter: fullDataFormatter$,
-      layout: layout$
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async (d) => d),
-    ).subscribe(data => {
+//   return new Observable(subscriber => {
+//     combineLatest({
+//       fullDataFormatter: fullDataFormatter$,
+//       layout: layout$
+//     }).pipe(
+//       takeUntil(destroy$),
+//       switchMap(async (d) => d),
+//     ).subscribe(data => {
       
-      const axisSize = calcAxesSize({
-        xAxisPosition: 'bottom',
-        yAxisPosition: 'left',
-        width: data.layout.width,
-        height: data.layout.height,
-      })
+//       const axisSize = calcAxesSize({
+//         xAxisPosition: 'bottom',
+//         yAxisPosition: 'left',
+//         width: data.layout.width,
+//         height: data.layout.height,
+//       })
 
-      subscriber.next(axisSize)
+//       subscriber.next(axisSize)
 
-      return function unsubscribe () {
-        destroy$.next(undefined)
-      }
-    })
-  })
-}
+//       return function unsubscribe () {
+//         destroy$.next(undefined)
+//       }
+//     })
+//   })
+// }
 
 // export const multiValueHighlightObservable = ({ computedData$, fullChartParams$, event$ }: {
 //   computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
@@ -416,18 +421,11 @@ export const multiValueCategoryLabelsObservable = ({ computedData$, fullDataForm
   computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiValue'>>
 }) => {
-  return combineLatest({
-    computedData: computedData$,
-    fullDataFormatter: fullDataFormatter$,
-  }).pipe(
+  return computedData$.pipe(
     map(data => {
-      const CategoryLabelsSet = new Set(data.fullDataFormatter.categoryLabels)
-      for (let datum of data.computedData) {
-        if (datum.categoryLabel) {
-          CategoryLabelsSet.add(datum.categoryLabel)
-        }
-      }
-      return Array.from(CategoryLabelsSet)
+      return data
+        .map(d => d[0] ? d[0].categoryLabel : '')
+        // .filter(d => d != null && d != '')
     }),
     distinctUntilChanged((a, b) => {
       return JSON.stringify(a).length === JSON.stringify(b).length
@@ -439,8 +437,11 @@ export const multiValueVisibleComputedDataObservable = ({ computedData$ }: { com
   return computedData$.pipe(
     map(data => {
       const visibleComputedData = data
-        .filter(d => {
-          return d.visible == true
+        .map(categoryData => {
+          return categoryData.filter(d => d.visible == true)
+        })
+        .filter(categoryData => {
+          return categoryData.length > 0
         })
       return visibleComputedData
     })
@@ -451,8 +452,11 @@ export const multiValueVisibleComputedLayoutDataObservable = ({ computedLayoutDa
   return computedLayoutData$.pipe(
     map(data => {
       const visibleComputedData = data
-        .filter(d => {
-          return d.visible == true
+        .map(categoryData => {
+          return categoryData.filter(d => d.visible == true)
+        })
+        .filter(categoryData => {
+          return categoryData.length > 0
         })
       return visibleComputedData
     })
