@@ -45,10 +45,10 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, se
   //     <defs> clipPath selection
   //     <g> graphic selection（圖形 scale 範圍的變形）
   const seriesSelection$ = seriesLabels$.pipe(
-    map((existSeriesLabels, i) => {
+    map((seriesLabels, i) => {
       return selection
         .selectAll<SVGGElement, string>(`g.${seriesClassName}`)
-        .data(existSeriesLabels, d => d)
+        .data(seriesLabels, d => d)
         .join(
           enter => {
             return enter

@@ -87,6 +87,7 @@ export const multiValueComputedLayoutDataObservable = ({ computedData$, fullData
               ...datum,
               axisX: xScale(datum.value[0] ?? 0),
               axisY: data.layout.height - yScale(datum.value[1] ?? 0), // y軸的繪圖座標是從上到下，所以反轉
+              // axisY: yScale(datum.value[1] ?? 0), // y軸的繪圖座標是從上到下，所以反轉
             }
           })
         })
@@ -270,7 +271,7 @@ export const multiValueGraphicTransformObservable = ({ computedData$, fullDataFo
     scaleX = gWidth / width
 
     // -- yScale --
-    const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+    const yScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
       maxValue: filteredMaxY,
       minValue: filteredMinY,
       axisWidth: height,
@@ -279,8 +280,8 @@ export const multiValueGraphicTransformObservable = ({ computedData$, fullDataFo
     })
   
     // -- translateY, scaleY --
-    const rangeMinY = valueScale(minY > 0 ? 0 : minY) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
-    const rangeMaxY = valueScale(maxY < 0 ? 0 : maxY) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
+    const rangeMinY = yScale(minY > 0 ? 0 : minY) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
+    const rangeMaxY = yScale(maxY < 0 ? 0 : maxY) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
     translateY = rangeMinY
     const gHeight = rangeMaxY - rangeMinY
     scaleY = gHeight / height

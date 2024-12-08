@@ -413,7 +413,6 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   const minAndMax$: Observable<[number, number]> = new Observable(subscriber => {
     combineLatest({
       fullDataFormatter: fullDataFormatter$,
-      gridAxesSize: gridAxesSize$,
       computedData: computedData$
     }).pipe(
       takeUntil(destroy$),

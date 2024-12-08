@@ -8,6 +8,7 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
   textSizePx$: Observable<number>
   isCategorySeprate$: Observable<boolean>
   multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+  
   // multiValueAxesTransform$: Observable<TransformData>
   // multiValueAxesReverseTransform$: Observable<TransformData>
   multiValueGraphicTransform$: Observable<TransformData>
@@ -17,8 +18,8 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
   categoryLabels$: Observable<string[]>
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
   visibleComputedData$: Observable<ComputedDataMultiValue>
-  computedLayoutData$: Observable<ComputedDataMultiValue>
-  visibleComputedLayoutData$: Observable<ComputedDataMultiValue>
+  computedLayoutData$: Observable<ComputedLayoutDataMultiValue>
+  visibleComputedLayoutData$: Observable<ComputedLayoutDataMultiValue>
 }
 
 export type ComputedLayoutDataMultiValue = ComputedLayoutDatumMultiValue[][]

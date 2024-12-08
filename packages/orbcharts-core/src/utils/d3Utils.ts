@@ -63,6 +63,12 @@ export const createAxisLinearScale = ({
   return d3.scaleLinear()
     .domain([axisDomainMinValue, axisDomainMaxValue])
     .range([0, axisWidth])
+  // return (n: number) => {
+  //   const scale = d3.scaleLinear()
+  //     .domain([axisDomainMinValue, axisDomainMaxValue])
+  //     .range([0, axisWidth])
+  //   return axisWidth - scale(n)// + axisWidth
+  // }
 }
 
 // scalePoint - 非連續資料對應到比例尺座標上

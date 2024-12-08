@@ -1,9 +1,11 @@
 import type { DataTree, DataTreeObj, DataTreeDatum, ComputedDataFn, ComputedDataTree } from '../../lib/core-types'
 import { isPlainObject } from '../utils/commonUtils'
-import { seriesColorPredicate } from '../utils/orbchartsUtils'
+import { seriesColorPredicate, createDefaultCategoryLabel } from '../utils/orbchartsUtils'
 
 export const computedDataFn: ComputedDataFn<'tree'> = (context) => {
   const { data = [], dataFormatter, chartParams } = context
+
+  const defaultCategoryLabel = createDefaultCategoryLabel()
 
   // <categoryLabel, categoryIndex>
   const CategoryIndexMap = new Map<string, number>(
@@ -16,7 +18,7 @@ export const computedDataFn: ComputedDataFn<'tree'> = (context) => {
     label: '',
     description: '',
     categoryIndex: -1,
-    categoryLabel: null,
+    categoryLabel: '',
     color: '',
     visible: true,
     // tooltipContent: '',
@@ -64,7 +66,7 @@ export const computedDataFn: ComputedDataFn<'tree'> = (context) => {
           data: root.data,
           // tooltipContent: root.tooltipContent,
           value: root.value,
-          categoryLabel: root.categoryLabel,
+          categoryLabel: root.categoryLabel ?? defaultCategoryLabel,
           children: (ChildrenMap.get(root.id) ?? []).map(d => {
             // 遞迴
             return createBranchData(d)
@@ -84,14 +86,11 @@ export const computedDataFn: ComputedDataFn<'tree'> = (context) => {
     
     const formatBranchData = (branch: DataTreeObj, level: number, seq: number): ComputedDataTree => {
       const childLayer = level + 1
-      const categoryLabel: string | null = branch.categoryLabel ?? null
-      let categoryIndex = -1
-      if (categoryLabel != null && categoryLabel !== '') {
-        if (!CategoryIndexMap.has(categoryLabel)) {
-          CategoryIndexMap.set(categoryLabel, CategoryIndexMap.size)
-        }
-        categoryIndex = CategoryIndexMap.get(categoryLabel) ?? -1
+      const categoryLabel: string = branch.categoryLabel ?? defaultCategoryLabel
+      if (!CategoryIndexMap.has(categoryLabel)) {
+        CategoryIndexMap.set(categoryLabel, CategoryIndexMap.size)
       }
+      const categoryIndex = CategoryIndexMap.get(categoryLabel) ?? 0
 
       const currentIndex = index
       index++

@@ -1,5 +1,5 @@
 import type { DataMultiValueDatum, ComputedDataFn, ComputedDatumMultiValue } from '../../lib/core-types'
-import { createDefaultCategoryLabel, createDefaultDatumId } from '../utils/orbchartsUtils'
+import { createDefaultCategoryLabel, createDefaultDatumId, seriesColorPredicate } from '../utils/orbchartsUtils'
 import { isPlainObject } from '../utils'
 
 export const computedDataFn: ComputedDataFn<'multiValue'> = (context) => {
@@ -8,7 +8,7 @@ export const computedDataFn: ComputedDataFn<'multiValue'> = (context) => {
     return []
   }
 
-  const defaultCategoryLabel = createDefaultCategoryLabel('multiValue')
+  const defaultCategoryLabel = createDefaultCategoryLabel()
 
   let computedDataMultiValue: ComputedDatumMultiValue[][] = []
 
@@ -52,9 +52,8 @@ export const computedDataFn: ComputedDataFn<'multiValue'> = (context) => {
       const CategoryLabelsSet = new Set(dataFormatter.categoryLabels)
       // 再加入 datum 中的 categoryLabel
       for (let datum of dataMultiValue) {
-        if (datum.categoryLabel) {
-          CategoryLabelsSet.add(datum.categoryLabel) // 不重覆
-        }
+        const categoryLabel = datum.categoryLabel ?? defaultCategoryLabel
+        CategoryLabelsSet.add(categoryLabel) // 不重覆
       }
       return Array.from(CategoryLabelsSet)
     })()
@@ -75,6 +74,8 @@ export const computedDataFn: ComputedDataFn<'multiValue'> = (context) => {
 
       const categoryIndex = CategoryIndexMap.get(d.categoryLabel) ?? 0
 
+      const color = seriesColorPredicate(categoryIndex, chartParams)
+
       const computedDatum: ComputedDatumMultiValue = {
         id: d.id ? d.id : defaultId,
         index: currentIndex,
@@ -89,7 +90,7 @@ export const computedDataFn: ComputedDataFn<'multiValue'> = (context) => {
         // valueLabel: formatValueToLabel(_d.value, dataFormatter.multiValue[_i].valueFormat),
         // axis: _i == 0 ? xScale(_d.value) : yScale(_d.value),
         visible: true, // 先給預設值
-        color: '' // @Q@ 未完成
+        color
       }
 
       computedDatum.visible = dataFormatter.visibleFilter(computedDatum, context)

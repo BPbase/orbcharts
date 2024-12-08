@@ -45,10 +45,10 @@ export const multiValueSelectionsObservable = ({ selection, pluginName, clipPath
   //     <defs> clipPath selection
   //     <g> graphic selection（圖形 scale 範圍的變形）
   const categorySelection$ = categoryLabels$.pipe(
-    map((existSeriesLabels, i) => {
+    map((categoryLabels, i) => {
       return selection
         .selectAll<SVGGElement, string>(`g.${categoryClassName}`)
-        .data(existSeriesLabels, d => d)
+        .data(categoryLabels, d => d)
         .join(
           enter => {
             return enter

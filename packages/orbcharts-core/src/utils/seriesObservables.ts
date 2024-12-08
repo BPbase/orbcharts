@@ -14,7 +14,7 @@ import type {
   ComputedDatumSeries,
   ComputedDataTypeMap,
   DataFormatterTypeMap,
-  SeriesContainerPosition,
+  ContainerPosition,
   Layout } from '../../lib/core-types'
 import { calcSeriesContainerLayout } from './orbchartsUtils'
 
@@ -97,7 +97,7 @@ export const seriesContainerPositionObservable = ({ computedData$, fullDataForma
   computedData$: Observable<ComputedDataTypeMap<'series'>>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>>
   layout$: Observable<Layout>
-}): Observable<SeriesContainerPosition[]> => {
+}): Observable<ContainerPosition[]> => {
 
   const gridContainerPosition$ = combineLatest({
     computedData: computedData$,
@@ -113,7 +113,7 @@ export const seriesContainerPositionObservable = ({ computedData$, fullDataForma
         // return data.computedData.map((seriesData, seriesIndex) => {
         //   const columnIndex = seriesIndex % data.fullDataFormatter.container.columnAmount
         //   const rowIndex = Math.floor(seriesIndex / data.fullDataFormatter.container.columnAmount)
-        //   const { startX, startY, centerX, centerY, width, height } = calcSeriesContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
+        //   const { startX, startY, centerX, centerY, width, height } = calcContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
         //   return {
         //     slotIndex: seriesIndex,
         //     rowIndex,
@@ -132,7 +132,7 @@ export const seriesContainerPositionObservable = ({ computedData$, fullDataForma
         // const columnIndex = 0
         // const rowIndex = 0
         // return data.computedData.map((seriesData, seriesIndex) => {
-        //   const { startX, startY, centerX, centerY, width, height } = calcSeriesContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
+        //   const { startX, startY, centerX, centerY, width, height } = calcContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
         //   return {
         //     slotIndex: 0,
         //     rowIndex,
@@ -153,7 +153,7 @@ export const seriesContainerPositionObservable = ({ computedData$, fullDataForma
 }
 
 export const seriesContainerPositionMapObservable = ({ seriesContainerPosition$, seriesLabels$, separateSeries$ }: {
-  seriesContainerPosition$: Observable<SeriesContainerPosition[]>
+  seriesContainerPosition$: Observable<ContainerPosition[]>
   seriesLabels$: Observable<string[]>
   separateSeries$: Observable<boolean>
 }) => {
@@ -165,10 +165,10 @@ export const seriesContainerPositionMapObservable = ({ seriesContainerPosition$,
     switchMap(async (d) => d),
     map(data => {
       return data.separateSeries
-        ? new Map<string, SeriesContainerPosition>(data.seriesLabels.map((seriesLabel, seriesIndex) => {
+        ? new Map<string, ContainerPosition>(data.seriesLabels.map((seriesLabel, seriesIndex) => {
           return [seriesLabel, data.seriesContainerPosition[seriesIndex] ?? data.seriesContainerPosition[0]]
         }))
-        : new Map<string, SeriesContainerPosition>(data.seriesLabels.map((seriesLabel, seriesIndex) => {
+        : new Map<string, ContainerPosition>(data.seriesLabels.map((seriesLabel, seriesIndex) => {
           return [seriesLabel, data.seriesContainerPosition[0]]
         }))
     })

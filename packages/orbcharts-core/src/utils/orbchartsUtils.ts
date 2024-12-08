@@ -48,8 +48,9 @@ export function createDefaultGroupLabel (chartTypeOrPrefix: string, groupIndex: 
   return `${chartTypeOrPrefix}_group${groupIndex}`
 }
 
-export function createDefaultCategoryLabel (chartTypeOrPrefix: string) {
-  return `${chartTypeOrPrefix}_category`
+export function createDefaultCategoryLabel () {
+  // return `${chartTypeOrPrefix}_category`
+  return '' // 空值
 }
 
 export function createGridSeriesLabels ({ transposedDataGrid, dataFormatterGrid, chartType = 'grid' }: {
