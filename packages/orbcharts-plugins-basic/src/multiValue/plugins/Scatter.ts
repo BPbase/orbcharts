@@ -40,14 +40,14 @@ type ClipPathDatum = {
 const pluginName = 'Scatter'
 
 
-function renderDots ({ graphicGSelection, circleGClassName, circleClassName, visibleComputedLayoutData, fullParams, fullChartParams }: {
+function renderDots ({ graphicGSelection, circleGClassName, circleClassName, visibleComputedLayoutData, fullParams, fullChartParams, graphicReverseScale }: {
   graphicGSelection: d3.Selection<SVGGElement, any, any, any>
   circleGClassName: string
   circleClassName: string
   visibleComputedLayoutData: ComputedLayoutDataMultiValue
   fullParams: ScatterParams
   fullChartParams: ChartParams
-  // graphicReverseScale: [number, number][]
+  graphicReverseScale: [number, number][]
 }) {
   const createEnterDuration = (enter: d3.Selection<d3.EnterElement, ComputedDatumMultiValue, SVGGElement, any>) => {
     const enterSize = enter.size()
@@ -107,47 +107,13 @@ function renderDots ({ graphicGSelection, circleGClassName, circleClassName, vis
             .attr('fill', (d, i) => getDatumColor({ datum: d, colorType: fullParams.fillColorType, fullChartParams }))
             .attr('stroke', (d, i) => getDatumColor({ datum: d, colorType: fullParams.strokeColorType, fullChartParams }))
             .attr('stroke-width', fullParams.strokeWidth)
-            // .attr('transform', `scale(${graphicReverseScale[categoryIndex][0] ?? 1}, ${graphicReverseScale[categoryIndex][1] ?? 1})`)
+            .attr('transform', `scale(${graphicReverseScale[categoryIndex][0] ?? 1}, ${graphicReverseScale[categoryIndex][1] ?? 1})`)
         })
     })
 
   const graphicCircleSelection: d3.Selection<SVGRectElement, ComputedDatumMultiValue, SVGGElement, unknown>  = graphicGSelection.selectAll(`circle.${circleClassName}`)
 
   return graphicCircleSelection
-}
-
-
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_SCATTER_PARAMS> = {
-  name: pluginName,
-  defaultParams: DEFAULT_SCATTER_PARAMS,
-  layerIndex: LAYER_INDEX_OF_GRAPHIC_COVER,
-  validator: (params, { validateColumns }) => {
-    // const result = validateColumns(params, {
-    //   radius: {
-    //     toBeTypes: ['number']
-    //   },
-    //   fillColorType: {
-    //     toBeOption: 'ColorType',
-    //   },
-    //   strokeColorType: {
-    //     toBeOption: 'ColorType',
-    //   },
-    //   strokeWidth: {
-    //     toBeTypes: ['number']
-    //   },
-    //   // strokeWidthWhileHighlight: {
-    //   //   toBeTypes: ['number']
-    //   // },
-    //   onlyShowHighlighted: {
-    //     toBeTypes: ['boolean']
-    //   }
-    // })
-    return {
-      status: 'success',
-      columnName: '',
-      expectToBe: ''
-    }
-  }
 }
 
 
@@ -162,6 +128,7 @@ function highlightDots ({ selection, ids, fullChartParams }: {
     selection
       .transition('highlight')
       .duration(200)
+      .style('opacity', 1)
     // selection
     //   .attr('stroke-width', fullParams.strokeWidth)
 
@@ -181,6 +148,7 @@ function highlightDots ({ selection, ids, fullChartParams }: {
       } else {
         const dot = d3.select(n[i])
         dot
+          .style('opacity', fullChartParams.styles.unhighlightedOpacity)
           .transition('highlight')
           .duration(200)
         // dot
@@ -219,6 +187,39 @@ function renderClipPath ({ defsSelection, clipPathData }: {
 
 }
 
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_SCATTER_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_SCATTER_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC_COVER,
+  validator: (params, { validateColumns }) => {
+    // const result = validateColumns(params, {
+    //   radius: {
+    //     toBeTypes: ['number']
+    //   },
+    //   fillColorType: {
+    //     toBeOption: 'ColorType',
+    //   },
+    //   strokeColorType: {
+    //     toBeOption: 'ColorType',
+    //   },
+    //   strokeWidth: {
+    //     toBeTypes: ['number']
+    //   },
+    //   // strokeWidthWhileHighlight: {
+    //   //   toBeTypes: ['number']
+    //   // },
+    //   onlyShowHighlighted: {
+    //     toBeTypes: ['boolean']
+    //   }
+    // })
+    return {
+      status: 'success',
+      columnName: '',
+      expectToBe: ''
+    }
+  }
+}
+
 export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   
   const destroy$ = new Subject()
@@ -240,6 +241,19 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
     multiValueContainerPosition$: observer.multiValueContainerPosition$,
     multiValueGraphicTransform$: observer.multiValueGraphicTransform$
   })
+
+  const graphicReverseScale$: Observable<[number, number][]> = combineLatest({
+    computedData: observer.computedData$,
+    multiValueGraphicReverseScale: observer.multiValueGraphicReverseScale$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async data => data),
+    map(data => {
+      return data.computedData.map((series, categoryIndex) => {
+        return data.multiValueGraphicReverseScale[categoryIndex]
+      })
+    })
+  )
 
   const clipPathSubscription = combineLatest({
     defsSelection: defsSelection$,
@@ -263,14 +277,13 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
   const graphicSelection$ = combineLatest({
     graphicGSelection: graphicGSelection$,
     visibleComputedLayoutData: observer.visibleComputedLayoutData$,
-    // graphicReverseScale: graphicReverseScale$,
+    graphicReverseScale: graphicReverseScale$,
     fullChartParams: observer.fullChartParams$,
     fullParams: observer.fullParams$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      console.log('renderDots')
       return renderDots({
         graphicGSelection: data.graphicGSelection,
         circleGClassName,
@@ -278,7 +291,7 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
         visibleComputedLayoutData: data.visibleComputedLayoutData,
         fullParams: data.fullParams,
         fullChartParams: data.fullChartParams,
-        // graphicReverseScale: data.graphicReverseScale
+        graphicReverseScale: data.graphicReverseScale
       })
     })
   )

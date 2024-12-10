@@ -15,7 +15,8 @@ import {
   multiValueVisibleComputedDataObservable,
   multiValueVisibleComputedLayoutDataObservable,
   multiValueContainerPositionObservable,
-
+  minMaxXYObservable,
+  filteredMinMaxXYDataObservable
 } from '../utils/multiValueObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({ subject, observer }) => {
@@ -36,33 +37,6 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     layout$: observer.layout$,
   })
 
-  // const multiValueAxesTransform$ = multiValueAxesTransformObservable({
-  //   fullDataFormatter$: observer.fullDataFormatter$,
-  //   layout$: observer.layout$
-  // }).pipe(
-  //   shareReplay(1)
-  // )
-
-  // const multiValueAxesReverseTransform$ = multiValueAxesReverseTransformObservable({
-  //   multiValueAxesTransform$
-  // }).pipe(
-  //   shareReplay(1)
-  // )
-  
-  const multiValueGraphicTransform$ = multiValueGraphicTransformObservable({
-    computedData$: observer.computedData$,
-    fullDataFormatter$: observer.fullDataFormatter$,
-    layout$: observer.layout$
-  }).pipe(
-    shareReplay(1)
-  )
-
-  const multiValueGraphicReverseScale$ = multiValueGraphicReverseScaleObservable({
-    multiValueContainerPosition$: multiValueContainerPosition$,
-    // multiValueAxesTransform$: multiValueAxesTransform$,
-    multiValueGraphicTransform$: multiValueGraphicTransform$,
-  })
-
   // const multiValueAxesSize$ = multiValueAxesSizeObservable({
   //   fullDataFormatter$: observer.fullDataFormatter$,
   //   layout$: observer.layout$
@@ -71,7 +45,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
   // )
 
   const datumList$ = observer.computedData$.pipe(
-    map(d => d.flat())
+    map(d => d.flat().flat())
   ).pipe(
     shareReplay(1)
   )
@@ -95,8 +69,16 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
 
+  const minMaxXY$ = minMaxXYObservable({
+    computedData$: observer.computedData$
+  }).pipe(
+    shareReplay(1)
+  )
+
+
   const computedLayoutData$ = multiValueComputedLayoutDataObservable({
     computedData$: observer.computedData$,
+    minMaxXY$,
     fullDataFormatter$: observer.fullDataFormatter$,
     layout$: observer.layout$,
   }).pipe(
@@ -115,6 +97,42 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
 
+  const filteredMinMaxXYData$ = filteredMinMaxXYDataObservable({
+    visibleComputedLayoutData$: visibleComputedLayoutData$,
+    minMaxXY$,
+    fullDataFormatter$: observer.fullDataFormatter$,
+  }).pipe(
+    shareReplay(1)
+  )
+
+  // const multiValueAxesTransform$ = multiValueAxesTransformObservable({
+  //   fullDataFormatter$: observer.fullDataFormatter$,
+  //   layout$: observer.layout$
+  // }).pipe(
+  //   shareReplay(1)
+  // )
+
+  // const multiValueAxesReverseTransform$ = multiValueAxesReverseTransformObservable({
+  //   multiValueAxesTransform$
+  // }).pipe(
+  //   shareReplay(1)
+  // )
+  
+  const multiValueGraphicTransform$ = multiValueGraphicTransformObservable({
+    minMaxXY$,
+    filteredMinMaxXYData$,
+    fullDataFormatter$: observer.fullDataFormatter$,
+    layout$: observer.layout$
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const multiValueGraphicReverseScale$ = multiValueGraphicReverseScaleObservable({
+    multiValueContainerPosition$: multiValueContainerPosition$,
+    // multiValueAxesTransform$: multiValueAxesTransform$,
+    multiValueGraphicTransform$: multiValueGraphicTransform$,
+  })
+
 
   return <ContextObserverTypeMap<'multiValue', any>>{
     fullParams$: observer.fullParams$,
@@ -125,16 +143,18 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     textSizePx$,
     isCategorySeprate$,
     multiValueContainerPosition$,
-    // multiValueAxesTransform$,
-    // multiValueAxesReverseTransform$,
-    multiValueGraphicTransform$,
-    multiValueGraphicReverseScale$,
     // multiValueAxesSize$,
     multiValueHighlight$,
     categoryLabels$,
     CategoryDataMap$,
+    minMaxXY$,
     computedLayoutData$,
     visibleComputedData$,
     visibleComputedLayoutData$,
+    filteredMinMaxXYData$,
+    // multiValueAxesTransform$,
+    // multiValueAxesReverseTransform$,
+    multiValueGraphicTransform$,
+    multiValueGraphicReverseScale$,
   }
 }

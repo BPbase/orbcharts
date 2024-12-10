@@ -85,14 +85,14 @@ export const GridLegend = defineGridPlugin(pluginConfig)(({ selection, rootSelec
       ]
       return {
         ...d,
-        seriesList
+        labelList: seriesList
       }
     })
   )
 
   const unsubscribeBaseLegend = createBaseLegend(pluginName, {
     rootSelection,
-    seriesLabels$,
+    legendLabels$: seriesLabels$,
     fullParams$,
     layout$: observer.layout$,
     fullChartParams$: observer.fullChartParams$,

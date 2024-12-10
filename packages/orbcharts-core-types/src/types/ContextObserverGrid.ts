@@ -21,10 +21,11 @@ export interface ContextObserverGridDetail {
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
-  computedLayoutData$: Observable<ComputedLayoutDataGrid>
-  visibleComputedData$: Observable<ComputedDataGrid>
+  computedLayoutData$: Observable<ComputedLayoutDataGrid> // 有座標的資料
+  visibleComputedData$: Observable<ComputedDataGrid> // filter掉visible=false的資料
   visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
   computedStackedData$: Observable<ComputedDataGrid>
+  // filteredMinMaxData$: Observable<{ minValueDatum: ComputedLayoutDatumGrid; maxValueDatum: ComputedLayoutDatumGrid }>
 }
 
 export type ComputedLayoutDataGrid = ComputedLayoutDatumGrid[][]

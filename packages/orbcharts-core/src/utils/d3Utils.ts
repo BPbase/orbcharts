@@ -8,12 +8,14 @@ export const createAxisLinearScale = ({
   axisWidth,
   scaleDomain = DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain,
   scaleRange = DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange,
+  reverse = false
 }: {
   maxValue: number
   minValue: number
   axisWidth: number
   scaleDomain: [number | 'min' | 'auto', number | 'max' | 'auto']
   scaleRange: [number, number] // 0-1
+  reverse?: boolean
 }) => {
   // -- 無值補上預設值 --
   const domainMin: number | 'min' | 'auto' = scaleDomain[0] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[0]
@@ -60,9 +62,15 @@ export const createAxisLinearScale = ({
   // return d3.scaleLinear()
   //   .domain([domainMinValue, domainMaxValue])
   //   .range([rangeMinValue, rangeMaxValue])
-  return d3.scaleLinear()
-    .domain([axisDomainMinValue, axisDomainMaxValue])
-    .range([0, axisWidth])
+  if (reverse) {
+    return d3.scaleLinear()
+      .domain([axisDomainMinValue, axisDomainMaxValue])
+      .range([axisWidth, 0])
+  } else {
+    return d3.scaleLinear()
+      .domain([axisDomainMinValue, axisDomainMaxValue])
+      .range([0, axisWidth])
+  }
   // return (n: number) => {
   //   const scale = d3.scaleLinear()
   //     .domain([axisDomainMinValue, axisDomainMaxValue])

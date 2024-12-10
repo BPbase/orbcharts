@@ -20,7 +20,7 @@ import type {
   TransformData,
   DataFormatterGrid,
   ChartParams } from '../../../lib/core-types'
-import { DEFAULT_GROUP_AREA_PARAMS } from '../defaults'
+import { DEFAULT_GROUP_AUX_PARAMS } from '../defaults'
 import { parseTickFormatValue } from '../../utils/d3Utils'
 import { measureTextWidth } from '../../utils/commonUtils'
 import { getColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
@@ -52,9 +52,9 @@ interface LabelDatum {
 const pluginName = 'GroupAux'
 const labelClassName = getClassName(pluginName, 'label-box')
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_GROUP_AREA_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_GROUP_AUX_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_GROUP_AREA_PARAMS,
+  defaultParams: DEFAULT_GROUP_AUX_PARAMS,
   layerIndex: LAYER_INDEX_OF_AUX,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {
@@ -603,7 +603,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'mouseover',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',
@@ -626,7 +626,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'mousemove',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',
@@ -649,7 +649,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'mouseout',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',
@@ -672,7 +672,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'click',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',
@@ -849,7 +849,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
           eventName: 'mouseover',
           highlightTarget: data.highlightTarget,
           datum: null,
-          gridIndex: 0, // @Q@ 暫不處理
+          gridIndex: 0,
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -870,7 +870,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
           eventName: 'mousemove',
           highlightTarget: data.highlightTarget,
           datum: null,
-          gridIndex: 0, // @Q@ 暫不處理
+          gridIndex: 0,
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -893,7 +893,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
           eventName: 'mouseout',
           highlightTarget: data.highlightTarget,
           datum: null,
-          gridIndex: 0, // @Q@ 暫不處理
+          gridIndex: 0,
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -914,7 +914,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
           eventName: 'click',
           highlightTarget: data.highlightTarget,
           datum: null,
-          gridIndex: 0, // @Q@ 暫不處理
+          gridIndex: 0,
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -995,7 +995,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'mouseover',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',
@@ -1015,7 +1015,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'mousemove',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',
@@ -1035,7 +1035,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'mouseout',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',
@@ -1055,7 +1055,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'click',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',

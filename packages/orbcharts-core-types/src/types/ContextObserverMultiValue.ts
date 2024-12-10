@@ -8,19 +8,37 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
   textSizePx$: Observable<number>
   isCategorySeprate$: Observable<boolean>
   multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
-  
-  // multiValueAxesTransform$: Observable<TransformData>
-  // multiValueAxesReverseTransform$: Observable<TransformData>
-  multiValueGraphicTransform$: Observable<TransformData>
-  multiValueGraphicReverseScale$: Observable<[number, number][]>
   // multiValueAxesSize$: Observable<{ width: number; height: number; }>
   multiValueHighlight$: Observable<ComputedDatumMultiValue[]>
   categoryLabels$: Observable<string[]>
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
+  minMaxXY$: Observable<{
+    minX: number
+    maxX: number
+    minY: number
+    maxY: number
+  }>
+  filteredMinMaxXYData$: Observable<{
+    minXDatum: ComputedLayoutDatumMultiValue
+    maxXDatum: ComputedLayoutDatumMultiValue
+    minYDatum: ComputedLayoutDatumMultiValue
+    maxYDatum: ComputedLayoutDatumMultiValue
+  }>
   visibleComputedData$: Observable<ComputedDataMultiValue>
   computedLayoutData$: Observable<ComputedLayoutDataMultiValue>
   visibleComputedLayoutData$: Observable<ComputedLayoutDataMultiValue>
+  // multiValueAxesTransform$: Observable<TransformData>
+  // multiValueAxesReverseTransform$: Observable<TransformData>
+  multiValueGraphicTransform$: Observable<TransformData>
+  multiValueGraphicReverseScale$: Observable<[number, number][]>
 }
+
+// export type MultiValueMinMaxData = {
+//   minXDatum: ComputedLayoutDatumMultiValue
+//   maxXDatum: ComputedLayoutDatumMultiValue
+//   minYDatum: ComputedLayoutDatumMultiValue
+//   maxYDatum: ComputedLayoutDatumMultiValue
+// }
 
 export type ComputedLayoutDataMultiValue = ComputedLayoutDatumMultiValue[][]
 

@@ -1,3 +1,6 @@
 export * from './defaults'
 // export * from './types'
+export { MultiValueLegend } from './plugins/MultiValueLegend'
+export { MultiValueTooltip } from './plugins/MultiValueTooltip'
 export { Scatter } from './plugins/Scatter'
+export { XYAxes } from './plugins/XYAxes'

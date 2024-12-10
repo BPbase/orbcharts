@@ -21,9 +21,9 @@ import {
   createAxisLinearScale,
   getMinAndMax
 } from '../../../lib/core'
-import type { MultiValueAxesParams
+import type { XYAxesParams
 } from '../../../lib/plugins-basic-types'
-import { DEFAULT_MULTI_VALUE_AXES_PARAMS } from '../defaults'
+import { DEFAULT_X_Y_AXES_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_AXIS } from '../../const'
 import { getColor, getDatumColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { parseTickFormatValue } from '../../utils/d3Utils'
@@ -49,38 +49,42 @@ interface TextAlign {
 //   tickTextColorType: ColorType
 // }
 
-const pluginName = 'MultiValueAxis'
+const pluginName = 'XYAxes'
 
 const defaultTickSize = 6
 
-const tickTextAnchor = 'end'
-const tickDominantBaseline = 'middle'
-const axisLabelAnchor = 'end'
-const axisLabelDominantBaseline = 'auto'
+const xTickTextAnchor = 'middle'
+const xTickDominantBaseline = 'hanging'
+const xAxisLabelAnchor = 'start'
+const xAxisLabelDominantBaseline = 'hanging'
+const yTickTextAnchor = 'end'
+const yTickDominantBaseline = 'middle'
+const yAxisLabelAnchor = 'end'
+const yAxisLabelDominantBaseline = 'auto'
 
-function renderYAxisLabel ({ selection, yLabelClassName, fullParams, layout, fullDataFormatter, fullChartParams }: {
+function renderXAxisLabel ({ selection, xLabelClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
-  yLabelClassName: string
-  fullParams: MultiValueAxesParams
+  xLabelClassName: string
+  fullParams: XYAxesParams
   // axisLabelAlign: TextAlign
   layout: { width: number, height: number }
   fullDataFormatter: DataFormatterMultiValue,
   fullChartParams: ChartParams
-  // textReverseTransform: string,
+  textReverseTransform: string,
 }) {
-  const offsetX = fullParams.yAxis.tickPadding - fullParams.yAxis.labelOffset[0]
-  const offsetY = fullParams.yAxis.tickPadding + fullParams.yAxis.labelOffset[1]
-  let labelX = - offsetX
-  let labelY = - offsetY
+  const offsetX = fullParams.xAxis.tickPadding + fullParams.xAxis.labelOffset[0]
+  const offsetY = fullParams.xAxis.tickPadding + fullParams.xAxis.labelOffset[1]
+  let labelX = offsetX
+  let labelY = offsetY
 
   const axisLabelSelection = selection
-    .selectAll<SVGGElement, MultiValueAxesParams>(`g.${yLabelClassName}`)
+    .selectAll<SVGGElement, XYAxesParams>(`g.${xLabelClassName}`)
     .data([fullParams])
     .join('g')
-    .classed(yLabelClassName, true)
+    .classed(xLabelClassName, true)
     .each((d, i, g) => {
       const text = d3.select(g[i])
-        .selectAll<SVGTextElement, MultiValueAxesParams>(`text`)
+        .selectAll<SVGTextElement, XYAxesParams>(`text`)
         .data([d])
         .join(
           enter => {
@@ -91,40 +95,176 @@ function renderYAxisLabel ({ selection, yLabelClassName, fullParams, layout, ful
           update => update,
           exit => exit.remove()
         )
-        .attr('text-anchor', tickTextAnchor)
-        .attr('dominant-baseline', tickDominantBaseline)
+        .attr('text-anchor', xAxisLabelAnchor)
+        .attr('dominant-baseline', xAxisLabelDominantBaseline)
+        .attr('font-size', fullChartParams.styles.textSize)
+        .style('fill', getColor(fullParams.xAxis.labelColorType, fullChartParams))
+        .style('transform', textReverseTransform)
+        // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
+        .attr('x', labelX)
+        .attr('y', labelY)
+        .text(d => fullDataFormatter.xAxis.label)
+    })
+    .attr('transform', d => `translate(${layout.width}, ${layout.height})`)
+}
+
+function renderYAxisLabel ({ selection, yLabelClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
+  selection: d3.Selection<SVGGElement, any, any, any>,
+  yLabelClassName: string
+  fullParams: XYAxesParams
+  // axisLabelAlign: TextAlign
+  layout: { width: number, height: number }
+  fullDataFormatter: DataFormatterMultiValue,
+  fullChartParams: ChartParams
+  textReverseTransform: string,
+}) {
+  const offsetX = fullParams.yAxis.tickPadding - fullParams.yAxis.labelOffset[0]
+  const offsetY = fullParams.yAxis.tickPadding + fullParams.yAxis.labelOffset[1]
+  let labelX = - offsetX
+  let labelY = - offsetY
+
+  const axisLabelSelection = selection
+    .selectAll<SVGGElement, XYAxesParams>(`g.${yLabelClassName}`)
+    .data([fullParams])
+    .join('g')
+    .classed(yLabelClassName, true)
+    .each((d, i, g) => {
+      const text = d3.select(g[i])
+        .selectAll<SVGTextElement, XYAxesParams>(`text`)
+        .data([d])
+        .join(
+          enter => {
+            return enter
+              .append('text')
+              .style('font-weight', 'bold')
+          },
+          update => update,
+          exit => exit.remove()
+        )
+        .attr('text-anchor', yAxisLabelAnchor)
+        .attr('dominant-baseline', yAxisLabelDominantBaseline)
         .attr('font-size', fullChartParams.styles.textSize)
         .style('fill', getColor(fullParams.yAxis.labelColorType, fullChartParams))
-        // .style('transform', textReverseTransform)
+        .style('transform', textReverseTransform)
         // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
         .attr('x', labelX)
         .attr('y', labelY)
         .text(d => fullDataFormatter.yAxis.label)
     })
-    .attr('transform', d => `translate(0, ${layout.height})`)
-    // .attr('transform', d => `translate(${- fullParams.tickPadding + fullParams.labelOffset[0]}, ${layout.height + fullParams.tickPadding + fullParams.labelOffset[1]})`)
+    // .attr('transform', d => `translate(0, ${layout.height})`)
 }
 
-function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataFormatter, fullChartParams, yScale, textReverseTransform, minAndMax }: {
+function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullDataFormatter, fullChartParams, xScale, textReverseTransform, minMaxXY }: {
+  selection: d3.Selection<SVGGElement, any, any, any>,
+  xAxisClassName: string
+  fullParams: XYAxesParams
+  // tickTextAlign: TextAlign
+  layout: { width: number, height: number }
+  fullDataFormatter: DataFormatterMultiValue,
+  fullChartParams: ChartParams
+  xScale: d3.ScaleLinear<number, number>
+  textReverseTransform: string,
+  minMaxXY: {
+    minX: number;
+    maxX: number;
+    minY: number;
+    maxY: number;
+  }
+}) {
+
+  const xAxisSelection = selection
+    .selectAll<SVGGElement, XYAxesParams>(`g.${xAxisClassName}`)
+    .data([fullParams])
+    .join('g')
+    .classed(xAxisClassName, true)
+    .attr('transform', `translate(0, ${layout.height})`)
+
+  const valueLength = minMaxXY.maxY - minMaxXY.minY
+  
+  // const _xScale = d3.scaleLinear()
+  //   .domain([0, 150])
+  //   .range([416.5, 791.349])
+
+  // 刻度文字偏移
+  let tickPadding = fullParams.xAxis.tickPadding
+  let textY = 0
+
+  // 設定Y軸刻度
+  const xAxis = d3.axisBottom(xScale)
+    .scale(xScale)
+    .ticks(valueLength > fullParams.xAxis.ticks
+      ? fullParams.xAxis.ticks
+      : ((minMaxXY.minY === 0 && minMaxXY.maxY === 0)
+        ? 1
+        : Math.ceil(valueLength))) // 刻度分段數量
+    .tickFormat(d => parseTickFormatValue(d, fullParams.xAxis.tickFormat))
+    .tickSize(fullParams.xAxis.tickFullLine == true
+      ? -layout.height
+      : defaultTickSize)
+    .tickSizeOuter(-layout.height)
+    .tickPadding(tickPadding)
+  
+  const xAxisEl = xAxisSelection
+    .transition()
+    .duration(100)
+    .call(xAxis)
+  
+  xAxisEl.selectAll('line')
+    .style('fill', 'none')
+    .style('stroke', fullParams.xAxis.tickLineVisible == true ? getColor(fullParams.xAxis.tickColorType, fullChartParams) : 'none')
+    .style('stroke-dasharray', fullParams.xAxis.tickFullLineDasharray)
+    .attr('pointer-events', 'none')
+  
+  xAxisEl.selectAll('path')
+    .style('fill', 'none')
+    // .style('stroke', this.fullParams.axisLineColor!)
+    .style('stroke', fullParams.xAxis.axisLineVisible == true ? getColor(fullParams.xAxis.axisLineColorType, fullChartParams) : 'none')
+    .style('shape-rendering', 'crispEdges')
+  
+  // const xText = xAxisEl.selectAll('text')
+  const xText = xAxisSelection.selectAll('text')
+    // .style('font-family', 'sans-serif')
+    .attr('font-size', fullChartParams.styles.textSize)
+    .style('color', getColor(fullParams.xAxis.tickTextColorType, fullChartParams))
+    .attr('text-anchor', yTickTextAnchor)
+    .attr('dominant-baseline', yTickDominantBaseline)
+    // .attr('dy', 0)
+    .attr('y', textY)
+    xText.style('transform', textReverseTransform)
+  
+  // // 抵消掉預設的偏移
+  // if (fullDataFormatter.grid.valueAxis.position === 'bottom' || fullDataFormatter.grid.valueAxis.position === 'top') {
+  //   xText.attr('dy', 0)
+  // }
+
+  return xAxisSelection
+}
+
+function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataFormatter, fullChartParams, yScale, textReverseTransform, minMaxXY }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   yAxisClassName: string
-  fullParams: MultiValueAxesParams
+  fullParams: XYAxesParams
   // tickTextAlign: TextAlign
   layout: { width: number, height: number }
   fullDataFormatter: DataFormatterMultiValue,
   fullChartParams: ChartParams
   yScale: d3.ScaleLinear<number, number>
   textReverseTransform: string,
-  minAndMax: [number, number]
+  minMaxXY: {
+    minX: number;
+    maxX: number;
+    minY: number;
+    maxY: number;
+  }
 }) {
 
   const yAxisSelection = selection
-    .selectAll<SVGGElement, MultiValueAxesParams>(`g.${yAxisClassName}`)
+    .selectAll<SVGGElement, XYAxesParams>(`g.${yAxisClassName}`)
     .data([fullParams])
     .join('g')
     .classed(yAxisClassName, true)
 
-  const valueLength = minAndMax[1] - minAndMax[0]
+  const valueLength = minMaxXY.maxY - minMaxXY.minY
   
   // const _yScale = d3.scaleLinear()
   //   .domain([0, 150])
@@ -139,7 +279,7 @@ function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataF
     .scale(yScale)
     .ticks(valueLength > fullParams.yAxis.ticks
       ? fullParams.yAxis.ticks
-      : ((minAndMax[0] === 0 && minAndMax[1] === 0)
+      : ((minMaxXY.minY === 0 && minMaxXY.maxY === 0)
         ? 1
         : Math.ceil(valueLength))) // 刻度分段數量
     .tickFormat(d => parseTickFormatValue(d, fullParams.yAxis.tickFormat))
@@ -170,8 +310,8 @@ function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataF
     // .style('font-family', 'sans-serif')
     .attr('font-size', fullChartParams.styles.textSize)
     .style('color', getColor(fullParams.yAxis.tickTextColorType, fullChartParams))
-    .attr('text-anchor', axisLabelAnchor)
-    .attr('dominant-baseline', axisLabelDominantBaseline)
+    .attr('text-anchor', yTickTextAnchor)
+    .attr('dominant-baseline', yTickDominantBaseline)
     // .attr('dy', 0)
     .attr('y', textY)
   yText.style('transform', textReverseTransform)
@@ -184,9 +324,9 @@ function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataF
   return yAxisSelection
 }
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_VALUE_AXES_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_X_Y_AXES_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_MULTI_VALUE_AXES_PARAMS,
+  defaultParams: DEFAULT_X_Y_AXES_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
   validator: (params, { validateColumns }) => {
     // const result = validateColumns(params, {
@@ -241,14 +381,17 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_V
   }
 }
 
-export const MultiValueAxis = defineMultiValuePlugin(pluginConfig)(({ selection, name, observer, subject }) => {
+export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, observer, subject }) => {
   
   const destroy$ = new Subject()
 
   const containerClassName = getClassName(pluginName, 'container')
+  const xAxisGClassName = getClassName(pluginName, 'xAxisG')
+  const xAxisClassName = getClassName(pluginName, 'xAxis')
   const yAxisGClassName = getClassName(pluginName, 'yAxisG')
   const yAxisClassName = getClassName(pluginName, 'yAxis')
-  const yLabelClassName = getClassName(pluginName, 'text')
+  const xLabelClassName = getClassName(pluginName, 'xLabel')
+  const yLabelClassName = getClassName(pluginName, 'yLabel')
 
   const containerSelection$ = combineLatest({
     computedData: observer.computedData$.pipe(
@@ -320,35 +463,57 @@ export const MultiValueAxis = defineMultiValuePlugin(pluginConfig)(({ selection,
     distinctUntilChanged()
   )
 
-  const minAndMax$: Observable<[number, number]> = new Observable(subscriber => {
+  // const minAndMax$: Observable<[number, number]> = new Observable(subscriber => {
+  //   combineLatest({
+  //     fullDataFormatter: observer.fullDataFormatter$,
+  //     computedData: observer.computedData$
+  //   }).pipe(
+  //     takeUntil(destroy$),
+  //     switchMap(async (d) => d),
+  //   ).subscribe(data => {
+  //     const groupMin = 0
+  //     const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
+  //     // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+  //     //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
+  //       ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
+  //       : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
+        
+  //     const filteredData = data.computedData.map((d, i) => {
+  //       return d.filter((_d, _i) => {
+  //         return _i >= groupScaleDomainMin && _i <= groupScaleDomainMax
+  //       })
+  //     })
+    
+  //     const filteredMinAndMax = getMinAndMax(filteredData.flat().map(d => d.value[1]))
+  //     if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
+  //       filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+  //     }
+  //     subscriber.next(filteredMinAndMax)
+  //   })
+  // })
+
+  const xScale$: Observable<d3.ScaleLinear<number, number>> = new Observable(subscriber => {
     combineLatest({
       fullDataFormatter: observer.fullDataFormatter$,
-      computedData: observer.computedData$
+      layout: observer.layout$,
+      minMaxXY: observer.minMaxXY$
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
-      const groupMin = 0
-      const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-      //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
-      //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
-        ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
-        : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
-        
-      const filteredData = data.computedData.map((d, i) => {
-        return d.filter((_d, _i) => {
-          return _i >= groupScaleDomainMin && _i <= groupScaleDomainMax
-        })
-      })
     
-      const filteredMinAndMax = getMinAndMax(filteredData.flat().map(d => d.value[1]))
-      if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
-        filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
-      }
-      subscriber.next(filteredMinAndMax)
+      const xScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+        maxValue: data.minMaxXY.maxX,
+        minValue: data.minMaxXY.minX,
+        axisWidth: data.layout.width,
+        scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
+        scaleRange: data.fullDataFormatter.xAxis.scaleRange,
+      })
+
+      subscriber.next(xScale)
     })
   })
 
@@ -356,18 +521,19 @@ export const MultiValueAxis = defineMultiValuePlugin(pluginConfig)(({ selection,
     combineLatest({
       fullDataFormatter: observer.fullDataFormatter$,
       layout: observer.layout$,
-      minAndMax: minAndMax$
+      minMaxXY: observer.minMaxXY$
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
     
       const yScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
-        maxValue: data.minAndMax[1],
-        minValue: data.minAndMax[0],
+        maxValue: data.minMaxXY.maxY,
+        minValue: data.minMaxXY.minY,
         axisWidth: data.layout.height,
         scaleDomain: data.fullDataFormatter.yAxis.scaleDomain,
-        scaleRange: data.fullDataFormatter.yAxis.scaleRange
+        scaleRange: data.fullDataFormatter.yAxis.scaleRange,
+        reverse: true
       })
 
       subscriber.next(yScale)
@@ -384,13 +550,27 @@ export const MultiValueAxis = defineMultiValuePlugin(pluginConfig)(({ selection,
     layout: observer.layout$,
     fullDataFormatter: observer.fullDataFormatter$,
     fullChartParams: observer.fullChartParams$,
+    xScale: xScale$,
     yScale: yScale$,
     textReverseTransform: textReverseTransform$,
-    minAndMax: minAndMax$
+    minMaxXY: observer.minMaxXY$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
   ).subscribe(data => {
+
+    renderXAxis({
+      selection: data.axisSelection,
+      xAxisClassName,
+      fullParams: data.fullParams,
+      // tickTextAlign: data.tickTextAlign,
+      layout: data.layout,
+      fullDataFormatter: data.fullDataFormatter,
+      fullChartParams: data.fullChartParams,
+      xScale: data.xScale,
+      textReverseTransform: data.textReverseTransform,
+      minMaxXY: data.minMaxXY
+    })
 
     renderYAxis({
       selection: data.axisSelection,
@@ -402,7 +582,18 @@ export const MultiValueAxis = defineMultiValuePlugin(pluginConfig)(({ selection,
       fullChartParams: data.fullChartParams,
       yScale: data.yScale,
       textReverseTransform: data.textReverseTransform,
-      minAndMax: data.minAndMax
+      minMaxXY: data.minMaxXY
+    })
+
+    renderXAxisLabel({
+      selection: data.axisSelection,
+      xLabelClassName,
+      fullParams: data.fullParams,
+      // axisLabelAlign: data.axisLabelAlign,
+      layout: data.layout,
+      fullDataFormatter: data.fullDataFormatter,
+      fullChartParams: data.fullChartParams,
+      textReverseTransform: data.textReverseTransform,
     })
 
     renderYAxisLabel({
@@ -413,6 +604,7 @@ export const MultiValueAxis = defineMultiValuePlugin(pluginConfig)(({ selection,
       layout: data.layout,
       fullDataFormatter: data.fullDataFormatter,
       fullChartParams: data.fullChartParams,
+      textReverseTransform: data.textReverseTransform,
     })
   })
 

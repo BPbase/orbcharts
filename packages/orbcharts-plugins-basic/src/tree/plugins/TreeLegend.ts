@@ -69,7 +69,7 @@ export const TreeLegend = defineTreePlugin(pluginConfig)(({ selection, rootSelec
   const fullParams$ = observer.fullParams$.pipe(
     takeUntil(destroy$),
     map(d => {
-      const seriesList = [
+      const labelList = [
         {
           listRectWidth: d.listRectWidth,
           listRectHeight: d.listRectHeight,
@@ -78,14 +78,14 @@ export const TreeLegend = defineTreePlugin(pluginConfig)(({ selection, rootSelec
       ]
       return {
         ...d,
-        seriesList
+        labelList
       }
     })
   )
 
   const unsubscribeBaseLegend = createBaseLegend(pluginName, {
     rootSelection,
-    seriesLabels$: observer.categoryLabels$,
+    legendLabels$: observer.categoryLabels$,
     fullParams$,
     layout$: observer.layout$,
     fullChartParams$: observer.fullChartParams$,

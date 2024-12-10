@@ -39,6 +39,13 @@ export type PluginListMultiGrid = 'MultiBars'
   | 'OverlappingValueAxes'
   | 'OverlappingValueStackAxes'
 
+export type PluginListMultiValue = 'MultiValueLegend'
+  | 'MultiValueTooltip'
+  | 'Scatter'
+  | 'XYAux'
+  | 'XYAxes'
+  | 'ZYZoom'
+
 export type PluginListTree = 'TreeLegend'
   | 'TreeMap'
   | 'TreeTooltip'

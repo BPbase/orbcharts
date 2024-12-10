@@ -13,6 +13,7 @@ import type {
   DataMultiValue,
   DataMultiValueDatum,
   DataMultiValueValue,
+  ComputedLayoutDatumMultiValue,
   DataFormatterContainer,
   SeriesDirection,
   DataFormatterGridGrid,
@@ -190,6 +191,48 @@ export function getMinAndMaxMultiValue (data: DataMultiValue, valueIndex: number
   return getMinAndMax(arr)
 }
 
+export function getMinAndMaxMultiValueXY ({ data, minX, maxX, minY, maxY }: {
+  data: ComputedLayoutDatumMultiValue[][]
+  minX: number
+  maxX: number
+  minY: number
+  maxY: number
+}) {
+  let filteredData: ComputedLayoutDatumMultiValue[][] = []
+  let minXDatum: ComputedLayoutDatumMultiValue | null = null
+  let maxXDatum: ComputedLayoutDatumMultiValue | null = null
+  let minYDatum: ComputedLayoutDatumMultiValue | null = null
+  let maxYDatum: ComputedLayoutDatumMultiValue | null = null
+  
+  for (let categoryData of data) {
+    for (let datum of categoryData) {
+      if (datum.axisX >= minX && datum.axisX <= maxX && datum.axisY >= minY && datum.axisY <= maxY) {
+        filteredData.push(categoryData)
+        if (minXDatum == null || datum.axisX < minXDatum.axisX) {
+          minXDatum = datum
+        }
+        if (maxXDatum == null || datum.axisX > maxXDatum.axisX) {
+          maxXDatum = datum
+        }
+        if (minYDatum == null || datum.axisY < minYDatum.axisY) {
+          minYDatum = datum
+        }
+        if (maxYDatum == null || datum.axisY > maxYDatum.axisY) {
+          maxYDatum = datum
+        }
+      }
+    }
+  }
+
+  return {
+    minXDatum,
+    maxXDatum,
+    minYDatum,
+    maxYDatum,
+    filteredData
+  }
+}
+
 // @Q@ 待處理
 // // 取得最小及最大值 - Relationship Data
 // export function getMinAndMaxRelationship (data: DataRelationship, target: 'nodes' | 'edges' = 'nodes'): [number, number] {
@@ -235,24 +278,6 @@ export function seriesColorPredicate (seriesIndex: number, chartParams: ChartPar
     ]
 }
 
-// export function calcSeriesContainerPosition (layout: Layout, container: DataFormatterContainer, rowIndex: number, columnIndex: number) {
-//   const { gap, rowAmount, columnAmount } = container
-//   const width = (layout.width - (gap * (columnAmount - 1))) / columnAmount
-//   const height = (layout.height - (gap * (rowAmount - 1))) / rowAmount
-//   const x = columnIndex * width + (columnIndex * gap)
-//   const y = rowIndex * height + (rowIndex * gap)
-//   // const translate: [number, number] = [x, y]
-  
-//   return {
-//     // translate,
-//     startX: x,
-//     startY: y,
-//     centerX: x + width / 2,
-//     centerY: y + height / 2,
-//     width,
-//     height
-//   }
-// }
 
 // 計算預設欄列數量
 // 規則1.rowAmount*columnAmount要大於或等於amount，並且數字要盡可能小
@@ -298,21 +323,6 @@ export function calcSeriesContainerLayout (layout: Layout, container: DataFormat
     }
   })
 }
-
-// export function calcGridContainerPosition (layout: Layout, container: DataFormatterContainer, rowIndex: number, columnIndex: number) {
-//   const { gap, rowAmount, columnAmount } = container
-//   const width = (layout.width - (gap * (columnAmount - 1))) / columnAmount
-//   const height = (layout.height - (gap * (rowAmount - 1))) / rowAmount
-//   const x = columnIndex * width + (columnIndex * gap)
-//   const y = rowIndex * height + (rowIndex * gap)
-//   const translate: [number, number] = [x, y]
-//   const scale: [number, number] = [width / layout.width, height / layout.height]
-
-//   return {
-//     translate,
-//     scale
-//   }
-// }
 
 export function calcGridContainerLayout (layout: Layout, container: DataFormatterContainer, amount: number): ContainerPositionScaled[] {
   const { gap } = container

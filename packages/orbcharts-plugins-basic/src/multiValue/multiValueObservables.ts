@@ -148,3 +148,158 @@ export const multiValueSelectionsObservable = ({ selection, pluginName, clipPath
     graphicGSelection$
   }
 }
+
+
+// @Q@ 寫到一半
+// export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatter$, computedData$, fullChartParams$, multiValueContainerPosition$, layout$ }: {
+//   rootSelection: d3.Selection<any, unknown, any, unknown>
+//   fullDataFormatter$: Observable<DataFormatterMultiValue>
+//   computedData$: Observable<ComputedDataMultiValue>
+//   fullChartParams$: Observable<ChartParams>
+//   multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+//   layout$: Observable<Layout>
+// }) => {
+//   const rootMousemove$ = d3EventObservable(rootSelection, 'mousemove')
+
+//   const groupScaleDomain$ = combineLatest({
+//     fullDataFormatter: fullDataFormatter$,
+//     layout: layout$,
+//     computedData: computedData$
+//   }).pipe(
+//     switchMap(async (d) => d),
+//     map(data => {
+//       const groupMin = 0
+//       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
+//       // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+//       //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+//       //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+//       const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
+//       const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
+//         ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
+//         : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
+
+//       return [groupScaleDomainMin, groupScaleDomainMax]
+//     }),
+//     shareReplay(1)
+//   )
+
+//   const groupLabels$ = combineLatest({
+//     fullDataFormatter: fullDataFormatter$,
+//     computedData: computedData$
+//   }).pipe(
+//     switchMap(async d => d),
+//     map(data => {
+//       return data.fullDataFormatter.grid.seriesDirection === 'row'
+//         ? (data.computedData[0] ?? []).map(d => d.groupLabel)
+//         : data.computedData.map(d => d[0].groupLabel)
+//     })
+//   )
+
+//   const scaleRangeGroupLabels$ = combineLatest({
+//     groupScaleDomain: groupScaleDomain$,
+//     groupLabels: groupLabels$
+//   }).pipe(
+//     switchMap(async d => d),
+//     map(data => {
+//       return data.groupLabels
+//         .filter((d, i) => {
+//           return i >= data.groupScaleDomain[0] && i <= data.groupScaleDomain[1]
+//         })
+//     })
+//   )
+
+//   // 比例尺座標對應非連續資料索引
+//   const xIndexScale$ = combineLatest({
+//     layout: layout$,
+//     scaleRangeGroupLabels: scaleRangeGroupLabels$,
+//     fullDataFormatter: fullDataFormatter$
+//   }).pipe(
+//     switchMap(async d => d),
+//     map(data => {
+//       return createAxisQuantizeScale({
+//         axisLabels: data.scaleRangeGroupLabels,
+//         axisWidth: data.layout.width,
+//         padding: data.fullDataFormatter.grid.groupAxis.scalePadding,
+//         reverse: false
+//       })
+//     })
+//   )
+
+//   const columnAmount$ = multiValueContainerPosition$.pipe(
+//     map(multiValueContainerPosition => {
+//       const maxColumnIndex = multiValueContainerPosition.reduce((acc, current) => {
+//         return current.columnIndex > acc ? current.columnIndex : acc
+//       }, 0)
+//       return maxColumnIndex + 1
+//     }),
+//     distinctUntilChanged()
+//   )
+
+//   const rowAmount$ = multiValueContainerPosition$.pipe(
+//     map(multiValueContainerPosition => {
+//       const maxRowIndex = multiValueContainerPosition.reduce((acc, current) => {
+//         return current.rowIndex > acc ? current.rowIndex : acc
+//       }, 0)
+//       return maxRowIndex + 1
+//     }),
+//     distinctUntilChanged()
+//   )
+
+//   const axisValue$ = combineLatest({
+//     fullDataFormatter: fullDataFormatter$,
+//     fullChartParams: fullChartParams$,
+//     rootMousemove: rootMousemove$,
+//     columnAmount: columnAmount$,
+//     rowAmount: rowAmount$,
+//     layout: layout$
+//   }).pipe(
+//     switchMap(async d => d),
+//     map(data => {
+//       // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
+//       const eventData = {
+//         offsetX: data.rootMousemove.offsetX * data.columnAmount % data.layout.rootWidth,
+//         offsetY: data.rootMousemove.offsetY * data.rowAmount % data.layout.rootHeight
+//       }
+//       return data.fullDataFormatter.grid.groupAxis.position === 'bottom'
+//           || data.fullDataFormatter.grid.groupAxis.position === 'top'
+//             ? eventData.offsetX - data.fullChartParams.padding.left
+//             : eventData.offsetY - data.fullChartParams.padding.top
+//     })
+//   )
+
+//   const groupIndex$ = combineLatest({
+//     xIndexScale: xIndexScale$,
+//     axisValue: axisValue$,
+//     groupScaleDomain: groupScaleDomain$
+//   }).pipe(
+//     switchMap(async d => d),
+//     map(data => {
+//       const xIndex = data.xIndexScale(data.axisValue)
+//       const currentxIndexStart = Math.ceil(data.groupScaleDomain[0]) // 因為有padding所以會有小數點，所以要無條件進位
+//       return xIndex + currentxIndexStart
+//     })
+//   )
+
+//   const groupLabel$ = combineLatest({
+//     groupIndex: groupIndex$,
+//     groupLabels: groupLabels$
+//   }).pipe(
+//     switchMap(async d => d),
+//     map(data => {
+//       return data.groupLabels[data.groupIndex] ?? ''
+//     })
+//   )
+
+//   return combineLatest({
+//     groupIndex: groupIndex$,
+//     groupLabel: groupLabel$
+//   }).pipe(
+//     switchMap(async d => d),
+//     map(data => {
+//       return {
+//         groupIndex: data.groupIndex,
+//         groupLabel: data.groupLabel
+//       }
+//     })
+//   )
+// }

@@ -34,7 +34,7 @@ export const DEFAULT_DOTS_PARAMS: DotsParams = {
   onlyShowHighlighted: false
 }
 
-export const DEFAULT_GROUP_AREA_PARAMS: GroupAuxParams = {
+export const DEFAULT_GROUP_AUX_PARAMS: GroupAuxParams = {
   showLine: true,
   showLabel: true,
   lineDashArray: '3, 3',
@@ -45,7 +45,7 @@ export const DEFAULT_GROUP_AREA_PARAMS: GroupAuxParams = {
   labelPadding: 20,
   labelRotate: 0
 }
-DEFAULT_GROUP_AREA_PARAMS.labelTextFormat.toString = () => `text => text`
+DEFAULT_GROUP_AUX_PARAMS.labelTextFormat.toString = () => `text => text`
 
 export const DEFAULT_BARS_PARAMS: BarsParams = {
   // barType: 'rect',

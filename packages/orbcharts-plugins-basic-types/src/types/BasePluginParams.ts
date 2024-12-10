@@ -60,7 +60,7 @@ export interface BaseLegendParams {
   backgroundStroke: ColorType
   textColorType: ColorType
   gap: number
-  seriesList: Array<{
+  labelList: Array<{
     listRectWidth: number
     listRectHeight: number
     listRectRadius: number
