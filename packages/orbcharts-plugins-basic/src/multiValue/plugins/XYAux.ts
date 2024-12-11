@@ -150,29 +150,29 @@ function createLineData ({ axisX, axisY, layout, fullParams }: {
   layout: Layout
   fullParams: XYAuxParams
 }): LineDatum[] {
-  // console.log({ axisX, axisY })
-  return axisX >= 0 && axisY >= 0
-    ? [
-      {
-        id: 'line-x',
-        x1: axisX,
-        x2: axisX,
-        y1: 0,
-        y2: layout.height,
-        dashArray: fullParams.xAxis.lineDashArray ?? 'none',
-        colorType: fullParams.xAxis.lineColorType
-      },
-      {
-        id: 'line-0',
-        x1: 0,
-        x2: layout.width,
-        y1: axisY,
-        y2: axisY,
-        dashArray: fullParams.yAxis.lineDashArray ?? 'none',
-        colorType: fullParams.yAxis.lineColorType
-      }
-    ]
-    : []
+  if ((axisX >= 0 && axisX <= layout.width && axisY >= 0 && axisY <= layout.height) === false) {
+    return []
+  }
+  return [
+    {
+      id: 'line-x',
+      x1: axisX,
+      x2: axisX,
+      y1: 0,
+      y2: layout.height,
+      dashArray: fullParams.xAxis.lineDashArray ?? 'none',
+      colorType: fullParams.xAxis.lineColorType
+    },
+    {
+      id: 'line-0',
+      x1: 0,
+      x2: layout.width,
+      y1: axisY,
+      y2: axisY,
+      dashArray: fullParams.yAxis.lineDashArray ?? 'none',
+      colorType: fullParams.yAxis.lineColorType
+    }
+  ]
 }
 
 function createLabelData ({ axisX, axisY, xValue, yValue, fullParams, textSizePx, layout, columnAmount, rowAmount }: {
@@ -186,6 +186,9 @@ function createLabelData ({ axisX, axisY, xValue, yValue, fullParams, textSizePx
   columnAmount: number
   rowAmount: number
 }): LabelDatum[] {
+  if ((axisX >= 0 && axisX <= layout.width && axisY >= 0 && axisY <= layout.height) === false) {
+    return []
+  }
   const rectPaddingWidth = 6
   const rectPaddingHeight = 3
 
@@ -217,44 +220,42 @@ function createLabelData ({ axisX, axisY, xValue, yValue, fullParams, textSizePx
   const yRectY = - rectPaddingHeight - yTextHeight / 2
   const yTextX = yRectX + rectPaddingWidth
   const yTextY = yRectY + rectPaddingHeight
-  return axisX >= 0 && axisY >= 0
-    ? [
-      {
-        id: 'label-x',
-        x: xX,
-        y: xY,
-        text: xText,
-        textArr: xTextArr,
-        textWidth: xTextWidth,
-        textHeight: xTextHeight,
-        colorType: fullParams.xAxis.labelColorType,
-        textColorType: fullParams.xAxis.labelTextColorType,
-        rectWidth: xRectWidth,
-        rectHeight: xRectHeight,
-        rectX: xRectX,
-        rectY: xRectY,
-        textX: xTextX,
-        textY: xTextY
-      },
-      {
-        id: 'label-y',
-        x: yX,
-        y: yY,
-        text: yText,
-        textArr: yTextArr,
-        textWidth: yTextWidth,
-        textHeight: yTextHeight,
-        colorType: fullParams.yAxis.labelColorType,
-        textColorType: fullParams.xAxis.labelTextColorType,
-        rectWidth: yRectWidth,
-        rectHeight: yRectHeight,
-        rectX: yRectX,
-        rectY: yRectY,
-        textX: yTextX,
-        textY: yTextY
-      }
-    ]
-    : []
+  return [
+    {
+      id: 'label-x',
+      x: xX,
+      y: xY,
+      text: xText,
+      textArr: xTextArr,
+      textWidth: xTextWidth,
+      textHeight: xTextHeight,
+      colorType: fullParams.xAxis.labelColorType,
+      textColorType: fullParams.xAxis.labelTextColorType,
+      rectWidth: xRectWidth,
+      rectHeight: xRectHeight,
+      rectX: xRectX,
+      rectY: xRectY,
+      textX: xTextX,
+      textY: xTextY
+    },
+    {
+      id: 'label-y',
+      x: yX,
+      y: yY,
+      text: yText,
+      textArr: yTextArr,
+      textWidth: yTextWidth,
+      textHeight: yTextHeight,
+      colorType: fullParams.yAxis.labelColorType,
+      textColorType: fullParams.xAxis.labelTextColorType,
+      rectWidth: yRectWidth,
+      rectHeight: yRectHeight,
+      rectX: yRectX,
+      rectY: yRectY,
+      textX: yTextX,
+      textY: yTextY
+    }
+  ]
 }
 
 function renderLine ({ selection, pluginName, lineData, fullParams, fullChartParams }: {
@@ -341,7 +342,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
           })
         return updateSelection
       },
-      exit => exit//.remove()
+      exit => exit.remove()
     )
     .each((datum, i, n) => {
       // // const rectWidth = measureTextWidth(datum.text, textSizePx) + 12
@@ -361,7 +362,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
             .attr('rx', 5)
             .attr('ry', 5),
           update => update,
-          exit => exit//.remove()
+          exit => exit.remove()
         )
         .attr('width', d => `${d.rectWidth}px`)
         .attr('height', d => `${d.rectHeight}px`)
@@ -380,7 +381,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
             .style('cursor', 'pointer')
             .style('pointer-events', 'none'),
           update => update,
-          exit => exit//.remove()
+          exit => exit.remove()
         )
         .style('transform', textReverseTransform)
         .attr('fill', d => getColor(d.textColorType, fullChartParams))
@@ -661,8 +662,8 @@ export const XYAux = defineMultiValuePlugin(pluginConfig)(({ selection, rootSele
       //   return
       // }
       
-      // removeLine(data.axesSelection)
-      // removeLabel(data.axesSelection)
+      removeLine(data.axesSelection)
+      removeLabel(data.axesSelection)
     })
   })
 

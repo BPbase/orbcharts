@@ -223,19 +223,17 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
     rootMousemove: rootMousemove$,
     columnAmount: columnAmount$,
     rowAmount: rowAmount$,
-    layout: layout$
+    layout: layout$,
+    multiValueContainerPosition: multiValueContainerPosition$
   }).pipe(
     switchMap(async d => d),
     map(data => {
       // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
-      const eventData = {
-        offsetX: data.rootMousemove.offsetX * data.columnAmount % data.layout.rootWidth,
-        offsetY: data.rootMousemove.offsetY * data.rowAmount % data.layout.rootHeight
-      }
-      // console.log(eventData.offsetY, eventData.offsetY - data.fullChartParams.padding.top * data.rowAmount)
       return {
-        x: (eventData.offsetX - data.fullChartParams.padding.left * data.columnAmount) * ((data.layout.width + data.layout.right * data.columnAmount) / data.layout.width),// * data.columnAmount,
-        y: (eventData.offsetY - data.fullChartParams.padding.top * data.rowAmount) * ((data.layout.height + data.layout.bottom * data.rowAmount) / data.layout.height)// * data.rowAmount
+        x: ((data.rootMousemove.offsetX - data.fullChartParams.padding.left) / data.multiValueContainerPosition[0].scale[0])
+          % (data.layout.rootWidth / data.columnAmount / data.multiValueContainerPosition[0].scale[0]),
+        y: ((data.rootMousemove.offsetY - data.fullChartParams.padding.top) / data.multiValueContainerPosition[0].scale[1])
+          % (data.layout.rootHeight / data.rowAmount / data.multiValueContainerPosition[0].scale[1])
       }
     })
   )
@@ -246,7 +244,6 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
   }).pipe(
     switchMap(async d => d),
     map(data => {
-      console.log(data.axisValue.y)
       return {
         x: data.axisValue.x,
         y: data.axisValue.y,

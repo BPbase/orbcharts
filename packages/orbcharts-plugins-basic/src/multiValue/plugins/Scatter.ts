@@ -315,18 +315,18 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
     data.graphicSelection
       .on('mouseover', (event, datum) => {
         // event.stopPropagation()
-        console.log({
-          type: 'multiValue',
-          eventName: 'mouseover',
-          pluginName,
-          highlightTarget: data.highlightTarget,
-          datum,
-          category: data.CategoryDataMap.get(datum.categoryLabel)!,
-          categoryIndex: datum.categoryIndex,
-          categoryLabel: datum.categoryLabel,
-          data: data.computedData,
-          event,
-        })
+        // console.log({
+        //   type: 'multiValue',
+        //   eventName: 'mouseover',
+        //   pluginName,
+        //   highlightTarget: data.highlightTarget,
+        //   datum,
+        //   category: data.CategoryDataMap.get(datum.categoryLabel)!,
+        //   categoryIndex: datum.categoryIndex,
+        //   categoryLabel: datum.categoryLabel,
+        //   data: data.computedData,
+        //   event,
+        // })
         subject.event$.next({
           type: 'multiValue',
           eventName: 'mouseover',

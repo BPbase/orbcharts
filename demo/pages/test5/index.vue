@@ -23,21 +23,21 @@ onMounted(() => {
     }
   })
 
-  setTimeout(() => {
-    chart!.dataFormatter$.next({
-      xAxis: {
-        label: 'xxxxxxx'
-      },
-      yAxis: {
-        label: 'yyyyyyy'
-      },
-      separateCategory: true,
-      container: {
-        columnAmount: 1,
-        rowAmount: 3
-      }
-    })
-  }, 2000)
+  // setTimeout(() => {
+  //   chart!.dataFormatter$.next({
+  //     xAxis: {
+  //       label: 'xxxxxxx'
+  //     },
+  //     yAxis: {
+  //       label: 'yyyyyyy'
+  //     },
+  //     separateCategory: true,
+  //     // container: {
+  //     //   columnAmount: 1,
+  //     //   rowAmount: 3
+  //     // }
+  //   })
+  // }, 2000)
 
   const scatter = new Scatter()
   const xyAux = new XYAux()
