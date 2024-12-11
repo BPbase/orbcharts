@@ -28,7 +28,7 @@ import type {
   Layout,
   TransformData } from '../../lib/core-types'
 import { getMinAndMax, getMinAndMaxMultiValue } from './orbchartsUtils'
-import { createAxisLinearScale, createAxisPointScale, createAxisQuantizeScale } from './d3Utils'
+import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from './d3Scale'
 import { calcGridContainerLayout } from './orbchartsUtils'
 
 export const minMaxXYObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'multiValue'>> }) => {
@@ -51,7 +51,7 @@ export const multiValueComputedLayoutDataObservable = ({ computedData$, minMaxXY
 
   // 未篩選範圍前的 scale
   function createOriginXScale (minMaxXY: { minX: number, maxX: number, minY: number, maxY: number }, layout: Layout) {
-    const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+    const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue: minMaxXY.maxX,
       minValue: minMaxXY.minX,
       axisWidth: layout.width,
@@ -64,7 +64,7 @@ export const multiValueComputedLayoutDataObservable = ({ computedData$, minMaxXY
 
   // 未篩選範圍及visible前的 scale
   function createOriginYScale (minMaxXY: { minX: number, maxX: number, minY: number, maxY: number }, layout: Layout) {
-    const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+    const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue: minMaxXY.maxY,
       minValue: minMaxXY.minY,
       axisWidth: layout.height,
@@ -530,17 +530,17 @@ export const multiValueGraphicTransformObservable = ({ minMaxXY$, filteredMinMax
     // } else {
     //   filteredMaxY = maxY
     // }
-    if (filteredMinX === filteredMaxX) {
-      filteredMaxX += 1 // 避免最大及最小值相同造成無法計算scale
-      filteredMinX -= 1
-    }
-    if (filteredMinY === filteredMaxY) {
-      filteredMaxY += 1 // 避免最大及最小值相同造成無法計算scale
-      filteredMinY -= 1
-    }
+    // if (filteredMinX === filteredMaxX) {
+    //   filteredMaxX += 1 // 避免最大及最小值相同造成無法計算scale
+    //   filteredMinX -= 1
+    // }
+    // if (filteredMinY === filteredMaxY) {
+    //   filteredMaxY += 1 // 避免最大及最小值相同造成無法計算scale
+    //   filteredMinY -= 1
+    // }
     // console.log({ minX, maxX, minY, maxY, filteredMinX, filteredMaxX, filteredMinY, filteredMaxY })
     // -- xScale --
-    const xScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+    const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue: filteredMaxX,
       minValue: filteredMinX,
       axisWidth: width,
@@ -556,7 +556,7 @@ export const multiValueGraphicTransformObservable = ({ minMaxXY$, filteredMinMax
     scaleX = gWidth / width
     // console.log({ gWidth, width, rangeMaxX, rangeMinX, scaleX, translateX })
     // -- yScale --
-    const yScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+    const yScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue: filteredMaxY,
       minValue: filteredMinY,
       axisWidth: height,

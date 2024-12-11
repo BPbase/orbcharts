@@ -1,8 +1,8 @@
 import * as d3 from 'd3'
 import { DATA_FORMATTER_VALUE_AXIS_DEFAULT } from '../defaults'
 
-// scaleLinear - 連續資料對應到比例尺座標上
-export const createAxisLinearScale = ({
+// scaleLinear - 連續資料 -> 座標
+export const createValueToAxisScale = ({
   maxValue = 1,
   minValue = 0,
   axisWidth,
@@ -17,6 +17,11 @@ export const createAxisLinearScale = ({
   scaleRange: [number, number] // 0-1
   reverse?: boolean
 }) => {
+  if (minValue === maxValue) {
+    maxValue += 1 // 避免最大及最小值相同造成無法計算scale
+    minValue -= 1
+  }
+  
   // -- 無值補上預設值 --
   const domainMin: number | 'min' | 'auto' = scaleDomain[0] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[0]
   const domainMax: number | 'max' | 'auto' = scaleDomain[1] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[1]
@@ -71,16 +76,87 @@ export const createAxisLinearScale = ({
       .domain([axisDomainMinValue, axisDomainMaxValue])
       .range([0, axisWidth])
   }
-  // return (n: number) => {
-  //   const scale = d3.scaleLinear()
-  //     .domain([axisDomainMinValue, axisDomainMaxValue])
-  //     .range([0, axisWidth])
-  //   return axisWidth - scale(n)// + axisWidth
-  // }
 }
 
-// scalePoint - 非連續資料對應到比例尺座標上
-export const createAxisPointScale = ({ axisLabels, axisWidth, padding = 0.5 }: {
+// scaleLinear - 座標 -> 連續資料
+export const createAxisToValueScale = ({
+  maxValue = 1,
+  minValue = 0,
+  axisWidth,
+  scaleDomain = DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain,
+  scaleRange = DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange,
+  reverse = false
+}: {
+  maxValue: number
+  minValue: number
+  axisWidth: number
+  scaleDomain: [number | 'min' | 'auto', number | 'max' | 'auto']
+  scaleRange: [number, number] // 0-1
+  reverse?: boolean
+}) => {
+  if (minValue === maxValue) {
+    maxValue += 1 // 避免最大及最小值相同造成無法計算scale
+    minValue -= 1
+  }
+  
+  // -- 無值補上預設值 --
+  const domainMin: number | 'min' | 'auto' = scaleDomain[0] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[0]
+  const domainMax: number | 'max' | 'auto' = scaleDomain[1] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[1]
+  const rangeMin: number = scaleRange[0] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange[0]
+  const rangeMax: number = scaleRange[1] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange[1]
+
+  // -- 'auto' | 'max' | 'min' 替換成實際值 --
+  let domainMinValue: number = (() => {
+    if (domainMin === 'auto') {
+      return minValue < 0 ? minValue : 0
+    } else if (domainMin === 'min') {
+      return minValue
+    } else {
+      return domainMin
+    }
+  })()
+  
+  let domainMaxValue: number = (() => {
+    if (domainMax === 'auto') {
+      return maxValue >= 0 ? maxValue : 0
+    } else if (domainMax === 'max') {
+      return maxValue
+    } else {
+      return domainMax
+    }
+  })()
+  // let rangeMinValue = axisWidth * rangeMin
+  // let rangeMaxValue = axisWidth * rangeMax
+
+  // -- 計算padding --
+  // if (padding > 0) {
+  //   const stepAmount = maxValue - minValue + (padding * 2)
+  //   const eachStepWidth = axisWidth / stepAmount
+  //   const paddingWidth = eachStepWidth * padding
+  //   rangeMinValue += paddingWidth
+  //   rangeMaxValue -= paddingWidth
+  // }
+
+  // -- 依場景大小換算 --
+  const axisDomainMinValue = maxValue - (maxValue - domainMinValue) / (1 - rangeMin)
+  const axisDomainMaxValue = domainMaxValue / rangeMax
+  
+  // return d3.scaleLinear()
+  //   .domain([domainMinValue, domainMaxValue])
+  //   .range([rangeMinValue, rangeMaxValue])
+  if (reverse) {
+    return d3.scaleLinear()
+      .domain([axisWidth, 0])
+      .range([axisDomainMinValue, axisDomainMaxValue])
+  } else {
+    return d3.scaleLinear()
+      .domain([0, axisWidth])
+      .range([axisDomainMinValue, axisDomainMaxValue])
+  }
+}
+
+// scalePoint - 非連續資料 -> 座標
+export const createLabelToAxisScale = ({ axisLabels, axisWidth, padding = 0.5 }: {
   axisLabels: string[]
   axisWidth: number
   padding?: number
@@ -94,8 +170,8 @@ export const createAxisPointScale = ({ axisLabels, axisWidth, padding = 0.5 }: {
       .padding(padding)
 }
 
-// scaleQuantize - 比例尺座標對應非連續資料索引
-export const createAxisQuantizeScale = ({ axisLabels, axisWidth, padding = 0, reverse = false }:{
+// scaleQuantize - 座標 -> 非連續資料索引
+export const createAxisToLabelIndexScale = ({ axisLabels, axisWidth, padding = 0, reverse = false }:{
   axisLabels: string[] | Date[],
   axisWidth: number
   padding?: number

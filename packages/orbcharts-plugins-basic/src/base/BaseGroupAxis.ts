@@ -498,7 +498,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
       
   //     const padding = data.fullDataFormatter.grid.groupAxis.scalePadding
       
-  //     const groupScale = createAxisPointScale({
+  //     const groupScale = createLabelToAxisScale({
   //       axisLabels,
   //       axisWidth: data.gridAxesSize.width,
   //       padding

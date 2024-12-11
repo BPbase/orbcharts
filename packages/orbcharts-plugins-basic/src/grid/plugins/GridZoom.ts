@@ -12,7 +12,7 @@ import {
 import type { DefinePluginConfig } from '../../../lib/core-types'
 import type { DataFormatterGrid } from '../../../lib/core-types'
 import {
-  defineGridPlugin, createAxisLinearScale } from '../../../lib/core'
+  defineGridPlugin, createValueToAxisScale } from '../../../lib/core'
 import { DEFAULT_GRID_ZOOM_PARAMS } from '../defaults'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { LAYER_INDEX_OF_ROOT } from '../../const'
@@ -98,7 +98,7 @@ export const GridZoom = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
         ? data.groupMax + data.initGroupAxis.scalePadding
         : data.initGroupAxis.scaleDomain[1] as number + data.initGroupAxis.scalePadding
 
-      const groupScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+      const groupScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
         maxValue: data.groupMax,
         minValue: 0,
         axisWidth: data.axisSize.width,

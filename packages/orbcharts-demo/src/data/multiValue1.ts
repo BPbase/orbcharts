@@ -7,6 +7,10 @@ export default [
     value: [45, 55, 30],
     categoryLabel: 'test1'
   },
+  {
+    value: [75, 35, 30],
+    categoryLabel: 'test2'
+  },
   [50, 65, 35],
   [20, 30, 15],
   [15, 25, 10],

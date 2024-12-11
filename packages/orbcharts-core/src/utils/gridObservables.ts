@@ -31,7 +31,7 @@ import type {
   Layout,
   TransformData } from '../../lib/core-types'
 import { getMinAndMaxGrid } from './orbchartsUtils'
-import { createAxisLinearScale, createAxisPointScale, createAxisQuantizeScale } from './d3Utils'
+import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from './d3Scale'
 import { calcGridContainerLayout } from './orbchartsUtils'
 import { getMinAndMaxValue } from './orbchartsUtils'
 
@@ -47,7 +47,7 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
       ? layout.width
       : layout.height
     const groupEndIndex = computedData[0] ? computedData[0].length - 1 : 0
-    const groupScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+    const groupScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue: groupEndIndex,
       minValue: 0,
       axisWidth: groupAxisWidth,
@@ -67,7 +67,7 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
     const listData = computedData.flat()
     const [minValue, maxValue] = getMinAndMaxValue(listData)
 
-    const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+    const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue,
       minValue,
       axisWidth: valueAxisWidth,
@@ -285,7 +285,7 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
       ? groupMax + groupAxis.scalePadding
       : groupAxis.scaleDomain[1] as number + groupAxis.scalePadding
     
-    const groupScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+    const groupScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue: groupMax,
       minValue: groupMin,
       axisWidth: groupAxisWidth,
@@ -323,7 +323,7 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
       ? height
       : width
   
-    const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+    const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue: filteredMinAndMax[1],
       minValue: filteredMinAndMax[0],
       axisWidth: valueAxisWidth,

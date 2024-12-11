@@ -94,7 +94,8 @@ export const DEFAULT_X_Y_AUX_PARAMS: XYAuxParams = {
     lineColorType: 'primary',
     labelColorType: 'primary',
     labelTextColorType: 'background',
-    labelTextFormat: text => text,
+    // labelTextFormat: text => text,
+    labelTextFormat: (value: number) => String(Math.round(value)),
     labelPadding: 20,
     // labelRotate: 0
   },
@@ -105,11 +106,15 @@ export const DEFAULT_X_Y_AUX_PARAMS: XYAuxParams = {
     lineColorType: 'primary',
     labelColorType: 'primary',
     labelTextColorType: 'background',
-    labelTextFormat: text => text,
+    // labelTextFormat: text => text,
+    labelTextFormat: (value: number) => String(Math.round(value)),
     labelPadding: 20,
     // labelRotate: 0
   }
 }
+DEFAULT_X_Y_AUX_PARAMS.xAxis.labelTextFormat.toString = () => `(value: number) => String(Math.round(value))`
+DEFAULT_X_Y_AUX_PARAMS.yAxis.labelTextFormat.toString = () => `(value: number) => String(Math.round(value))`
+
 
 export const DEFAULT_X_Y_AXES_PARAMS: XYAxesParams = {
   xAxis: {

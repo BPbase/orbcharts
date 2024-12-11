@@ -18,7 +18,7 @@ import type {
 } from '../../../lib/core-types'
 import {
   defineMultiValuePlugin,
-  createAxisLinearScale,
+  createValueToAxisScale,
   getMinAndMax
 } from '../../../lib/core'
 import type { XYAxesParams
@@ -226,9 +226,9 @@ function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullDataF
     // .style('font-family', 'sans-serif')
     .attr('font-size', fullChartParams.styles.textSize)
     .style('color', getColor(fullParams.xAxis.tickTextColorType, fullChartParams))
-    .attr('text-anchor', yTickTextAnchor)
-    .attr('dominant-baseline', yTickDominantBaseline)
-    // .attr('dy', 0)
+    .attr('text-anchor', xTickTextAnchor)
+    .attr('dominant-baseline', xTickDominantBaseline)
+    .attr('dy', 0)
     .attr('y', textY)
     xText.style('transform', textReverseTransform)
   
@@ -314,6 +314,7 @@ function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataF
     .attr('dominant-baseline', yTickDominantBaseline)
     // .attr('dy', 0)
     .attr('y', textY)
+    .attr('dy', 0)
   yText.style('transform', textReverseTransform)
   
   // // 抵消掉預設的偏移
@@ -505,7 +506,7 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
       switchMap(async (d) => d),
     ).subscribe(data => {
     
-      const xScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+      const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
         maxValue: data.minMaxXY.maxX,
         minValue: data.minMaxXY.minX,
         axisWidth: data.layout.width,
@@ -527,7 +528,7 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
       switchMap(async (d) => d),
     ).subscribe(data => {
     
-      const yScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+      const yScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
         maxValue: data.minMaxXY.maxY,
         minValue: data.minMaxXY.minY,
         axisWidth: data.layout.height,

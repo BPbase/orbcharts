@@ -21,7 +21,7 @@ import type {
   TransformData,
   ContainerPositionScaled,
   Layout } from '../../lib/core-types'
-import { createAxisQuantizeScale } from '../../lib/core'
+import { createAxisToLabelIndexScale } from '../../lib/core'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 import { d3EventObservable } from '../utils/observables'
 
@@ -298,7 +298,7 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
           ? true : false
 
       // 比例尺座標對應非連續資料索引
-      const xIndexScale = createAxisQuantizeScale({
+      const xIndexScale = createAxisToLabelIndexScale({
         axisLabels: data.scaleRangeGroupLabels,
         axisWidth: data.axisSize.width,
         padding: data.dataFormatter.grid.groupAxis.scalePadding,
@@ -419,7 +419,7 @@ export const gridGroupPositionObservable = ({ rootSelection, fullDataFormatter$,
   }).pipe(
     switchMap(async d => d),
     map(data => {
-      return createAxisQuantizeScale({
+      return createAxisToLabelIndexScale({
         axisLabels: data.scaleRangeGroupLabels,
         axisWidth: data.gridAxesSize.width,
         padding: data.fullDataFormatter.grid.groupAxis.scalePadding,

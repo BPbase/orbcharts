@@ -8,7 +8,7 @@ import {
   takeUntil,
   Observable,
   Subject } from 'rxjs'
-import { createAxisLinearScale } from '../../lib/core'
+import { createValueToAxisScale } from '../../lib/core'
 import type { BasePluginFn } from './types'
 import type {
   ComputedDataGrid,
@@ -231,6 +231,7 @@ function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gri
     .attr('dominant-baseline', tickTextAlign.dominantBaseline)
     // .attr('dy', 0)
     .attr('y', textY)
+    .attr('dy', 0)
   yText.style('transform', textReverseTransformWithRotate)
   
   // 抵消掉預設的偏移
@@ -452,7 +453,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       switchMap(async (d) => d),
     ).subscribe(data => {
     
-      const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+      const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
         maxValue: data.minAndMax[1],
         minValue: data.minAndMax[0],
         axisWidth: data.gridAxesSize.height,
