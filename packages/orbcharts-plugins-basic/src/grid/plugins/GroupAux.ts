@@ -528,38 +528,38 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //   })
   // })
 
-  const groupScaleDomain$ = combineLatest({
-    fullDataFormatter: observer.fullDataFormatter$,
-    gridAxesSize: observer.gridAxesSize$,
-    computedData: observer.computedData$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async (d) => d),
-    map(data => {
-      const groupMin = 0
-      const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-      //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
-      //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
-        ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
-        : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
+  // const groupScaleDomain$ = combineLatest({
+  //   fullDataFormatter: observer.fullDataFormatter$,
+  //   gridAxesSize: observer.gridAxesSize$,
+  //   computedData: observer.computedData$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(data => {
+  //     const groupMin = 0
+  //     const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
+  //     // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+  //     //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
+  //       ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
+  //       : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
 
-      return [groupScaleDomainMin, groupScaleDomainMax]
-    }),
-    shareReplay(1)
-  )
+  //     return [groupScaleDomainMin, groupScaleDomainMax]
+  //   }),
+  //   shareReplay(1)
+  // )
 
   const groupScale$ = combineLatest({
-    groupScaleDomain: groupScaleDomain$,
+    groupScaleDomainValue: observer.groupScaleDomainValue$,
     gridAxesSize: observer.gridAxesSize$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
       const groupScale: d3.ScaleLinear<number, number> = d3.scaleLinear()
-        .domain(data.groupScaleDomain)
+        .domain(data.groupScaleDomainValue)
         .range([0, data.gridAxesSize.width])
       return groupScale
     })

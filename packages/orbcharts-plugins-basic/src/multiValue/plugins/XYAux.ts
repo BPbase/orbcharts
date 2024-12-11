@@ -457,11 +457,11 @@ export const XYAux = defineMultiValuePlugin(pluginConfig)(({ selection, rootSele
       .attr('height', d.rootHeight)
   })
 
-  const highlightTarget$ = observer.fullChartParams$.pipe(
-    takeUntil(destroy$),
-    map(d => d.highlightTarget),
-    distinctUntilChanged()
-  )
+  // const highlightTarget$ = observer.fullChartParams$.pipe(
+  //   takeUntil(destroy$),
+  //   map(d => d.highlightTarget),
+  //   distinctUntilChanged()
+  // )
 
   const rootMousemove$: Observable<any> = d3EventObservable(rootSelection, 'mousemove').pipe(
     takeUntil(destroy$),
@@ -504,7 +504,6 @@ export const XYAux = defineMultiValuePlugin(pluginConfig)(({ selection, rootSele
     rootSelection,
     fullDataFormatter$: observer.fullDataFormatter$,
     filteredMinMaxXYData$: observer.filteredMinMaxXYData$,
-    fullChartParams$: observer.fullChartParams$,
     multiValueContainerPosition$: observer.multiValueContainerPosition$,
     layout$: observer.layout$
   }).pipe(

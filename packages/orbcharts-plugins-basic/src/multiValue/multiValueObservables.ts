@@ -152,7 +152,7 @@ export const multiValueSelectionsObservable = ({ selection, pluginName, clipPath
 }
 
 
-export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatter$, filteredMinMaxXYData$, fullChartParams$, multiValueContainerPosition$, layout$ }: {
+export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatter$, filteredMinMaxXYData$, multiValueContainerPosition$, layout$ }: {
   rootSelection: d3.Selection<any, unknown, any, unknown>
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   // computedData$: Observable<ComputedDataMultiValue>
@@ -163,7 +163,6 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
     minYDatum: ComputedLayoutDatumMultiValue
     maxYDatum: ComputedLayoutDatumMultiValue
   }>
-  fullChartParams$: Observable<ChartParams>
   multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
   layout$: Observable<Layout>
 }) => {
@@ -176,7 +175,8 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
       }, 0)
       return maxColumnIndex + 1
     }),
-    distinctUntilChanged()
+    distinctUntilChanged(),
+    shareReplay(1)
   )
 
   const rowAmount$ = multiValueContainerPosition$.pipe(
@@ -186,7 +186,8 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
       }, 0)
       return maxRowIndex + 1
     }),
-    distinctUntilChanged()
+    distinctUntilChanged(),
+    shareReplay(1)
   )
 
   const xyScale$ = combineLatest({
@@ -219,7 +220,6 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
 
   const axisValue$ = combineLatest({
     fullDataFormatter: fullDataFormatter$,
-    fullChartParams: fullChartParams$,
     rootMousemove: rootMousemove$,
     columnAmount: columnAmount$,
     rowAmount: rowAmount$,
@@ -230,9 +230,9 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
     map(data => {
       // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
       return {
-        x: ((data.rootMousemove.offsetX - data.fullChartParams.padding.left) / data.multiValueContainerPosition[0].scale[0])
+        x: ((data.rootMousemove.offsetX - data.layout.left) / data.multiValueContainerPosition[0].scale[0])
           % (data.layout.rootWidth / data.columnAmount / data.multiValueContainerPosition[0].scale[0]),
-        y: ((data.rootMousemove.offsetY - data.fullChartParams.padding.top) / data.multiValueContainerPosition[0].scale[1])
+        y: ((data.rootMousemove.offsetY - data.layout.top) / data.multiValueContainerPosition[0].scale[1])
           % (data.layout.rootHeight / data.rowAmount / data.multiValueContainerPosition[0].scale[1])
       }
     })

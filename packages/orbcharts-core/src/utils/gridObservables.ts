@@ -106,311 +106,6 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
   )
 }
 
-export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
-  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
-  layout$: Observable<Layout>
-}): Observable<TransformData> => {
-  const destroy$ = new Subject()
-
-  function calcAxesTransform ({ xAxis, yAxis, width, height }: {
-    xAxis: DataFormatterGroupAxis | DataFormatterValueAxis,
-    yAxis: DataFormatterValueAxis,
-    width: number,
-    height: number
-  }): TransformData {
-    if (!xAxis || !yAxis) {
-      return {
-        translate: [0, 0],
-        scale: [1, 1],
-        rotate: 0,
-        rotateX: 0,
-        rotateY: 0,
-        value: ''
-      }
-    }
-    // const width = size.width - fullChartParams.layout.left - fullChartParams.layout.right
-    // const height = size.height - fullChartParams.layout.top - fullChartParams.layout.bottom
-    let translateX = 0
-    let translateY = 0
-    let rotate = 0
-    let rotateX = 0
-    let rotateY = 0
-    if (xAxis.position === 'bottom') {
-      if (yAxis.position === 'left') {
-        rotateX = 180
-        translateY = height
-      } else if (yAxis.position === 'right') {
-        rotateX = 180
-        rotateY = 180
-        translateX = width
-        translateY = height
-      } else {
-        // 預設
-        rotateX = 180
-        translateY = height
-      }
-    } else if (xAxis.position === 'top') {
-      if (yAxis.position === 'left') {
-      } else if (yAxis.position === 'right') {
-        rotateY = 180
-        translateX = width
-      } else {
-        // 預設
-        rotateX = 180
-        translateY = height
-      }
-    } else if (xAxis.position === 'left') {
-      if (yAxis.position === 'bottom') {
-        rotate = -90
-        translateY = height
-      } else if (yAxis.position === 'top') {
-        rotate = -90
-        rotateY = 180
-      } else {
-        // 預設
-        rotateX = 180
-        translateY = height
-      }
-    } else if (xAxis.position === 'right') {
-      if (yAxis.position === 'bottom') {
-        rotate = -90
-        rotateX = 180
-        translateY = height
-        translateX = width
-      } else if (yAxis.position === 'top') {
-        rotate = -90
-        rotateX = 180
-        rotateY = 180
-        translateX = width
-      } else {
-        // 預設
-        rotateX = 180
-        translateY = height
-      }
-    } else {
-      // 預設
-      rotateX = 180
-      translateY = height
-    }
-    // selection.style('transform', `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`)
-  
-    return {
-      translate: [translateX, translateY],
-      scale: [1, 1],
-      rotate,
-      rotateX,
-      rotateY,
-      value: `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
-    }
-  }
-
-  return new Observable(subscriber => {
-    combineLatest({
-      fullDataFormatter: fullDataFormatter$,
-      layout: layout$
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async (d) => d),
-    ).subscribe(data => {
-      const axesTransformData = calcAxesTransform({
-        xAxis: data.fullDataFormatter.grid.groupAxis,
-        yAxis: data.fullDataFormatter.grid.valueAxis,
-        width: data.layout.width,
-        height: data.layout.height
-      })
-    
-      subscriber.next(axesTransformData)
-    })
-
-    return function unscbscribe () {
-      destroy$.next(undefined)
-    }
-  })
-}
-
-
-export const gridAxesReverseTransformObservable = ({ gridAxesTransform$ }: {
-  gridAxesTransform$: Observable<TransformData>
-}): Observable<TransformData> => {
-  return gridAxesTransform$.pipe(
-    map(d => {
-      // const translate: [number, number] = [d.translate[0] * -1, d.translate[1] * -1]
-      const translate: [number, number] = [0, 0] // 無需逆轉
-      const scale: [number, number] = [1 / d.scale[0], 1 / d.scale[1]]
-      const rotate = d.rotate * -1
-      const rotateX = d.rotateX * -1
-      const rotateY = d.rotateY * -1
-      return {
-        translate,
-        scale,
-        rotate,
-        rotateX,
-        rotateY,
-        value: `translate(${translate[0]}px, ${translate[1]}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotate(${rotate}deg)`
-      }
-    }),
-  )
-}
-
-export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
-  computedData$: Observable<ComputedDataTypeMap<'grid'>>
-  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
-  layout$: Observable<Layout>
-}): Observable<TransformData> => {
-  const destroy$ = new Subject()
-
-  function calcGridDataAreaTransform ({ data, groupAxis, valueAxis, width, height }: {
-    data: ComputedDataTypeMap<'grid'>
-    groupAxis: DataFormatterGroupAxis
-    valueAxis: DataFormatterValueAxis
-    width: number
-    height: number
-  }): TransformData {
-    let translateX = 0
-    let translateY = 0
-    let scaleX = 0
-    let scaleY = 0
-  
-    // -- groupScale --
-    const groupAxisWidth = (groupAxis.position === 'top' || groupAxis.position === 'bottom')
-      ? width
-      : height
-    const groupMin = 0
-    const groupMax = data[0] ? data[0].length - 1 : 0
-    // const groupScaleDomainMin = groupAxis.scaleDomain[0] === 'min'
-    //   ? groupMin - groupAxis.scalePadding
-    //   : groupAxis.scaleDomain[0] as number - groupAxis.scalePadding
-    const groupScaleDomainMin = groupAxis.scaleDomain[0] - groupAxis.scalePadding
-    const groupScaleDomainMax = groupAxis.scaleDomain[1] === 'max'
-      ? groupMax + groupAxis.scalePadding
-      : groupAxis.scaleDomain[1] as number + groupAxis.scalePadding
-    
-    const groupScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-      maxValue: groupMax,
-      minValue: groupMin,
-      axisWidth: groupAxisWidth,
-      // scaleDomain: groupAxis.scaleDomain,
-      scaleDomain: [groupScaleDomainMin, groupScaleDomainMax],
-      scaleRange: [0, 1]
-    })
-  
-    // -- translateX, scaleX --
-    const rangeMinX = groupScale(groupMin)
-    const rangeMaxX = groupScale(groupMax)
-    if (groupMin == groupMax) {
-      // 當group只有一個
-      translateX = 0
-      scaleX = 1
-    } else {
-      translateX = rangeMinX
-      const gWidth = rangeMaxX - rangeMinX
-      scaleX = gWidth / groupAxisWidth
-    }
-
-    // -- valueScale --
-    const filteredData = data.map((d, i) => {
-      return d.filter((_d, _i) => {
-        return _i >= groupScaleDomainMin && _i <= groupScaleDomainMax && _d.visible == true
-      })
-    })
-  
-    const filteredMinAndMax = getMinAndMaxGrid(filteredData)
-    if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
-      filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
-    }
-  
-    const valueAxisWidth = (valueAxis.position === 'left' || valueAxis.position === 'right')
-      ? height
-      : width
-  
-    const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-      maxValue: filteredMinAndMax[1],
-      minValue: filteredMinAndMax[0],
-      axisWidth: valueAxisWidth,
-      scaleDomain: valueAxis.scaleDomain,
-      scaleRange: valueAxis.scaleRange
-    })
-  
-    // -- translateY, scaleY --
-    const minAndMax = getMinAndMaxGrid(data)
-    if (minAndMax[0] === minAndMax[1]) {
-      minAndMax[0] = minAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
-    }
-    // const rangeMinY = valueScale(minAndMax[0])
-    const rangeMinY = valueScale(minAndMax[0] > 0 ? 0 : minAndMax[0]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
-    const rangeMaxY = valueScale(minAndMax[1] < 0 ? 0 : minAndMax[1]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
-    translateY = rangeMinY
-    const gHeight = rangeMaxY - rangeMinY
-    scaleY = gHeight / valueAxisWidth
-
-    return {
-      translate: [translateX, translateY],
-      scale: [scaleX, scaleY],
-      rotate: 0,
-      rotateX: 0,
-      rotateY: 0,
-      value: `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`
-    }
-  }
-
-  return new Observable(subscriber => {
-    combineLatest({
-      computedData: computedData$,
-      fullDataFormatter: fullDataFormatter$,
-      layout: layout$
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async (d) => d),
-    ).subscribe(data => {
-      const dataAreaTransformData = calcGridDataAreaTransform ({
-        data: data.computedData,
-        groupAxis: data.fullDataFormatter.grid.groupAxis,
-        valueAxis: data.fullDataFormatter.grid.valueAxis,
-        width: data.layout.width,
-        height: data.layout.height
-      })
-    
-      subscriber.next(dataAreaTransformData)
-    })
-
-    return function unscbscribe () {
-      destroy$.next(undefined)
-    }
-  })
-}
-
-export const gridGraphicReverseScaleObservable = ({ gridContainerPosition$, gridAxesTransform$, gridGraphicTransform$ }: {
-  gridContainerPosition$: Observable<ContainerPositionScaled[]>
-  gridAxesTransform$: Observable<TransformData>
-  gridGraphicTransform$: Observable<TransformData>
-}): Observable<[number, number][]> => {
-  return combineLatest({
-    gridContainerPosition: gridContainerPosition$,
-    gridAxesTransform: gridAxesTransform$,
-    gridGraphicTransform: gridGraphicTransform$,
-  }).pipe(
-    switchMap(async (d) => d),
-    map(data => {
-      if (data.gridAxesTransform.rotate == 0 || data.gridAxesTransform.rotate == 180) {
-        return data.gridContainerPosition.map((series, seriesIndex) => {
-          return [
-            1 / data.gridGraphicTransform.scale[0] / data.gridContainerPosition[seriesIndex].scale[0],
-            1 / data.gridGraphicTransform.scale[1] / data.gridContainerPosition[seriesIndex].scale[1],
-          ]
-        })
-      } else {
-        return data.gridContainerPosition.map((series, seriesIndex) => {
-          // 由於有垂直的旋轉，所以外層 (container) x和y的scale要互換
-          return [
-            1 / data.gridGraphicTransform.scale[0] / data.gridContainerPosition[seriesIndex].scale[1],
-            1 / data.gridGraphicTransform.scale[1] / data.gridContainerPosition[seriesIndex].scale[0],
-          ]
-        })
-      }
-    }),
-  )
-}
-
 export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
   fullDataFormatter$: Observable<DataFormatterGrid>
   layout$: Observable<Layout>
@@ -611,5 +306,367 @@ export const computedStackedDataObservables = ({ isSeriesSeprate$, computedData$
     switchMap(isSeriesSeprate => {
       return iif(() => isSeriesSeprate, computedData$, stackedData$)
     })
+  )
+}
+
+export const groupScaleDomainValueObservable = ({ computedData$, fullDataFormatter$ }: {
+  computedData$: Observable<ComputedDataGrid>
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
+}): Observable<[number, number]> => {
+  return combineLatest({
+    computedData: computedData$,
+    fullDataFormatter: fullDataFormatter$
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      const groupAxis = data.fullDataFormatter.grid.groupAxis
+      const groupMin = 0
+      const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
+      // const groupScaleDomainMin = groupAxis.scaleDomain[0] === 'min'
+      //   ? groupMin - groupAxis.scalePadding
+      //   : groupAxis.scaleDomain[0] as number - groupAxis.scalePadding
+      const groupScaleDomainMin = groupAxis.scaleDomain[0] - groupAxis.scalePadding
+      const groupScaleDomainMax = groupAxis.scaleDomain[1] === 'max'
+        ? groupMax + groupAxis.scalePadding
+        : groupAxis.scaleDomain[1] as number + groupAxis.scalePadding
+      
+      return [groupScaleDomainMin, groupScaleDomainMax]
+    })
+  )
+}
+
+export const filteredMinMaxValueObservable = ({ computedData$, groupScaleDomainValue$ }: {
+  computedData$: Observable<ComputedDataGrid>
+  // fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
+  groupScaleDomainValue$: Observable<[number, number]>
+}) => {
+  return combineLatest({
+    computedData: computedData$,
+    // fullDataFormatter: fullDataFormatter$,
+    groupScaleDomainValue: groupScaleDomainValue$
+  }).pipe(
+    map(data => {
+      const filteredData = data.computedData.map((d, i) => {
+        return d.filter((_d, _i) => {
+          return _i >= data.groupScaleDomainValue[0] && _i <= data.groupScaleDomainValue[1] && _d.visible == true
+        })
+      })
+    
+      const filteredMinAndMax = getMinAndMaxGrid(filteredData)
+      // if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
+      //   filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+      // }
+      return filteredMinAndMax
+    }),
+  )
+}
+
+export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
+  layout$: Observable<Layout>
+}): Observable<TransformData> => {
+  const destroy$ = new Subject()
+
+  function calcAxesTransform ({ xAxis, yAxis, width, height }: {
+    xAxis: DataFormatterGroupAxis | DataFormatterValueAxis,
+    yAxis: DataFormatterValueAxis,
+    width: number,
+    height: number
+  }): TransformData {
+    if (!xAxis || !yAxis) {
+      return {
+        translate: [0, 0],
+        scale: [1, 1],
+        rotate: 0,
+        rotateX: 0,
+        rotateY: 0,
+        value: ''
+      }
+    }
+    // const width = size.width - fullChartParams.layout.left - fullChartParams.layout.right
+    // const height = size.height - fullChartParams.layout.top - fullChartParams.layout.bottom
+    let translateX = 0
+    let translateY = 0
+    let rotate = 0
+    let rotateX = 0
+    let rotateY = 0
+    if (xAxis.position === 'bottom') {
+      if (yAxis.position === 'left') {
+        rotateX = 180
+        translateY = height
+      } else if (yAxis.position === 'right') {
+        rotateX = 180
+        rotateY = 180
+        translateX = width
+        translateY = height
+      } else {
+        // 預設
+        rotateX = 180
+        translateY = height
+      }
+    } else if (xAxis.position === 'top') {
+      if (yAxis.position === 'left') {
+      } else if (yAxis.position === 'right') {
+        rotateY = 180
+        translateX = width
+      } else {
+        // 預設
+        rotateX = 180
+        translateY = height
+      }
+    } else if (xAxis.position === 'left') {
+      if (yAxis.position === 'bottom') {
+        rotate = -90
+        translateY = height
+      } else if (yAxis.position === 'top') {
+        rotate = -90
+        rotateY = 180
+      } else {
+        // 預設
+        rotateX = 180
+        translateY = height
+      }
+    } else if (xAxis.position === 'right') {
+      if (yAxis.position === 'bottom') {
+        rotate = -90
+        rotateX = 180
+        translateY = height
+        translateX = width
+      } else if (yAxis.position === 'top') {
+        rotate = -90
+        rotateX = 180
+        rotateY = 180
+        translateX = width
+      } else {
+        // 預設
+        rotateX = 180
+        translateY = height
+      }
+    } else {
+      // 預設
+      rotateX = 180
+      translateY = height
+    }
+    // selection.style('transform', `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`)
+  
+    return {
+      translate: [translateX, translateY],
+      scale: [1, 1],
+      rotate,
+      rotateX,
+      rotateY,
+      value: `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
+    }
+  }
+
+  return new Observable(subscriber => {
+    combineLatest({
+      fullDataFormatter: fullDataFormatter$,
+      layout: layout$
+    }).pipe(
+      takeUntil(destroy$),
+      switchMap(async (d) => d),
+    ).subscribe(data => {
+      const axesTransformData = calcAxesTransform({
+        xAxis: data.fullDataFormatter.grid.groupAxis,
+        yAxis: data.fullDataFormatter.grid.valueAxis,
+        width: data.layout.width,
+        height: data.layout.height
+      })
+    
+      subscriber.next(axesTransformData)
+    })
+
+    return function unscbscribe () {
+      destroy$.next(undefined)
+    }
+  })
+}
+
+
+export const gridAxesReverseTransformObservable = ({ gridAxesTransform$ }: {
+  gridAxesTransform$: Observable<TransformData>
+}): Observable<TransformData> => {
+  return gridAxesTransform$.pipe(
+    map(d => {
+      // const translate: [number, number] = [d.translate[0] * -1, d.translate[1] * -1]
+      const translate: [number, number] = [0, 0] // 無需逆轉
+      const scale: [number, number] = [1 / d.scale[0], 1 / d.scale[1]]
+      const rotate = d.rotate * -1
+      const rotateX = d.rotateX * -1
+      const rotateY = d.rotateY * -1
+      return {
+        translate,
+        scale,
+        rotate,
+        rotateX,
+        rotateY,
+        value: `translate(${translate[0]}px, ${translate[1]}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotate(${rotate}deg)`
+      }
+    }),
+  )
+}
+
+export const gridGraphicTransformObservable = ({ computedData$, groupScaleDomainValue$, filteredMinMaxValue$, fullDataFormatter$, layout$ }: {
+  computedData$: Observable<ComputedDataTypeMap<'grid'>>
+  groupScaleDomainValue$: Observable<[number, number]>
+  filteredMinMaxValue$: Observable<[number, number]>
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
+  layout$: Observable<Layout>
+}): Observable<TransformData> => {
+  const destroy$ = new Subject()
+
+  function calcGridDataAreaTransform ({ data, groupAxis, valueAxis, groupScaleDomainValue, filteredMinMaxValue, width, height }: {
+    data: ComputedDataTypeMap<'grid'>
+    groupAxis: DataFormatterGroupAxis
+    valueAxis: DataFormatterValueAxis
+    groupScaleDomainValue: [number, number],
+    filteredMinMaxValue: [number, number],
+    width: number
+    height: number
+  }): TransformData {
+    let translateX = 0
+    let translateY = 0
+    let scaleX = 0
+    let scaleY = 0
+  
+    // -- groupScale --
+    const groupAxisWidth = (groupAxis.position === 'top' || groupAxis.position === 'bottom')
+      ? width
+      : height
+    const groupMin = 0
+    const groupMax = data[0] ? data[0].length - 1 : 0
+    // const groupScaleDomainMin = groupAxis.scaleDomain[0] - groupAxis.scalePadding
+    // const groupScaleDomainMax = groupAxis.scaleDomain[1] === 'max'
+    //   ? groupMax + groupAxis.scalePadding
+    //   : groupAxis.scaleDomain[1] as number + groupAxis.scalePadding
+    
+    const groupScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
+      maxValue: groupMax,
+      minValue: groupMin,
+      axisWidth: groupAxisWidth,
+      // scaleDomain: groupAxis.scaleDomain,
+      scaleDomain: groupScaleDomainValue,
+      scaleRange: [0, 1]
+    })
+  
+    // -- translateX, scaleX --
+    const rangeMinX = groupScale(groupMin)
+    const rangeMaxX = groupScale(groupMax)
+    if (groupMin == groupMax) {
+      // 當group只有一個
+      translateX = 0
+      scaleX = 1
+    } else {
+      translateX = rangeMinX
+      const gWidth = rangeMaxX - rangeMinX
+      scaleX = gWidth / groupAxisWidth
+    }
+
+    // -- valueScale --
+    // const filteredData = data.map((d, i) => {
+    //   return d.filter((_d, _i) => {
+    //     return _i >= groupScaleDomainMin && _i <= groupScaleDomainMax && _d.visible == true
+    //   })
+    // })
+  
+    // const filteredMinAndMax = getMinAndMaxGrid(filteredData)
+    // if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
+    //   filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+    // }
+  
+    const valueAxisWidth = (valueAxis.position === 'left' || valueAxis.position === 'right')
+      ? height
+      : width
+  
+    const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
+      maxValue: filteredMinMaxValue[1],
+      minValue: filteredMinMaxValue[0],
+      axisWidth: valueAxisWidth,
+      scaleDomain: valueAxis.scaleDomain,
+      scaleRange: valueAxis.scaleRange
+    })
+  
+    // -- translateY, scaleY --
+    const minAndMax = getMinAndMaxGrid(data)
+    if (minAndMax[0] === minAndMax[1]) {
+      minAndMax[0] = minAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+    }
+    // const rangeMinY = valueScale(minAndMax[0])
+    const rangeMinY = valueScale(minAndMax[0] > 0 ? 0 : minAndMax[0]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
+    const rangeMaxY = valueScale(minAndMax[1] < 0 ? 0 : minAndMax[1]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
+    translateY = rangeMinY
+    const gHeight = rangeMaxY - rangeMinY
+    scaleY = gHeight / valueAxisWidth
+
+    return {
+      translate: [translateX, translateY],
+      scale: [scaleX, scaleY],
+      rotate: 0,
+      rotateX: 0,
+      rotateY: 0,
+      value: `translate(${translateX}px, ${translateY}px) scale(${scaleX}, ${scaleY})`
+    }
+  }
+
+  return new Observable(subscriber => {
+    combineLatest({
+      computedData: computedData$,
+      groupScaleDomainValue: groupScaleDomainValue$,
+      filteredMinMaxValue: filteredMinMaxValue$,
+      fullDataFormatter: fullDataFormatter$,
+      layout: layout$
+    }).pipe(
+      takeUntil(destroy$),
+      switchMap(async (d) => d),
+    ).subscribe(data => {
+      const dataAreaTransformData = calcGridDataAreaTransform ({
+        data: data.computedData,
+        groupAxis: data.fullDataFormatter.grid.groupAxis,
+        valueAxis: data.fullDataFormatter.grid.valueAxis,
+        groupScaleDomainValue: data.groupScaleDomainValue,
+        filteredMinMaxValue: data.filteredMinMaxValue,
+        width: data.layout.width,
+        height: data.layout.height
+      })
+    
+      subscriber.next(dataAreaTransformData)
+    })
+
+    return function unscbscribe () {
+      destroy$.next(undefined)
+    }
+  })
+}
+
+export const gridGraphicReverseScaleObservable = ({ gridContainerPosition$, gridAxesTransform$, gridGraphicTransform$ }: {
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
+  gridAxesTransform$: Observable<TransformData>
+  gridGraphicTransform$: Observable<TransformData>
+}): Observable<[number, number][]> => {
+  return combineLatest({
+    gridContainerPosition: gridContainerPosition$,
+    gridAxesTransform: gridAxesTransform$,
+    gridGraphicTransform: gridGraphicTransform$,
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      if (data.gridAxesTransform.rotate == 0 || data.gridAxesTransform.rotate == 180) {
+        return data.gridContainerPosition.map((series, seriesIndex) => {
+          return [
+            1 / data.gridGraphicTransform.scale[0] / data.gridContainerPosition[seriesIndex].scale[0],
+            1 / data.gridGraphicTransform.scale[1] / data.gridContainerPosition[seriesIndex].scale[1],
+          ]
+        })
+      } else {
+        return data.gridContainerPosition.map((series, seriesIndex) => {
+          // 由於有垂直的旋轉，所以外層 (container) x和y的scale要互換
+          return [
+            1 / data.gridGraphicTransform.scale[0] / data.gridContainerPosition[seriesIndex].scale[1],
+            1 / data.gridGraphicTransform.scale[1] / data.gridContainerPosition[seriesIndex].scale[0],
+          ]
+        })
+      }
+    }),
   )
 }

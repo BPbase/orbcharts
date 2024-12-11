@@ -62,6 +62,121 @@ const yTickDominantBaseline = 'middle'
 const yAxisLabelAnchor = 'end'
 const yAxisLabelDominantBaseline = 'auto'
 
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_X_Y_AXES_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_X_Y_AXES_PARAMS,
+  layerIndex: LAYER_INDEX_OF_AXIS,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      xAxis: {
+        toBeTypes: ['object']
+      },
+      yAxis: {
+        toBeTypes: ['object']
+      }
+    })
+    if (params.xAxis) {
+      const forceResult = validateColumns(params.xAxis, {
+        labelOffset: {
+          toBe: '[number, number]',
+          test: (value: any) => {
+            return Array.isArray(value)
+              && value.length === 2
+              && typeof value[0] === 'number'
+              && typeof value[1] === 'number'
+          }
+        },
+        labelColorType: {
+          toBeOption: 'ColorType',
+        },
+        axisLineVisible: {
+          toBeTypes: ['boolean']
+        },
+        axisLineColorType: {
+          toBeOption: 'ColorType',
+        },
+        ticks: {
+          toBeTypes: ['number', 'null']
+        },
+        tickFormat: {
+          toBeTypes: ['string', 'Function']
+        },
+        tickLineVisible: {
+          toBeTypes: ['boolean']
+        },
+        tickPadding: {
+          toBeTypes: ['number']
+        },
+        tickFullLine: {
+          toBeTypes: ['boolean']
+        },
+        tickFullLineDasharray: {
+          toBeTypes: ['string']
+        },
+        tickColorType: {
+          toBeOption: 'ColorType',
+        },
+        tickTextColorType: {
+          toBeOption: 'ColorType',
+        }
+      })
+      if (forceResult.status === 'error') {
+        return forceResult
+      }
+    }
+    if (params.yAxis) {
+      const forceResult = validateColumns(params.yAxis, {
+        labelOffset: {
+          toBe: '[number, number]',
+          test: (value: any) => {
+            return Array.isArray(value)
+              && value.length === 2
+              && typeof value[0] === 'number'
+              && typeof value[1] === 'number'
+          }
+        },
+        labelColorType: {
+          toBeOption: 'ColorType',
+        },
+        axisLineVisible: {
+          toBeTypes: ['boolean']
+        },
+        axisLineColorType: {
+          toBeOption: 'ColorType',
+        },
+        ticks: {
+          toBeTypes: ['number', 'null']
+        },
+        tickFormat: {
+          toBeTypes: ['string', 'Function']
+        },
+        tickLineVisible: {
+          toBeTypes: ['boolean']
+        },
+        tickPadding: {
+          toBeTypes: ['number']
+        },
+        tickFullLine: {
+          toBeTypes: ['boolean']
+        },
+        tickFullLineDasharray: {
+          toBeTypes: ['string']
+        },
+        tickColorType: {
+          toBeOption: 'ColorType',
+        },
+        tickTextColorType: {
+          toBeOption: 'ColorType',
+        }
+      })
+      if (forceResult.status === 'error') {
+        return forceResult
+      }
+    }
+    return result
+  }
+}
+
 function renderXAxisLabel ({ selection, xLabelClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   xLabelClassName: string
@@ -325,62 +440,6 @@ function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataF
   return yAxisSelection
 }
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_X_Y_AXES_PARAMS> = {
-  name: pluginName,
-  defaultParams: DEFAULT_X_Y_AXES_PARAMS,
-  layerIndex: LAYER_INDEX_OF_AXIS,
-  validator: (params, { validateColumns }) => {
-    // const result = validateColumns(params, {
-    //   labelOffset: {
-    //     toBe: '[number, number]',
-    //     test: (value: any) => {
-    //       return Array.isArray(value)
-    //         && value.length === 2
-    //         && typeof value[0] === 'number'
-    //         && typeof value[1] === 'number'
-    //     }
-    //   },
-    //   labelColorType: {
-    //     toBeOption: 'ColorType',
-    //   },
-    //   axisLineVisible: {
-    //     toBeTypes: ['boolean']
-    //   },
-    //   axisLineColorType: {
-    //     toBeOption: 'ColorType',
-    //   },
-    //   ticks: {
-    //     toBeTypes: ['number', 'null']
-    //   },
-    //   tickFormat: {
-    //     toBeTypes: ['string', 'Function']
-    //   },
-    //   tickLineVisible: {
-    //     toBeTypes: ['boolean']
-    //   },
-    //   tickPadding: {
-    //     toBeTypes: ['number']
-    //   },
-    //   tickFullLine: {
-    //     toBeTypes: ['boolean']
-    //   },
-    //   tickFullLineDasharray: {
-    //     toBeTypes: ['string']
-    //   },
-    //   tickColorType: {
-    //     toBeOption: 'ColorType',
-    //   },
-    //   tickTextColorType: {
-    //     toBeOption: 'ColorType',
-    //   }
-    // })
-    return {
-      status: 'success',
-      columnName: '',
-      expectToBe: ''
-    }
-  }
-}
 
 export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, observer, subject }) => {
   

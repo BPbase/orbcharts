@@ -43,6 +43,7 @@ import { getColor, getMinAndMaxValue, getClassName, getUniID } from '../utils/or
 interface BaseLinesContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
+  filteredMinMaxValue$: Observable<[number, number]>
   fullParams$: Observable<BaseValueAxisParams>
   fullDataFormatter$: Observable<DataFormatterGrid>
   fullChartParams$: Observable<ChartParams>
@@ -149,7 +150,7 @@ function renderAxisLabel ({ selection, textClassName, fullParams, axisLabelAlign
 
 }
 
-function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gridAxesSize, fullDataFormatter, fullChartParams, valueScale, textReverseTransformWithRotate, minAndMax }: {
+function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gridAxesSize, fullDataFormatter, fullChartParams, valueScale, textReverseTransformWithRotate, filteredMinMaxValue }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   yAxisClassName: string
   fullParams: BaseValueAxisParams
@@ -159,7 +160,7 @@ function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gri
   fullChartParams: ChartParams
   valueScale: d3.ScaleLinear<number, number>
   textReverseTransformWithRotate: string,
-  minAndMax: [number, number]
+  filteredMinMaxValue: [number, number]
 }) {
 
   const yAxisSelection = selection
@@ -168,7 +169,7 @@ function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gri
     .join('g')
     .classed(yAxisClassName, true)
 
-  const valueLength = minAndMax[1] - minAndMax[0]
+  const valueLength = filteredMinMaxValue[1] - filteredMinMaxValue[0]
   
   // const _valueScale = d3.scaleLinear()
   //   .domain([0, 150])
@@ -196,7 +197,7 @@ function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gri
     .scale(valueScale)
     .ticks(valueLength > fullParams.ticks
       ? fullParams.ticks
-      : ((minAndMax[0] === 0 && minAndMax[1] === 0)
+      : ((filteredMinMaxValue[0] === 0 && filteredMinMaxValue[1] === 0)
         ? 1
         : Math.ceil(valueLength))) // 刻度分段數量
     .tickFormat(d => parseTickFormatValue(d, fullParams.tickFormat))
@@ -247,6 +248,7 @@ function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gri
 export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: string, {
   selection,
   computedData$,
+  filteredMinMaxValue$,
   fullParams$,
   fullDataFormatter$,
   fullChartParams$,
@@ -411,51 +413,52 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     })
   )
 
-  const minAndMax$: Observable<[number, number]> = new Observable(subscriber => {
-    combineLatest({
-      fullDataFormatter: fullDataFormatter$,
-      computedData: computedData$
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async (d) => d),
-    ).subscribe(data => {
-      const groupMin = 0
-      const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-      //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
-      //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
-        ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
-        : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
+  // const minAndMax$: Observable<[number, number]> = new Observable(subscriber => {
+  //   combineLatest({
+  //     fullDataFormatter: fullDataFormatter$,
+  //     computedData: computedData$
+  //   }).pipe(
+  //     takeUntil(destroy$),
+  //     switchMap(async (d) => d),
+  //   ).subscribe(data => {
+  //     const groupMin = 0
+  //     const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
+  //     // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+  //     //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
+  //       ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
+  //       : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
         
-      const filteredData = data.computedData.map((d, i) => {
-        return d.filter((_d, _i) => {
-          return _i >= groupScaleDomainMin && _i <= groupScaleDomainMax
-        })
-      })
+  //     const filteredData = data.computedData.map((d, i) => {
+  //       return d.filter((_d, _i) => {
+  //         return _i >= groupScaleDomainMin && _i <= groupScaleDomainMax
+  //       })
+  //     })
     
-      const filteredMinAndMax = getMinAndMaxValue(filteredData.flat())
-      if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
-        filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
-      }
-      subscriber.next(filteredMinAndMax)
-    })
-  })
+  //     const filteredMinAndMax = getMinAndMaxValue(filteredData.flat())
+  //     if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
+  //       filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+  //     }
+  //     subscriber.next(filteredMinAndMax)
+  //   })
+  // })
 
   const valueScale$: Observable<d3.ScaleLinear<number, number>> = new Observable(subscriber => {
     combineLatest({
       fullDataFormatter: fullDataFormatter$,
       gridAxesSize: gridAxesSize$,
-      minAndMax: minAndMax$
+      // minAndMax: minAndMax$
+      filteredMinMaxValue: filteredMinMaxValue$
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
     
       const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-        maxValue: data.minAndMax[1],
-        minValue: data.minAndMax[0],
+        maxValue: data.filteredMinMaxValue[1],
+        minValue: data.filteredMinMaxValue[0],
         axisWidth: data.gridAxesSize.height,
         scaleDomain: data.fullDataFormatter.grid.valueAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.grid.valueAxis.scaleRange
@@ -543,7 +546,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     valueScale: valueScale$,
     textReverseTransform: textReverseTransform$,
     textReverseTransformWithRotate: textReverseTransformWithRotate$,
-    minAndMax: minAndMax$
+    filteredMinMaxValue: filteredMinMaxValue$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -559,7 +562,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       fullChartParams: data.fullChartParams,
       valueScale: data.valueScale,
       textReverseTransformWithRotate: data.textReverseTransformWithRotate,
-      minAndMax: data.minAndMax
+      filteredMinMaxValue: data.filteredMinMaxValue
     })
 
     renderAxisLabel({

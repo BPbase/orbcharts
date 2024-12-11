@@ -12,10 +12,6 @@ ContextObserverBase<'grid', PluginParams>, ContextObserverGridDetail {
 export interface ContextObserverGridDetail {
   isSeriesSeprate$: Observable<boolean>
   gridContainerPosition$: Observable<ContainerPositionScaled[]>
-  gridAxesTransform$: Observable<TransformData>
-  gridAxesReverseTransform$: Observable<TransformData>
-  gridGraphicTransform$: Observable<TransformData>
-  gridGraphicReverseScale$: Observable<[number, number][]>
   gridAxesSize$: Observable<{ width: number; height: number; }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
   seriesLabels$: Observable<string[]>
@@ -25,6 +21,12 @@ export interface ContextObserverGridDetail {
   visibleComputedData$: Observable<ComputedDataGrid> // filter掉visible=false的資料
   visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
   computedStackedData$: Observable<ComputedDataGrid>
+  groupScaleDomainValue$: Observable<[number, number]>
+  filteredMinMaxValue$: Observable<[number, number]>
+  gridAxesTransform$: Observable<TransformData>
+  gridAxesReverseTransform$: Observable<TransformData>
+  gridGraphicTransform$: Observable<TransformData>
+  gridGraphicReverseScale$: Observable<[number, number][]>
   // filteredMinMaxData$: Observable<{ minValueDatum: ComputedLayoutDatumGrid; maxValueDatum: ComputedLayoutDatumGrid }>
 }
 

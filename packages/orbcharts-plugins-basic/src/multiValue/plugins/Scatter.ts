@@ -39,6 +39,34 @@ type ClipPathDatum = {
 
 const pluginName = 'Scatter'
 
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_SCATTER_PARAMS> = {
+  name: pluginName,
+  defaultParams: DEFAULT_SCATTER_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC_COVER,
+  validator: (params, { validateColumns }) => {
+    const result = validateColumns(params, {
+      radius: {
+        toBeTypes: ['number']
+      },
+      fillColorType: {
+        toBeOption: 'ColorType',
+      },
+      strokeColorType: {
+        toBeOption: 'ColorType',
+      },
+      strokeWidth: {
+        toBeTypes: ['number']
+      },
+      // strokeWidthWhileHighlight: {
+      //   toBeTypes: ['number']
+      // },
+      // onlyShowHighlighted: {
+      //   toBeTypes: ['boolean']
+      // }
+    })
+    return result
+  }
+}
 
 function renderDots ({ graphicGSelection, circleGClassName, circleClassName, visibleComputedLayoutData, fullParams, fullChartParams, graphicReverseScale }: {
   graphicGSelection: d3.Selection<SVGGElement, any, any, any>
@@ -187,38 +215,6 @@ function renderClipPath ({ defsSelection, clipPathData }: {
 
 }
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_SCATTER_PARAMS> = {
-  name: pluginName,
-  defaultParams: DEFAULT_SCATTER_PARAMS,
-  layerIndex: LAYER_INDEX_OF_GRAPHIC_COVER,
-  validator: (params, { validateColumns }) => {
-    // const result = validateColumns(params, {
-    //   radius: {
-    //     toBeTypes: ['number']
-    //   },
-    //   fillColorType: {
-    //     toBeOption: 'ColorType',
-    //   },
-    //   strokeColorType: {
-    //     toBeOption: 'ColorType',
-    //   },
-    //   strokeWidth: {
-    //     toBeTypes: ['number']
-    //   },
-    //   // strokeWidthWhileHighlight: {
-    //   //   toBeTypes: ['number']
-    //   // },
-    //   onlyShowHighlighted: {
-    //     toBeTypes: ['boolean']
-    //   }
-    // })
-    return {
-      status: 'success',
-      columnName: '',
-      expectToBe: ''
-    }
-  }
-}
 
 export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   

@@ -7,17 +7,20 @@ import {
   textSizePxObservable } from '../utils/observables'
 import {
   gridComputedLayoutDataObservable,
-  gridAxesTransformObservable,
-  gridAxesReverseTransformObservable,
-  gridGraphicTransformObservable,
-  gridGraphicReverseScaleObservable,
   gridAxesSizeObservable,
   gridSeriesLabelsObservable,
   gridVisibleComputedDataObservable,
   gridVisibleComputedLayoutDataObservable,
   // isSeriesSeprateObservable,
   gridContainerPositionObservable,
-  computedStackedDataObservables } from '../utils/gridObservables'
+  computedStackedDataObservables,
+  groupScaleDomainValueObservable,
+  filteredMinMaxValueObservable,
+  gridAxesTransformObservable,
+  gridAxesReverseTransformObservable,
+  gridGraphicTransformObservable,
+  gridGraphicReverseScaleObservable,
+} from '../utils/gridObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subject, observer }) => {
   
@@ -35,33 +38,6 @@ export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subje
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$,
     layout$: observer.layout$,
-  })
-
-  const gridAxesTransform$ = gridAxesTransformObservable({
-    fullDataFormatter$: observer.fullDataFormatter$,
-    layout$: observer.layout$
-  }).pipe(
-    shareReplay(1)
-  )
-
-  const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({
-    gridAxesTransform$
-  }).pipe(
-    shareReplay(1)
-  )
-  
-  const gridGraphicTransform$ = gridGraphicTransformObservable({
-    computedData$: observer.computedData$,
-    fullDataFormatter$: observer.fullDataFormatter$,
-    layout$: observer.layout$
-  }).pipe(
-    shareReplay(1)
-  )
-
-  const gridGraphicReverseScale$ = gridGraphicReverseScaleObservable({
-    gridContainerPosition$: gridContainerPosition$,
-    gridAxesTransform$: gridAxesTransform$,
-    gridGraphicTransform$: gridGraphicTransform$,
   })
 
   const gridAxesSize$ = gridAxesSizeObservable({
@@ -128,6 +104,49 @@ export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subje
     shareReplay(1)
   )
 
+  const groupScaleDomainValue$ = groupScaleDomainValueObservable({
+    computedData$: observer.computedData$,
+    fullDataFormatter$: observer.fullDataFormatter$,
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const filteredMinMaxValue$ = filteredMinMaxValueObservable({
+    computedData$: observer.computedData$,
+    groupScaleDomainValue$: groupScaleDomainValue$,
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const gridAxesTransform$ = gridAxesTransformObservable({
+    fullDataFormatter$: observer.fullDataFormatter$,
+    layout$: observer.layout$
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({
+    gridAxesTransform$
+  }).pipe(
+    shareReplay(1)
+  )
+  
+  const gridGraphicTransform$ = gridGraphicTransformObservable({
+    computedData$: observer.computedData$,
+    groupScaleDomainValue$: groupScaleDomainValue$,
+    filteredMinMaxValue$: filteredMinMaxValue$,
+    fullDataFormatter$: observer.fullDataFormatter$,
+    layout$: observer.layout$
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const gridGraphicReverseScale$ = gridGraphicReverseScaleObservable({
+    gridContainerPosition$: gridContainerPosition$,
+    gridAxesTransform$: gridAxesTransform$,
+    gridGraphicTransform$: gridGraphicTransform$,
+  })
+
 
   return {
     fullParams$: observer.fullParams$,
@@ -138,10 +157,6 @@ export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subje
     textSizePx$,
     isSeriesSeprate$,
     gridContainerPosition$,
-    gridAxesTransform$,
-    gridAxesReverseTransform$,
-    gridGraphicTransform$,
-    gridGraphicReverseScale$,
     gridAxesSize$,
     gridHighlight$,
     seriesLabels$,
@@ -151,5 +166,11 @@ export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subje
     visibleComputedData$,
     visibleComputedLayoutData$,
     computedStackedData$,
+    groupScaleDomainValue$,
+    filteredMinMaxValue$,
+    gridAxesTransform$,
+    gridAxesReverseTransform$,
+    gridGraphicTransform$,
+    gridGraphicReverseScale$,
   }
 }
