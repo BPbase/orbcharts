@@ -13,7 +13,7 @@ import type {
   GridZoomParams,
   GridLegendParams
 } from '../../lib/plugins-basic-types'
-import { measureTextWidth } from '../utils/commonUtils'
+// import { measureTextWidth } from '../utils/commonUtils'
 
 export const DEFAULT_LINES_PARAMS: LinesParams = {
   lineCurve: 'curveLinear',

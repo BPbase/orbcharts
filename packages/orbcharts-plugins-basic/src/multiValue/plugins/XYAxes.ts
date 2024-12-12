@@ -27,6 +27,7 @@ import { DEFAULT_X_Y_AXES_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_AXIS } from '../../const'
 import { getColor, getDatumColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { parseTickFormatValue } from '../../utils/d3Utils'
+import { filteredMinMaxXYDataObservable } from '../../../../orbcharts-core/src/utils/multiValueObservables'
 // import { multiValueSelectionsObservable } from '../multiValueObservables'
 
 interface TextAlign {
@@ -302,7 +303,6 @@ function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullDataF
 
   // 刻度文字偏移
   let tickPadding = fullParams.xAxis.tickPadding
-  let textY = 0
 
   // 設定Y軸刻度
   const xAxis = d3.axisBottom(xScale)
@@ -344,7 +344,7 @@ function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullDataF
     .attr('text-anchor', xTickTextAnchor)
     .attr('dominant-baseline', xTickDominantBaseline)
     .attr('dy', 0)
-    .attr('y', textY)
+    .attr('y', tickPadding)
     xText.style('transform', textReverseTransform)
   
   // // 抵消掉預設的偏移
@@ -387,7 +387,6 @@ function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataF
 
   // 刻度文字偏移
   let tickPadding = fullParams.yAxis.tickPadding
-  let textY = 0
 
   // 設定Y軸刻度
   const yAxis = d3.axisLeft(yScale)
@@ -428,7 +427,7 @@ function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataF
     .attr('text-anchor', yTickTextAnchor)
     .attr('dominant-baseline', yTickDominantBaseline)
     // .attr('dy', 0)
-    .attr('y', textY)
+    .attr('x', - tickPadding)
     .attr('dy', 0)
   yText.style('transform', textReverseTransform)
   
@@ -559,15 +558,18 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
     combineLatest({
       fullDataFormatter: observer.fullDataFormatter$,
       layout: observer.layout$,
-      minMaxXY: observer.minMaxXY$
+      // minMaxXY: observer.minMaxXY$
+      filteredMinMaxXYData: observer.filteredMinMaxXYData$
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
     
       const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-        maxValue: data.minMaxXY.maxX,
-        minValue: data.minMaxXY.minX,
+        // maxValue: data.minMaxXY.maxX,
+        // minValue: data.minMaxXY.minX,
+        maxValue: data.filteredMinMaxXYData.maxYDatum.value[1],
+        minValue: data.filteredMinMaxXYData.minYDatum.value[0],
         axisWidth: data.layout.width,
         scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.xAxis.scaleRange,
@@ -581,15 +583,16 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
     combineLatest({
       fullDataFormatter: observer.fullDataFormatter$,
       layout: observer.layout$,
-      minMaxXY: observer.minMaxXY$
+      // minMaxXY: observer.minMaxXY$
+      filteredMinMaxXYData: observer.filteredMinMaxXYData$
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
     
       const yScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-        maxValue: data.minMaxXY.maxY,
-        minValue: data.minMaxXY.minY,
+        maxValue: data.filteredMinMaxXYData.maxYDatum.value[1],
+        minValue: data.filteredMinMaxXYData.minYDatum.value[0],
         axisWidth: data.layout.height,
         scaleDomain: data.fullDataFormatter.yAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.yAxis.scaleRange,
