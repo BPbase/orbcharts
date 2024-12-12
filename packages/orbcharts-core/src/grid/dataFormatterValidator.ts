@@ -41,8 +41,8 @@ export const dataFormatterValidator: DataFormatterValidator<'grid'> = (dataForma
     if (dataFormatter.grid.valueAxis) {
       const valueAxisResult = validateColumns(dataFormatter.grid.valueAxis, {
         position: {
-          toBe: '"left" | "right"',
-          test: (value) => value === 'left' || value === 'right'
+          toBe: '"bottom" | "left" | "top" | "right"',
+          test: (value) => value === 'bottom' || value === 'left' || value === 'top' || value === 'right'
         },
         scaleDomain: {
           toBe: '[number | "min" | "auto", number | "max" | "auto"]',
@@ -63,8 +63,8 @@ export const dataFormatterValidator: DataFormatterValidator<'grid'> = (dataForma
     if (dataFormatter.grid.groupAxis) {
       const groupAxisResult = validateColumns(dataFormatter.grid.groupAxis, {
         position: {
-          toBe: '"top" | "bottom"',
-          test: (value) => value === 'top' || value === 'bottom'
+          toBe: '"bottom" | "left" | "top" | "right"',
+          test: (value) => value === 'bottom' || value === 'left' || value === 'top' || value === 'right'
         },
         scaleDomain: {
           toBe: '[number, number | "max"]',
