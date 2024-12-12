@@ -14,7 +14,7 @@ import {
   distinctUntilChanged
 } from 'rxjs'
 import type {
-  SeriesContainerPosition } from '../../lib/core-types'
+  ContainerPosition } from '../../lib/core-types'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 
 function createSeriesSelection ({ selection, pluginName, separateSeries$, seriesLabels$ }: {
@@ -55,7 +55,7 @@ export const seriesStartSelectionObservable = ({ selection, pluginName, separate
   pluginName: string
   separateSeries$: Observable<boolean>
   seriesLabels$: Observable<string[]>
-  seriesContainerPosition$: Observable<SeriesContainerPosition[]>
+  seriesContainerPosition$: Observable<ContainerPosition[]>
 }) => {
   
   const seriesStartSelection$ = createSeriesSelection({ selection, pluginName, separateSeries$, seriesLabels$ })
@@ -102,7 +102,7 @@ export const seriesCenterSelectionObservable = ({ selection, pluginName, separat
   pluginName: string
   separateSeries$: Observable<boolean>
   seriesLabels$: Observable<string[]>
-  seriesContainerPosition$: Observable<SeriesContainerPosition[]>
+  seriesContainerPosition$: Observable<ContainerPosition[]>
 }) => {
   
   const seriesCenterSelection$ = createSeriesSelection({ selection, pluginName, separateSeries$, seriesLabels$ })

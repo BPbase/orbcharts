@@ -14,7 +14,7 @@ import type { DefinePluginConfig } from '../../../lib/core-types'
 import type {
   ComputedDataSeries,
   ComputedDatumSeries,
-  SeriesContainerPosition,
+  ContainerPosition,
   ChartParams,
   EventSeries,
   Layout } from '../../../lib/core-types'
@@ -219,7 +219,7 @@ function createEachRose (pluginName: string, context: {
   fullParams$: Observable<RoseParams>
   fullChartParams$: Observable<ChartParams>
   seriesHighlight$: Observable<ComputedDatumSeries[]>
-  seriesContainerPosition$: Observable<SeriesContainerPosition>
+  seriesContainerPosition$: Observable<ContainerPosition>
   event$: Subject<EventSeries>
 }) {
   const destroy$ = new Subject()

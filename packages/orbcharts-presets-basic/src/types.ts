@@ -40,6 +40,15 @@ import type {
   OverlappingValueAxesParams,
   OverlappingValueStackAxesParams,
 
+  // -- multiValue --
+  MultiValueLegendParams,
+  MultiValueTooltipParams,  
+  ScatterParams,
+  ScatterBubblesParams,
+  XYAuxParams,
+  XYAxesParams,
+  XYZoomParams,
+
   // -- tree --
   TreeLegendParams,
   TreeMapParams,
@@ -239,6 +248,51 @@ export interface PresetOverlappingValueAxesParams {
 
 export interface PresetOverlappingValueStackAxesParams {
   OverlappingValueStackAxes: Partial<OverlappingValueStackAxesParams>
+}
+
+// -- multiValue --
+export type PresetMultiValuePluginParams = PresetMultiValueLegendParams
+  & PresetMultiValueTooltipParams
+  & PresetScatterParams
+  & PresetScatterBubblesParams
+  & PresetXYAuxParams
+  & PresetXYAxesParams
+  & PresetXYZoomParams
+
+export interface PresetMultiValueAxisParams {
+  MultiValueAxis: Partial<MultiValueAxisParams>
+}
+
+export interface PresetMultiValueStackAxisParams {
+  MultiValueStackAxis: Partial<MultiValueStackAxisParams>
+}
+
+export interface PresetMultiValueLegendParams {
+  MultiValueLegend: Partial<MultiValueLegendParams>
+}
+
+export interface PresetMultiValueTooltipParams {
+  MultiValueTooltip: Partial<MultiValueTooltipParams>
+}
+
+export interface PresetScatterParams {
+  Scatter: Partial<ScatterParams>
+}
+
+export interface PresetScatterBubblesParams {
+  ScatterBubbles: Partial<ScatterBubblesParams>
+}
+
+export interface PresetXYAuxParams {
+  XYAux: Partial<XYAuxParams>
+}
+
+export interface PresetXYAxesParams {
+  XYAxes: Partial<XYAxesParams>
+}
+
+export interface PresetXYZoomParams {
+  XYZoom: Partial<XYZoomParams>
 }
 
 // -- tree --

@@ -65,18 +65,11 @@ export const TreeLegend = defineTreePlugin(pluginConfig)(({ selection, rootSelec
   
   const destroy$ = new Subject()
 
-  const categoryLabels$: Observable<string[]> = observer.CategoryDataMap$.pipe(
-    takeUntil(destroy$),
-    map(data => {
-      return Array.from(data.keys())
-    })
-  )
-
   // 全部列點矩型使用相同樣式參數
   const fullParams$ = observer.fullParams$.pipe(
     takeUntil(destroy$),
     map(d => {
-      const seriesList = [
+      const labelList = [
         {
           listRectWidth: d.listRectWidth,
           listRectHeight: d.listRectHeight,
@@ -85,14 +78,14 @@ export const TreeLegend = defineTreePlugin(pluginConfig)(({ selection, rootSelec
       ]
       return {
         ...d,
-        seriesList
+        labelList
       }
     })
   )
 
   const unsubscribeBaseLegend = createBaseLegend(pluginName, {
     rootSelection,
-    seriesLabels$: categoryLabels$,
+    legendLabels$: observer.categoryLabels$,
     fullParams$,
     layout$: observer.layout$,
     fullChartParams$: observer.fullChartParams$,

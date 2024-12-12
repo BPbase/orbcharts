@@ -2,6 +2,7 @@ import { Observable } from 'rxjs'
 import type { ContextObserverBase } from './ContextObserver'
 import type { ComputedDataGrid, ComputedDatumGrid } from './ComputedDataGrid'
 import type { TransformData } from './TransformData'
+import type { ContainerPositionScaled } from './ContextObserver'
 
 export interface ContextObserverGrid<PluginParams> extends
 ContextObserverBase<'grid', PluginParams>, ContextObserverGridDetail {
@@ -10,20 +11,23 @@ ContextObserverBase<'grid', PluginParams>, ContextObserverGridDetail {
 
 export interface ContextObserverGridDetail {
   isSeriesSeprate$: Observable<boolean>
-  gridContainerPosition$: Observable<GridContainerPosition[]>
-  gridAxesTransform$: Observable<TransformData>
-  gridAxesReverseTransform$: Observable<TransformData>
-  gridGraphicTransform$: Observable<TransformData>
-  gridGraphicReverseScale$: Observable<[number, number][]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
   gridAxesSize$: Observable<{ width: number; height: number; }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
-  computedLayoutData$: Observable<ComputedLayoutDataGrid>
-  visibleComputedData$: Observable<ComputedDataGrid>
+  computedLayoutData$: Observable<ComputedLayoutDataGrid> // 有座標的資料
+  visibleComputedData$: Observable<ComputedDataGrid> // filter掉visible=false的資料
   visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
   computedStackedData$: Observable<ComputedDataGrid>
+  groupScaleDomainValue$: Observable<[number, number]>
+  filteredMinMaxValue$: Observable<[number, number]>
+  gridAxesTransform$: Observable<TransformData>
+  gridAxesReverseTransform$: Observable<TransformData>
+  gridGraphicTransform$: Observable<TransformData>
+  gridGraphicReverseScale$: Observable<[number, number][]>
+  // filteredMinMaxData$: Observable<{ minValueDatum: ComputedLayoutDatumGrid; maxValueDatum: ComputedLayoutDatumGrid }>
 }
 
 export type ComputedLayoutDataGrid = ComputedLayoutDatumGrid[][]
@@ -34,10 +38,10 @@ export interface ComputedLayoutDatumGrid extends ComputedDatumGrid {
   axisYFromZero: number
 }
 
-export interface GridContainerPosition {
-  slotIndex: number
-  rowIndex: number
-  columnIndex: number
-  translate: [number, number]
-  scale: [number, number]
-}
+// export interface GridContainerPosition {
+//   slotIndex: number
+//   rowIndex: number
+//   columnIndex: number
+//   translate: [number, number]
+//   scale: [number, number]
+// }

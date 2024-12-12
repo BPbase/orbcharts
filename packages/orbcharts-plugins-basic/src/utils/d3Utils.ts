@@ -58,7 +58,8 @@ export function makeD3Arc ({ axisWidth, innerRadius, outerRadius, padAngle, corn
 
 export const parseTickFormatValue = (value: any, tickFormat: string | ((text: d3.NumberValue) => string)) => {
   if (tickFormat! instanceof Function == true) {
-    return (tickFormat as ((text: d3.NumberValue) => string))(value)
+    const v = (tickFormat as ((text: d3.NumberValue) => string))(value)
+    return String(v ?? '')
   }
   return d3.format(tickFormat as string)!(value)
 }

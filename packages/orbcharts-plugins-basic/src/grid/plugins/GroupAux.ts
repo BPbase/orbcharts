@@ -20,12 +20,12 @@ import type {
   TransformData,
   DataFormatterGrid,
   ChartParams } from '../../../lib/core-types'
-import { DEFAULT_GROUP_AREA_PARAMS } from '../defaults'
+import { DEFAULT_GROUP_AUX_PARAMS } from '../defaults'
 import { parseTickFormatValue } from '../../utils/d3Utils'
 import { measureTextWidth } from '../../utils/commonUtils'
 import { getColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { d3EventObservable } from '../../utils/observables'
-import { gridGroupPosition } from '../gridObservables'
+import { gridGroupPositionObservable } from '../gridObservables'
 import type { GroupAuxParams } from '../../../lib/plugins-basic-types'
 import { gridSelectionsObservable } from '../gridObservables'
 import { renderTspansOnAxis } from '../../utils/d3Graphics'
@@ -52,9 +52,9 @@ interface LabelDatum {
 const pluginName = 'GroupAux'
 const labelClassName = getClassName(pluginName, 'label-box')
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_GROUP_AREA_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_GROUP_AUX_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_GROUP_AREA_PARAMS,
+  defaultParams: DEFAULT_GROUP_AUX_PARAMS,
   layerIndex: LAYER_INDEX_OF_AUX,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {
@@ -107,11 +107,12 @@ function createLineData ({ groupLabel, axisX, axisHeight, fullParams }: {
     : []
 }
 
-function createLabelData ({ groupLabel, axisX, fullParams, textSizePx }: {
+function createLabelData ({ groupLabel, axisX, fullParams, textSizePx, rowAmount }: {
   groupLabel: string
   axisX: number
   fullParams: GroupAuxParams
   textSizePx: number
+  rowAmount: number
 }) {
   const text = parseTickFormatValue(groupLabel, fullParams.labelTextFormat)
   const textArr = text.split('\n')
@@ -122,7 +123,7 @@ function createLabelData ({ groupLabel, axisX, fullParams, textSizePx }: {
     ? [{
       id: groupLabel,
       x: axisX,
-      y: - fullParams.labelPadding,
+      y: - fullParams.labelPadding * rowAmount, // rowAmount 是為了把外部 container 的變形逆轉回來
       text,
       textArr,
       textWidth,
@@ -139,36 +140,36 @@ function renderLine ({ selection, pluginName, lineData, fullParams, fullChartPar
   fullChartParams: ChartParams
 }) {
   const gClassName = getClassName(pluginName, 'auxline')
-  const update = selection
+  const auxLineSelection = selection
     .selectAll<SVGLineElement, LineDatum>(`line.${gClassName}`)
     .data(lineData)
-  const enter = update
-    .enter()
-    .append('line')
-    .classed(gClassName, true)
-    // .style('stroke', '#E4E7ED')
+    .join(
+      enter => {
+        return enter
+          .append('line')
+          .classed(gClassName, true)
+          .style('stroke-width', 1)
+          .style('pointer-events', 'none')
+          .style('vector-effect', 'non-scaling-stroke')
+          .attr('x1', d => d.x1)
+          .attr('y1', d => d.y1)
+          .attr('x2', d => d.x2)
+          .attr('y2', d => d.y2)
+      },
+      update => {
+        const updateSelection = update
+          .transition()
+          .duration(50)
+          .attr('x1', d => d.x1)
+          .attr('y1', d => d.y1)
+          .attr('x2', d => d.x2)
+          .attr('y2', d => d.y2)
+        return updateSelection
+      },
+      exit => exit.remove()
+    )
     .style('stroke', d => getColor(fullParams.lineColorType, fullChartParams))
-    .style('stroke-width', 1)
     .style('stroke-dasharray', fullParams.lineDashArray ?? 'none')
-    .style('pointer-events', 'none')
-    // .attr('opacity', 0)
-  const auxLineSelection = update.merge(enter)
-  //   .attr('opacity', (d) => {
-  //     return d.active == true ? 1 : 0
-  //   })
-  update.exit().remove()
-  enter
-    .attr('x1', d => d.x1)
-    .attr('y1', d => d.y1)
-    .attr('x2', d => d.x2)
-    .attr('y2', d => d.y2)
-  update
-    .transition()
-    .duration(50)
-    .attr('x1', d => d.x1)
-    .attr('y1', d => d.y1)
-    .attr('x2', d => d.x2)
-    .attr('y2', d => d.y2)
 
   return auxLineSelection
 }
@@ -193,140 +194,143 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
 }) {
   // const rectHeight = textSizePx + 6
 
-  const gUpdate = selection
+  const axisLabelSelection = selection
     .selectAll<SVGGElement, LabelDatum>(`g.${labelClassName}`)
     .data(labelData)
-  const gEnter = gUpdate
-    .enter()
-    .append('g')
-    .classed(labelClassName, true)
-    .style('cursor', 'pointer')
-  const axisLabelSelection = gEnter.merge(gUpdate)
-  gEnter
-    .attr("transform", (d, i) => {
-      return `translate(${d.x}, ${d.y})`
-    })
-  gUpdate
-    .transition()
-    .duration(50)
-    .attr("transform", (d, i) => {
-      return `translate(${d.x}, ${d.y})`
-    })
-  gUpdate.exit().remove()
-
-  axisLabelSelection.each((datum, i, n) => {
-    // const rectWidth = measureTextWidth(datum.text, textSizePx) + 12
-    const rectWidth = datum.textWidth + 12
-    const rectHeight = datum.textHeight + 6
-    // -- label偏移位置 --
-    let rectX = - rectWidth / 2
-    let rectY = -2
-    if (fullDataFormatter.grid.groupAxis.position === 'bottom') {
-      rectX = fullParams.labelRotate
-        ? - rectWidth + rectHeight // 有傾斜時以末端對齊（+height是為了修正移動太多）
-        : - rectWidth / 2
-      rectY = 2
-    } else if (fullDataFormatter.grid.groupAxis.position === 'left') {
-      rectX = - rectWidth + 2
-      rectY = - rectHeight / 2
-    } else if (fullDataFormatter.grid.groupAxis.position === 'right') {
-      rectX = - 2
-      rectY = - rectHeight / 2
-    } else if (fullDataFormatter.grid.groupAxis.position === 'top') {
-      rectX = fullParams.labelRotate
-        ? - rectWidth + rectHeight // 有傾斜時以末端對齊（+height是為了修正移動太多）
-        : - rectWidth / 2
-      rectY = - rectHeight + 2
-    }
-
-    // -- rect --
-    d3.select(n[i])
-      .selectAll<SVGRectElement, LabelDatum>('rect')
-      .data([datum])
-      .join(
-        enter => enter.append('rect')
+    .join(
+      enter => {
+        return enter
+          .append('g')
+          .classed(labelClassName, true)
           .style('cursor', 'pointer')
-          .attr('rx', 5)
-          .attr('ry', 5),
-        update => update,
-        exit => exit.remove()
-      )
-      .attr('width', d => `${rectWidth}px`)
-      .attr('height', `${rectHeight}px`)
-      .attr('fill', d => getColor(fullParams.labelColorType, fullChartParams))
-      .attr('x', rectX)
-      .attr('y', rectY - 3) // 奇怪的偏移修正
-      .style('transform', textReverseTransformWithRotate)
+          .attr("transform", (d, i) => {
+            return `translate(${d.x}, ${d.y})`
+          })
+      },
+      update => {
+        const updateSelection = update
+          .transition()
+          .duration(50)
+          .attr("transform", (d, i) => {
+            return `translate(${d.x}, ${d.y})`
+          })
+        return updateSelection
+      },
+      exit => exit.remove()
+    )
+    .each((datum, i, n) => {
+      // const rectWidth = measureTextWidth(datum.text, textSizePx) + 12
+      const rectWidth = datum.textWidth + 12
+      const rectHeight = datum.textHeight + 6
+      // -- label偏移位置 --
+      let rectX = - rectWidth / 2
+      let rectY = -2
+      if (fullDataFormatter.grid.groupAxis.position === 'bottom') {
+        rectX = fullParams.labelRotate
+          ? - rectWidth + rectHeight // 有傾斜時以末端對齊（+height是為了修正移動太多）
+          : - rectWidth / 2
+        rectY = 2
+      } else if (fullDataFormatter.grid.groupAxis.position === 'left') {
+        rectX = - rectWidth + 2
+        rectY = - rectHeight / 2
+      } else if (fullDataFormatter.grid.groupAxis.position === 'right') {
+        rectX = - 2
+        rectY = - rectHeight / 2
+      } else if (fullDataFormatter.grid.groupAxis.position === 'top') {
+        rectX = fullParams.labelRotate
+          ? - rectWidth + rectHeight // 有傾斜時以末端對齊（+height是為了修正移動太多）
+          : - rectWidth / 2
+        rectY = - rectHeight + 2
+      }
 
-    // const rectUpdate = d3.select(n[i])
-    //   .selectAll<SVGRectElement, LabelDatum>('rect')
-    //   .data([datum])
-    // const rectEnter = rectUpdate
-    //   .enter()
-    //   .append('rect')
-    //   .attr('height', `${rectHeight}px`)
-    //   .attr('fill', d => getColor(fullParams.labelColorType, fullChartParams))
-    //   .attr('x', rectX)
-    //   .attr('y', rectY - 3) // 奇怪的偏移修正
-    //   .attr('rx', 5)
-    //   .attr('ry', 5)
-    //   .style('cursor', 'pointer')
-    //   // .style('pointer-events', 'none')
-    // const rect = rectUpdate.merge(rectEnter)
-    //   .attr('width', d => `${rectWidth}px`)
-    //   .style('transform', textReverseTransformWithRotate)
-    // rectUpdate.exit().remove()
+      // -- rect --
+      d3.select(n[i])
+        .selectAll<SVGRectElement, LabelDatum>('rect')
+        .data([datum])
+        .join(
+          enter => enter.append('rect')
+            .style('cursor', 'pointer')
+            .attr('rx', 5)
+            .attr('ry', 5),
+          update => update,
+          exit => exit.remove()
+        )
+        .attr('width', d => `${rectWidth}px`)
+        .attr('height', `${rectHeight}px`)
+        .attr('fill', d => getColor(fullParams.labelColorType, fullChartParams))
+        .attr('x', rectX)
+        .attr('y', rectY - 3) // 奇怪的偏移修正
+        .style('transform', textReverseTransformWithRotate)
 
-    // -- text --
-    d3.select(n[i])
-      .selectAll<SVGTextElement, LabelDatum>('text')
-      .data([datum])
-      .join(
-        enter => enter.append('text')
-          .style('dominant-baseline', 'hanging')
-          .style('cursor', 'pointer'),
-        update => update,
-        exit => exit.remove()
-      )
-      .style('transform', textReverseTransformWithRotate)
-      .attr('fill', d => getColor(fullParams.labelTextColorType, fullChartParams))
-      .attr('font-size', fullChartParams.styles.textSize)
-      .attr('x', rectX + 6)
-      .attr('y', rectY)
-      .each((d, i, n) => {
-        renderTspansOnAxis(d3.select(n[i]), {
-          textArr: datum.textArr,
-          textSizePx,
-          groupAxisPosition: fullDataFormatter.grid.groupAxis.position
+      // const rectUpdate = d3.select(n[i])
+      //   .selectAll<SVGRectElement, LabelDatum>('rect')
+      //   .data([datum])
+      // const rectEnter = rectUpdate
+      //   .enter()
+      //   .append('rect')
+      //   .attr('height', `${rectHeight}px`)
+      //   .attr('fill', d => getColor(fullParams.labelColorType, fullChartParams))
+      //   .attr('x', rectX)
+      //   .attr('y', rectY - 3) // 奇怪的偏移修正
+      //   .attr('rx', 5)
+      //   .attr('ry', 5)
+      //   .style('cursor', 'pointer')
+      //   // .style('pointer-events', 'none')
+      // const rect = rectUpdate.merge(rectEnter)
+      //   .attr('width', d => `${rectWidth}px`)
+      //   .style('transform', textReverseTransformWithRotate)
+      // rectUpdate.exit().remove()
+
+      // -- text --
+      d3.select(n[i])
+        .selectAll<SVGTextElement, LabelDatum>('text')
+        .data([datum])
+        .join(
+          enter => enter.append('text')
+            .style('dominant-baseline', 'hanging')
+            .style('cursor', 'pointer'),
+          update => update,
+          exit => exit.remove()
+        )
+        .style('transform', textReverseTransformWithRotate)
+        .attr('fill', d => getColor(fullParams.labelTextColorType, fullChartParams))
+        .attr('font-size', fullChartParams.styles.textSize)
+        .attr('x', rectX + 6)
+        .attr('y', rectY)
+        .each((d, i, n) => {
+          renderTspansOnAxis(d3.select(n[i]), {
+            textArr: datum.textArr,
+            textSizePx,
+            groupAxisPosition: fullDataFormatter.grid.groupAxis.position
+          })
         })
-      })
 
-    // const textUpdate = d3.select(n[i])
-    //   .selectAll<SVGTextElement, LabelDatum>('text')
-    //   .data([datum])
-    // const textEnter = textUpdate
-    //   .enter()
-    //   .append('text')
-    //   .style('dominant-baseline', 'hanging')
-    //   .style('cursor', 'pointer')
-    //   // .style('pointer-events', 'none')
-    // const text = textUpdate.merge(textEnter)
-    //   // .text(d => d.text)
-    //   .style('transform', textReverseTransformWithRotate)
-    //   .attr('fill', d => getColor(fullParams.labelTextColorType, fullChartParams))
-    //   .attr('font-size', fullChartParams.styles.textSize)
-    //   .attr('x', rectX + 6)
-    //   .attr('y', rectY)
-    // textUpdate.exit().remove()
+      // const textUpdate = d3.select(n[i])
+      //   .selectAll<SVGTextElement, LabelDatum>('text')
+      //   .data([datum])
+      // const textEnter = textUpdate
+      //   .enter()
+      //   .append('text')
+      //   .style('dominant-baseline', 'hanging')
+      //   .style('cursor', 'pointer')
+      //   // .style('pointer-events', 'none')
+      // const text = textUpdate.merge(textEnter)
+      //   // .text(d => d.text)
+      //   .style('transform', textReverseTransformWithRotate)
+      //   .attr('fill', d => getColor(fullParams.labelTextColorType, fullChartParams))
+      //   .attr('font-size', fullChartParams.styles.textSize)
+      //   .attr('x', rectX + 6)
+      //   .attr('y', rectY)
+      // textUpdate.exit().remove()
 
-    // text.each((d, i, n) => {
-    //   renderTspansOnAxis(d3.select(n[i]), {
-    //     textArr: datum.textArr,
-    //     textSizePx,
-    //     groupAxisPosition: fullDataFormatter.grid.groupAxis.position
-    //   })
-    // })
-  })
+      // text.each((d, i, n) => {
+      //   renderTspansOnAxis(d3.select(n[i]), {
+      //     textArr: datum.textArr,
+      //     textSizePx,
+      //     groupAxisPosition: fullDataFormatter.grid.groupAxis.position
+      //   })
+      // })
+    })
 
   return axisLabelSelection
 }
@@ -514,7 +518,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
       
   //     const padding = data.fullDataFormatter.grid.groupAxis.scalePadding
       
-  //     const groupScale = createAxisPointScale({
+  //     const groupScale = createLabelToAxisScale({
   //       axisLabels,
   //       axisWidth: data.gridAxesSize.width,
   //       padding
@@ -524,38 +528,38 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //   })
   // })
 
-  const groupScaleDomain$ = combineLatest({
-    fullDataFormatter: observer.fullDataFormatter$,
-    gridAxesSize: observer.gridAxesSize$,
-    computedData: observer.computedData$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async (d) => d),
-    map(data => {
-      const groupMin = 0
-      const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-      //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
-      //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
-        ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
-        : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
+  // const groupScaleDomain$ = combineLatest({
+  //   fullDataFormatter: observer.fullDataFormatter$,
+  //   gridAxesSize: observer.gridAxesSize$,
+  //   computedData: observer.computedData$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(data => {
+  //     const groupMin = 0
+  //     const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
+  //     // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
+  //     //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
+  //       ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
+  //       : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
 
-      return [groupScaleDomainMin, groupScaleDomainMax]
-    }),
-    shareReplay(1)
-  )
+  //     return [groupScaleDomainMin, groupScaleDomainMax]
+  //   }),
+  //   shareReplay(1)
+  // )
 
   const groupScale$ = combineLatest({
-    groupScaleDomain: groupScaleDomain$,
+    groupScaleDomainValue: observer.groupScaleDomainValue$,
     gridAxesSize: observer.gridAxesSize$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
       const groupScale: d3.ScaleLinear<number, number> = d3.scaleLinear()
-        .domain(data.groupScaleDomain)
+        .domain(data.groupScaleDomainValue)
         .range([0, data.gridAxesSize.width])
       return groupScale
     })
@@ -603,7 +607,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'mouseover',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',
@@ -626,7 +630,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'mousemove',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',
@@ -649,7 +653,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'mouseout',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',
@@ -672,7 +676,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'click',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',
@@ -757,7 +761,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
     distinctUntilChanged()
   )
 
-  const gridGroupPosition$ = gridGroupPosition({
+  const gridGroupPosition$ = gridGroupPositionObservable({
     rootSelection,
     fullDataFormatter$: observer.fullDataFormatter$,
     gridAxesSize$: observer.gridAxesSize$,
@@ -821,7 +825,8 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
       groupLabel: groupLabel,
       axisX,
       fullParams: data.fullParams,
-      textSizePx: data.textSizePx
+      textSizePx: data.textSizePx,
+      rowAmount: data.rowAmount
     })
     const labelSelection = renderLabel({
       // selection: axisSelection,
@@ -832,7 +837,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
       fullChartParams: data.fullChartParams,
       // gridAxesReverseTransformValue: data.gridAxesReverseTransform.value,
       textReverseTransformWithRotate: data.textReverseTransformWithRotate,
-      textSizePx: data.textSizePx
+      textSizePx: data.textSizePx,
     })
 
     // label的事件
@@ -849,7 +854,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
           eventName: 'mouseover',
           highlightTarget: data.highlightTarget,
           datum: null,
-          gridIndex: 0, // @Q@ 暫不處理
+          gridIndex: 0,
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -870,7 +875,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
           eventName: 'mousemove',
           highlightTarget: data.highlightTarget,
           datum: null,
-          gridIndex: 0, // @Q@ 暫不處理
+          gridIndex: 0,
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -893,7 +898,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
           eventName: 'mouseout',
           highlightTarget: data.highlightTarget,
           datum: null,
-          gridIndex: 0, // @Q@ 暫不處理
+          gridIndex: 0,
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -914,7 +919,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
           eventName: 'click',
           highlightTarget: data.highlightTarget,
           datum: null,
-          gridIndex: 0, // @Q@ 暫不處理
+          gridIndex: 0,
           series: [],
           seriesIndex: -1,
           seriesLabel: '',
@@ -995,7 +1000,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'mouseover',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',
@@ -1015,7 +1020,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'mousemove',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',
@@ -1035,7 +1040,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'mouseout',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',
@@ -1055,7 +1060,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //         eventName: 'click',
   //         highlightTarget: data.highlightTarget,
   //         datum: null,
-  //         gridIndex: 0, // @Q@ 暫不處理
+  //         gridIndex: 0,
   //         series: [],
   //         seriesIndex: -1,
   //         seriesLabel: '',

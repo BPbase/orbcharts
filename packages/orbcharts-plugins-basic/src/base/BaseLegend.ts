@@ -25,7 +25,7 @@ import { measureTextWidth } from '../utils/commonUtils'
 //   backgroundStroke: ColorType
 //   textColorType: ColorType
 //   gap: number
-//   seriesList: Array<{
+//   labelList: Array<{
 //     listRectWidth: number
 //     listRectHeight: number
 //     listRectRadius: number
@@ -35,7 +35,7 @@ import { measureTextWidth } from '../utils/commonUtils'
 
 interface BaseLegendContext {
   rootSelection: d3.Selection<any, unknown, any, unknown>
-  seriesLabels$: Observable<string[]>
+  legendLabels$: Observable<string[]>
   fullParams$: Observable<BaseLegendParams>
   layout$: Observable<Layout>
   fullChartParams$: Observable<ChartParams>
@@ -89,6 +89,8 @@ interface ListStyle {
   listRectRadius: number
 }
 
+const noneLabelText = ' - ' // 沒有label時的預設文字
+
 const defaultListStyle: ListStyle = {
   listRectWidth: 14,
   listRectHeight: 14,
@@ -105,7 +107,7 @@ function getSeriesColor (seriesIndex: number, fullChartParams: ChartParams) {
 
 export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: string, {
   rootSelection,
-  seriesLabels$,
+  legendLabels$,
   fullParams$,
   layout$,
   fullChartParams$,
@@ -119,7 +121,7 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
 
   const destroy$ = new Subject()
 
-  // const seriesLabels$: Observable<string[]> = SeriesDataMap$.pipe(
+  // const legendLabels$: Observable<string[]> = SeriesDataMap$.pipe(
   //   takeUntil(destroy$),
   //   map(data => {
   //     return Array.from(data.keys())
@@ -127,7 +129,7 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
   // )
 
   const SeriesLabelColorMap$ = combineLatest({
-    seriesLabels: seriesLabels$,
+    legendLabels: legendLabels$,
     fullChartParams: fullChartParams$
   }).pipe(
     takeUntil(destroy$),
@@ -135,7 +137,7 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
     map(data => {
       const SeriesLabelColorMap: Map<string, string> = new Map()
       let accIndex = 0
-      data.seriesLabels.forEach((label, i) => {
+      data.legendLabels.forEach((label, i) => {
         if (!SeriesLabelColorMap.has(label)) {
           const color = getSeriesColor(accIndex, data.fullChartParams)
           SeriesLabelColorMap.set(label, color)
@@ -146,8 +148,8 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
     })
   )
 
-  // 對應seriesLabels是否顯示（只顯示不重覆的）
-  const visibleList$ = seriesLabels$.pipe(
+  // 對應legendLabels是否顯示（只顯示不重覆的）
+  const visibleList$ = legendLabels$.pipe(
     takeUntil(destroy$),
     map(data => {
       const AccSeriesLabelSet = new Set()
@@ -305,7 +307,7 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
   const defaultListStyle$ = fullParams$.pipe(
     takeUntil(destroy$),
     map(data => {
-      return data.seriesList[0] ? data.seriesList[0] : defaultListStyle
+      return data.labelList[0] ? data.labelList[0] : defaultListStyle
     })
   )
 
@@ -314,7 +316,7 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
     visibleList: visibleList$,
     fullParams: fullParams$,
     fullChartParams: fullChartParams$,
-    seriesLabels: seriesLabels$,
+    legendLabels: legendLabels$,
     lineDirection: lineDirection$,
     lineMaxSize: lineMaxSize$,
     defaultListStyle: defaultListStyle$,
@@ -324,16 +326,18 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
     takeUntil(destroy$),
     switchMap(async d => d),
     map(data => {
-      return data.seriesLabels.reduce((prev: LegendItem[][], current, currentIndex) => {
+      return data.legendLabels.reduce((prev: LegendItem[][], _current, currentIndex) => {
         // visible為flase則不加入
         if (!data.visibleList[currentIndex]) {
           return prev
         }
+
+        const currentText = _current !== '' ? _current : noneLabelText
         
-        const textWidth = measureTextWidth(current, data.textSizePx)
+        const textWidth = measureTextWidth(currentText, data.textSizePx)
         const itemWidth = (data.textSizePx * 1.5) + textWidth
         // const color = getSeriesColor(currentIndex, data.fullChartParams)
-        const color = data.SeriesLabelColorMap.get(current)
+        const color = data.SeriesLabelColorMap.get(_current)
         const lastItem: LegendItem | null = prev[0] && prev[0][0]
           ? prev[prev.length - 1][prev[prev.length - 1].length - 1]
           : null
@@ -389,15 +393,15 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
           prev[lineIndex] = []
         }
 
-        const listStyle = data.fullParams.seriesList[itemIndex] ? data.fullParams.seriesList[itemIndex] : data.defaultListStyle
+        const listStyle = data.fullParams.labelList[itemIndex] ? data.fullParams.labelList[itemIndex] : data.defaultListStyle
 
         prev[lineIndex].push({
-          id: current,
-          seriesLabel: current,
+          id: currentText,
+          seriesLabel: currentText,
           seriesIndex: currentIndex,
           lineIndex,
           itemIndex,
-          text: current,
+          text: currentText,
           itemWidth,
           translateX,
           translateY,

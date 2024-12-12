@@ -3,7 +3,7 @@ import type { ContextObserverCallback } from '../../lib/core-types'
 import { highlightObservable, categoryDataMapObservable, textSizePxObservable } from '../utils/observables'
 import {
   nodeListObservable,
-  existCategoryLabelsObservable,
+  categoryLabelsObservable,
   treeVisibleComputedDataObservable
 } from '../utils/treeObservables'
 
@@ -27,16 +27,13 @@ export const contextObserverCallback: ContextObserverCallback<'tree'> = ({ subje
     shareReplay(1)
   )
 
-  const existCategoryLabels$ = existCategoryLabelsObservable({
-    nodeList$,
-    fullDataFormatter$: observer.fullDataFormatter$
-  }).pipe(
-    shareReplay(1)
-  )
-
   const CategoryDataMap$ = categoryDataMapObservable({
     datumList$: nodeList$
   }).pipe(
+    shareReplay(1)
+  )
+  
+  const categoryLabels$ = categoryLabelsObservable(CategoryDataMap$).pipe(
     shareReplay(1)
   )
 
@@ -54,7 +51,7 @@ export const contextObserverCallback: ContextObserverCallback<'tree'> = ({ subje
     layout$: observer.layout$,
     textSizePx$,
     treeHighlight$,
-    existCategoryLabels$,
+    categoryLabels$,
     CategoryDataMap$,
     visibleComputedData$
   }

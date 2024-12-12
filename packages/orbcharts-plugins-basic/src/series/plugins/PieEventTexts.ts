@@ -15,7 +15,7 @@ import {
 import type {
   ComputedDatumSeries,
   ChartParams,
-  SeriesContainerPosition,
+  ContainerPosition,
   EventName,
   EventSeries } from '../../../lib/core-types'
 import type { PieEventTextsParams } from '../../../lib/plugins-basic-types'
@@ -110,7 +110,7 @@ function createEachPieEventTexts (pluginName: string, context: {
   fullParams$: Observable<PieEventTextsParams>
   fullChartParams$: Observable<ChartParams>
   seriesHighlight$: Observable<ComputedDatumSeries[]>
-  seriesContainerPosition$: Observable<SeriesContainerPosition>
+  seriesContainerPosition$: Observable<ContainerPosition>
   event$: Subject<EventSeries>
 }) {
   const destroy$ = new Subject()

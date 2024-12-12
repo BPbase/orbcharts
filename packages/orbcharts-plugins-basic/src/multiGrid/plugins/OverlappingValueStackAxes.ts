@@ -277,6 +277,7 @@ export const OverlappingValueStackAxes = defineMultiGridPlugin(pluginConfig)(({ 
           unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
             selection: gridSelection,
             computedData$: i === 0 ? d.computedStackedData$ : d.computedData$, // 第一個圖軸計算疊加value的資料
+            filteredMinMaxValue$: d.filteredMinMaxValue$,
             fullParams$: observer.fullParams$.pipe(
               map(fullParams => i === 0 ? fullParams.firstAxis : fullParams.secondAxis)
             ),

@@ -77,6 +77,7 @@ export const ValueAxis = defineGridPlugin(pluginConfig)(({ selection, name, obse
   const unsubscribeBaseValueAxis = createBaseValueAxis(pluginName, {
     selection,
     computedData$: observer.computedData$,
+    filteredMinMaxValue$: observer.filteredMinMaxValue$,
     fullParams$: observer.fullParams$,
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,  

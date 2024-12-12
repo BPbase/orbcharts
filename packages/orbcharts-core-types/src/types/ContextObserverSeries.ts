@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs'
 import type { ContextObserverBase } from './ContextObserver'
 import type { ComputedDatumSeries } from './ComputedDataSeries'
+import type { ContainerPosition} from './ContextObserver'
 
 export interface ContextObserverSeries<PluginParams> extends ContextObserverBase<'series', PluginParams> {
   textSizePx$: Observable<number>
@@ -11,19 +12,19 @@ export interface ContextObserverSeries<PluginParams> extends ContextObserverBase
   seriesHighlight$: Observable<ComputedDatumSeries[]>
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
-  seriesContainerPosition$: Observable<SeriesContainerPosition[]>
-  SeriesContainerPositionMap$: Observable<Map<string, SeriesContainerPosition>>
+  seriesContainerPosition$: Observable<ContainerPosition[]>
+  SeriesContainerPositionMap$: Observable<Map<string, ContainerPosition>>
 }
 
-export interface SeriesContainerPosition {
-  slotIndex: number
-  rowIndex: number
-  columnIndex: number
-  // translate: [number, number]
-  startX: number
-  startY: number
-  centerX: number
-  centerY: number
-  width: number
-  height: number
-}
+// export interface SeriesContainerPosition {
+//   slotIndex: number
+//   rowIndex: number
+//   columnIndex: number
+//   // translate: [number, number]
+//   startX: number
+//   startY: number
+//   centerX: number
+//   centerY: number
+//   width: number
+//   height: number
+// }

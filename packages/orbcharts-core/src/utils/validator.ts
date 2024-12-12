@@ -1,4 +1,5 @@
 import type {
+  ColorType,
   ValidatorResult,
   ToBeTypes,
   ToBeOption,
@@ -40,14 +41,14 @@ function getInvalidColumn<T> (data: T, rules: Partial<ValidatorRule<T>>) {
   }
   // "toBeOption" 的測試
   const testOption: {[key in ToBeOption]: (value: any) => boolean} = {
-    ColorType: (value: any) => {
+    ColorType: (value: ColorType) => {
       return value === 'none'
         || value === 'series'
         || value === 'primary'
         || value === 'secondary'
         || value === 'white'
         || value === 'background'
-    }
+    },
   }
 
   const failColumn = Object.keys(data).find((columnName: string) => {
