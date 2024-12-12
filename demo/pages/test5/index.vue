@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { MultiValueChart } from '../../../packages/orbcharts-core/src'
-import { Scatter, XYAxes, XYAux, XYZoom, MultiValueLegend, MultiValueTooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { ScatterBubbles, XYAxes, XYAux, XYZoom, MultiValueLegend, MultiValueTooltip } from '../../../packages/orbcharts-plugins-basic/src'
 // import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 import multiValue1 from '../../../packages/orbcharts-demo/src/data/multiValue1'
 
@@ -39,14 +39,14 @@ onMounted(() => {
   //   })
   // }, 2000)
 
-  const scatter = new Scatter()
+  const scatterBubbles = new ScatterBubbles()
   const xyAux = new XYAux()
   const xyAxes = new XYAxes()
   const xyZoom = new XYZoom()
   const multiValueLegend = new MultiValueLegend()
   const multiValueTooltip = new MultiValueTooltip()
 
-  chart!.plugins$.next([ scatter, xyAux, xyAxes, xyZoom, multiValueLegend, multiValueTooltip ])
+  chart!.plugins$.next([ scatterBubbles, xyAux, xyAxes, xyZoom, multiValueLegend, multiValueTooltip ])
 
 
 

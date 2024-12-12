@@ -152,7 +152,7 @@ function createBubblesData ({ visibleComputedLayoutData, LastBubbleDataMap, grap
   // highlightIds: string[]
 }): BubblesDatum[] {
   // 虛擬大圓（所有小圓聚合起來的大圓）的半徑
-  const totalR = Math.min(...[graphicWidth, graphicHeight]) / 2
+  const totalR = Math.min(...[, graphicHeight]) / 2
 
   const data = visibleComputedLayoutData.flat()
 

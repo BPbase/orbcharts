@@ -1,5 +1,6 @@
 import type { ColorType, EventMultiValue } from '../../lib/core-types'
 import type { BaseTooltipStyle, BaseTooltipUtils } from './BasePluginParams'
+import type { ArcScaleType } from './Common'
 
 export interface MultiValueLegendParams {
   // position: 'top' | 'bottom' | 'left' | 'right'
@@ -40,6 +41,15 @@ export interface ScatterParams {
   fillColorType: ColorType
   strokeColorType: ColorType
   strokeWidth: number
+}
+
+export interface ScatterBubblesParams {
+  // radius: number
+  fillColorType: ColorType
+  strokeColorType: ColorType
+  strokeWidth: number
+  valueLinearOpacity: [number, number]
+  arcScaleType: ArcScaleType
 }
 
 export interface XYAuxParams {

@@ -1,7 +1,6 @@
 import type { ChartType, ComputedDatumSeries, EventSeries, EventName, ColorType } from '../../lib/core-types'
 import type { BaseTooltipStyle, BaseTooltipUtils } from './BasePluginParams'
-
-export type ArcScaleType = 'area' | 'radius'
+import type { ArcScaleType } from './Common'
 
 export interface BubblesParams {
   force: {
