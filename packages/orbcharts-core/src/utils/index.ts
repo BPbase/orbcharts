@@ -1,5 +1,5 @@
 export * from './commonUtils'
-export * from './d3Utils'
+export * from './d3Scale'
 export * from './gridObservables'
 export * from './multiGridObservables'
 // export * from './multiValueObservables'

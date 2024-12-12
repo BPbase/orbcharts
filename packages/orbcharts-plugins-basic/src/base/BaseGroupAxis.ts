@@ -13,7 +13,7 @@ import {
 import type {
   ColorType,
   ComputedDataGrid,
-  GridContainerPosition,
+  ContainerPositionScaled,
   ComputedDatumGrid,
   DataFormatterGrid,
   ChartParams,
@@ -57,7 +57,7 @@ interface BaseGroupAxisContext {
     width: number;
     height: number;
   }>
-  gridContainerPosition$: Observable<GridContainerPosition[]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
   isSeriesSeprate$: Observable<boolean>
   textSizePx$: Observable<number>
 }
@@ -498,7 +498,7 @@ export const createBaseGroupAxis: BasePluginFn<BaseGroupAxisContext> = ((pluginN
       
   //     const padding = data.fullDataFormatter.grid.groupAxis.scalePadding
       
-  //     const groupScale = createAxisPointScale({
+  //     const groupScale = createLabelToAxisScale({
   //       axisLabels,
   //       axisWidth: data.gridAxesSize.width,
   //       padding

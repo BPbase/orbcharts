@@ -14,7 +14,7 @@ import type {
   ComputedLayoutDataGrid,
   EventGrid,
   ChartParams, 
-  GridContainerPosition,
+  ContainerPositionScaled,
   Layout,
   TransformData,
   ColorType
@@ -51,7 +51,7 @@ interface BaseDotsContext {
     height: number;
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
-  gridContainerPosition$: Observable<GridContainerPosition[]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
   event$: Subject<EventGrid>
 }
 
@@ -138,57 +138,6 @@ function renderDots ({ graphicGSelection, circleGClassName, circleClassName, vis
             .attr('transform', `scale(${graphicReverseScale[seriesIndex][0] ?? 1}, ${graphicReverseScale[seriesIndex][1] ?? 1})`)
         })
     })
-  
-  // const dots = graphicGSelection
-  //   .selectAll<SVGGElement, ComputedDatumGrid>('g')
-  //   .data(data, d => d.id)
-  //   .join(
-  //     enter => {
-  //       // enterDuration
-  //       enterDuration = createEnterDuration(enter)
-
-  //       return enter
-  //         .append('g')
-  //         .classed(circleGClassName, true)     
-  //     },
-  //     update => update,
-  //     exit => exit.remove()
-  //   )
-  //   .attr('transform', d => `translate(${d.axisX}, ${d.axisY})`)
-  //   .each((d, i, g) => {
-  //     const circle = d3.select(g[i])
-  //       .selectAll('circle')
-  //       .data([d])
-  //       .join(
-  //         enter => {
-  //           return enter
-  //             .append('circle')
-  //             .style('cursor', 'pointer')
-  //             .style('vector-effect', 'non-scaling-stroke')
-  //             .classed(circleClassName, true)
-  //             .attr('opacity', 0)
-  //             .transition()
-  //             .delay((_d, _i) => {
-  //               return i * enterDuration
-  //             })
-  //             .attr('opacity', 1)
-  //         },
-  //         update => {
-  //           return update
-  //             .transition()
-  //             .duration(50)
-  //             // .attr('cx', d => d.axisX)
-  //             // .attr('cy', d => d.axisY)
-  //             .attr('opacity', 1)
-  //         },
-  //         exit => exit.remove()
-  //       )
-  //       .attr('r', fullParams.radius)
-  //       .attr('fill', (d, i) => getDatumColor({ datum: d, colorType: fullParams.fillColorType, fullChartParams }))
-  //       .attr('stroke', (d, i) => getDatumColor({ datum: d, colorType: fullParams.strokeColorType, fullChartParams }))
-  //       .attr('stroke-width', fullParams.strokeWidth)
-  //       .attr('transform', `scale(${graphicReverseScale[0]}, ${graphicReverseScale[1]})`)
-  //   })
 
   const graphicCircleSelection: d3.Selection<SVGRectElement, ComputedDatumGrid, SVGGElement, unknown>  = graphicGSelection.selectAll(`circle.${circleClassName}`)
 

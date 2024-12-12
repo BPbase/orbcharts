@@ -17,7 +17,7 @@ import type {
   DataFormatterGrid,
   EventGrid,
   ChartParams,
-  GridContainerPosition,
+  ContainerPositionScaled,
   Layout,
   TransformData } from '../../lib/core-types'
 import type { BaseBarStackParams } from '../../lib/plugins-basic-types'
@@ -52,7 +52,7 @@ interface BaseBarStackContext {
     height: number;
   }>
   gridHighlight$: Observable<ComputedDatumGrid[]>
-  gridContainerPosition$: Observable<GridContainerPosition[]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
   isSeriesSeprate$: Observable<boolean>
   event$: Subject<EventGrid>
 }

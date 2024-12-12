@@ -201,9 +201,12 @@ export const DATA_FORMATTER_MULTI_VALUE_DEFAULT: DataFormatterMultiValue = {
   type: 'multiValue',
   visibleFilter: (datum, context) => true,
   categoryLabels: [],
-  multiValue: [],
   xAxis: { ...DATA_FORMATTER_VALUE_AXIS_DEFAULT },
   yAxis: { ...DATA_FORMATTER_VALUE_AXIS_DEFAULT },
+  container: {
+    ...DATA_FORMATTER_CONTAINER_DEFAULT
+  },
+  separateCategory: false
 }
 DATA_FORMATTER_MULTI_VALUE_DEFAULT.visibleFilter.toString = () => `(datum, context) => true`
 

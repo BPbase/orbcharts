@@ -45,6 +45,15 @@ export interface DataFormatterBase<T extends ChartType> {
 
 export type DataFormatterBasePartial<T extends ChartType> = Partial<DataFormatterBase<T>>
 
+export interface DataFormatterAxis {
+  // scaleDomain說明
+  // [0] => min: 最小值, 'auto': 取最小值，但若大於0則保持為0
+  // [1] => max: 最大值, 'auto': 取最大值，但若小於0則保持為0
+  scaleDomain: [number | 'min' | 'auto', number | 'max' | 'auto']
+  scaleRange: [number, number]
+  label: string
+}
+
 export interface DataFormatterValueAxis {
   position: AxisPosition
   // scaleDomain說明

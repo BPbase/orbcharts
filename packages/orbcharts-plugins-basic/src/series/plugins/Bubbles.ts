@@ -17,7 +17,7 @@ import type {
   EventName,
   ComputedDataSeries,
   ComputedDatumSeries,
-  SeriesContainerPosition } from '../../../lib/core-types'
+  ContainerPosition } from '../../../lib/core-types'
 import {
   defineSeriesPlugin } from '../../../lib/core'
 import type { BubblesParams, ArcScaleType } from '../../../lib/plugins-basic-types'
@@ -147,12 +147,12 @@ function createBubblesData ({ visibleComputedLayoutData, LastBubbleDataMap, grap
   LastBubbleDataMap: Map<string, BubblesDatum>
   graphicWidth: number
   graphicHeight: number
-  SeriesContainerPositionMap: Map<string, SeriesContainerPosition>
+  SeriesContainerPositionMap: Map<string, ContainerPosition>
   scaleType: ArcScaleType
   // highlightIds: string[]
 }): BubblesDatum[] {
   // 虛擬大圓（所有小圓聚合起來的大圓）的半徑
-  const totalR = Math.min(...[graphicWidth, graphicHeight]) / 2
+  const totalR = Math.min(...[, graphicHeight]) / 2
 
   const data = visibleComputedLayoutData.flat()
 
@@ -330,7 +330,7 @@ function groupBubbles ({ fullParams, SeriesContainerPositionMap }: {
   fullParams: BubblesParams
   // graphicWidth: number
   // graphicHeight: number
-  SeriesContainerPositionMap: Map<string, SeriesContainerPosition>
+  SeriesContainerPositionMap: Map<string, ContainerPosition>
 }) {
   // console.log('groupBubbles')
   force!

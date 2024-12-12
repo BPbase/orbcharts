@@ -16,7 +16,7 @@ export interface ComputedDatumBase {
   id: string
   index: number
   label: string
-  value: number | null
+  // value: number | null
   visible: boolean
   description: string
   data: any // 使用者注入的資料
@@ -40,8 +40,16 @@ export interface ComputedDatumBase {
 //   axisY: number
 // }
 
+export interface ComputedDatumBaseValue {
+  value: number | null
+}
+
+export interface ComputedDatumBaseMultiValue {
+  value: number[]
+}
+
 // datum - 序列資料
-export interface ComputedDatumSeriesValue {
+export interface ComputedDatumBaseSeries {
   color: string
   seriesIndex: number
   seriesLabel: string
@@ -49,7 +57,7 @@ export interface ComputedDatumSeriesValue {
 }
 
 // datum - 矩陣資料
-export interface ComputedDatumGridValue {
+export interface ComputedDatumBaseGrid {
   gridIndex: number
   color: string
   seriesIndex: number
@@ -59,10 +67,10 @@ export interface ComputedDatumGridValue {
 }
 
 // datum - 類別資料
-export interface ComputedDatumCategoryValue {
+export interface ComputedDatumBaseCategory {
   color: string
   categoryIndex: number
-  categoryLabel: string | null
+  categoryLabel: string
 }
 
 // 透過類型選擇ComputedData

@@ -137,14 +137,14 @@ export const MultiGridLegend = defineMultiGridPlugin(pluginConfig)(({ selection,
     map(d => {
       return {
         ...d.fullParams,
-        seriesList: d.seriesList
+        labelList: d.seriesList
       }
     })
   )
 
   const unsubscribeBaseLegend = createBaseLegend(pluginName, {
     rootSelection,
-    seriesLabels$,
+    legendLabels$: seriesLabels$,
     fullParams$,
     layout$: observer.layout$,
     fullChartParams$: observer.fullChartParams$,

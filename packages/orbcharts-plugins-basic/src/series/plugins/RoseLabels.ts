@@ -14,7 +14,7 @@ import {
   defineSeriesPlugin } from '../../../lib/core'
 import type {
   ComputedDatumSeries,
-  SeriesContainerPosition,
+  ContainerPosition,
   EventSeries,
   ChartParams } from '../../../lib/core-types'
 import type { RoseLabelsParams } from '../../../lib/plugins-basic-types'
@@ -413,7 +413,7 @@ function createEachPieLabel (pluginName: string, context: {
   fullChartParams$: Observable<ChartParams>
   textSizePx$: Observable<number>
   seriesHighlight$: Observable<ComputedDatumSeries[]>
-  seriesContainerPosition$: Observable<SeriesContainerPosition>
+  seriesContainerPosition$: Observable<ContainerPosition>
   event$: Subject<EventSeries>
 }) {
   const destroy$ = new Subject()

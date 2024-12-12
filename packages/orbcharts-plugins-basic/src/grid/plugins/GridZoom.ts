@@ -12,7 +12,7 @@ import {
 import type { DefinePluginConfig } from '../../../lib/core-types'
 import type { DataFormatterGrid } from '../../../lib/core-types'
 import {
-  defineGridPlugin, createAxisLinearScale } from '../../../lib/core'
+  defineGridPlugin, createValueToAxisScale } from '../../../lib/core'
 import { DEFAULT_GRID_ZOOM_PARAMS } from '../defaults'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { LAYER_INDEX_OF_ROOT } from '../../const'
@@ -60,7 +60,7 @@ export const GridZoom = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //     .attr('y', d.top)
   // })
 
-  const groupMax$ = observer.computedData$.pipe(
+  const groupMaxIndex$ = observer.computedData$.pipe(
     map(d => d[0] ? d[0].length - 1 : 0),
     distinctUntilChanged()
   )
@@ -82,10 +82,10 @@ export const GridZoom = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   )
 
 
-  const groupScale$ = combineLatest({
+  const initGroupScale$ = combineLatest({
     initGroupAxis: initGroupAxis$,
-    fullDataFormatter: observer.fullDataFormatter$,
-    groupMax: groupMax$,
+    // fullDataFormatter: observer.fullDataFormatter$,
+    groupMaxIndex: groupMaxIndex$,
     layout: observer.layout$,
     axisSize: observer.gridAxesSize$
   }).pipe(
@@ -95,11 +95,11 @@ export const GridZoom = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
       // const groupMin = 0
       const groupScaleDomainMin = data.initGroupAxis.scaleDomain[0] - data.initGroupAxis.scalePadding
       const groupScaleDomainMax = data.initGroupAxis.scaleDomain[1] === 'max'
-        ? data.groupMax + data.initGroupAxis.scalePadding
+        ? data.groupMaxIndex + data.initGroupAxis.scalePadding
         : data.initGroupAxis.scaleDomain[1] as number + data.initGroupAxis.scalePadding
 
-      const groupScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
-        maxValue: data.groupMax,
+      const groupScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
+        maxValue: data.groupMaxIndex,
         minValue: 0,
         axisWidth: data.axisSize.width,
         scaleDomain: [groupScaleDomainMin, groupScaleDomainMax],
@@ -111,20 +111,20 @@ export const GridZoom = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   )
 
   combineLatest({
-    groupScale: groupScale$,
+    initGroupScale: initGroupScale$,
     // initGroupAxis: initGroupAxis$,
     // fullDataFormatter: fullDataFormatter$.pipe(first()), // 只用第一次資料來計算scale才不會造成每次變動都受到影響
     fullDataFormatter: observer.fullDataFormatter$,
-    groupMax: groupMax$,
+    groupMaxIndex: groupMaxIndex$,
     // layout: observer.layout$,
     // axisSize: observer.gridAxesSize$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
   ).subscribe(data => {
-    const groupMin = 0
+    const groupMinIndex = 0
 
-    const shadowScale = data.groupScale.copy()
+    const shadowScale = data.initGroupScale.copy()
 
     const zoom = d3.zoom()
       // .scaleExtent([1, data.groupMaxIndex])
@@ -153,7 +153,7 @@ export const GridZoom = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
         // console.log('t.x', t.x)
         const mapGroupindex = (d: number) => {
           const n = Math.round(d)
-          return Math.min(data.groupMax, Math.max(groupMin, n));
+          return Math.min(data.groupMaxIndex, Math.max(groupMinIndex, n));
         }
         
         const zoomedDomain = data.fullDataFormatter.grid.groupAxis.position === 'bottom' || data.fullDataFormatter.grid.groupAxis.position === 'top'
@@ -166,7 +166,7 @@ export const GridZoom = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
 
 
         // domain超過極限值
-        if (zoomedDomain[0] <= groupMin && zoomedDomain[1] >= data.groupMax) {
+        if (zoomedDomain[0] <= groupMinIndex && zoomedDomain[1] >= data.groupMaxIndex) {
           // 繼續縮小
           if (t.k < lastTransform.k) {
             // 維持前一次的transform

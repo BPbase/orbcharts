@@ -114,6 +114,7 @@ export const MultiValueAxis = defineMultiGridPlugin(pluginConfig)(({ selection, 
           unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
             selection: gridSelection,
             computedData$: d.computedData$,
+            filteredMinMaxValue$: d.filteredMinMaxValue$,
             fullParams$: observer.fullParams$,
             fullDataFormatter$: d.dataFormatter$,
             fullChartParams$: observer.fullChartParams$,  

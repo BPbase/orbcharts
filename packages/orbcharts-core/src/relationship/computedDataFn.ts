@@ -66,7 +66,7 @@ export const computedDataFn: ComputedDataFn<'relationship'> = (context) => {
         description: edge.description ?? '',
         // tooltipContent: edge.tooltipContent ? edge.tooltipContent : dataFormatter.tooltipContentFormat(edge, 1, i, context), // 1代表edge
         data: edge.data ?? {},
-        value: edge.value ?? 0,
+        // value: edge.value ?? 0,
         startNode: NodesMap.get(edge.start),
         startNodeId: edge.start,
         endNode: NodesMap.get(edge.end),

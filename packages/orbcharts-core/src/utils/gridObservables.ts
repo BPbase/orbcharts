@@ -26,12 +26,12 @@ import type {
   DataFormatterGroupAxis,
   ComputedLayoutDatumGrid,
   ComputedLayoutDataGrid,
-  GridContainerPosition,
+  ContainerPositionScaled,
   HighlightTarget,
   Layout,
   TransformData } from '../../lib/core-types'
 import { getMinAndMaxGrid } from './orbchartsUtils'
-import { createAxisLinearScale, createAxisPointScale, createAxisQuantizeScale } from './d3Utils'
+import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from './d3Scale'
 import { calcGridContainerLayout } from './orbchartsUtils'
 import { getMinAndMaxValue } from './orbchartsUtils'
 
@@ -47,7 +47,7 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
       ? layout.width
       : layout.height
     const groupEndIndex = computedData[0] ? computedData[0].length - 1 : 0
-    const groupScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+    const groupScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue: groupEndIndex,
       minValue: 0,
       axisWidth: groupAxisWidth,
@@ -67,7 +67,7 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
     const listData = computedData.flat()
     const [minValue, maxValue] = getMinAndMaxValue(listData)
 
-    const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+    const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue,
       minValue,
       axisWidth: valueAxisWidth,
@@ -103,6 +103,261 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
         })
       })
     })
+  )
+}
+
+export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
+  fullDataFormatter$: Observable<DataFormatterGrid>
+  layout$: Observable<Layout>
+}): Observable<{
+  width: number;
+  height: number;
+}> => {
+  const destroy$ = new Subject()
+
+  function calcAxesSize ({ xAxisPosition, yAxisPosition, width, height }: {
+    xAxisPosition: AxisPosition
+    yAxisPosition: AxisPosition
+    width: number
+    height: number
+  }) {
+    if ((xAxisPosition === 'bottom' || xAxisPosition === 'top') && (yAxisPosition === 'left' || yAxisPosition === 'right')) {
+      return { width, height }
+    } else if ((xAxisPosition === 'left' || xAxisPosition === 'right') && (yAxisPosition === 'bottom' || yAxisPosition === 'top')) {
+      return {
+        width: height,
+        height: width
+      }
+    } else {
+      // default
+      return { width, height }
+    }
+  }
+
+  return new Observable(subscriber => {
+    combineLatest({
+      fullDataFormatter: fullDataFormatter$,
+      layout: layout$
+    }).pipe(
+      takeUntil(destroy$),
+      switchMap(async (d) => d),
+    ).subscribe(data => {
+      
+      const axisSize = calcAxesSize({
+        xAxisPosition: data.fullDataFormatter.grid.groupAxis.position,
+        yAxisPosition: data.fullDataFormatter.grid.valueAxis.position,
+        width: data.layout.width,
+        height: data.layout.height,
+      })
+
+      subscriber.next(axisSize)
+
+      return function unsubscribe () {
+        destroy$.next(undefined)
+      }
+    })
+  })
+}
+
+// export const gridHighlightObservable = ({ computedData$, fullChartParams$, event$ }: {
+//   computedData$: Observable<ComputedDataTypeMap<'grid'>>
+//   fullChartParams$: Observable<ChartParams>
+//   event$: Subject<any>
+// }): Observable<string[]> => {
+//   const datumList$ = computedData$.pipe(
+//     map(d => d.flat())
+//   )
+//   return highlightObservable ({ datumList$, fullChartParams$, event$ })
+// }
+
+export const gridSeriesLabelsObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
+  return computedData$.pipe(
+    map(data => {
+      return data
+        .filter(series => series.length)
+        .map(series => {
+          return series[0].seriesLabel
+        })
+    }),
+    distinctUntilChanged((a, b) => {
+      return JSON.stringify(a).length === JSON.stringify(b).length
+    }),
+  )
+}
+
+export const gridVisibleComputedDataObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
+  return computedData$.pipe(
+    map(data => {
+      const visibleComputedData = data
+        .map(d => {
+          return d.filter(_d => {
+            return _d.visible == true
+          })
+        })
+        .filter(d => d.length)
+      return visibleComputedData
+    })
+  )
+}
+
+export const gridVisibleComputedLayoutDataObservable = ({ computedLayoutData$ }: { computedLayoutData$: Observable<ComputedLayoutDataGrid> }) => {
+  return computedLayoutData$.pipe(
+    map(data => {
+      const visibleComputedData = data
+        .map(d => {
+          return d.filter(_d => {
+            return _d.visible == true
+          })
+        })
+        .filter(d => d.length)
+      return visibleComputedData
+    })
+  )
+}
+
+// 所有container位置（對應series）
+export const gridContainerPositionObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
+  computedData$: Observable<ComputedDataTypeMap<'grid'>>
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
+  layout$: Observable<Layout>
+}): Observable<ContainerPositionScaled[]> => {
+
+  const gridContainerPosition$ = combineLatest({
+    computedData: computedData$,
+    fullDataFormatter: fullDataFormatter$,
+    layout: layout$,
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      
+      if (data.fullDataFormatter.grid.separateSeries) {
+        // -- 依slotIndexes計算 --
+        return calcGridContainerLayout(data.layout, data.fullDataFormatter.container, data.computedData.length)
+        // return data.computedData.map((seriesData, seriesIndex) => {
+        //   const columnIndex = seriesIndex % data.fullDataFormatter.container.columnAmount
+        //   const rowIndex = Math.floor(seriesIndex / data.fullDataFormatter.container.columnAmount)
+        //   const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
+        //   return {
+        //     slotIndex: seriesIndex,
+        //     rowIndex,
+        //     columnIndex,
+        //     translate,
+        //     scale,
+        //   }
+        // })
+      } else {
+        // -- 無拆分 --
+        const gridContainerPositionArr = calcGridContainerLayout(data.layout, data.fullDataFormatter.container, 1)
+        return data.computedData.map((d, i) => gridContainerPositionArr[0]) // 每個series相同位置
+        // const columnIndex = 0
+        // const rowIndex = 0
+        // return data.computedData.map((seriesData, seriesIndex) => {
+        //   const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
+        //   return {
+        //     slotIndex: 0,
+        //     rowIndex,
+        //     columnIndex,
+        //     translate,
+        //     scale,
+        //   }
+        // })
+      }
+    })
+  )
+
+  return gridContainerPosition$
+}
+
+// 將原本的value全部替換成加總後的value
+export const computedStackedDataObservables = ({ isSeriesSeprate$, computedData$ }: {
+  isSeriesSeprate$: Observable<boolean>
+  computedData$: Observable<ComputedDataGrid>
+}): Observable<ComputedDataGrid> => {
+  const stackedData$: Observable<ComputedDataGrid> = computedData$.pipe(
+    map(data => {
+      // 將同一group的value加總起來
+      const stackedValue = new Array(data[0] ? data[0].length : 0)
+        .fill(null)
+        .map((_, i) => {
+          return data.reduce((prev, current) => {
+            if (current && current[i]) {
+              const currentValue = current[i].value == null || current[i].visible == false
+                ? 0
+                : current[i].value!
+              return prev + currentValue
+            }
+            return prev
+          }, 0)
+        })
+      // 將原本的value全部替換成加總後的value
+      const computedData = data.map((series, seriesIndex) => {
+        return series.map((d, i) => {
+          return {
+            ...d,
+            value: stackedValue[i],
+          }
+        })
+      })
+      return computedData
+    }),
+  )
+
+  return isSeriesSeprate$.pipe(
+    switchMap(isSeriesSeprate => {
+      return iif(() => isSeriesSeprate, computedData$, stackedData$)
+    })
+  )
+}
+
+export const groupScaleDomainValueObservable = ({ computedData$, fullDataFormatter$ }: {
+  computedData$: Observable<ComputedDataGrid>
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
+}): Observable<[number, number]> => {
+  return combineLatest({
+    computedData: computedData$,
+    fullDataFormatter: fullDataFormatter$
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      const groupAxis = data.fullDataFormatter.grid.groupAxis
+      const groupMin = 0
+      const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
+      // const groupScaleDomainMin = groupAxis.scaleDomain[0] === 'min'
+      //   ? groupMin - groupAxis.scalePadding
+      //   : groupAxis.scaleDomain[0] as number - groupAxis.scalePadding
+      const groupScaleDomainMin = groupAxis.scaleDomain[0] - groupAxis.scalePadding
+      const groupScaleDomainMax = groupAxis.scaleDomain[1] === 'max'
+        ? groupMax + groupAxis.scalePadding
+        : groupAxis.scaleDomain[1] as number + groupAxis.scalePadding
+      
+      return [groupScaleDomainMin, groupScaleDomainMax]
+    })
+  )
+}
+
+export const filteredMinMaxValueObservable = ({ computedData$, groupScaleDomainValue$ }: {
+  computedData$: Observable<ComputedDataGrid>
+  // fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
+  groupScaleDomainValue$: Observable<[number, number]>
+}) => {
+  return combineLatest({
+    computedData: computedData$,
+    // fullDataFormatter: fullDataFormatter$,
+    groupScaleDomainValue: groupScaleDomainValue$
+  }).pipe(
+    map(data => {
+      const filteredData = data.computedData.map((d, i) => {
+        return d.filter((_d, _i) => {
+          return _i >= data.groupScaleDomainValue[0] && _i <= data.groupScaleDomainValue[1] && _d.visible == true
+        })
+      })
+    
+      const filteredMinAndMax = getMinAndMaxGrid(filteredData)
+      // if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
+      //   filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+      // }
+      return filteredMinAndMax
+    }),
   )
 }
 
@@ -252,17 +507,21 @@ export const gridAxesReverseTransformObservable = ({ gridAxesTransform$ }: {
   )
 }
 
-export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
+export const gridGraphicTransformObservable = ({ computedData$, groupScaleDomainValue$, filteredMinMaxValue$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'grid'>>
+  groupScaleDomainValue$: Observable<[number, number]>
+  filteredMinMaxValue$: Observable<[number, number]>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
   layout$: Observable<Layout>
 }): Observable<TransformData> => {
   const destroy$ = new Subject()
 
-  function calcGridDataAreaTransform ({ data, groupAxis, valueAxis, width, height }: {
+  function calcGridDataAreaTransform ({ data, groupAxis, valueAxis, groupScaleDomainValue, filteredMinMaxValue, width, height }: {
     data: ComputedDataTypeMap<'grid'>
     groupAxis: DataFormatterGroupAxis
     valueAxis: DataFormatterValueAxis
+    groupScaleDomainValue: [number, number],
+    filteredMinMaxValue: [number, number],
     width: number
     height: number
   }): TransformData {
@@ -277,20 +536,17 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
       : height
     const groupMin = 0
     const groupMax = data[0] ? data[0].length - 1 : 0
-    // const groupScaleDomainMin = groupAxis.scaleDomain[0] === 'min'
-    //   ? groupMin - groupAxis.scalePadding
-    //   : groupAxis.scaleDomain[0] as number - groupAxis.scalePadding
-    const groupScaleDomainMin = groupAxis.scaleDomain[0] - groupAxis.scalePadding
-    const groupScaleDomainMax = groupAxis.scaleDomain[1] === 'max'
-      ? groupMax + groupAxis.scalePadding
-      : groupAxis.scaleDomain[1] as number + groupAxis.scalePadding
+    // const groupScaleDomainMin = groupAxis.scaleDomain[0] - groupAxis.scalePadding
+    // const groupScaleDomainMax = groupAxis.scaleDomain[1] === 'max'
+    //   ? groupMax + groupAxis.scalePadding
+    //   : groupAxis.scaleDomain[1] as number + groupAxis.scalePadding
     
-    const groupScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
+    const groupScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue: groupMax,
       minValue: groupMin,
       axisWidth: groupAxisWidth,
       // scaleDomain: groupAxis.scaleDomain,
-      scaleDomain: [groupScaleDomainMin, groupScaleDomainMax],
+      scaleDomain: groupScaleDomainValue,
       scaleRange: [0, 1]
     })
   
@@ -308,24 +564,24 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
     }
 
     // -- valueScale --
-    const filteredData = data.map((d, i) => {
-      return d.filter((_d, _i) => {
-        return _i >= groupScaleDomainMin && _i <= groupScaleDomainMax && _d.visible == true
-      })
-    })
+    // const filteredData = data.map((d, i) => {
+    //   return d.filter((_d, _i) => {
+    //     return _i >= groupScaleDomainMin && _i <= groupScaleDomainMax && _d.visible == true
+    //   })
+    // })
   
-    const filteredMinAndMax = getMinAndMaxGrid(filteredData)
-    if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
-      filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
-    }
+    // const filteredMinAndMax = getMinAndMaxGrid(filteredData)
+    // if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
+    //   filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+    // }
   
     const valueAxisWidth = (valueAxis.position === 'left' || valueAxis.position === 'right')
       ? height
       : width
   
-    const valueScale: d3.ScaleLinear<number, number> = createAxisLinearScale({
-      maxValue: filteredMinAndMax[1],
-      minValue: filteredMinAndMax[0],
+    const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
+      maxValue: filteredMinMaxValue[1],
+      minValue: filteredMinMaxValue[0],
       axisWidth: valueAxisWidth,
       scaleDomain: valueAxis.scaleDomain,
       scaleRange: valueAxis.scaleRange
@@ -356,6 +612,8 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
   return new Observable(subscriber => {
     combineLatest({
       computedData: computedData$,
+      groupScaleDomainValue: groupScaleDomainValue$,
+      filteredMinMaxValue: filteredMinMaxValue$,
       fullDataFormatter: fullDataFormatter$,
       layout: layout$
     }).pipe(
@@ -366,6 +624,8 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
         data: data.computedData,
         groupAxis: data.fullDataFormatter.grid.groupAxis,
         valueAxis: data.fullDataFormatter.grid.valueAxis,
+        groupScaleDomainValue: data.groupScaleDomainValue,
+        filteredMinMaxValue: data.filteredMinMaxValue,
         width: data.layout.width,
         height: data.layout.height
       })
@@ -380,7 +640,7 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
 }
 
 export const gridGraphicReverseScaleObservable = ({ gridContainerPosition$, gridAxesTransform$, gridGraphicTransform$ }: {
-  gridContainerPosition$: Observable<GridContainerPosition[]>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
   gridAxesTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>
 }): Observable<[number, number][]> => {
@@ -408,208 +668,5 @@ export const gridGraphicReverseScaleObservable = ({ gridContainerPosition$, grid
         })
       }
     }),
-  )
-}
-
-export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
-  fullDataFormatter$: Observable<DataFormatterGrid>
-  layout$: Observable<Layout>
-}): Observable<{
-  width: number;
-  height: number;
-}> => {
-  const destroy$ = new Subject()
-
-  function calcAxesSize ({ xAxisPosition, yAxisPosition, width, height }: {
-    xAxisPosition: AxisPosition
-    yAxisPosition: AxisPosition
-    width: number
-    height: number
-  }) {
-    if ((xAxisPosition === 'bottom' || xAxisPosition === 'top') && (yAxisPosition === 'left' || yAxisPosition === 'right')) {
-      return { width, height }
-    } else if ((xAxisPosition === 'left' || xAxisPosition === 'right') && (yAxisPosition === 'bottom' || yAxisPosition === 'top')) {
-      return {
-        width: height,
-        height: width
-      }
-    } else {
-      // default
-      return { width, height }
-    }
-  }
-
-  return new Observable(subscriber => {
-    combineLatest({
-      fullDataFormatter: fullDataFormatter$,
-      layout: layout$
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async (d) => d),
-    ).subscribe(data => {
-      
-      const axisSize = calcAxesSize({
-        xAxisPosition: data.fullDataFormatter.grid.groupAxis.position,
-        yAxisPosition: data.fullDataFormatter.grid.valueAxis.position,
-        width: data.layout.width,
-        height: data.layout.height,
-      })
-
-      subscriber.next(axisSize)
-
-      return function unsubscribe () {
-        destroy$.next(undefined)
-      }
-    })
-  })
-}
-
-// export const gridHighlightObservable = ({ computedData$, fullChartParams$, event$ }: {
-//   computedData$: Observable<ComputedDataTypeMap<'grid'>>
-//   fullChartParams$: Observable<ChartParams>
-//   event$: Subject<any>
-// }): Observable<string[]> => {
-//   const datumList$ = computedData$.pipe(
-//     map(d => d.flat())
-//   )
-//   return highlightObservable ({ datumList$, fullChartParams$, event$ })
-// }
-
-export const gridSeriesLabelsObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
-  return computedData$.pipe(
-    map(data => {
-      return data
-        .filter(series => series.length)
-        .map(series => {
-          return series[0].seriesLabel
-        })
-    }),
-    distinctUntilChanged((a, b) => {
-      return JSON.stringify(a).length === JSON.stringify(b).length
-    }),
-  )
-}
-
-export const gridVisibleComputedDataObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'grid'>> }) => {
-  return computedData$.pipe(
-    map(data => {
-      const visibleComputedData = data
-        .map(d => {
-          return d.filter(_d => {
-            return _d.visible == true
-          })
-        })
-        .filter(d => d.length)
-      return visibleComputedData
-    })
-  )
-}
-
-export const gridVisibleComputedLayoutDataObservable = ({ computedLayoutData$ }: { computedLayoutData$: Observable<ComputedLayoutDataGrid> }) => {
-  return computedLayoutData$.pipe(
-    map(data => {
-      const visibleComputedData = data
-        .map(d => {
-          return d.filter(_d => {
-            return _d.visible == true
-          })
-        })
-        .filter(d => d.length)
-      return visibleComputedData
-    })
-  )
-}
-
-// 所有container位置（對應series）
-export const gridContainerPositionObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
-  computedData$: Observable<ComputedDataTypeMap<'grid'>>
-  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
-  layout$: Observable<Layout>
-}): Observable<GridContainerPosition[]> => {
-
-  const gridContainerPosition$ = combineLatest({
-    computedData: computedData$,
-    fullDataFormatter: fullDataFormatter$,
-    layout: layout$,
-  }).pipe(
-    switchMap(async (d) => d),
-    map(data => {
-      
-      if (data.fullDataFormatter.grid.separateSeries) {
-        // -- 依slotIndexes計算 --
-        return calcGridContainerLayout(data.layout, data.fullDataFormatter.container, data.computedData.length)
-        // return data.computedData.map((seriesData, seriesIndex) => {
-        //   const columnIndex = seriesIndex % data.fullDataFormatter.container.columnAmount
-        //   const rowIndex = Math.floor(seriesIndex / data.fullDataFormatter.container.columnAmount)
-        //   const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
-        //   return {
-        //     slotIndex: seriesIndex,
-        //     rowIndex,
-        //     columnIndex,
-        //     translate,
-        //     scale,
-        //   }
-        // })
-      } else {
-        // -- 無拆分 --
-        const gridContainerPositionArr = calcGridContainerLayout(data.layout, data.fullDataFormatter.container, 1)
-        return data.computedData.map((d, i) => gridContainerPositionArr[0]) // 每個series相同位置
-        // const columnIndex = 0
-        // const rowIndex = 0
-        // return data.computedData.map((seriesData, seriesIndex) => {
-        //   const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
-        //   return {
-        //     slotIndex: 0,
-        //     rowIndex,
-        //     columnIndex,
-        //     translate,
-        //     scale,
-        //   }
-        // })
-      }
-    })
-  )
-
-  return gridContainerPosition$
-}
-
-// 將原本的value全部替換成加總後的value
-export const computedStackedDataObservables = ({ isSeriesSeprate$, computedData$ }: {
-  isSeriesSeprate$: Observable<boolean>
-  computedData$: Observable<ComputedDataGrid>
-}): Observable<ComputedDataGrid> => {
-  const stackedData$: Observable<ComputedDataGrid> = computedData$.pipe(
-    map(data => {
-      // 將同一group的value加總起來
-      const stackedValue = new Array(data[0] ? data[0].length : 0)
-        .fill(null)
-        .map((_, i) => {
-          return data.reduce((prev, current) => {
-            if (current && current[i]) {
-              const currentValue = current[i].value == null || current[i].visible == false
-                ? 0
-                : current[i].value!
-              return prev + currentValue
-            }
-            return prev
-          }, 0)
-        })
-      // 將原本的value全部替換成加總後的value
-      const computedData = data.map((series, seriesIndex) => {
-        return series.map((d, i) => {
-          return {
-            ...d,
-            value: stackedValue[i],
-          }
-        })
-      })
-      return computedData
-    }),
-  )
-
-  return isSeriesSeprate$.pipe(
-    switchMap(isSeriesSeprate => {
-      return iif(() => isSeriesSeprate, computedData$, stackedData$)
-    })
   )
 }

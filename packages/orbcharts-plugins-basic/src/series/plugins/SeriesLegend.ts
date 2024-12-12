@@ -65,7 +65,7 @@ export const SeriesLegend = defineSeriesPlugin(pluginConfig)(({ selection, rootS
   
   const destroy$ = new Subject()
 
-  const seriesLabels$: Observable<string[]> = observer.SeriesDataMap$.pipe(
+  const legendLabels$: Observable<string[]> = observer.SeriesDataMap$.pipe(
     takeUntil(destroy$),
     map(data => {
       return Array.from(data.keys())
@@ -76,7 +76,7 @@ export const SeriesLegend = defineSeriesPlugin(pluginConfig)(({ selection, rootS
   const fullParams$ = observer.fullParams$.pipe(
     takeUntil(destroy$),
     map(d => {
-      const seriesList = [
+      const labelList = [
         {
           listRectWidth: d.listRectWidth,
           listRectHeight: d.listRectHeight,
@@ -85,14 +85,14 @@ export const SeriesLegend = defineSeriesPlugin(pluginConfig)(({ selection, rootS
       ]
       return {
         ...d,
-        seriesList
+        labelList
       }
     })
   )
 
   const unsubscribeBaseLegend = createBaseLegend(pluginName, {
     rootSelection,
-    seriesLabels$,
+    legendLabels$,
     fullParams$,
     layout$: observer.layout$,
     fullChartParams$: observer.fullChartParams$,

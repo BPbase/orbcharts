@@ -79,6 +79,7 @@ export const ValueStackAxis = defineGridPlugin(pluginConfig)(({ selection, name,
   const unsubscribeBaseValueAxis = createBaseValueAxis(pluginName, {
     selection,
     computedData$: observer.computedStackedData$, // 計算疊加value的資料
+    filteredMinMaxValue$: observer.filteredMinMaxValue$,
     fullParams$: observer.fullParams$,
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,  
