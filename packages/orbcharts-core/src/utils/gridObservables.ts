@@ -41,7 +41,7 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
   layout$: Observable<Layout>
 }): Observable<ComputedLayoutDatumGrid[][]> => {
 
-  // 未篩選group範圍前的group scale
+  // 未篩選group範圍前的group scale（ * 不受到dataFormatter設定影響）
   function createOriginGroupScale (computedData: ComputedDatumGrid[][], dataFormatter: DataFormatterGrid, layout: Layout) {
     const groupAxisWidth = (dataFormatter.grid.groupAxis.position === 'top' || dataFormatter.grid.groupAxis.position === 'bottom')
       ? layout.width
@@ -54,10 +54,11 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
       scaleDomain: [0, groupEndIndex], // 不使用dataFormatter設定
       scaleRange: [0, 1] // 不使用dataFormatter設定
     })
+
     return groupScale
   }
 
-  // 未篩選group範圍及visible前的value scale
+  // 未篩選group範圍及visible前的value scale（ * 不受到dataFormatter設定影響）
   function createOriginValueScale (computedData: ComputedDatumGrid[][], dataFormatter: DataFormatterGrid, layout: Layout) {
     const valueAxisWidth = (dataFormatter.grid.valueAxis.position === 'left' || dataFormatter.grid.valueAxis.position === 'right')
       ? layout.height
@@ -70,7 +71,8 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
       maxValue,
       minValue,
       axisWidth: valueAxisWidth,
-      scaleDomain: [minValue, maxValue], // 不使用dataFormatter設定
+      // scaleDomain: [minValue, maxValue], // 不使用dataFormatter設定
+      scaleDomain: ['auto', 'auto'], // 不使用dataFormatter設定 --> 以0為基準到最大或最小值為範圍（ * 如果是使用[minValue, maxValue]的話，在兩者很接近的情況下有可能造成scale倍率過高而svg變型時失真的情況）
       scaleRange: [0, 1] // 不使用dataFormatter設定
     })
     
@@ -334,8 +336,9 @@ export const gridGraphicTransformObservable = ({ computedData$, fullDataFormatte
     if (minAndMax[0] === minAndMax[1]) {
       minAndMax[0] = minAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
     }
-    const rangeMinY = valueScale(minAndMax[0])
-    const rangeMaxY = valueScale(minAndMax[1])
+    // const rangeMinY = valueScale(minAndMax[0])
+    const rangeMinY = valueScale(minAndMax[0] > 0 ? 0 : minAndMax[0]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
+    const rangeMaxY = valueScale(minAndMax[1] < 0 ? 0 : minAndMax[1]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
     translateY = rangeMinY
     const gHeight = rangeMaxY - rangeMinY
     scaleY = gHeight / valueAxisWidth
