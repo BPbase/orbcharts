@@ -278,6 +278,7 @@ export const OverlappingValueAxes = defineMultiGridPlugin(pluginConfig)(({ selec
           unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
             selection: gridSelection,
             computedData$: d.computedData$,
+            filteredMinMaxValue$: d.filteredMinMaxValue$,
             fullParams$: observer.fullParams$.pipe(
               map(fullParams => i === 0 ? fullParams.firstAxis : fullParams.secondAxis)
             ),

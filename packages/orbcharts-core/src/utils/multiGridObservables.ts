@@ -32,17 +32,21 @@ import {
   seriesDataMapObservable,
   groupDataMapObservable } from './observables'
 import {
-  gridAxesTransformObservable,
-  gridGraphicTransformObservable,
-  gridGraphicReverseScaleObservable,
-  gridAxesReverseTransformObservable,
+  gridComputedLayoutDataObservable,
   gridAxesSizeObservable,
   gridSeriesLabelsObservable,
-  gridComputedLayoutDataObservable,
   gridVisibleComputedDataObservable,
   gridVisibleComputedLayoutDataObservable,
   // isSeriesSeprateObservable,
-  computedStackedDataObservables } from './gridObservables'
+  gridContainerPositionObservable,
+  computedStackedDataObservables,
+  groupScaleDomainValueObservable,
+  filteredMinMaxValueObservable,
+  gridAxesTransformObservable,
+  gridAxesReverseTransformObservable,
+  gridGraphicTransformObservable,
+  gridGraphicReverseScaleObservable,
+} from './gridObservables'
 import { DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT } from '../defaults'
 import { calcGridContainerLayout } from './orbchartsUtils'
 
@@ -143,36 +147,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           shareReplay(1)
         )
         
-        const gridAxesTransform$ = gridAxesTransformObservable({
-          fullDataFormatter$: gridDataFormatter$,
-          layout$: layout$
-        }).pipe(
-          takeUntil(destroy$),
-          shareReplay(1)
-        )
-    
         
-        const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({
-          gridAxesTransform$
-        }).pipe(
-          takeUntil(destroy$),
-          shareReplay(1)
-        )
-        
-        const gridGraphicTransform$ = gridGraphicTransformObservable({
-          computedData$: gridComputedData$,
-          fullDataFormatter$: gridDataFormatter$,
-          layout$: layout$
-        }).pipe(
-          takeUntil(destroy$),
-          shareReplay(1)
-        )
-    
-        const gridGraphicReverseScale$ = gridGraphicReverseScaleObservable({
-          gridContainerPosition$: gridContainerPosition$,
-          gridAxesTransform$: gridAxesTransform$,
-          gridGraphicTransform$: gridGraphicTransform$,
-        })
     
         const gridAxesSize$ = gridAxesSizeObservable({
           fullDataFormatter$: gridDataFormatter$,
@@ -248,13 +223,58 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           shareReplay(1)
         )
 
+        const groupScaleDomainValue$ = groupScaleDomainValueObservable({
+          computedData$: gridComputedData$,
+          fullDataFormatter$: gridDataFormatter$,
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+
+        const filteredMinMaxValue$ = filteredMinMaxValueObservable({
+          computedData$: gridComputedData$,
+          groupScaleDomainValue$: groupScaleDomainValue$,
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+
+        const gridAxesTransform$ = gridAxesTransformObservable({
+          fullDataFormatter$: gridDataFormatter$,
+          layout$: layout$
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+    
+        
+        const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({
+          gridAxesTransform$
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+        
+        const gridGraphicTransform$ = gridGraphicTransformObservable({
+          computedData$: gridComputedData$,
+          groupScaleDomainValue$: groupScaleDomainValue$,
+          filteredMinMaxValue$: filteredMinMaxValue$,
+          fullDataFormatter$: gridDataFormatter$,
+          layout$: layout$
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+    
+        const gridGraphicReverseScale$ = gridGraphicReverseScaleObservable({
+          gridContainerPosition$: gridContainerPosition$,
+          gridAxesTransform$: gridAxesTransform$,
+          gridGraphicTransform$: gridGraphicTransform$,
+        })
+
         return {
           isSeriesSeprate$,
           gridContainerPosition$,
-          gridAxesTransform$,
-          gridAxesReverseTransform$,
-          gridGraphicTransform$,
-          gridGraphicReverseScale$,
           gridAxesSize$,
           gridHighlight$: allGridHighlight$,
           seriesLabels$,
@@ -265,7 +285,13 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           computedLayoutData$,
           visibleComputedData$,
           visibleComputedLayoutData$,
-          computedStackedData$
+          computedStackedData$,
+          groupScaleDomainValue$,
+          filteredMinMaxValue$,
+          gridAxesTransform$,
+          gridAxesReverseTransform$,
+          gridGraphicTransform$,
+          gridGraphicReverseScale$,
         }
       })
     })
