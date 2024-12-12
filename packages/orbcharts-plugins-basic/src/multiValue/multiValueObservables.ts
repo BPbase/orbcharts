@@ -2,6 +2,7 @@ import * as d3 from 'd3'
 import {
   Observable,
   Subject,
+  debounceTime,
   of,
   takeUntil,
   filter,
@@ -166,7 +167,9 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
   multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
   layout$: Observable<Layout>
 }) => {
-  const rootMousemove$ = d3EventObservable(rootSelection, 'mousemove')
+  const rootMousemove$ = d3EventObservable(rootSelection, 'mousemove').pipe(
+    debounceTime(2) // 避免過度頻繁觸發，實測時沒加電腦容易卡頓
+  )
 
   const columnAmount$ = multiValueContainerPosition$.pipe(
     map(multiValueContainerPosition => {

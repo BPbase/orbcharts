@@ -3,12 +3,13 @@ import type {
   ColorType,
   ChartParams,
   ComputedDatumBase,
-  ComputedDatumSeriesValue,
-  ComputedDatumCategoryValue } from '../../lib/core-types'
+  ComputedDatumBaseValue,
+  ComputedDatumBaseSeries,
+  ComputedDatumBaseCategory } from '../../lib/core-types'
 import { getMinAndMax } from './commonUtils'
 
 // 取得最小及最大值 - datum格式陣列資料
-export function getMinAndMaxValue (data: ComputedDatumBase[]): [number, number] {
+export function getMinAndMaxValue (data: (ComputedDatumBase & ComputedDatumBaseValue)[]): [number, number] {
   const arr = data
     .filter(d => d.value != null && d.visible != false)
     .map(d => d.value as number)
@@ -37,7 +38,7 @@ export function getSeriesValueColor () {
 
 }
 
-export function getCategoryValueColor ({ datum, colorType, fullChartParams }: { datum: ComputedDatumCategoryValue, colorType: ColorType, fullChartParams: ChartParams }) {
+export function getCategoryValueColor ({ datum, colorType, fullChartParams }: { datum: ComputedDatumBaseCategory, colorType: ColorType, fullChartParams: ChartParams }) {
 
 }
 
@@ -53,8 +54,8 @@ export function getCategoryValueColor ({ datum, colorType, fullChartParams }: { 
 export function getDatumColor ({ datum, colorType, fullChartParams }: { datum: ComputedDatumBase, colorType: ColorType, fullChartParams: ChartParams }) {
   // 對應series資料中的顏色
   if (colorType === 'series') {
-    if ((datum as unknown as ComputedDatumSeriesValue).color) {
-      return (datum as unknown as ComputedDatumSeriesValue).color
+    if ((datum as unknown as ComputedDatumBaseSeries).color) {
+      return (datum as unknown as ComputedDatumBaseSeries).color
     } else {
       // 非series類型的資料則回傳陣列中第1個顏色
       return fullChartParams.colors[fullChartParams.colorScheme].series[0]

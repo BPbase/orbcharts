@@ -41,10 +41,12 @@ export type PluginListMultiGrid = 'MultiBars'
 
 export type PluginListMultiValue = 'MultiValueLegend'
   | 'MultiValueTooltip'
+  | 'MultiValueLegend'
   | 'Scatter'
+  | 'ScatterBubbles'
   | 'XYAux'
   | 'XYAxes'
-  | 'ZYZoom'
+  | 'XYZoom'
 
 export type PluginListTree = 'TreeLegend'
   | 'TreeMap'
@@ -58,8 +60,10 @@ export type PluginList<T extends ChartType> = T extends 'series'
     ? PluginListGrid
     : T extends 'multiGrid'
       ? PluginListMultiGrid
-      : T extends 'tree'
-        ? PluginListTree
-        // : T extends 'noneData'
-        //   ? PluginListNoneData
-          : never
+      : T extends 'multiValue'
+        ? PluginListMultiValue
+        : T extends 'tree'
+          ? PluginListTree
+          // : T extends 'noneData'
+          //   ? PluginListNoneData
+            : never

@@ -665,6 +665,52 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
     ]
   },
   {
+    title: 'MultiValue',
+    chartType: 'multiValue',
+    list: [
+      {
+        title: 'Scatter',
+        description: 'Scatter Chart',
+        descriptionZh: '散佈圖',
+        mainPluginNames: ['Scatter'],
+        list: [
+          {
+            title: 'PRESET_MULTI_VALUE_BASIC',
+            presetName: 'PRESET_MULTI_VALUE_BASIC',
+            allPluginNames: ['Scatter', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux'],
+            getData: () => import('./data/multiValue1')
+          },
+        ]
+      },
+      {
+        title: 'ScatterBubbles',
+        description: 'Scatter Bubbles Chart',
+        descriptionZh: '泡泡散佈圖',
+        mainPluginNames: ['ScatterBubbles'],
+        list: [
+          {
+            title: 'PRESET_MULTI_VALUE_BASIC',
+            presetName: 'PRESET_MULTI_VALUE_BASIC',
+            allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XYZoom'],
+            getData: () => import('./data/multiValue1')
+          },
+          {
+            title: 'PRESET_SCATTER_BUBBLES_LINEAR_OPACITY',
+            presetName: 'PRESET_SCATTER_BUBBLES_LINEAR_OPACITY',
+            allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XYZoom'],
+            getData: () => import('./data/multiValue1')
+          },
+          {
+            title: 'PRESET_SCATTER_BUBBLES_SCALING_BY_RADIUS',
+            presetName: 'PRESET_SCATTER_BUBBLES_SCALING_BY_RADIUS',
+            allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XYZoom'],
+            getData: () => import('./data/multiValue1')
+          },
+        ]
+      }
+    ]
+  },
+  {
     title: 'Tree',
     chartType: 'tree',
     list: [

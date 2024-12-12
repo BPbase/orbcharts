@@ -2,6 +2,7 @@ import * as d3 from 'd3'
 import {
   // of,
   iif,
+  debounceTime,
   EMPTY,
   combineLatest,
   switchMap,
@@ -463,9 +464,17 @@ export const XYAux = defineMultiValuePlugin(pluginConfig)(({ selection, rootSele
   //   distinctUntilChanged()
   // )
 
-  const rootMousemove$: Observable<any> = d3EventObservable(rootSelection, 'mousemove').pipe(
-    takeUntil(destroy$),
-  )
+  // const rootMousemove$: Observable<any> = d3EventObservable(rootSelection, 'mousemove')
+  //   .pipe(
+  //     takeUntil(destroy$),
+  //     debounceTime(10)
+  //   )
+
+  // let r = 0
+  // rootMousemove$.subscribe(d => {
+  //   r++
+  //   console.log('r:', r)
+  // })
 
   const columnAmount$ = observer.multiValueContainerPosition$.pipe(
     map(multiValueContainerPosition => {
@@ -512,7 +521,7 @@ export const XYAux = defineMultiValuePlugin(pluginConfig)(({ selection, rootSele
 
   combineLatest({
     axesSelection: axesSelection$,
-    rootMousemove: rootMousemove$,
+    // rootMousemove: rootMousemove$,
     layout: observer.layout$,
     xyPosition: xyPosition$,
     // computedData: observer.computedData$,

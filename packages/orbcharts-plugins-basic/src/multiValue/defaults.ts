@@ -93,7 +93,8 @@ export const DEFAULT_SCATTER_BUBBLES_PARAMS: ScatterBubblesParams = {
   strokeColorType: 'series',
   strokeWidth: 0,
   valueLinearOpacity: [0.8, 0.8],
-  arcScaleType: 'area'
+  arcScaleType: 'area',
+  sizeAdjust: 0.5
 }
 
 export const DEFAULT_X_Y_AUX_PARAMS: XYAuxParams = {

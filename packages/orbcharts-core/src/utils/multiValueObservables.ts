@@ -395,18 +395,19 @@ export const filteredMinMaxXYDataObservable = ({ visibleComputedLayoutData$, min
         return { minX, maxX, minY, maxY }
       })()
 // console.log({ minX, maxX, minY, maxY })
-      // let filteredData: ComputedLayoutDatumMultiValue[][] = []
+      let datumList: ComputedLayoutDatumMultiValue[] = []
       let minXDatum: ComputedLayoutDatumMultiValue | null = null
       let maxXDatum: ComputedLayoutDatumMultiValue | null = null
       let minYDatum: ComputedLayoutDatumMultiValue | null = null
       let maxYDatum: ComputedLayoutDatumMultiValue | null = null
       // console.log('data.visibleComputedLayoutData', data.visibleComputedLayoutData)
       // minX, maxX, minY, maxY 範圍內的最大最小值資料
+      
       for (let categoryData of data.visibleComputedLayoutData) {
         for (let datum of categoryData) {
           // 比較矩形範圍（所以 minX, maxX, minY, maxY 要同時比較）
           if (datum.value[0] >= minX && datum.value[0] <= maxX && datum.value[1] >= minY && datum.value[1] <= maxY) {
-            // filteredData.push(categoryData)
+            datumList.push(datum)
             if (minXDatum == null || datum.value[0] < minXDatum.value[0]) {
               minXDatum = datum
             }
@@ -422,13 +423,9 @@ export const filteredMinMaxXYDataObservable = ({ visibleComputedLayoutData$, min
           }
         }
       }
-      // console.log({
-      //   minXDatum,
-      //   maxXDatum,
-      //   minYDatum,
-      //   maxYDatum
-      // })
+      
       return {
+        datumList,
         minXDatum,
         maxXDatum,
         minYDatum,

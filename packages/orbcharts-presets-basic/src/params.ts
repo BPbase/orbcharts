@@ -2,6 +2,7 @@ import type {
   PresetSeriesPluginParams,
   PresetGridPluginParams,
   PresetMultiGridPluginParams,
+  PresetMultiValuePluginParams,
   PresetTreePluginParams,
   PresetNoneDataPluginParams
 } from './types'
@@ -48,6 +49,16 @@ export const ALL_PLUGIN_PARAMS_MULTI_GRID: PresetMultiGridPluginParams = {
   MultiValueStackAxis: {},
   OverlappingValueAxes: {},
   OverlappingValueStackAxes: {},
+}
+
+export const ALL_PLUGIN_PARAMS_MULTI_VALUE: PresetMultiValuePluginParams = {
+  MultiValueLegend: {},
+  MultiValueTooltip: {},
+  Scatter: {},
+  ScatterBubbles: {},
+  XYAxes: {},
+  XYAux: {},
+  XYZoom: {}
 }
 
 export const ALL_PLUGIN_PARAMS_TREE: PresetTreePluginParams = {

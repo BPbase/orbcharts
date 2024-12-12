@@ -50,6 +50,7 @@ export interface ScatterBubblesParams {
   strokeWidth: number
   valueLinearOpacity: [number, number]
   arcScaleType: ArcScaleType
+  sizeAdjust: number
 }
 
 export interface XYAuxParams {

@@ -6,7 +6,9 @@ import {
   takeUntil,
   distinctUntilChanged,
   Observable,
-  Subject
+  Subject,
+  share,
+  shareReplay
 } from 'rxjs'
 import type {
   ComputedDatumMultiValue,
@@ -22,7 +24,8 @@ import type {
   ColorType
 } from '../../../lib/core-types'
 import {
-  defineMultiValuePlugin
+  defineMultiValuePlugin,
+  getMinAndMax
 } from '../../../lib/core'
 import type { ScatterBubblesParams } from '../../../lib/plugins-basic-types'
 import { DEFAULT_SCATTER_BUBBLES_PARAMS } from '../defaults'
@@ -40,6 +43,7 @@ type ClipPathDatum = {
 
 interface BubbleDatum extends ComputedLayoutDatumMultiValue {
   r: number
+  opacity: number
 }
 
 const pluginName = 'ScatterBubbles'
@@ -73,6 +77,9 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_SCATTER
         test: (value) => {
           return value === 'area' || value === 'radius'
         }
+      },
+      sizeAdjust: {
+        toBeTypes: ['number']
       }
     })
     return result
@@ -151,14 +158,14 @@ function renderDots ({ graphicGSelection, circleGClassName, circleClassName, bub
         })
     })
 
-  const graphicCircleSelection: d3.Selection<SVGRectElement, ComputedDatumMultiValue, SVGGElement, unknown>  = graphicGSelection.selectAll(`circle.${circleClassName}`)
+  const graphicCircleSelection: d3.Selection<SVGRectElement, BubbleDatum, SVGGElement, unknown>  = graphicGSelection.selectAll(`circle.${circleClassName}`)
 
   return graphicCircleSelection
 }
 
 
-function highlightDots ({ selection, ids, fullChartParams }: {
-  selection: d3.Selection<SVGGElement, ComputedDatumMultiValue, any, any>
+function highlightBubbles ({ selection, ids, fullChartParams }: {
+  selection: d3.Selection<SVGGElement, BubbleDatum, any, any>
   ids: string[]
   fullChartParams: ChartParams
 }) {
@@ -168,7 +175,7 @@ function highlightDots ({ selection, ids, fullChartParams }: {
     selection
       .transition('highlight')
       .duration(200)
-      .style('opacity', 0.8)
+      .style('opacity', d => d.opacity)
     // selection
     //   .attr('stroke-width', fullParams.strokeWidth)
 
@@ -178,9 +185,9 @@ function highlightDots ({ selection, ids, fullChartParams }: {
   selection
     .each((d, i, n) => {
       if (ids.includes(d.id)) {
-        const dot = d3.select(n[i])
+        const dot = d3.select<SVGGElement, BubbleDatum>(n[i])
         dot
-          .style('opacity', 0.8)
+          .style('opacity', d => d.opacity)
           .transition('highlight')
           .duration(200)
         // dot
@@ -282,22 +289,46 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
     })
   })
 
-  const visibleValueList$ = observer.visibleComputedData$.pipe(
+  const filteredValueList$ = observer.filteredMinMaxXYData$.pipe(
     takeUntil(destroy$),
-    map(data => data.flat().map(d => d.value[2]))
+    map(data => data.datumList.flat().map(d => d.value[2] ?? 0)),
+    shareReplay(1)
   )
 
-  // 虛擬大圓（所有小圓聚合起來的大圓）的半徑
-  const totalR$ = observer.layout$.pipe(
+  const filteredMinMaxValue$ = observer.filteredMinMaxXYData$.pipe(
     takeUntil(destroy$),
     map(data => {
-      // 場景最短邊
-      const fullRadius = Math.min(...[data.width, data.height]) / 2
-      return fullRadius / 2 // 約為場景的一半
+      return getMinAndMax(data.datumList.flat().map(d => d.value[2] ?? 0))
     })
   )
 
-  const totalValue$ = visibleValueList$.pipe(
+  const opacityScale$ = combineLatest({
+    filteredMinMaxValue: filteredMinMaxValue$,
+    fullParams: observer.fullParams$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      return d3.scaleLinear()
+        .domain(data.filteredMinMaxValue)
+        .range(data.fullParams.valueLinearOpacity)
+    })
+  )
+
+  // 虛擬大圓（所有小圓聚合起來的大圓）的半徑
+  const totalR$ = combineLatest({
+    layout: observer.layout$,
+    fullParams: observer.fullParams$
+  }).pipe(
+    takeUntil(destroy$),
+    map(data => {
+      // 場景最短邊
+      const fullRadius = Math.min(...[data.layout.width, data.layout.height]) / 2
+      return fullRadius * data.fullParams.sizeAdjust
+    })
+  )
+
+  const totalValue$ = filteredValueList$.pipe(
     takeUntil(destroy$),
     map(data => {
       return data.reduce((acc, current) => acc + current, 0)
@@ -326,7 +357,7 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
     radiusScale: radiusScale$,
     fullParams: observer.fullParams$,
     totalR: totalR$,
-    visibleValueList: visibleValueList$
+    filteredValueList: filteredValueList$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -336,13 +367,14 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
         // 當數值映射半徑時，多個小圓的總面積會小於大圓的面積，所以要計算縮放比例
         : (() => {
           const totalArea = data.totalR * data.totalR * Math.PI
-          return Math.sqrt(totalArea / d3.sum(data.visibleValueList, d => Math.PI * Math.pow(data.radiusScale(d), 2)))
+          return Math.sqrt(totalArea / d3.sum(data.filteredValueList, d => Math.PI * Math.pow(data.radiusScale(d), 2)))
         })()
     })
   )
 
   const bubbleData$ = combineLatest({
     computedLayoutData: observer.computedLayoutData$,
+    opacityScale: opacityScale$,
     radiusScale: radiusScale$,
     scaleFactor: scaleFactor$,
     fullParams: observer.fullParams$
@@ -354,6 +386,7 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
         return category.map(_d => {
           const d: BubbleDatum = _d as BubbleDatum
           d.r = data.radiusScale(d.value[2]) * data.scaleFactor * adjustmentFactor
+          d.opacity = data.opacityScale(d.value[2])
           return d
         })
       })
@@ -489,7 +522,7 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
     takeUntil(destroy$),
     switchMap(async d => d)
   ).subscribe(data => {
-    highlightDots({
+    highlightBubbles({
       selection: data.graphicSelection,
       ids: data.highlight,
       fullChartParams: data.fullChartParams
