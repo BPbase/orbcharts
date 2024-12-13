@@ -1,15 +1,22 @@
 export default [
+  [10, 25, 5],
+  [5, 10, 5],
   [30, 45, 20],
   [35, 40, 25],
+  [25, 30, 15],
   [55, 60, 40],
   // [45, 55, 30],
   {
     value: [45, 55, 30],
-    categoryLabel: 'test1'
+    categoryLabel: 'category1'
   },
   {
     value: [75, 35, 30],
-    categoryLabel: 'test2'
+    categoryLabel: 'category2'
+  },
+  {
+    value: [65, 25, 5],
+    categoryLabel: 'category2'
   },
   [50, 65, 35],
   [20, 30, 15],

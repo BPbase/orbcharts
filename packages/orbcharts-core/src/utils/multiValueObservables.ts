@@ -402,7 +402,7 @@ export const filteredMinMaxXYDataObservable = ({ visibleComputedLayoutData$, min
       let maxYDatum: ComputedLayoutDatumMultiValue | null = null
       // console.log('data.visibleComputedLayoutData', data.visibleComputedLayoutData)
       // minX, maxX, minY, maxY 範圍內的最大最小值資料
-      
+      // console.log({ minX, maxX, minY, maxY })
       for (let categoryData of data.visibleComputedLayoutData) {
         for (let datum of categoryData) {
           // 比較矩形範圍（所以 minX, maxX, minY, maxY 要同時比較）
@@ -590,6 +590,13 @@ export const multiValueGraphicTransformObservable = ({ minMaxXY$, filteredMinMax
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
+      if (!data.filteredMinMaxXYData.minXDatum || !data.filteredMinMaxXYData.maxXDatum
+        || data.filteredMinMaxXYData.minXDatum.value[0] == null || data.filteredMinMaxXYData.maxXDatum.value[0] == null
+        || !data.filteredMinMaxXYData.minYDatum || !data.filteredMinMaxXYData.maxYDatum
+        || data.filteredMinMaxXYData.minYDatum.value[1] == null || data.filteredMinMaxXYData.maxYDatum.value[1] == null
+      ) {
+        return
+      }
       const dataAreaTransformData = calcDataAreaTransform({
         minMaxXY: data.minMaxXY,
         filteredMinMaxXYData: data.filteredMinMaxXYData,

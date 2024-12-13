@@ -564,12 +564,17 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
+      if (!data.filteredMinMaxXYData.minXDatum || !data.filteredMinMaxXYData.maxXDatum
+        || data.filteredMinMaxXYData.minXDatum.value[0] == null || data.filteredMinMaxXYData.maxXDatum.value[0] == null
+      ) {
+        return
+      }
     
       const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
         // maxValue: data.minMaxXY.maxX,
         // minValue: data.minMaxXY.minX,
-        maxValue: data.filteredMinMaxXYData.maxYDatum.value[1],
-        minValue: data.filteredMinMaxXYData.minYDatum.value[0],
+        maxValue: data.filteredMinMaxXYData.maxXDatum.value[0],
+        minValue: data.filteredMinMaxXYData.minXDatum.value[0],
         axisWidth: data.layout.width,
         scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.xAxis.scaleRange,
@@ -589,6 +594,11 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
+      if (!data.filteredMinMaxXYData.minYDatum || !data.filteredMinMaxXYData.maxYDatum
+        || data.filteredMinMaxXYData.minYDatum.value[1] == null || data.filteredMinMaxXYData.maxYDatum.value[1] == null
+      ) {
+        return
+      }
     
       const yScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
         maxValue: data.filteredMinMaxXYData.maxYDatum.value[1],
