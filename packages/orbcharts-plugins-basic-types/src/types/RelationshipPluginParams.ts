@@ -2,12 +2,13 @@ import type { ColorType, ComputedNode, ComputedEdge } from '../../lib/core-types
 
 export interface ForceDirectedParams {
   node: {
+    dotRadius: number
     dotFillColorType: ColorType
     dotStrokeColorType: ColorType
     dotStrokeWidth: number
     dotStyleFn: (node: ComputedNode) => string
     labelColorType: ColorType
-    nodeStyleFn: (node: ComputedNode) => string
+    labelStyleFn: (node: ComputedNode) => string
   }
   edge: {
     arrowColorType: ColorType
@@ -17,6 +18,10 @@ export interface ForceDirectedParams {
     arrowStyleFn: (node: ComputedNode) => string
     labelColorType: ColorType
     labelStyleFn: (node: ComputedNode) => string
+  }
+  force: {
+    strength: number // 泡泡引力
+    velocityDecay: number // 衰減數
   }
   zoomable: boolean
   transform: {
