@@ -92,7 +92,7 @@ function calcBarWidth ({ axisWidth, groupAmount, barAmountOfGroup, barPadding = 
   barPadding: number
   barGroupPadding: number
 }) {
-  const eachGroupWidth = groupAmount > 1
+  const eachGroupWidth = groupAmount > 1 // 等於 1 時會算出 Infinity
     ? axisWidth / (groupAmount - 1) // -1是因為要扣掉兩側的padding
     : axisWidth
   const width = (eachGroupWidth - barGroupPadding) / barAmountOfGroup - barPadding
@@ -127,7 +127,7 @@ function calctransitionItem (barGroupAmount: number, totalDuration: number) {
 function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedLayoutData, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesSeprate }: RenderBarParams) {
 
   const barHalfWidth = barWidth! / 2
-// console.log(visibleComputedLayoutData)
+
   graphicGSelection
     .each((seriesData, seriesIndex, g) => {
       d3.select(g[seriesIndex])
@@ -140,7 +140,7 @@ function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedLayo
               .append('rect')
               .classed(rectClassName, true)
               .attr('cursor', 'pointer')
-              .attr('height', d => 0)
+              .attr('height', d => 1)
           },
           update => update,
           exit => exit.remove()
@@ -156,7 +156,7 @@ function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedLayo
         .duration(transitionItem)
         .ease(getD3TransitionEase(chartParams.transitionEase))
         .delay((d, i) => d.groupIndex * delayGroup)
-        .attr('height', d => Math.abs(d.axisYFromZero))
+        .attr('height', d => Math.abs(d.axisYFromZero) || 1) // 無值還是給一個 1 的高度
     })
 
 

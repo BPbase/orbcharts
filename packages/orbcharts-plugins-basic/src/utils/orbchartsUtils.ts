@@ -99,3 +99,18 @@ export function calcAxesSize ({ xAxisPosition, yAxisPosition, width, height }: {
   }
 }
 
+// export function getTicks (minValue: number, maxValue: number, defaultTicks: number | null) {
+//   let valueLength = maxValue - minValue
+//   if (defaultTicks === null) {
+//     if (valueLength <= 1) {
+//       return 1
+//     } else {
+//       // d3.js自動判斷
+//       return null
+//     }
+//   } else if (valueLength < defaultTicks) {
+//     return Math.ceil(valueLength)
+//   } else {
+//     return defaultTicks
+//   }
+// }

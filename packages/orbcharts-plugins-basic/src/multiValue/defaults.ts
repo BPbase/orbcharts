@@ -134,7 +134,8 @@ export const DEFAULT_X_Y_AXES_PARAMS: XYAxesParams = {
     axisLineVisible: false,
     axisLineColorType: 'primary',
     ticks: null,
-    tickFormat: ',.0f',
+    // tickFormat: ',.0f',
+    tickFormat: v => v,
     tickLineVisible: true,
     tickPadding: 20,
     tickFullLine: true,
@@ -148,7 +149,8 @@ export const DEFAULT_X_Y_AXES_PARAMS: XYAxesParams = {
     axisLineVisible: false,
     axisLineColorType: 'primary',
     ticks: null,
-    tickFormat: ',.0f',
+    // tickFormat: ',.0f',
+    tickFormat: v => v,
     tickLineVisible: true,
     tickPadding: 20,
     tickFullLine: true,
@@ -157,6 +159,8 @@ export const DEFAULT_X_Y_AXES_PARAMS: XYAxesParams = {
     tickTextColorType: 'primary'
   }
 }
+DEFAULT_X_Y_AXES_PARAMS.xAxis.tickFormat.toString = () => `v => v`
+DEFAULT_X_Y_AXES_PARAMS.yAxis.tickFormat.toString = () => `v => v`
 
 export const DEFAULT_X_Y_ZOOM_PARAMS: XYZoomParams = {
 

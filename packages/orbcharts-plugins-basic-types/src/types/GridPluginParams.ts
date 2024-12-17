@@ -72,7 +72,7 @@ export interface GroupAxisParams {
   axisLineVisible: boolean
   axisLineColorType: ColorType
   ticks: number | null | 'all'
-  tickFormat: string | ((text: any) => string)
+  tickFormat: string | ((text: any) => string | d3.NumberValue)
   tickLineVisible: boolean
   tickPadding: number
   tickFullLine: boolean
@@ -92,7 +92,7 @@ export interface ValueAxisParams {
   axisLineVisible: boolean
   axisLineColorType: ColorType
   ticks: number | null
-  tickFormat: string | ((text: d3.NumberValue) => string)
+  tickFormat: string | ((text: d3.NumberValue) => string | d3.NumberValue)
   tickLineVisible: boolean
   tickPadding: number
   tickFullLine: boolean
