@@ -51,9 +51,15 @@ export const multiValueComputedLayoutDataObservable = ({ computedData$, minMaxXY
 
   // 未篩選範圍前的 scale
   function createOriginXScale (minMaxXY: { minX: number, maxX: number, minY: number, maxY: number }, layout: Layout) {
+    let maxValue = minMaxXY.maxX
+    let minValue = minMaxXY.minX
+    if (minValue === maxValue && maxValue === 0) {
+      // 避免最大及最小值相同造成無法計算scale
+      maxValue = 1
+    }
     const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-      maxValue: minMaxXY.maxX,
-      minValue: minMaxXY.minX,
+      maxValue,
+      minValue,
       axisWidth: layout.width,
       scaleDomain: ['auto', 'auto'], // 不使用dataFormatter設定 --> 以0為基準到最大或最小值為範圍（ * 如果是使用[minValue, maxValue]的話，在兩者很接近的情況下有可能造成scale倍率過高而svg變型時失真的情況）
       scaleRange: [0, 1] // 不使用dataFormatter設定
@@ -64,9 +70,15 @@ export const multiValueComputedLayoutDataObservable = ({ computedData$, minMaxXY
 
   // 未篩選範圍及visible前的 scale
   function createOriginYScale (minMaxXY: { minX: number, maxX: number, minY: number, maxY: number }, layout: Layout) {
+    let maxValue = minMaxXY.maxY
+    let minValue = minMaxXY.minY
+    if (minValue === maxValue && maxValue === 0) {
+      // 避免最大及最小值相同造成無法計算scale
+      maxValue = 1
+    }
     const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-      maxValue: minMaxXY.maxY,
-      minValue: minMaxXY.minY,
+      maxValue,
+      minValue,
       axisWidth: layout.height,
       scaleDomain: ['auto', 'auto'], // 不使用dataFormatter設定 --> 以0為基準到最大或最小值為範圍（ * 如果是使用[minValue, maxValue]的話，在兩者很接近的情況下有可能造成scale倍率過高而svg變型時失真的情況）
       scaleRange: [0, 1], // 不使用dataFormatter設定
@@ -505,14 +517,6 @@ export const multiValueGraphicTransformObservable = ({ minMaxXY$, filteredMinMax
     let filteredMinY = filteredMinMaxXYData.minYDatum.value[1] ?? 0
     let filteredMaxY = filteredMinMaxXYData.maxYDatum.value[1] ?? 0
 
-    if (minX === maxX) {
-      maxX += 1 // 避免最大及最小值相同造成無法計算scale
-      minX -= 1
-    }
-    if (minY === maxY) {
-      maxY += 1 // 避免最大及最小值相同造成無法計算scale
-      minY -= 1
-    }
     // if (yAxis.scaleDomain[0] === 'auto' && filteredMinY > 0) {
     //   filteredMinY = 0
     // } else if (typeof yAxis.scaleDomain[0] === 'number') {
@@ -527,15 +531,24 @@ export const multiValueGraphicTransformObservable = ({ minMaxXY$, filteredMinMax
     // } else {
     //   filteredMaxY = maxY
     // }
-    // if (filteredMinX === filteredMaxX) {
-    //   filteredMaxX += 1 // 避免最大及最小值相同造成無法計算scale
-    //   filteredMinX -= 1
-    // }
-    // if (filteredMinY === filteredMaxY) {
-    //   filteredMaxY += 1 // 避免最大及最小值相同造成無法計算scale
-    //   filteredMinY -= 1
-    // }
+
     // console.log({ minX, maxX, minY, maxY, filteredMinX, filteredMaxX, filteredMinY, filteredMaxY })
+    if (filteredMinX === filteredMaxX && filteredMaxX === 0) {
+      // 避免最大及最小值相同造成無法計算scale
+      filteredMaxX = 1
+    }
+    if (filteredMinY === filteredMaxY && filteredMaxY === 0) {
+      // 避免最大及最小值相同造成無法計算scale
+      filteredMaxY = 1
+    }
+    if (minX === maxX && maxX === 0) {
+      // 避免最大及最小值相同造成無法計算scale
+      maxX = 1
+    }
+    if (minY === maxY && maxY === 0) {
+      // 避免最大及最小值相同造成無法計算scale
+      maxY = 1
+    }
     // -- xScale --
     const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue: filteredMaxX,
@@ -568,7 +581,6 @@ export const multiValueGraphicTransformObservable = ({ minMaxXY$, filteredMinMax
     translateY = rangeMaxY // 最大值的 y 最小（最上方）
     const gHeight = rangeMinY - rangeMaxY // 最大的 y 減最小的 y
     scaleY = gHeight / height
-    // console.log({ gHeight, height, rangeMaxY, rangeMinY, scaleY, translateY })
 
     return {
       translate: [translateX, translateY],
