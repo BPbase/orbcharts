@@ -59,6 +59,7 @@ export const computedDataFn: ComputedDataFn<'relationship'> = (context) => {
     // -- nodes --
     computedNodes = nodes.map((node, i) => {
       const categoryLabel = node.categoryLabel ?? defaultCategoryLabel
+      const categoryIndex = CategoryIndexMap.get(categoryLabel) ?? 0
       
       const computedNode: ComputedNode = {
         id: node.id,
@@ -67,9 +68,9 @@ export const computedDataFn: ComputedDataFn<'relationship'> = (context) => {
         description: node.description ?? '',
         data: node.data ?? {},
         value: node.value ?? 0,
-        categoryIndex: CategoryIndexMap.get(categoryLabel),
+        categoryIndex,
         categoryLabel,
-        color: seriesColorPredicate(i, chartParams),
+        color: seriesColorPredicate(categoryIndex, chartParams),
         // startNodes: [], // 後面再取得資料
         // startNodeIds: [], // 後面再取得資料
         // endNodes: [], // 後面再取得資料

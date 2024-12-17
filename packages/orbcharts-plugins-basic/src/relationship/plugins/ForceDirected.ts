@@ -49,7 +49,10 @@ type Zoom = {
   }
 }
 
-
+interface D3Edge extends ComputedEdge {
+  source: d3.SimulationNodeDatum & ComputedNode
+  target: d3.SimulationNodeDatum & ComputedNode
+}
 
 // type BubblesSimulationDatum = BubblesDatum & d3.SimulationNodeDatum
 
@@ -149,16 +152,20 @@ function makeForce (layout: Layout) {
 }
 
 function translateFn (d: any): string {
+  // console.log('translateFn', d)
   return "translate(" + d.x + "," + d.y + ")";
 }
 
 function translateCenterFn (d: any): string {
+  // console.log('translateCenterFn', d)
   const x = d.source.x + ((d.target.x - d.source.x) / 1.8) // 置中的話除2
   const y = d.source.y + ((d.target.y - d.source.y) / 1.8) // 置中的話除2
   return "translate(" + x + "," + y + ")";
 }
 
-function linkArcFn (d: ChartDirectedForceLinkRendered): string {
+function linkArcFn (d: D3Edge): string {
+  // console.log('linkArcFn', d)
+  
   // var dx = d.target.x - d.source.x,
   //     dy = d.target.y - d.source.y
   // dr讓方向線變成有弧度的
@@ -228,6 +235,55 @@ function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, string, 
 
 }
 
+function drag (): d3.DragBehavior<Element, unknown, unknown> {
+  let originHighlightLockMode: boolean // 拖拽前的highlightLockMode
+
+  return d3.drag()
+    .on("start", (d: any) => {
+      if (this.params.lockMode) {
+        return
+      }
+      if (!d3.event.active) {
+        this.forceRestart()
+      }
+      d.fx = d.x
+      d.fy = d.y
+
+      // 鎖定模式才不會在拖拽過程式觸發到其他事件造成衝突
+      originHighlightLockMode = this.highlightLockMode
+      this.highlightLockMode = true
+      this.noneStopMode = true
+      // 動畫會有點卡住所以乾脆拿掉
+      if(this.tooltip != null) {
+        this.tooltip.remove()
+      }
+    })
+    .on("drag", (d: any) => {
+      if (this.params.lockMode) {
+        return
+      }
+      if (!d3.event.active) {
+        this.force.alphaTarget(0)
+      }
+      d.fx = d3.event.x
+      d.fy = d3.event.y
+    })
+    .on("end", (d: any) => {
+      if (this.params.lockMode) {
+        return
+      }
+      d.fx = null
+      d.fy = null
+
+      this.highlightLockMode = originHighlightLockMode // 還原拖拽前的highlightLockMode
+      this.noneStopMode = false
+      if (this.highlightLockMode) {
+        this.forceStop()
+      }
+    })
+}
+
+
 function renderNodeCircle ({ nodeGSelection, nodes, fullParams, fullChartParams }: {
   nodeGSelection: d3.Selection<SVGGElement, string, any, unknown>
   nodes: ComputedNode[]
@@ -251,8 +307,8 @@ function renderNodeCircle ({ nodeGSelection, nodes, fullParams, fullChartParams 
       }
     )
     .attr('r', fullParams.node.dotRadius)
-    .attr('fill', d => getDatumColor({ datum: d.data, colorType: fullParams.node.dotFillColorType, fullChartParams }))
-    .attr('stroke', d => getDatumColor({ datum: d.data, colorType: fullParams.node.dotStrokeColorType, fullChartParams }))
+    .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.node.dotFillColorType, fullChartParams }))
+    .attr('stroke', d => getDatumColor({ datum: d, colorType: fullParams.node.dotStrokeColorType, fullChartParams }))
     .attr('stroke-width', fullParams.node.dotStrokeWidth)
     .attr('style', d => fullParams.node.dotStyleFn(d))
 
@@ -463,7 +519,7 @@ function renderArrowPath ({ edgeGSelection, edges, fullParams, fullChartParams }
 
 
 
-export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection, name, observer, subject }) => {
+export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
   
   const destroy$ = new Subject()
 
@@ -471,19 +527,20 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
   // gSelection.append('rect').attr('width', 1000).attr('height', 1000)
   const gSelection$ = of(selection).pipe(
     takeUntil(destroy$),
-    first(),
-    map(s => {
-      return s
+    // first(),
+    map(_selection => {
+      return _selection
         .selectAll<SVGGElement, string>('g')
         .data([pluginName])
         .join('g')
         .classed(gSelectionClassName, true)
-    })
+    }),
+    shareReplay(1)
   )
 
   // <defs> clipPath selection
   const defsSelection$ = gSelection$.pipe(
-    map(axesSelection => axesSelection.append('defs')),
+    map(gSelection => gSelection.append('defs')),
     switchMap(defsSelection => {
       return observer.fullParams$.pipe(
         takeUntil(destroy$),
@@ -494,15 +551,18 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
     })
   )
 
-  // <g> node selection
-  const nodeGSelection$ = gSelection$.pipe(
-    map(axesSelection => axesSelection.append('g').classed(nodeGClassName, true)),
-  )
-
   // <g> edge selection
   const edgeGSelection$ = gSelection$.pipe(
-    map(axesSelection => axesSelection.append('g').classed(edgeGClassName, true)),
+    map(gSelection => gSelection.append('g').classed(edgeGClassName, true)),
   )
+  
+  // <g> node selection
+  const nodeGSelection$ = gSelection$.pipe(
+    map(gSelection => gSelection.append('g').classed(nodeGClassName, true))
+  )
+
+  
+
 
   // const scaleExtent$ = observer.fullParams$.pipe(
   //   takeUntil(destroy$),
@@ -541,7 +601,7 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
           if (scaleExtent) {
             d3Zoom.scaleExtent([scaleExtent.min, scaleExtent.max])
           }
-          selection.call(d3Zoom)
+          rootSelection.call(d3Zoom)
       
           return d3Zoom
         }),
@@ -576,10 +636,29 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
     shareReplay(1)
   )
 
+  const forceData$: Observable<{
+    nodes: ComputedNode[];
+    edges: D3Edge[];
+  }> = observer.computedData$.pipe(
+    takeUntil(destroy$),
+    map(data => {
+      return {
+        nodes: data.nodes,
+        edges: data.edges.map(_d => {
+          let d: D3Edge = _d as D3Edge
+          d.source = _d.startNode // reference
+          d.target = _d.endNode
+          return d
+        })
+      }
+    })
+  )
+
+
   combineLatest({
-    nodeGSelection: nodeGSelection$,
     edgeGSelection: edgeGSelection$,
-    computedData: observer.computedData$,
+    nodeGSelection: nodeGSelection$,
+    forceData: forceData$,
     force: force$,
     fullParams: observer.fullParams$,
     fullChartParams: observer.fullChartParams$
@@ -587,21 +666,30 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
     takeUntil(destroy$),
     switchMap(async d => d),
   ).subscribe(data => {
+    // console.log(data.forceData)
+    const edgeData = data.forceData.edges.map(d => {
+      d.source = d.startNode
+      d.target = d.endNode
+      return d
+    })
     const circleSelection = renderNodeCircle({
       nodeGSelection: data.nodeGSelection,
-      nodes: data.computedData.nodes,
+      nodes: data.forceData.nodes,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
     const arrowSelection = renderArrowPath({
       edgeGSelection: data.edgeGSelection,
-      edges: data.computedData.edges,
+      // edges: data.computedData.edges,
+      edges: edgeData,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
 
-    data.force.nodes(data.computedData.nodes)
+    data.force.nodes(data.forceData.nodes)
       .on('tick', () => {
+        arrowSelection.attr('d', linkArcFn)
+        circleSelection.attr('transform', translateFn)
         // this.path!.attr("d", this.linkArc)
         // this.circle!.attr("transform", this.translate)
         // this.pathText!.attr("transform", this.translateCenter)
@@ -609,8 +697,9 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
         // this.circleBtn!.attr("transform", this.translate)
         // this.tag!.attr("transform", this.translate)
       })
-    ;(data.force.force("link") as any).links(data.computedData.edges)
+    ;(data.force.force("link") as any).links(data.forceData.edges)
 
+    data.force.alpha(0.1).restart()
   })
 
 
