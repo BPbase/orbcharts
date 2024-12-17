@@ -97,7 +97,8 @@ export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
   axisLineVisible: false,
   axisLineColorType: 'primary',
   ticks: null,
-  tickFormat: ',.0f',
+  // tickFormat: ',.0f',
+  tickFormat: v => v,
   tickLineVisible: true,
   tickPadding: 20,
   tickFullLine: true,
@@ -106,6 +107,7 @@ export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
   tickTextRotate: 0,
   tickTextColorType: 'primary'
 }
+DEFAULT_VALUE_AXIS_PARAMS.tickFormat.toString = () => 'v => v'
 
 export const DEFAULT_VALUE_STACK_AXIS_PARAMS: ValueStackAxisParams = {
   ...DEFAULT_VALUE_AXIS_PARAMS

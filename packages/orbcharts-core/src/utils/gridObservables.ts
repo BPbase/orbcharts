@@ -65,7 +65,11 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
       : layout.width
   
     const listData = computedData.flat()
-    const [minValue, maxValue] = getMinAndMaxValue(listData)
+    let [minValue, maxValue] = getMinAndMaxValue(listData)
+    if (minValue === maxValue && maxValue === 0) {
+      // 避免最大及最小值相同造成無法計算scale
+      maxValue = 1
+    }
 
     const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue,
@@ -571,9 +575,10 @@ export const gridGraphicTransformObservable = ({ computedData$, groupScaleDomain
     // })
   
     // const filteredMinAndMax = getMinAndMaxGrid(filteredData)
-    // if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
-    //   filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
-    // }
+    if (filteredMinMaxValue[0] === filteredMinMaxValue[1] && filteredMinMaxValue[1] === 0) {
+      // filteredMinMaxValue[0] = filteredMinMaxValue[1] - 1 // 避免最大及最小值相同造成無法計算scale
+      filteredMinMaxValue[1] = 1 // 避免最大及最小值同等於 0 造成無法計算scale
+    }
   
     const valueAxisWidth = (valueAxis.position === 'left' || valueAxis.position === 'right')
       ? height
@@ -586,11 +591,18 @@ export const gridGraphicTransformObservable = ({ computedData$, groupScaleDomain
       scaleDomain: valueAxis.scaleDomain,
       scaleRange: valueAxis.scaleRange
     })
-  
+  // console.log({
+  //   maxValue: filteredMinMaxValue[1],
+  //   minValue: filteredMinMaxValue[0],
+  //   axisWidth: valueAxisWidth,
+  //   scaleDomain: valueAxis.scaleDomain,
+  //   scaleRange: valueAxis.scaleRange
+  // })
     // -- translateY, scaleY --
     const minAndMax = getMinAndMaxGrid(data)
-    if (minAndMax[0] === minAndMax[1]) {
-      minAndMax[0] = minAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+    if (minAndMax[0] === minAndMax[1] && minAndMax[1] === 0) {
+      // minAndMax[0] = minAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+      minAndMax[1] = 1 // 避免最大及最小值同等於 0 造成無法計算scale
     }
     // const rangeMinY = valueScale(minAndMax[0])
     const rangeMinY = valueScale(minAndMax[0] > 0 ? 0 : minAndMax[0]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
