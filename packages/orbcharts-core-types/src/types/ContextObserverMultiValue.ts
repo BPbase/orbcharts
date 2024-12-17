@@ -20,10 +20,10 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
   }>
   filteredMinMaxXYData$: Observable<{
     datumList: ComputedLayoutDatumMultiValue[]
-    minXDatum: ComputedLayoutDatumMultiValue
-    maxXDatum: ComputedLayoutDatumMultiValue
-    minYDatum: ComputedLayoutDatumMultiValue
-    maxYDatum: ComputedLayoutDatumMultiValue
+    minXDatum: ComputedLayoutDatumMultiValue | null
+    maxXDatum: ComputedLayoutDatumMultiValue | null
+    minYDatum: ComputedLayoutDatumMultiValue | null
+    maxYDatum: ComputedLayoutDatumMultiValue | null
   }>
   visibleComputedData$: Observable<ComputedDataMultiValue>
   computedLayoutData$: Observable<ComputedLayoutDataMultiValue>

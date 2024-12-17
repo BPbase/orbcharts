@@ -295,8 +295,6 @@ function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullDataF
     .classed(xAxisClassName, true)
     .attr('transform', `translate(0, ${layout.height})`)
 
-  const valueLength = minMaxXY.maxY - minMaxXY.minY
-  
   // const _xScale = d3.scaleLinear()
   //   .domain([0, 150])
   //   .range([416.5, 791.349])
@@ -307,11 +305,7 @@ function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullDataF
   // 設定Y軸刻度
   const xAxis = d3.axisBottom(xScale)
     .scale(xScale)
-    .ticks(valueLength > fullParams.xAxis.ticks
-      ? fullParams.xAxis.ticks
-      : ((minMaxXY.minY === 0 && minMaxXY.maxY === 0)
-        ? 1
-        : Math.ceil(valueLength))) // 刻度分段數量
+    .ticks(fullParams.xAxis.ticks) // 刻度分段數量
     .tickFormat(d => parseTickFormatValue(d, fullParams.xAxis.tickFormat))
     .tickSize(fullParams.xAxis.tickFullLine == true
       ? -layout.height
@@ -379,8 +373,6 @@ function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataF
     .join('g')
     .classed(yAxisClassName, true)
 
-  const valueLength = minMaxXY.maxY - minMaxXY.minY
-  
   // const _yScale = d3.scaleLinear()
   //   .domain([0, 150])
   //   .range([416.5, 791.349])
@@ -391,11 +383,7 @@ function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataF
   // 設定Y軸刻度
   const yAxis = d3.axisLeft(yScale)
     .scale(yScale)
-    .ticks(valueLength > fullParams.yAxis.ticks
-      ? fullParams.yAxis.ticks
-      : ((minMaxXY.minY === 0 && minMaxXY.maxY === 0)
-        ? 1
-        : Math.ceil(valueLength))) // 刻度分段數量
+    .ticks(fullParams.xAxis.ticks) // 刻度分段數量
     .tickFormat(d => parseTickFormatValue(d, fullParams.yAxis.tickFormat))
     .tickSize(fullParams.yAxis.tickFullLine == true
       ? -layout.width
@@ -564,12 +552,21 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
-    
+      if (!data.filteredMinMaxXYData.minXDatum || !data.filteredMinMaxXYData.maxXDatum
+        || data.filteredMinMaxXYData.minXDatum.value[0] == null || data.filteredMinMaxXYData.maxXDatum.value[0] == null
+      ) {
+        return
+      }
+      let maxValue = data.filteredMinMaxXYData.maxXDatum.value[0]
+      let minValue = data.filteredMinMaxXYData.minXDatum.value[0]
+      if (maxValue === minValue && maxValue === 0) {
+        // 避免最大及最小值同等於 0 造成無法計算scale
+        maxValue = 1
+      }
+
       const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-        // maxValue: data.minMaxXY.maxX,
-        // minValue: data.minMaxXY.minX,
-        maxValue: data.filteredMinMaxXYData.maxYDatum.value[1],
-        minValue: data.filteredMinMaxXYData.minYDatum.value[0],
+        maxValue,
+        minValue,
         axisWidth: data.layout.width,
         scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.xAxis.scaleRange,
@@ -589,10 +586,21 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
-    
+      if (!data.filteredMinMaxXYData.minYDatum || !data.filteredMinMaxXYData.maxYDatum
+        || data.filteredMinMaxXYData.minYDatum.value[1] == null || data.filteredMinMaxXYData.maxYDatum.value[1] == null
+      ) {
+        return
+      }
+      let maxValue = data.filteredMinMaxXYData.maxYDatum.value[1]
+      let minValue = data.filteredMinMaxXYData.minYDatum.value[1]
+      if (maxValue === minValue && maxValue === 0) {
+        // 避免最大及最小值同等於 0 造成無法計算scale
+        maxValue = 1
+      }
+
       const yScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-        maxValue: data.filteredMinMaxXYData.maxYDatum.value[1],
-        minValue: data.filteredMinMaxXYData.minYDatum.value[0],
+        maxValue,
+        minValue,
         axisWidth: data.layout.height,
         scaleDomain: data.fullDataFormatter.yAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.yAxis.scaleRange,

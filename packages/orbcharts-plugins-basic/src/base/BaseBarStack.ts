@@ -97,7 +97,9 @@ function calcBarWidth ({ axisWidth, groupAmount, barGroupPadding = 0 }: {
   groupAmount: number
   barGroupPadding: number
 }) {
-  const eachGroupWidth = axisWidth / (groupAmount - 1)
+  const eachGroupWidth = groupAmount > 1 // 等於 1 時會算出 Infinity
+    ? axisWidth / (groupAmount - 1) // -1是因為要扣掉兩側的padding
+    : axisWidth
   const width = eachGroupWidth - barGroupPadding
   return width > 1 ? width : 1
 
@@ -143,7 +145,7 @@ function renderRectBars ({ graphicGSelection, rectClassName, barData, zeroY, gro
               .append('rect')
               .classed(rectClassName, true)
               .attr('cursor', 'pointer')
-              .attr('height', d => 0)
+              .attr('height', d => 1)
           },
           update => update,
           exit => exit.remove()
@@ -160,7 +162,7 @@ function renderRectBars ({ graphicGSelection, rectClassName, barData, zeroY, gro
         .ease(getD3TransitionEase(chartParams.transitionEase))
         .delay((d, i) => d.groupIndex * delayGroup)
         .attr('y', d => d._barStartY)
-        .attr('height', d => Math.abs(d._barHeight))
+        .attr('height', d => Math.abs(d._barHeight) || 1) // 無值還是給一個 1 的高度
     })
 
   // const barGroup = graphicGSelection

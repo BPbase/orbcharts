@@ -169,8 +169,6 @@ function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gri
     .join('g')
     .classed(yAxisClassName, true)
 
-  const valueLength = filteredMinMaxValue[1] - filteredMinMaxValue[0]
-  
   // const _valueScale = d3.scaleLinear()
   //   .domain([0, 150])
   //   .range([416.5, 791.349])
@@ -195,11 +193,7 @@ function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gri
   // 設定Y軸刻度
   const yAxis = d3.axisLeft(valueScale)
     .scale(valueScale)
-    .ticks(valueLength > fullParams.ticks
-      ? fullParams.ticks
-      : ((filteredMinMaxValue[0] === 0 && filteredMinMaxValue[1] === 0)
-        ? 1
-        : Math.ceil(valueLength))) // 刻度分段數量
+    .ticks(fullParams.ticks) // 刻度分段數量
     .tickFormat(d => parseTickFormatValue(d, fullParams.tickFormat))
     .tickSize(fullParams.tickFullLine == true
       ? -gridAxesSize.width
@@ -455,10 +449,16 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
+      let maxValue = data.filteredMinMaxValue[1]
+      let minValue = data.filteredMinMaxValue[0]
+      if (maxValue === minValue && maxValue === 0) {
+        // 避免最大及最小值同等於 0 造成無法計算scale
+        maxValue = 1
+      }
     
       const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-        maxValue: data.filteredMinMaxValue[1],
-        minValue: data.filteredMinMaxValue[0],
+        maxValue,
+        minValue,
         axisWidth: data.gridAxesSize.height,
         scaleDomain: data.fullDataFormatter.grid.valueAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.grid.valueAxis.scaleRange
