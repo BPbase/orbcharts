@@ -79,7 +79,7 @@ interface GroupLabelData {
 // const groupingLabelClassName = getClassName(pluginName, 'groupingLabel')
 const defaultTickSize = 6
 
-function createGroupLabelData (groupLabels: string[], tickFormat: string | ((text: any) => string)): GroupLabelData[] {
+function createGroupLabelData (groupLabels: string[], tickFormat: string | ((text: any) => string  | d3.NumberValue)): GroupLabelData[] {
   return groupLabels.map((_text, i) => {
     const text = parseTickFormatValue(_text, tickFormat)
     const textArr = typeof text === 'string' ? text.split('\n') : [text]
