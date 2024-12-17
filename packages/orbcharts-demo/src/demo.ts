@@ -677,7 +677,7 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_MULTI_VALUE_BASIC',
             presetName: 'PRESET_MULTI_VALUE_BASIC',
-            allPluginNames: ['Scatter', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux'],
+            allPluginNames: ['Scatter', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XYZoom'],
             getData: () => import('./data/multiValue1')
           },
           {
