@@ -680,6 +680,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             allPluginNames: ['Scatter', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux'],
             getData: () => import('./data/multiValue1')
           },
+          {
+            title: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
+            presetName: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
+            allPluginNames: ['Scatter', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux'],
+            getData: () => import('./data/multiValue1')
+          },
         ]
       },
       {
@@ -703,6 +709,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_SCATTER_BUBBLES_SCALING_BY_RADIUS',
             presetName: 'PRESET_SCATTER_BUBBLES_SCALING_BY_RADIUS',
+            allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XYZoom'],
+            getData: () => import('./data/multiValue1')
+          },
+          {
+            title: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
+            presetName: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
             allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XYZoom'],
             getData: () => import('./data/multiValue1')
           },
