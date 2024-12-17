@@ -100,7 +100,9 @@ function calcBarWidth ({ axisWidth, groupAmount, barAmountOfGroup, barPadding = 
   barPadding: number
   barGroupPadding: number
 }) {
-  const eachGroupWidth = axisWidth / (groupAmount - 1)
+  const eachGroupWidth = groupAmount > 1 // 等於 1 時會算出 Infinity
+    ? axisWidth / (groupAmount - 1)
+    : axisWidth
   const width = (eachGroupWidth - barGroupPadding) / barAmountOfGroup - barPadding
   return width > 1 ? width : 1
 }
@@ -164,7 +166,7 @@ function renderTriangleBars ({ graphicGSelection, pathGClassName, pathClassName,
 
       // path
       gSelection.select(`path.${pathClassName}`)
-        .attr('height', d => Math.abs(d.axisYFromZero))
+        .attr('height', d => Math.abs(d.axisYFromZero) || 1) // 無值還是給一個 1 的高度
         .attr('y', d => d.axisY < zeroYArr[seriesIndex] ? d.axisY : zeroYArr[seriesIndex])
         .attr('x', d => isSeriesSeprate ? 0 : barScale(d.seriesLabel)!)
         // .style('fill', d => `url(#${d.linearGradientId})`)

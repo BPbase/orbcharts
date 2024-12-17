@@ -17,10 +17,10 @@ export const createValueToAxisScale = ({
   scaleRange: [number, number] // 0-1
   reverse?: boolean
 }) => {
-  if (minValue === maxValue) {
-    maxValue += 1 // 避免最大及最小值相同造成無法計算scale
-    minValue -= 1
-  }
+  // if (minValue === maxValue) {
+  //   maxValue += 1 // 避免最大及最小值相同造成無法計算scale
+  //   minValue -= 1
+  // }
   
   // -- 無值補上預設值 --
   const domainMin: number | 'min' | 'auto' = scaleDomain[0] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[0]

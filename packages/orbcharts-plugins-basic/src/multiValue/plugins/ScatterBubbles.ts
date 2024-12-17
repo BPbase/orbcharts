@@ -2,6 +2,7 @@ import * as d3 from 'd3'
 import {
   combineLatest,
   map,
+  filter,
   switchMap,
   takeUntil,
   distinctUntilChanged,
@@ -332,7 +333,8 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
     takeUntil(destroy$),
     map(data => {
       return data.reduce((acc, current) => acc + current, 0)
-    })
+    }),
+    filter(data => data > 0) // 避免後續計算scale的時候發生問題
   )
 
   const radiusScale$ = combineLatest({
@@ -343,6 +345,7 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
+      // console.log({ totalR: data.totalR, totalValue: data.totalValue })
       return d3.scalePow()
         .domain([0, data.totalValue])
         .range([0, data.totalR])

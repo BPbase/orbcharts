@@ -340,7 +340,7 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
     takeUntil(destroy$),
     switchMap(async (d) => d),
   ).subscribe(data => {
-
+    
     data.graphicSelection
       .on('mouseover', (event, datum) => {
         // event.stopPropagation()

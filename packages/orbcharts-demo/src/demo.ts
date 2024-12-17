@@ -706,6 +706,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XYZoom'],
             getData: () => import('./data/multiValue1')
           },
+          {
+            title: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
+            presetName: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
+            allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XYZoom'],
+            getData: () => import('./data/multiValue1')
+          },
         ]
       }
     ]

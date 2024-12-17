@@ -2,10 +2,10 @@ import type { PresetPartial } from '../../lib/core-types'
 import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '../types'
 // import { ALL_PLUGIN_PARAMS_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_MULTI_VALUE_BASIC: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
+export const PRESET_MULTI_VALUE_SEPARATE_CATEGORY: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
-  name: 'PRESET_MULTI_VALUE_BASIC',
-  description: '基本MultiValue參數',
+  name: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
+  description: 'MultiValue 分開顯示category',
   chartParams: {
     padding: {
       top: 60,
@@ -13,6 +13,9 @@ export const PRESET_MULTI_VALUE_BASIC: PresetPartial<'multiValue', Partial<Prese
       bottom: 120,
       left: 60
     },
+  },
+  dataFormatter: {
+    separateCategory: true
   },
   allPluginParams: {
     MultiValueLegend: {
