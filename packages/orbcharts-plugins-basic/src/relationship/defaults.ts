@@ -5,7 +5,7 @@ import type {
 
 export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
   node: {
-    dotRadius: 6,
+    dotRadius: 10,
     dotFillColorType: 'series',
     dotStrokeColorType: 'series',
     dotStrokeWidth: 1,
@@ -15,9 +15,9 @@ export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
   },
   edge: {
     arrowColorType: 'primary',
-    arrowStrokeWidth: 2,
-    arrowWidth: 10,
-    arrowHeight: 10,
+    arrowStrokeWidth: 1.5,
+    arrowWidth: 5,
+    arrowHeight: 5,
     arrowStyleFn: (node) => '',
     labelColorType: 'primary',
     labelStyleFn: (node) => ''

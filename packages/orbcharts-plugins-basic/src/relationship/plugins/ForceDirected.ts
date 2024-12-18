@@ -49,9 +49,24 @@ type Zoom = {
   }
 }
 
+type D3Node = d3.SimulationNodeDatum & ComputedNode
+
 interface D3Edge extends ComputedEdge {
-  source: d3.SimulationNodeDatum & ComputedNode
-  target: d3.SimulationNodeDatum & ComputedNode
+  source: D3Node
+  target: D3Node
+}
+
+interface D3DragEvent {
+  active: number
+  dx: number
+  dy: number
+  identifier: string
+  sourceEvent: MouseEvent
+  subject: D3Node
+  target: any
+  type: string
+  x: number
+  y: number
 }
 
 // type BubblesSimulationDatum = BubblesDatum & d3.SimulationNodeDatum
@@ -127,10 +142,10 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_FORCE_D
 
 // let force: d3.Simulation<d3.SimulationNodeDatum, undefined> | undefined
 
-function makeForce (layout: Layout) {
+function createSimulation (layout: Layout, fullParams: ForceDirectedParams) {
   return d3.forceSimulation()
-    .velocityDecay(0.2)
-    // .alphaDecay(0.1)
+    .velocityDecay(0.1)
+    // .alphaDecay(0.01)
     .force(
       "link",
       d3.forceLink()
@@ -145,8 +160,8 @@ function makeForce (layout: Layout) {
           return 200
         })
     )
-    .force("charge", d3.forceManyBody().strength(-2000))
-    .force("collision", d3.forceCollide(60).strength(1)) // @Q@ 60為泡泡的R，暫時是先寫死的
+    .force("charge", d3.forceManyBody().strength(-200))
+    .force("collision", d3.forceCollide(fullParams.node.dotRadius).strength(1)) // @Q@ 60為泡泡的R，暫時是先寫死的
     .force("center", d3.forceCenter(layout.width / 2, layout.height / 2))
 
 }
@@ -176,10 +191,11 @@ function linkArcFn (d: D3Edge): string {
 
 
 
-function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, string, any, unknown>, fullParams: ForceDirectedParams) {
-  defsSelection
-    .selectAll<SVGMarkerElement, any>(".bp__force-directed-chart__arrow-marker")
-    .data([fullParams.edge])
+function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any, unknown>, fullParams: ForceDirectedParams) {
+  console.log('renderArrowMarker')
+  return defsSelection
+    .selectAll<SVGMarkerElement, any>(`marker.${arrowMarkerClassName}`)
+    .data([fullParams])
     .join(
       enter => {
         const enterSelection = enter
@@ -199,11 +215,10 @@ function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, string, 
         return exit.remove()
       }
     )
-    
-    .attr("markerWidth", d => d.arrowWidth)
-    .attr("markerHeight", d => d.arrowHeight)
+    .attr("markerWidth", d => d.edge.arrowWidth)
+    .attr("markerHeight", d => d.edge.arrowHeight)
     .attr("refX", d => {
-      return 60 - 20 // @Q@ 60為泡泡的R，暫時是先寫死的，-20的原因不明
+      return d.node.dotRadius * 2.2
     })
     .attr("refY", 0)
     
@@ -235,57 +250,91 @@ function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, string, 
 
 }
 
-function drag (): d3.DragBehavior<Element, unknown, unknown> {
-  let originHighlightLockMode: boolean // 拖拽前的highlightLockMode
+// function drag (): d3.DragBehavior<Element, unknown, unknown> {
+//   let originHighlightLockMode: boolean // 拖拽前的highlightLockMode
 
+//   return d3.drag()
+//     .on("start", (event: D3DragEvent) => {
+//       console.log('start', event.sourceEvent)
+//       // if (this.params.lockMode) {
+//       //   return
+//       // }
+//       // if (!d3.event.active) {
+//       //   this.forceRestart()
+//       // }
+//       // d.fx = d.x
+//       // d.fy = d.y
+
+//       // // 鎖定模式才不會在拖拽過程式觸發到其他事件造成衝突
+//       // originHighlightLockMode = this.highlightLockMode
+//       // this.highlightLockMode = true
+//       // this.noneStopMode = true
+//       // // 動畫會有點卡住所以乾脆拿掉
+//       // if(this.tooltip != null) {
+//       //   this.tooltip.remove()
+//       // }
+//     })
+//     .on("drag", function (event: D3DragEvent) {
+//       console.log('drag', event)
+//       // if (this.params.lockMode) {
+//       //   return
+//       // }
+//       // if (!d3.event.active) {
+//       //   this.force.alphaTarget(0)
+//       // }
+//       // d.fx = d3.event.x
+//       // d.fy = d3.event.y
+//       // d3.select(this).attr({
+//       //   'cx': event.x,
+//       //   'cy': event.y,
+//       // })
+//       d3.select(this)
+//         .attr('fx', event.x)
+//         .attr('fy', event.y)
+//     })
+//     .on("end", (event: D3DragEvent) => {
+//       console.log('end', event)
+//       // if (this.params.lockMode) {
+//       //   return
+//       // }
+//       // d.fx = null
+//       // d.fy = null
+
+//       // this.highlightLockMode = originHighlightLockMode // 還原拖拽前的highlightLockMode
+//       // this.noneStopMode = false
+//       // if (this.highlightLockMode) {
+//       //   this.forceStop()
+//       // }
+//     })
+// }
+
+function drag (simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>) {    
+  function dragstarted (event: D3DragEvent) {
+    if (!event.active) simulation.alphaTarget(0.3).restart();
+    event.subject.fx = event.subject.x;
+    event.subject.fy = event.subject.y;
+  }
+  
+  function dragged (event: D3DragEvent) {
+    event.subject.fx = event.x;
+    event.subject.fy = event.y;
+  }
+  
+  function dragended (event: D3DragEvent) {
+    if (!event.active) simulation.alphaTarget(0);
+    event.subject.fx = null;
+    event.subject.fy = null;
+  }
+  
   return d3.drag()
-    .on("start", (d: any) => {
-      if (this.params.lockMode) {
-        return
-      }
-      if (!d3.event.active) {
-        this.forceRestart()
-      }
-      d.fx = d.x
-      d.fy = d.y
-
-      // 鎖定模式才不會在拖拽過程式觸發到其他事件造成衝突
-      originHighlightLockMode = this.highlightLockMode
-      this.highlightLockMode = true
-      this.noneStopMode = true
-      // 動畫會有點卡住所以乾脆拿掉
-      if(this.tooltip != null) {
-        this.tooltip.remove()
-      }
-    })
-    .on("drag", (d: any) => {
-      if (this.params.lockMode) {
-        return
-      }
-      if (!d3.event.active) {
-        this.force.alphaTarget(0)
-      }
-      d.fx = d3.event.x
-      d.fy = d3.event.y
-    })
-    .on("end", (d: any) => {
-      if (this.params.lockMode) {
-        return
-      }
-      d.fx = null
-      d.fy = null
-
-      this.highlightLockMode = originHighlightLockMode // 還原拖拽前的highlightLockMode
-      this.noneStopMode = false
-      if (this.highlightLockMode) {
-        this.forceStop()
-      }
-    })
+    .on("start", dragstarted)
+    .on("drag", dragged)
+    .on("end", dragended);
 }
 
 
 function renderNodeCircle ({ nodeGSelection, nodes, fullParams, fullChartParams }: {
-  nodeGSelection: d3.Selection<SVGGElement, string, any, unknown>
+  nodeGSelection: d3.Selection<SVGGElement, any, any, unknown>
   nodes: ComputedNode[]
   fullParams: ForceDirectedParams
   fullChartParams: ChartParams
@@ -336,7 +385,7 @@ function renderNodeCircle ({ nodeGSelection, nodes, fullParams, fullChartParams 
 }
 
 function renderArrowPath ({ edgeGSelection, edges, fullParams, fullChartParams }: {
-  edgeGSelection: d3.Selection<SVGGElement, string, any, unknown>
+  edgeGSelection: d3.Selection<SVGGElement, any, any, unknown>
   edges: ComputedEdge[]
   fullParams: ForceDirectedParams
   fullChartParams: ChartParams
@@ -523,45 +572,65 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
   
   const destroy$ = new Subject()
 
-  // const gSelection = selection.append('g').classed('gSelectionClassName', true)
+  const gSelection = selection.append('g').classed('gSelectionClassName', true)
+  const defsSelection = gSelection.append('defs')
+  const edgeGSelection = gSelection.append('g').classed('edgeGClassName', true)
+  const nodeGSelection = gSelection.append('g').classed('nodeGClassName', true)
+
   // gSelection.append('rect').attr('width', 1000).attr('height', 1000)
-  const gSelection$ = of(selection).pipe(
+  // const gSelection$ = of(selection).pipe(
+  //   takeUntil(destroy$),
+  //   // first(),
+  //   map(_selection => {
+  //     const gSelection = _selection
+  //       .selectAll<SVGGElement, string>('g')
+  //       .data([pluginName])
+  //       .join('g')
+  //       .classed(gSelectionClassName, true)
+  //     gSelection.append('defs')
+  //     gSelection.append('g').classed('edgeGClassName', true)
+  //     gSelection.append('g').classed('nodeGClassName', true)
+
+  //     return gSelection
+  //   }),
+  //   shareReplay(1)
+  // )
+
+  // // <defs> clipPath selection
+  // const defsSelection$ = gSelection$.pipe(
+  //   map(gSelection => gSelection.select<SVGDefsElement>(`defs`))
+  // )
+
+  // // <marker> marker selection
+  observer.fullParams$.pipe(
     takeUntil(destroy$),
-    // first(),
-    map(_selection => {
-      return _selection
-        .selectAll<SVGGElement, string>('g')
-        .data([pluginName])
-        .join('g')
-        .classed(gSelectionClassName, true)
-    }),
-    shareReplay(1)
-  )
-
-  // <defs> clipPath selection
-  const defsSelection$ = gSelection$.pipe(
-    map(gSelection => gSelection.append('defs')),
-    switchMap(defsSelection => {
-      return observer.fullParams$.pipe(
-        takeUntil(destroy$),
-        map(fullParams => {
-          return renderArrowMarker(defsSelection, fullParams)
-        })
-      )
+    map(fullParams => {
+      return renderArrowMarker(defsSelection, fullParams)
     })
-  )
+  ).subscribe()
+  // const defsSelection$ = gSelection$.pipe(
+  //   map(gSelection => gSelection.append('defs')),
+  //   switchMap(defsSelection => {
+  //     return observer.fullParams$.pipe(
+  //       takeUntil(destroy$),
+  //       map(fullParams => {
+  //         return renderArrowMarker(defsSelection, fullParams)
+  //       })
+  //     )
+  //   })
+  // )
 
-  // <g> edge selection
-  const edgeGSelection$ = gSelection$.pipe(
-    map(gSelection => gSelection.append('g').classed(edgeGClassName, true)),
-  )
+  // // <g> edge selection
+  // const edgeGSelection$ = gSelection$.pipe(
+  //   map(gSelection => gSelection.select<SVGGElement>(`g.${edgeGClassName}`))
+  // )
   
-  // <g> node selection
-  const nodeGSelection$ = gSelection$.pipe(
-    map(gSelection => gSelection.append('g').classed(nodeGClassName, true))
-  )
+  // // <g> node selection
+  // const nodeGSelection$ = gSelection$.pipe(
+  //   map(gSelection => gSelection.select<SVGGElement>(`g.${nodeGClassName}`))
+  // )
 
-  
+  // gSelection$.subscribe()
 
 
   // const scaleExtent$ = observer.fullParams$.pipe(
@@ -575,39 +644,35 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
   // })
 
   // init zoom
-  const d3Zoom$ = gSelection$.pipe(
-    switchMap(gSelection => {
-      return observer.fullParams$.pipe(
-        takeUntil(destroy$),
-        map(d => d.scaleExtent),
-        distinctUntilChanged((a, b) => String(a) === String(b)),
-        first(),
-        map(scaleExtent => {
-          let d3Zoom = d3.zoom().on('zoom', (event) => {
-            // console.log(event)
-            // this.svgGroup.attr('transform', `translate(
-            //   ${event.transform.x + (this.zoom.xOffset * event.transform.k)},
-            //   ${event.transform.y + (this.zoom.yOffset * event.transform.k)}
-            // ) scale(
-            //   ${event.transform.k}
-            // )`)
-            gSelection.attr('transform', `translate(
-              ${event.transform.x},
-              ${event.transform.y}
-            ) scale(
-              ${event.transform.k}
-            )`)
-          })
-          if (scaleExtent) {
-            d3Zoom.scaleExtent([scaleExtent.min, scaleExtent.max])
-          }
-          rootSelection.call(d3Zoom)
-      
-          return d3Zoom
-        }),
-        // shareReplay(1)
-      )
-    })
+  const d3Zoom$ = observer.fullParams$.pipe(
+    takeUntil(destroy$),
+    map(d => d.scaleExtent),
+    distinctUntilChanged((a, b) => String(a) === String(b)),
+    first(),
+    map(scaleExtent => {
+      let d3Zoom = d3.zoom().on('zoom', (event) => {
+        // console.log(event)
+        // this.svgGroup.attr('transform', `translate(
+        //   ${event.transform.x + (this.zoom.xOffset * event.transform.k)},
+        //   ${event.transform.y + (this.zoom.yOffset * event.transform.k)}
+        // ) scale(
+        //   ${event.transform.k}
+        // )`)
+        gSelection.attr('transform', `translate(
+          ${event.transform.x},
+          ${event.transform.y}
+        ) scale(
+          ${event.transform.k}
+        )`)
+      })
+      if (scaleExtent) {
+        d3Zoom.scaleExtent([scaleExtent.min, scaleExtent.max])
+      }
+      rootSelection.call(d3Zoom)
+  
+      return d3Zoom
+    }),
+    // shareReplay(1)
   )
     
   // zoom transform
@@ -630,9 +695,12 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
   })
 
   
-  const force$: Observable<d3.Simulation<d3.SimulationNodeDatum, undefined>> = observer.layout$.pipe(
+  const simulation$: Observable<d3.Simulation<d3.SimulationNodeDatum, undefined>> = combineLatest({
+    layout: observer.layout$,
+    fullParams: observer.fullParams$
+  }).pipe(
     takeUntil(destroy$),
-    map(layout => makeForce(layout)),
+    map(data => createSimulation(data.layout, data.fullParams)),
     shareReplay(1)
   )
 
@@ -656,37 +724,39 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
 
 
   combineLatest({
-    edgeGSelection: edgeGSelection$,
-    nodeGSelection: nodeGSelection$,
     forceData: forceData$,
-    force: force$,
+    simulation: simulation$,
     fullParams: observer.fullParams$,
     fullChartParams: observer.fullChartParams$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
   ).subscribe(data => {
+    // console.log('nodeGSelection', data.nodeGSelection)
+    // console.log('edgeGSelection', data.edgeGSelection)
     // console.log(data.forceData)
-    const edgeData = data.forceData.edges.map(d => {
-      d.source = d.startNode
-      d.target = d.endNode
-      return d
-    })
+    // const edgeData = data.forceData.edges.map(d => {
+    //   d.source = d.startNode
+    //   d.target = d.endNode
+    //   return d
+    // })
     const circleSelection = renderNodeCircle({
-      nodeGSelection: data.nodeGSelection,
+      nodeGSelection: nodeGSelection,
       nodes: data.forceData.nodes,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
+    circleSelection.call(drag(data.simulation))
+
     const arrowSelection = renderArrowPath({
-      edgeGSelection: data.edgeGSelection,
+      edgeGSelection: edgeGSelection,
       // edges: data.computedData.edges,
-      edges: edgeData,
+      edges: data.forceData.edges,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
 
-    data.force.nodes(data.forceData.nodes)
+    data.simulation.nodes(data.forceData.nodes)
       .on('tick', () => {
         arrowSelection.attr('d', linkArcFn)
         circleSelection.attr('transform', translateFn)
@@ -697,9 +767,9 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
         // this.circleBtn!.attr("transform", this.translate)
         // this.tag!.attr("transform", this.translate)
       })
-    ;(data.force.force("link") as any).links(data.forceData.edges)
+    ;(data.simulation.force("link") as any).links(data.forceData.edges)
 
-    data.force.alpha(0.1).restart()
+    data.simulation.alpha(0.3).restart()
   })
 
 
