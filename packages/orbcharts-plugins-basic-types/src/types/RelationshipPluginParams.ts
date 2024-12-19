@@ -8,6 +8,7 @@ export interface ForceDirectedParams {
     dotStrokeWidth: number
     dotStyleFn: (node: ComputedNode) => string
     labelColorType: ColorType
+    labelSizeFixed: boolean
     labelStyleFn: (node: ComputedNode) => string
   }
   edge: {
@@ -17,11 +18,14 @@ export interface ForceDirectedParams {
     arrowHeight: number
     arrowStyleFn: (node: ComputedNode) => string
     labelColorType: ColorType
+    labelSizeFixed: boolean
     labelStyleFn: (node: ComputedNode) => string
   }
   force: {
-    strength: number // 泡泡引力
+    nodeStrength: number // 泡泡引力
+    linkDistance: number // 距離
     velocityDecay: number // 衰減數
+    alphaDecay: number // 衰減數
   }
   zoomable: boolean
   transform: {

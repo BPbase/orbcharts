@@ -10,7 +10,8 @@ export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
     dotStrokeColorType: 'series',
     dotStrokeWidth: 1,
     dotStyleFn: (node) => '',
-    labelColorType: 'white',
+    labelColorType: 'primary',
+    labelSizeFixed: false,
     labelStyleFn: (node) => 'text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff'
   },
   edge: {
@@ -20,11 +21,14 @@ export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
     arrowHeight: 5,
     arrowStyleFn: (node) => '',
     labelColorType: 'primary',
+    labelSizeFixed: false,
     labelStyleFn: (node) => ''
   },
   force: {
-    strength: 0.08, // 泡泡引力
-    velocityDecay: 0.3, // 衰減數
+    nodeStrength: -500, // 泡泡引力
+    linkDistance: 100, // 連結長度
+    velocityDecay: 0.1, // 衰減數
+    alphaDecay: 0.05
     // collisionSpacing: 2 // 泡泡間距
   },
   zoomable: true,

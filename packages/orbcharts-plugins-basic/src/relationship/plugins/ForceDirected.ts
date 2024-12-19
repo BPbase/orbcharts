@@ -81,6 +81,7 @@ const arrowPathClassName = getClassName(pluginName, 'arrow-path')
 const arrowTextClassName = getClassName(pluginName, 'arrow-text')
 const nodeGClassName = getClassName(pluginName, 'node-g')
 const dotCircleClassName = getClassName(pluginName, 'dot-circle')
+const dotTextGClassName = getClassName(pluginName, 'dot-text-g')
 const dotTextClassName = getClassName(pluginName, 'dot-text')
 
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_FORCE_DIRECTED_PARAMS> = {
@@ -144,8 +145,8 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_FORCE_D
 
 function createSimulation (layout: Layout, fullParams: ForceDirectedParams) {
   return d3.forceSimulation()
-    .velocityDecay(0.1)
-    .alphaDecay(0.05)
+    .velocityDecay(fullParams.force.velocityDecay)
+    .alphaDecay(fullParams.force.alphaDecay)
     .force(
       "link",
       d3.forceLink()
@@ -157,11 +158,11 @@ function createSimulation (layout: Layout, fullParams: ForceDirectedParams) {
           // } else {
           //   return 250
           // }
-          return 100
+          return fullParams.force.linkDistance
         })
     )
-    .force("charge", d3.forceManyBody().strength(-500))
-    .force("collision", d3.forceCollide(fullParams.node.dotRadius).strength(1)) // @Q@ 60為泡泡的R，暫時是先寫死的
+    .force("charge", d3.forceManyBody().strength(fullParams.force.nodeStrength))
+    .force("collision", d3.forceCollide(fullParams.node.dotRadius).strength(1))
     .force("center", d3.forceCenter(layout.width / 2, layout.height / 2))
 
 }
@@ -345,7 +346,7 @@ function drag (simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>) {
 
 function renderNodeCircle ({ nodeGSelection, nodes, fullParams, fullChartParams }: {
   nodeGSelection: d3.Selection<SVGGElement, any, any, unknown>
-  nodes: ComputedNode[]
+  nodes: D3Node[]
   fullParams: ForceDirectedParams
   fullChartParams: ChartParams
 }) {
@@ -356,6 +357,7 @@ function renderNodeCircle ({ nodeGSelection, nodes, fullParams, fullChartParams 
         const enterSelection = enter
           .append('circle')
           .classed(dotCircleClassName, true)
+          .attr('cursor', 'pointer')
         return enterSelection
       },
       update => {
@@ -392,6 +394,91 @@ function renderNodeCircle ({ nodeGSelection, nodes, fullParams, fullChartParams 
   //     return this.styleConfig._StylesMap!.get(d.style.circle)!
   //   })
 
+}
+
+function renderNodeLabelG ({ nodeGSelection, nodes, fullParams, fullChartParams }: {
+  nodeGSelection: d3.Selection<SVGGElement, any, any, unknown>
+  nodes: D3Node[]
+  fullParams: ForceDirectedParams
+  fullChartParams: ChartParams
+}) {
+  return nodeGSelection.selectAll<SVGGElement, D3Node>('g')
+    .data(nodes, d => d.id)
+    .join(
+      enter => {
+        const enterSelection = enter
+          .append('g')
+          .classed(dotTextGClassName, true)
+          .attr('cursor', 'pointer')
+        return enterSelection
+      },
+      update => {
+        return update
+      },
+      exit => {
+        return exit.remove()
+      }
+    )
+}
+
+function renderNodeLabel ({ nodeLabelGSelection, fullParams, fullChartParams }: {
+  // nodeGSelection: d3.Selection<SVGGElement, any, any, unknown>
+  nodeLabelGSelection: d3.Selection<SVGGElement, D3Node, any, unknown>
+  // nodes: D3Node[]
+  fullParams: ForceDirectedParams
+  fullChartParams: ChartParams
+}) {
+  // console.log(nodes)
+  // return nodeGSelection.selectAll<SVGTextElement, D3Node>('text')
+  //   .data(nodes, d => d.id)
+  //   .join(
+  //     enter => {
+  //       const enterSelection = enter
+  //         .append('text')
+  //         .classed(dotTextClassName, true)
+  //         .attr('cursor', 'pointer')
+  //         .attr('text-anchor', 'middle')
+  //         .attr('pointer-events', 'none')
+  //       return enterSelection
+  //     },
+  //     update => {
+  //       return update
+  //     },
+  //     exit => {
+  //       return exit.remove()
+  //     }
+  //   )
+  //   .text(d => d.label)
+  //   .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.node.labelColorType, fullChartParams }))
+  //   .attr('style', d => fullParams.node.labelStyleFn(d))
+
+  nodeLabelGSelection.each((data,i,g) => {
+    const gSelection = d3.select(g[i])
+    gSelection.selectAll<SVGTextElement, D3Node>('text')
+      .data([data], d => d.id)
+      .join(
+        enter => {
+          const enterSelection = enter
+            .append('text')
+            .classed(dotTextClassName, true)
+            .attr('cursor', 'pointer')
+            .attr('text-anchor', 'middle')
+            .attr('pointer-events', 'none')
+          return enterSelection
+        },
+        update => {
+          return update
+        },
+        exit => {
+          return exit.remove()
+        }
+      )
+      .text(d => d.label)
+      .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.node.labelColorType, fullChartParams }))
+      .attr('style', d => fullParams.node.labelStyleFn(d))
+  })
+
+  return nodeLabelGSelection.select<SVGTextElement>('text')
 }
 
 function renderArrowPath ({ edgeGSelection, edges, fullParams, fullChartParams }: {
@@ -587,6 +674,11 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
   const edgeGSelection = gSelection.append('g').classed('edgeGClassName', true)
   const nodeGSelection = gSelection.append('g').classed('nodeGClassName', true)
 
+  let circleSelection: d3.Selection<SVGCircleElement, D3Node, SVGGElement, any>
+  let nodeLabelGSelection: d3.Selection<SVGGElement, D3Node, SVGGElement, any>
+  let nodeLabelSelection: d3.Selection<SVGTextElement, D3Node, SVGGElement, any>
+  let arrowSelection: d3.Selection<SVGPathElement, ComputedEdge, SVGGElement, any>
+
   // gSelection.append('rect').attr('width', 1000).attr('height', 1000)
   // const gSelection$ = of(selection).pipe(
   //   takeUntil(destroy$),
@@ -656,10 +748,10 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
   // init zoom
   const d3Zoom$ = observer.fullParams$.pipe(
     takeUntil(destroy$),
-    map(d => d.scaleExtent),
-    distinctUntilChanged((a, b) => String(a) === String(b)),
-    first(),
-    map(scaleExtent => {
+    // map(d => d.scaleExtent),
+    // distinctUntilChanged((a, b) => String(a) === String(b)),
+    // first(),
+    map(data => {
       let d3Zoom = d3.zoom().on('zoom', (event) => {
         // console.log(event)
         // this.svgGroup.attr('transform', `translate(
@@ -674,9 +766,13 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
         ) scale(
           ${event.transform.k}
         )`)
+
+        if (data.node.labelSizeFixed) {
+          nodeLabelSelection.attr('transform', `scale(${1 / event.transform.k})`)
+        }
       })
-      if (scaleExtent) {
-        d3Zoom.scaleExtent([scaleExtent.min, scaleExtent.max])
+      if (data.scaleExtent) {
+        d3Zoom.scaleExtent([data.scaleExtent.min, data.scaleExtent.max])
       }
       rootSelection.call(d3Zoom)
   
@@ -750,7 +846,7 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
     //   d.target = d.endNode
     //   return d
     // })
-    const circleSelection = renderNodeCircle({
+    circleSelection = renderNodeCircle({
       nodeGSelection: nodeGSelection,
       nodes: data.forceData.nodes,
       fullParams: data.fullParams,
@@ -758,18 +854,38 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
     })
     circleSelection.call(drag(data.simulation))
 
-    const arrowSelection = renderArrowPath({
+    nodeLabelGSelection = renderNodeLabelG({
+      nodeGSelection: nodeGSelection,
+      nodes: data.forceData.nodes,
+      fullParams: data.fullParams,
+      fullChartParams: data.fullChartParams
+    })
+
+    nodeLabelSelection = renderNodeLabel({
+      nodeLabelGSelection: nodeLabelGSelection,
+      // nodes: data.forceData.nodes,
+      fullParams: data.fullParams,
+      fullChartParams: data.fullChartParams
+    })
+
+    arrowSelection = renderArrowPath({
       edgeGSelection: edgeGSelection,
       // edges: data.computedData.edges,
       edges: data.forceData.edges,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
-
     data.simulation.nodes(data.forceData.nodes)
       .on('tick', () => {
         arrowSelection.attr('d', linkArcFn)
         circleSelection.attr('transform', translateFn)
+        // nodeLabelSelection
+        //   .attr('x', d => d.x)
+        //   .attr('y', d => d.y - data.fullParams.node.dotRadius - 10)
+        nodeLabelGSelection.attr('transform', d => translateFn({
+          x: d.x,
+          y: d.y - data.fullParams.node.dotRadius - 10
+        }))
         // this.path!.attr("d", this.linkArc)
         // this.circle!.attr("transform", this.translate)
         // this.pathText!.attr("transform", this.translateCenter)
