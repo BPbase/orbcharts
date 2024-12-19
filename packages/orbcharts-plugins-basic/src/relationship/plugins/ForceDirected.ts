@@ -145,7 +145,7 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_FORCE_D
 function createSimulation (layout: Layout, fullParams: ForceDirectedParams) {
   return d3.forceSimulation()
     .velocityDecay(0.1)
-    // .alphaDecay(0.01)
+    .alphaDecay(0.05)
     .force(
       "link",
       d3.forceLink()
@@ -157,10 +157,10 @@ function createSimulation (layout: Layout, fullParams: ForceDirectedParams) {
           // } else {
           //   return 250
           // }
-          return 200
+          return 100
         })
     )
-    .force("charge", d3.forceManyBody().strength(-200))
+    .force("charge", d3.forceManyBody().strength(-500))
     .force("collision", d3.forceCollide(fullParams.node.dotRadius).strength(1)) // @Q@ 60為泡泡的R，暫時是先寫死的
     .force("center", d3.forceCenter(layout.width / 2, layout.height / 2))
 
@@ -186,7 +186,11 @@ function linkArcFn (d: D3Edge): string {
   // dr讓方向線變成有弧度的
   //     dr = Math.sqrt(dx * dx + dy * dy);
   // return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+  
+  // 直線
   return "M" + d.source.x + "," + d.source.y + " L" + d.target.x + "," + d.target.y;
+
+
 }
 
 
@@ -202,10 +206,14 @@ function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any
           .append("marker")
           .classed(arrowMarkerClassName, true)
           .attr('id', arrowMarkerId)
-          .attr("viewBox", "0 -5 10 10")
+          // .attr("viewBox", "0 -5 10 10")
+          // .attr("viewBox", d => `0 -${d.edge.arrowHeight / 2} ${d.edge.arrowWidth} ${d.edge.arrowHeight}`)
+          .attr("viewBox", d => `-${d.edge.arrowWidth} -${d.edge.arrowHeight / 2} ${d.edge.arrowWidth} ${d.edge.arrowHeight}`)
           .attr("orient", "auto")
         enterSelection.append("path")
-          .attr("d", "M0,-5L10,0L0,5")
+          // .attr("d", "M0,-5L10,0L0,5")
+          // .attr("d", d => `M0,${-d.edge.arrowHeight / 2}L${d.edge.arrowWidth},0L0,${d.edge.arrowHeight / 2}`)
+          .attr("d", d => `M${-d.edge.arrowWidth},${-d.edge.arrowHeight / 2}L0,0L${-d.edge.arrowWidth},${d.edge.arrowHeight / 2}`)
         return enterSelection
       },
       update => {
@@ -217,9 +225,11 @@ function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any
     )
     .attr("markerWidth", d => d.edge.arrowWidth)
     .attr("markerHeight", d => d.edge.arrowHeight)
-    .attr("refX", d => {
-      return d.node.dotRadius * 2.2
-    })
+    // .attr("refX", d => {
+    //   return d.node.dotRadius + d.edge.arrowStrokeWidth / 2
+    // })
+    .attr('refX', d => d.node.dotRadius / d.edge.arrowStrokeWidth)
+    // .attr('refX', 0)
     .attr("refY", 0)
     
   

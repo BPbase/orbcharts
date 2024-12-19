@@ -6,7 +6,7 @@
 import { RelationshipChart } from '../../../packages/orbcharts-core/src'
 import { ForceDirected } from '../../../packages/orbcharts-plugins-basic/src'
 // import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
-import relationshipData1 from '../../../packages/orbcharts-demo/src/data/relationshipData1.js'
+import relationshipData1 from '../../../packages/orbcharts-demo/src/data/relationshipData3.js'
 
 onMounted(() => {
 
