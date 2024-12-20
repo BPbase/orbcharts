@@ -49,11 +49,19 @@ type Zoom = {
   }
 }
 
-type D3Node = d3.SimulationNodeDatum & ComputedNode
+// d3 forceSimulation使用的node資料
+type RenderNode = d3.SimulationNodeDatum & ComputedNode
 
-interface D3Edge extends ComputedEdge {
-  source: D3Node
-  target: D3Node
+// d3 forceSimulation使用的edge資料
+interface RenderEdge extends ComputedEdge {
+  source: RenderNode
+  target: RenderNode
+}
+
+// d3 forceSimulation使用的資料
+type RenderData = {
+  nodes: (ComputedNode | RenderNode)[] // 經過d3 forceSimulation計算後的node才有座標資訊
+  edges: RenderEdge[]
 }
 
 interface D3DragEvent {
@@ -62,7 +70,7 @@ interface D3DragEvent {
   dy: number
   identifier: string
   sourceEvent: MouseEvent
-  subject: D3Node
+  subject: RenderNode
   target: any
   type: string
   x: number
@@ -74,15 +82,17 @@ interface D3DragEvent {
 const pluginName = 'ForceDirected'
 
 const gSelectionClassName = getClassName(pluginName, 'zoom-area')
-const arrowMarkerId = getUniID(pluginName, 'arrow')
-const arrowMarkerClassName = getClassName(pluginName, 'arrow-marker')
+const defsArrowMarkerId = getUniID(pluginName, 'arrow')
+const defsArrowMarkerClassName = getClassName(pluginName, 'arrow-marker')
+const edgeListGClassName = getClassName(pluginName, 'edge-list-g')
 const edgeGClassName = getClassName(pluginName, 'edge-g')
-const arrowPathClassName = getClassName(pluginName, 'arrow-path')
-const arrowTextClassName = getClassName(pluginName, 'arrow-text')
+const edgeArrowPathClassName = getClassName(pluginName, 'edge-arrow-path')
+const edgeArrowTextClassName = getClassName(pluginName, 'edge-arrow-text')
+const nodeListGClassName = getClassName(pluginName, 'node-list-g')
 const nodeGClassName = getClassName(pluginName, 'node-g')
-const dotCircleClassName = getClassName(pluginName, 'dot-circle')
-const dotTextGClassName = getClassName(pluginName, 'dot-text-g')
-const dotTextClassName = getClassName(pluginName, 'dot-text')
+const nodeCircleClassName = getClassName(pluginName, 'node-circle')
+const nodeTextGClassName = getClassName(pluginName, 'node-text-g')
+const nodeTextClassName = getClassName(pluginName, 'node-text')
 
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_FORCE_DIRECTED_PARAMS> = {
   name: pluginName,
@@ -179,7 +189,7 @@ function translateCenterFn (d: any): string {
   return "translate(" + x + "," + y + ")";
 }
 
-function linkArcFn (d: D3Edge): string {
+function linkArcFn (d: RenderEdge): string {
   // console.log('linkArcFn', d)
   
   // var dx = d.target.x - d.source.x,
@@ -197,16 +207,15 @@ function linkArcFn (d: D3Edge): string {
 
 
 function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any, unknown>, fullParams: ForceDirectedParams) {
-  console.log('renderArrowMarker')
   return defsSelection
-    .selectAll<SVGMarkerElement, any>(`marker.${arrowMarkerClassName}`)
+    .selectAll<SVGMarkerElement, any>(`marker.${defsArrowMarkerClassName}`)
     .data([fullParams])
     .join(
       enter => {
         const enterSelection = enter
           .append("marker")
-          .classed(arrowMarkerClassName, true)
-          .attr('id', arrowMarkerId)
+          .classed(defsArrowMarkerClassName, true)
+          .attr('id', defsArrowMarkerId)
           // .attr("viewBox", "0 -5 10 10")
           // .attr("viewBox", d => `0 -${d.edge.arrowHeight / 2} ${d.edge.arrowWidth} ${d.edge.arrowHeight}`)
           .attr("viewBox", d => `-${d.edge.arrowWidth} -${d.edge.arrowHeight / 2} ${d.edge.arrowWidth} ${d.edge.arrowHeight}`)
@@ -233,31 +242,6 @@ function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any
     // .attr('refX', 0)
     .attr("refY", 0)
     
-  
-  // const update = defsSelection
-  //   .selectAll<SVGMarkerElement, any>(".bp__force-directed-chart__arrow-marker")
-  //   .data(this.styleConfig.arrows)
-  // const enter = update.enter()
-  //   .append("marker")
-  //   .classed("bp__force-directed-chart__arrow-marker", true)
-  //   // .attr("viewBox", "0 -5 10 10")
-  //   .attr("viewBox", "0 -5 10 10")
-  //   // .attr("markerWidth", 6)
-  //   // .attr("markerHeight", 6)
-  //   .attr("markerWidth", 10)
-  //   .attr("markerHeight", 10)
-  //   .attr("orient", "auto")
-  // enter.merge(update)      
-  //   .attr("id", type => type)
-  //   // .attr("refX", 60 + 15) // @Q@ 60為泡泡的R，暫時是先寫死的
-  //   .attr("refX", type => {
-  //     return this.styleConfig._CirclesRMap!.get(type) ? this.styleConfig._CirclesRMap!.get(type)! - 20 : 60 - 20
-  //   }) // @Q@ 我也不太確定為什麼是-20
-  //   .attr("refY", 0)
-  //   .attr("style", type => this.styleConfig._StylesMap!.get(type)!)
-  // enter.append("path")
-  //   .attr("d", "M0,-5L10,0L0,5");
-  // update.exit().remove()
 
 }
 
@@ -343,72 +327,17 @@ function drag (simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>) {
     .on("end", dragended);
 }
 
-
-function renderNodeCircle ({ nodeGSelection, nodes, fullParams, fullChartParams }: {
-  nodeGSelection: d3.Selection<SVGGElement, any, any, unknown>
-  nodes: D3Node[]
-  fullParams: ForceDirectedParams
-  fullChartParams: ChartParams
+function renderNodeG ({ nodeListGSelection, nodes }: {
+  nodeListGSelection: d3.Selection<SVGGElement, any, any, unknown>
+  nodes: RenderNode[]
 }) {
-  return nodeGSelection.selectAll<SVGCircleElement, ComputedEdge>('circle')
-    .data(nodes, d => d.id)
-    .join(
-      enter => {
-        const enterSelection = enter
-          .append('circle')
-          .classed(dotCircleClassName, true)
-          .attr('cursor', 'pointer')
-        return enterSelection
-      },
-      update => {
-        return update
-      },
-      exit => {
-        return exit.remove()
-      }
-    )
-    .attr('r', fullParams.node.dotRadius)
-    .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.node.dotFillColorType, fullChartParams }))
-    .attr('stroke', d => getDatumColor({ datum: d, colorType: fullParams.node.dotStrokeColorType, fullChartParams }))
-    .attr('stroke-width', fullParams.node.dotStrokeWidth)
-    .attr('style', d => fullParams.node.dotStyleFn(d))
-
-  // const circleUpdate = this.circleG
-  //   .selectAll<SVGGElement, any>(".nodeG")
-  //   .data(nodes, d => d.id)
-  // const circleEnter = circleUpdate
-  //   .enter()
-  //   .append("g")
-  //   .attr("class", "nodeG")
-  // circleEnter
-  //   .append("circle")
-  //   .attr("class", "node")
-
-  // this.circle = circleUpdate.merge(circleEnter)
-  // this.circle
-  //   .select("circle")
-  //   .attr("r", (d: ChartDirectedForceNode) => {
-  //     return this.styleConfig._CirclesRMap!.get(d.style.circle)!
-  //   })
-  //   .attr("style", d => {
-  //     return this.styleConfig._StylesMap!.get(d.style.circle)!
-  //   })
-
-}
-
-function renderNodeLabelG ({ nodeGSelection, nodes, fullParams, fullChartParams }: {
-  nodeGSelection: d3.Selection<SVGGElement, any, any, unknown>
-  nodes: D3Node[]
-  fullParams: ForceDirectedParams
-  fullChartParams: ChartParams
-}) {
-  return nodeGSelection.selectAll<SVGGElement, D3Node>('g')
+  return nodeListGSelection.selectAll<SVGGElement, RenderNode>('g')
     .data(nodes, d => d.id)
     .join(
       enter => {
         const enterSelection = enter
           .append('g')
-          .classed(dotTextGClassName, true)
+          .classed(nodeGClassName, true)
           .attr('cursor', 'pointer')
         return enterSelection
       },
@@ -421,46 +350,85 @@ function renderNodeLabelG ({ nodeGSelection, nodes, fullParams, fullChartParams 
     )
 }
 
-function renderNodeLabel ({ nodeLabelGSelection, fullParams, fullChartParams }: {
-  // nodeGSelection: d3.Selection<SVGGElement, any, any, unknown>
-  nodeLabelGSelection: d3.Selection<SVGGElement, D3Node, any, unknown>
-  // nodes: D3Node[]
+function renderNodeCircle ({ nodeGSelection, nodes, fullParams, fullChartParams }: {
+  nodeGSelection: d3.Selection<SVGGElement, any, any, unknown>
+  nodes: RenderNode[]
   fullParams: ForceDirectedParams
   fullChartParams: ChartParams
 }) {
-  // console.log(nodes)
-  // return nodeGSelection.selectAll<SVGTextElement, D3Node>('text')
-  //   .data(nodes, d => d.id)
-  //   .join(
-  //     enter => {
-  //       const enterSelection = enter
-  //         .append('text')
-  //         .classed(dotTextClassName, true)
-  //         .attr('cursor', 'pointer')
-  //         .attr('text-anchor', 'middle')
-  //         .attr('pointer-events', 'none')
-  //       return enterSelection
-  //     },
-  //     update => {
-  //       return update
-  //     },
-  //     exit => {
-  //       return exit.remove()
-  //     }
-  //   )
-  //   .text(d => d.label)
-  //   .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.node.labelColorType, fullChartParams }))
-  //   .attr('style', d => fullParams.node.labelStyleFn(d))
+  nodeGSelection.each((data,i,g) => {
+    const gSelection = d3.select(g[i])
+    gSelection.selectAll<SVGCircleElement, ComputedEdge>('circle')
+      .data([data])
+      .join(
+        enter => {
+          const enterSelection = enter
+            .append('circle')
+            .classed(nodeCircleClassName, true)
+            .attr('cursor', 'pointer')
+          return enterSelection
+        },
+        update => {
+          return update
+        },
+        exit => {
+          return exit.remove()
+        }
+      )
+      .attr('r', fullParams.node.dotRadius)
+      .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.node.dotFillColorType, fullChartParams }))
+      .attr('stroke', d => getDatumColor({ datum: d, colorType: fullParams.node.dotStrokeColorType, fullChartParams }))
+      .attr('stroke-width', fullParams.node.dotStrokeWidth)
+      .attr('style', d => fullParams.node.dotStyleFn(d))
+  })
 
+  return nodeGSelection.select<SVGCircleElement>(`circle.${nodeCircleClassName}`)
+}
+
+function renderNodeLabelG ({ nodeGSelection, nodes }: {
+  nodeGSelection: d3.Selection<SVGGElement, any, any, unknown>
+  nodes: RenderNode[]
+}) {
+  nodeGSelection.each((data,i,g) => {
+    const gSelection = d3.select(g[i])
+    gSelection.selectAll<SVGGElement, RenderNode>('g')
+      .data([data])
+      .join(
+        enter => {
+          const enterSelection = enter
+            .append('g')
+            .classed(nodeTextGClassName, true)
+            .attr('cursor', 'pointer')
+          return enterSelection
+        },
+        update => {
+          return update
+        },
+        exit => {
+          return exit.remove()
+        }
+      )
+  })
+
+  return nodeGSelection.select<SVGTextElement>(`g.${nodeTextGClassName}`)
+}
+
+function renderNodeLabel ({ nodeLabelGSelection, fullParams, fullChartParams }: {
+  // nodeListGSelection: d3.Selection<SVGGElement, any, any, unknown>
+  nodeLabelGSelection: d3.Selection<SVGGElement, RenderNode, any, unknown>
+  // nodes: RenderNode[]
+  fullParams: ForceDirectedParams
+  fullChartParams: ChartParams
+}) {
   nodeLabelGSelection.each((data,i,g) => {
     const gSelection = d3.select(g[i])
-    gSelection.selectAll<SVGTextElement, D3Node>('text')
+    gSelection.selectAll<SVGTextElement, RenderNode>('text')
       .data([data], d => d.id)
       .join(
         enter => {
           const enterSelection = enter
             .append('text')
-            .classed(dotTextClassName, true)
+            .classed(nodeTextClassName, true)
             .attr('cursor', 'pointer')
             .attr('text-anchor', 'middle')
             .attr('pointer-events', 'none')
@@ -478,23 +446,22 @@ function renderNodeLabel ({ nodeLabelGSelection, fullParams, fullChartParams }: 
       .attr('style', d => fullParams.node.labelStyleFn(d))
   })
 
-  return nodeLabelGSelection.select<SVGTextElement>('text')
+  return nodeLabelGSelection.select<SVGTextElement>(`text.${nodeTextClassName}`)
 }
 
-function renderArrowPath ({ edgeGSelection, edges, fullParams, fullChartParams }: {
-  edgeGSelection: d3.Selection<SVGGElement, any, any, unknown>
-  edges: ComputedEdge[]
-  fullParams: ForceDirectedParams
-  fullChartParams: ChartParams
+function renderEdgeG ({ edgeListGSelection, edges }: {
+  edgeListGSelection: d3.Selection<SVGGElement, any, any, unknown>
+  edges: RenderEdge[]
 }) {
-  return edgeGSelection.selectAll<SVGPathElement, ComputedEdge>('path')
+  return edgeListGSelection.selectAll<SVGGElement, RenderEdge>('g')
     .data(edges, d => d.id)
     .join(
       enter => {
-        return enter
-          .append('path')
-          .classed(arrowPathClassName, true)
-          .attr('marker-end', `url(#${arrowMarkerId})`)
+        const enterSelection = enter
+          .append('g')
+          .classed(nodeGClassName, true)
+          .attr('cursor', 'pointer')
+        return enterSelection
       },
       update => {
         return update
@@ -503,25 +470,38 @@ function renderArrowPath ({ edgeGSelection, edges, fullParams, fullChartParams }
         return exit.remove()
       }
     )
-    .attr('stroke', d => getDatumColor({ datum: d.data, colorType: fullParams.edge.arrowColorType, fullChartParams }))
-    .attr('stroke-width', fullParams.edge.arrowStrokeWidth)
-    .attr('style', d => fullParams.edge.arrowStyleFn(d))
-    
+}
 
-  // const pathUpdate = this.pathG
-  //   .selectAll<SVGPathElement, any>("path")
-  //   .data(links, d => `${d._source}->${d._target}`)
-  // const pathEnter = pathUpdate
-  //   .enter()
-  //   .append("path")
-  //   .attr("class", "link")
-  //   .attr("marker-end", d => `url(#${d.style.arrow || 'arrow'})`)
-  //   .attr("style", (d: ChartDirectedForceLink) => {
-  //     let pathStyle = d.style.path ? this.styleConfig._StylesMap!.get(d.style.path)
-  //       : (d.direction === 'top' ? this.styleConfig._StylesMap!.get('pathTop') : this.styleConfig._StylesMap!.get('pathDown'))
-  //     return pathStyle!
-  //   })
+function renderArrowPath ({ edgeGSelection, edges, fullParams, fullChartParams }: {
+  edgeGSelection: d3.Selection<SVGGElement, any, any, unknown>
+  edges: ComputedEdge[]
+  fullParams: ForceDirectedParams
+  fullChartParams: ChartParams
+}) {
+  edgeGSelection.each((data,i,g) => {
+    const gSelection = d3.select(g[i])
+    gSelection.selectAll<SVGPathElement, ComputedEdge>('path')
+      .data(edges, d => d.id)
+      .join(
+        enter => {
+          return enter
+            .append('path')
+            .classed(edgeArrowPathClassName, true)
+            .attr('marker-end', `url(#${defsArrowMarkerId})`)
+        },
+        update => {
+          return update
+        },
+        exit => {
+          return exit.remove()
+        }
+      )
+      .attr('stroke', d => getDatumColor({ datum: d.data, colorType: fullParams.edge.arrowColorType, fullChartParams }))
+      .attr('stroke-width', fullParams.edge.arrowStrokeWidth)
+      .attr('style', d => fullParams.edge.arrowStyleFn(d))
+  })
 
+  return edgeGSelection.select<SVGPathElement>(`path.${edgeArrowPathClassName}`)
 }
 
 
@@ -620,28 +600,6 @@ function renderArrowPath ({ edgeGSelection, edges, fullParams, fullChartParams }
 //   })
 // }
 
-// function drag (): d3.DragBehavior<Element, unknown, unknown> {
-//   return d3.drag()
-//     .on("start", (event, d: any) => {
-//       if (!event.active) {
-//         force!.alpha(1).restart()
-//       }
-//       d.fx = d.x
-//       d.fy = d.y
-//     })
-//     .on("drag", (event, d: any) => {
-//       if (!event.active) {
-//         force!.alphaTarget(0)
-//       }
-//       d.fx = event.x
-//       d.fy = event.y
-//     })
-//     .on("end", (event, d: any) => {
-//       d.fx = null
-//       d.fy = null
-//     })
-// }
-
 
 // function groupBubbles ({ fullParams, SeriesContainerPositionMap }: {
 //   fullParams: BubblesParams
@@ -663,45 +621,92 @@ function renderArrowPath ({ edgeGSelection, edges, fullParams, fullChartParams }
 //   force!.alpha(1).restart()
 // }
 
+function highlightNodes ({ nodeGSelection, edgeGSelection, highlightIds, fullChartParams }: {
+  nodeGSelection: d3.Selection<SVGGElement, RenderNode, SVGGElement, any>
+  edgeGSelection: d3.Selection<SVGGElement, RenderEdge, SVGGElement, any>
+  fullChartParams: ChartParams
+  highlightIds: string[]
+}) {
+  nodeGSelection.interrupt('highlight')
+  
+  if (!highlightIds.length) {
+    nodeGSelection
+      .transition('highlight')
+      .style('opacity', 1)
+    edgeGSelection
+      .transition('highlight')
+      .style('opacity', 1)
+    return
+  }
 
+  edgeGSelection
+    .style('opacity', fullChartParams.styles.unhighlightedOpacity)  
+
+  nodeGSelection.each((d, i, n) => {
+    const segment = d3.select(n[i])
+
+    if (highlightIds.includes(d.id)) {
+      segment
+        .style('opacity', 1)
+        .transition('highlight')
+        .ease(d3.easeElastic)
+        .duration(500)
+    } else {
+      // 取消
+      segment
+        .style('opacity', fullChartParams.styles.unhighlightedOpacity)        
+    }
+  })
+}
+
+// 暫不處理edge的highlight
+// function highlightEdges ({ edgeGSelection, highlightIds, fullChartParams }: {
+//   edgeGSelection: d3.Selection<SVGGElement, RenderEdge, SVGGElement, any>
+//   fullChartParams: ChartParams
+//   highlightIds: string[]
+// }) {
+//   edgeGSelection.interrupt('highlight')
+
+//   if (!highlightIds.length) {
+//     edgeGSelection
+//       .transition('highlight')
+//       .style('opacity', 1)
+//     return
+//   }
+
+//   edgeGSelection.each((d, i, n) => {
+//     const segment = d3.select(n[i])
+
+//     if (highlightIds.includes(d.id)) {
+//       segment
+//         .style('opacity', 1)
+//         .transition('highlight')
+//         .ease(d3.easeElastic)
+//         .duration(500)
+//     } else {
+//       // 取消放大
+//       segment
+//         .style('opacity', fullChartParams.styles.unhighlightedOpacity)        
+//     }
+//   })
+// }
 
 export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
   
   const destroy$ = new Subject()
 
-  const gSelection = selection.append('g').classed('gSelectionClassName', true)
+  const gSelection = selection.append('g').classed(gSelectionClassName, true)
   const defsSelection = gSelection.append('defs')
-  const edgeGSelection = gSelection.append('g').classed('edgeGClassName', true)
-  const nodeGSelection = gSelection.append('g').classed('nodeGClassName', true)
+  const edgeListGSelection = gSelection.append('g').classed(edgeListGClassName, true)
+  const nodeListGSelection = gSelection.append('g').classed(nodeListGClassName, true)
 
-  let circleSelection: d3.Selection<SVGCircleElement, D3Node, SVGGElement, any>
-  let nodeLabelGSelection: d3.Selection<SVGGElement, D3Node, SVGGElement, any>
-  let nodeLabelSelection: d3.Selection<SVGTextElement, D3Node, SVGGElement, any>
-  let arrowSelection: d3.Selection<SVGPathElement, ComputedEdge, SVGGElement, any>
+  let nodeGSelection: d3.Selection<SVGGElement, RenderNode, SVGGElement, any>
+  let nodeCircleSelection: d3.Selection<SVGCircleElement, RenderNode, SVGGElement, any>
+  let nodeLabelGSelection: d3.Selection<SVGGElement, RenderNode, SVGGElement, any>
+  let nodeLabelSelection: d3.Selection<SVGTextElement, RenderNode, SVGGElement, any>
+  let edgeGSelection: d3.Selection<SVGGElement, RenderEdge, SVGGElement, any>
+  let edgeArrowSelection: d3.Selection<SVGPathElement, RenderEdge, SVGGElement, any>
 
-  // gSelection.append('rect').attr('width', 1000).attr('height', 1000)
-  // const gSelection$ = of(selection).pipe(
-  //   takeUntil(destroy$),
-  //   // first(),
-  //   map(_selection => {
-  //     const gSelection = _selection
-  //       .selectAll<SVGGElement, string>('g')
-  //       .data([pluginName])
-  //       .join('g')
-  //       .classed(gSelectionClassName, true)
-  //     gSelection.append('defs')
-  //     gSelection.append('g').classed('edgeGClassName', true)
-  //     gSelection.append('g').classed('nodeGClassName', true)
-
-  //     return gSelection
-  //   }),
-  //   shareReplay(1)
-  // )
-
-  // // <defs> clipPath selection
-  // const defsSelection$ = gSelection$.pipe(
-  //   map(gSelection => gSelection.select<SVGDefsElement>(`defs`))
-  // )
 
   // // <marker> marker selection
   observer.fullParams$.pipe(
@@ -710,40 +715,6 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
       return renderArrowMarker(defsSelection, fullParams)
     })
   ).subscribe()
-  // const defsSelection$ = gSelection$.pipe(
-  //   map(gSelection => gSelection.append('defs')),
-  //   switchMap(defsSelection => {
-  //     return observer.fullParams$.pipe(
-  //       takeUntil(destroy$),
-  //       map(fullParams => {
-  //         return renderArrowMarker(defsSelection, fullParams)
-  //       })
-  //     )
-  //   })
-  // )
-
-  // // <g> edge selection
-  // const edgeGSelection$ = gSelection$.pipe(
-  //   map(gSelection => gSelection.select<SVGGElement>(`g.${edgeGClassName}`))
-  // )
-  
-  // // <g> node selection
-  // const nodeGSelection$ = gSelection$.pipe(
-  //   map(gSelection => gSelection.select<SVGGElement>(`g.${nodeGClassName}`))
-  // )
-
-  // gSelection$.subscribe()
-
-
-  // const scaleExtent$ = observer.fullParams$.pipe(
-  //   takeUntil(destroy$),
-  //   map(d => d.scaleExtent),
-  //   distinctUntilChanged((a, b) => String(a) === String(b)),
-  // )
-
-  // combineLatest({
-  //   scaleExtent: scaleExtent$
-  // })
 
   // init zoom
   const d3Zoom$ = observer.fullParams$.pipe(
@@ -802,7 +773,9 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
 
   
   const simulation$: Observable<d3.Simulation<d3.SimulationNodeDatum, undefined>> = combineLatest({
-    layout: observer.layout$,
+    layout: observer.layout$.pipe(
+      first() // 只使用第一次的尺寸（置中）
+    ),
     fullParams: observer.fullParams$
   }).pipe(
     takeUntil(destroy$),
@@ -810,16 +783,13 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
     shareReplay(1)
   )
 
-  const forceData$: Observable<{
-    nodes: ComputedNode[];
-    edges: D3Edge[];
-  }> = observer.computedData$.pipe(
+  const renderData$: Observable<RenderData> = observer.visibleComputedData$.pipe(
     takeUntil(destroy$),
     map(data => {
       return {
         nodes: data.nodes,
         edges: data.edges.map(_d => {
-          let d: D3Edge = _d as D3Edge
+          let d: RenderEdge = _d as RenderEdge
           d.source = _d.startNode // reference
           d.target = _d.endNode
           return d
@@ -830,7 +800,9 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
 
 
   combineLatest({
-    forceData: forceData$,
+    renderData: renderData$,
+    computedData: observer.computedData$,
+    CategoryNodeMap: observer.CategoryNodeMap$,
     simulation: simulation$,
     fullParams: observer.fullParams$,
     fullChartParams: observer.fullChartParams$
@@ -838,70 +810,156 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
     takeUntil(destroy$),
     switchMap(async d => d),
   ).subscribe(data => {
-    // console.log('nodeGSelection', data.nodeGSelection)
-    // console.log('edgeGSelection', data.edgeGSelection)
-    // console.log(data.forceData)
-    // const edgeData = data.forceData.edges.map(d => {
-    //   d.source = d.startNode
-    //   d.target = d.endNode
-    //   return d
-    // })
-    circleSelection = renderNodeCircle({
+
+    nodeGSelection = renderNodeG({
+      nodeListGSelection: nodeListGSelection,
+      nodes: data.renderData.nodes,
+    })
+
+    nodeCircleSelection = renderNodeCircle({
       nodeGSelection: nodeGSelection,
-      nodes: data.forceData.nodes,
+      nodes: data.renderData.nodes,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
-    circleSelection.call(drag(data.simulation))
+    nodeCircleSelection.call(drag(data.simulation))
 
     nodeLabelGSelection = renderNodeLabelG({
       nodeGSelection: nodeGSelection,
-      nodes: data.forceData.nodes,
-      fullParams: data.fullParams,
-      fullChartParams: data.fullChartParams
+      nodes: data.renderData.nodes,
     })
 
     nodeLabelSelection = renderNodeLabel({
       nodeLabelGSelection: nodeLabelGSelection,
-      // nodes: data.forceData.nodes,
+      // nodes: data.renderData.nodes,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
 
-    arrowSelection = renderArrowPath({
+    edgeGSelection = renderEdgeG({
+      edgeListGSelection: edgeListGSelection,
+      edges: data.renderData.edges
+    })
+
+    edgeArrowSelection = renderArrowPath({
       edgeGSelection: edgeGSelection,
       // edges: data.computedData.edges,
-      edges: data.forceData.edges,
+      edges: data.renderData.edges,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
-    data.simulation.nodes(data.forceData.nodes)
+    data.simulation.nodes(data.renderData.nodes)
       .on('tick', () => {
-        arrowSelection.attr('d', linkArcFn)
-        circleSelection.attr('transform', translateFn)
-        // nodeLabelSelection
-        //   .attr('x', d => d.x)
-        //   .attr('y', d => d.y - data.fullParams.node.dotRadius - 10)
+        edgeArrowSelection.attr('d', linkArcFn)
+        nodeCircleSelection.attr('transform', translateFn)
         nodeLabelGSelection.attr('transform', d => translateFn({
           x: d.x,
           y: d.y - data.fullParams.node.dotRadius - 10
         }))
-        // this.path!.attr("d", this.linkArc)
-        // this.circle!.attr("transform", this.translate)
-        // this.pathText!.attr("transform", this.translateCenter)
-        // this.circleText!.attr("transform", this.translate)
-        // this.circleBtn!.attr("transform", this.translate)
-        // this.tag!.attr("transform", this.translate)
       })
-    ;(data.simulation.force("link") as any).links(data.forceData.edges)
+    ;(data.simulation.force("link") as any).links(data.renderData.edges)
 
     data.simulation.alpha(0.3).restart()
+
+    nodeCircleSelection
+      .on('mouseover', (event, datum) => {
+        event.stopPropagation()
+
+        subject.event$.next({
+          type: 'relationship',
+          eventName: 'mouseover',
+          pluginName,
+          highlightTarget: data.fullChartParams.highlightTarget,
+          datum: datum,
+          category: data.CategoryNodeMap.get(datum.categoryLabel)!,
+          categoryIndex: datum.categoryIndex,
+          categoryLabel: datum.categoryLabel,
+          event,
+          data: data.computedData
+        })
+      })
+      .on('mousemove', (event, datum) => {
+        event.stopPropagation()
+
+        subject.event$.next({
+          type: 'relationship',
+          eventName: 'mousemove',
+          pluginName,
+          highlightTarget: data.fullChartParams.highlightTarget,
+          datum: datum,
+          category: data.CategoryNodeMap.get(datum.categoryLabel)!,
+          categoryIndex: datum.categoryIndex,
+          categoryLabel: datum.categoryLabel,
+          event,
+          data: data.computedData
+        })
+      })
+      .on('mouseout', (event, datum) => {
+        event.stopPropagation()
+
+        subject.event$.next({
+          type: 'relationship',
+          eventName: 'mouseout',
+          pluginName,
+          highlightTarget: data.fullChartParams.highlightTarget,
+          datum: datum,
+          category: data.CategoryNodeMap.get(datum.categoryLabel)!,
+          categoryIndex: datum.categoryIndex,
+          categoryLabel: datum.categoryLabel,
+          event,
+          data: data.computedData
+        })
+      })
+      .on('click', (event, datum) => {
+        event.stopPropagation()
+
+        subject.event$.next({
+          type: 'relationship',
+          eventName: 'click',
+          pluginName,
+          highlightTarget: data.fullChartParams.highlightTarget,
+          datum: datum,
+          category: data.CategoryNodeMap.get(datum.categoryLabel)!,
+          categoryIndex: datum.categoryIndex,
+          categoryLabel: datum.categoryLabel,
+          event,
+          data: data.computedData
+        })
+      })
   })
 
 
-  observer.computedData$.subscribe(d => {
-    console.log(d)
+  combineLatest({
+    renderData: renderData$,
+    highlightNodes: observer.relationshipHighlightNodes$.pipe(
+      map(data => data.map(d => d.id))
+    ),
+    highlightEdges: observer.relationshipHighlightEdges$.pipe(
+      map(data => data.map(d => d.id))
+    ),
+    fullChartParams: observer.fullChartParams$,
+    fullParams: observer.fullParams$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d)
+  ).subscribe(data => {
+    if (!nodeGSelection || !edgeGSelection) {
+      return 
+    }
+    
+    highlightNodes({
+      nodeGSelection,
+      edgeGSelection,
+      highlightIds: data.highlightNodes,
+      fullChartParams: data.fullChartParams
+    })
+    // highlightEdges({
+    //   edgeGSelection,
+    //   highlightIds: data.highlightEdges,
+    //   fullChartParams: data.fullChartParams
+    // })
   })
+  
 
   
   return () => {
