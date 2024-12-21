@@ -7,11 +7,15 @@ import {
   first,
   takeUntil,
   Subject, 
+  BehaviorSubject,
   Observable,
   distinctUntilChanged,
   shareReplay,
   take,
-  share
+  share,
+  filter,
+  iif,
+  EMPTY
 } from 'rxjs'
 import type { DefinePluginConfig } from '../../../lib/core-types'
 import type {
@@ -19,6 +23,7 @@ import type {
   DatumValue,
   DataSeries,
   EventName,
+  EventRelationship,
   ComputedDataSeries,
   ComputedNode,
   ComputedEdge,
@@ -30,8 +35,9 @@ import {
 import type { BubblesParams, ArcScaleType, ForceDirectedParams } from '../../../lib/plugins-basic-types'
 import { getDatumColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { DEFAULT_FORCE_DIRECTED_PARAMS } from '../defaults'
-import { renderCircleText } from '../../utils/d3Graphics'
+// import { renderCircleText } from '../../utils/d3Graphics'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
+import { d3EventObservable } from '../../utils/observables'
 
 // interface BubblesDatum extends ComputedNode {
 //   x: number
@@ -76,6 +82,8 @@ interface D3DragEvent {
   x: number
   y: number
 }
+
+type DragStatus = 'start' | 'drag' | 'end'
 
 // type BubblesSimulationDatum = BubblesDatum & d3.SimulationNodeDatum
 
@@ -303,22 +311,28 @@ function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any
 //     })
 // }
 
-function drag (simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>) {    
+function drag (simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>, dragStatus$: BehaviorSubject<DragStatus>) {    
   function dragstarted (event: D3DragEvent) {
     if (!event.active) simulation.alphaTarget(0.3).restart();
     event.subject.fx = event.subject.x;
     event.subject.fy = event.subject.y;
+    
+    dragStatus$.next('start')
   }
   
   function dragged (event: D3DragEvent) {
     event.subject.fx = event.x;
     event.subject.fy = event.y;
+
+    dragStatus$.next('drag')
   }
   
   function dragended (event: D3DragEvent) {
     if (!event.active) simulation.alphaTarget(0);
     event.subject.fx = null;
     event.subject.fy = null;
+
+    dragStatus$.next('end')
   }
   
   return d3.drag()
@@ -628,7 +642,7 @@ function highlightNodes ({ nodeGSelection, edgeGSelection, highlightIds, fullCha
   highlightIds: string[]
 }) {
   nodeGSelection.interrupt('highlight')
-  
+  // console.log(highlightIds)
   if (!highlightIds.length) {
     nodeGSelection
       .transition('highlight')
@@ -707,6 +721,8 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
   let edgeGSelection: d3.Selection<SVGGElement, RenderEdge, SVGGElement, any>
   let edgeArrowSelection: d3.Selection<SVGPathElement, RenderEdge, SVGGElement, any>
 
+  const dragStatus$ = new BehaviorSubject<DragStatus>('end') // start, drag, end
+  const mouseEvent$ = new Subject<EventRelationship>()
 
   // // <marker> marker selection
   observer.fullParams$.pipe(
@@ -723,25 +739,27 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
     // distinctUntilChanged((a, b) => String(a) === String(b)),
     // first(),
     map(data => {
-      let d3Zoom = d3.zoom().on('zoom', (event) => {
-        // console.log(event)
-        // this.svgGroup.attr('transform', `translate(
-        //   ${event.transform.x + (this.zoom.xOffset * event.transform.k)},
-        //   ${event.transform.y + (this.zoom.yOffset * event.transform.k)}
-        // ) scale(
-        //   ${event.transform.k}
-        // )`)
-        gSelection.attr('transform', `translate(
-          ${event.transform.x},
-          ${event.transform.y}
-        ) scale(
-          ${event.transform.k}
-        )`)
+      let d3Zoom = data.zoomable
+        ? d3.zoom().on('zoom', (event) => {
+          // console.log(event)
+          // this.svgGroup.attr('transform', `translate(
+          //   ${event.transform.x + (this.zoom.xOffset * event.transform.k)},
+          //   ${event.transform.y + (this.zoom.yOffset * event.transform.k)}
+          // ) scale(
+          //   ${event.transform.k}
+          // )`)
+          gSelection.attr('transform', `translate(
+            ${event.transform.x},
+            ${event.transform.y}
+          ) scale(
+            ${event.transform.k}
+          )`)
 
-        if (data.node.labelSizeFixed) {
-          nodeLabelSelection.attr('transform', `scale(${1 / event.transform.k})`)
-        }
-      })
+          if (data.node.labelSizeFixed) {
+            nodeLabelSelection.attr('transform', `scale(${1 / event.transform.k})`)
+          }
+        })
+        : d3.zoom().on('zoom', null)
       if (data.scaleExtent) {
         d3Zoom.scaleExtent([data.scaleExtent.min, data.scaleExtent.max])
       }
@@ -798,7 +816,6 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
     })
   )
 
-
   combineLatest({
     renderData: renderData$,
     computedData: observer.computedData$,
@@ -822,7 +839,7 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
-    nodeCircleSelection.call(drag(data.simulation))
+    nodeCircleSelection.call(drag(data.simulation, dragStatus$))
 
     nodeLabelGSelection = renderNodeLabelG({
       nodeGSelection: nodeGSelection,
@@ -865,7 +882,7 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
       .on('mouseover', (event, datum) => {
         event.stopPropagation()
 
-        subject.event$.next({
+        mouseEvent$.next({
           type: 'relationship',
           eventName: 'mouseover',
           pluginName,
@@ -881,7 +898,7 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
       .on('mousemove', (event, datum) => {
         event.stopPropagation()
 
-        subject.event$.next({
+        mouseEvent$.next({
           type: 'relationship',
           eventName: 'mousemove',
           pluginName,
@@ -897,7 +914,7 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
       .on('mouseout', (event, datum) => {
         event.stopPropagation()
 
-        subject.event$.next({
+        mouseEvent$.next({
           type: 'relationship',
           eventName: 'mouseout',
           pluginName,
@@ -913,7 +930,7 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
       .on('click', (event, datum) => {
         event.stopPropagation()
 
-        subject.event$.next({
+        mouseEvent$.next({
           type: 'relationship',
           eventName: 'click',
           pluginName,
@@ -928,6 +945,12 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
       })
   })
 
+  dragStatus$.pipe(
+    // 只有沒有托曳時才執行
+    switchMap(d => iif(() => d === 'end', mouseEvent$, EMPTY))
+  ).subscribe(data => {
+    subject.event$.next(data)
+  })
 
   combineLatest({
     renderData: renderData$,

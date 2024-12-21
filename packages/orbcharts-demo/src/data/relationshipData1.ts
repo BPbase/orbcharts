@@ -1,200 +1,200 @@
 import type { DataRelationship } from "@orbcharts/core-types"
 
 export default <DataRelationship>{
-  nodes: [
+  "nodes": [
     {
-        "id": "80641013",
-        "label": "豪潔實業股份有限公司",
-        "value": 19800000,
-        "categoryLabel": "法人"
+      "id": "id0",
+      "label": "label0",
+      "value": 19800000,
+      "categoryLabel": "category1"
     },
     {
-        "id": "唐麗芬",
-        "value": 0,
-        "categoryLabel": "自然人"
+      "id": "id1",
+      "value": 0,
+      "categoryLabel": "category2"
     },
     {
-        "id": "蔡德忠",
-        "value": 0,
-        "categoryLabel": "自然人"
+      "id": "id2",
+      "value": 0,
+      "categoryLabel": "category2"
     },
     {
-        "id": "45110360",
-        "label": "杏州醫藥股份有限公司",
-        "value": 5114269,
-        "categoryLabel": "法人"
+      "id": "id3",
+      "label": "label1",
+      "value": 5114269,
+      "categoryLabel": "category1"
     },
     {
-        "id": "53836726",
-        "label": "多寧生技股份有限公司",
-        "value": 1093200,
-        "categoryLabel": "法人"
+      "id": "id4",
+      "label": "label2",
+      "value": 1093200,
+      "categoryLabel": "category1"
     },
     {
-        "id": "86649006",
-        "label": "杏一醫療用品股份有限公司",
-        "value": 32007217,
-        "categoryLabel": "法人"
+      "id": "id5",
+      "label": "label3",
+      "value": 32007217,
+      "categoryLabel": "category1"
     },
     {
-        "id": "曾盛誠",
-        "value": 0,
-        "categoryLabel": "自然人"
+      "id": "id6",
+      "value": 0,
+      "categoryLabel": "category2"
     },
     {
-        "id": "28776432",
-        "label": "麗德投資股份有限公司",
-        "value": 18743266,
-        "categoryLabel": "法人"
+      "id": "id7",
+      "label": "label4",
+      "value": 18743266,
+      "categoryLabel": "category1"
     },
     {
-        "id": "李弘暉",
-        "value": 0,
-        "categoryLabel": "自然人"
+      "id": "id8",
+      "value": 0,
+      "categoryLabel": "category2"
     },
     {
-        "id": "42750428",
-        "label": "創晟國際股份有限公司",
-        "value": 1000000,
-        "categoryLabel": "法人"
+      "id": "id9",
+      "label": "label5",
+      "value": 1000000,
+      "categoryLabel": "category1"
     },
     {
-        "id": "陳麗如",
-        "value": 0,
-        "categoryLabel": "自然人"
+      "id": "id10",
+      "value": 0,
+      "categoryLabel": "category2"
     },
     {
-        "id": "83204178",
-        "label": "軒如股份有限公司",
-        "value": 4631703,
-        "categoryLabel": "法人"
+      "id": "id11",
+      "label": "label6",
+      "value": 4631703,
+      "categoryLabel": "category1"
     },
     {
-        "id": "黃成業",
-        "value": 0,
-        "categoryLabel": "自然人"
+      "id": "id12",
+      "value": 0,
+      "categoryLabel": "category2"
     },
     {
-        "id": "53842500",
-        "label": "精贊生技股份有限公司",
-        "value": 3399144,
-        "categoryLabel": "法人"
+      "id": "id13",
+      "label": "label7",
+      "value": 3399144,
+      "categoryLabel": "category1"
     }
-],
-  edges: [
+  ],
+  "edges": [
     {
-        "id": "86649006->80641013",
-        "label": "86649006->80641013",
-        "categoryLabel": "自然人",
-        "start": "86649006",
-        "end": "80641013",
-        "value": 100
+      "id": "id14",
+      "label": "label8",
+      "categoryLabel": "category2",
+      "start": "id5",
+      "end": "id0",
+      "value": 100
     },
     {
-        "id": "86649006->45110360",
-        "label": "86649006->45110360",
-        "categoryLabel": "自然人",
-        "start": "86649006",
-        "end": "45110360",
-        "value": 100
+      "id": "id15",
+      "label": "label9",
+      "categoryLabel": "category2",
+      "start": "id5",
+      "end": "id3",
+      "value": 100
     },
     {
-        "id": "86649006->53836726",
-        "label": "86649006->53836726",
-        "categoryLabel": "自然人",
-        "start": "86649006",
-        "end": "53836726",
-        "value": 50
+      "id": "id16",
+      "label": "label10",
+      "categoryLabel": "category2",
+      "start": "id5",
+      "end": "id4",
+      "value": 50
     },
     {
-        "id": "83204178->86649006",
-        "label": "83204178->86649006",
-        "categoryLabel": "自然人",
-        "start": "83204178",
-        "end": "86649006",
-        "value": 20.752235715203
+      "id": "id17",
+      "label": "label11",
+      "categoryLabel": "category2",
+      "start": "id11",
+      "end": "id5",
+      "value": 20.752235715203
     },
     {
-        "id": "28776432->86649006",
-        "label": "28776432->86649006",
-        "categoryLabel": "自然人",
-        "start": "28776432",
-        "end": "86649006",
-        "value": 27.472781543551
+      "id": "id18",
+      "label": "label12",
+      "categoryLabel": "category2",
+      "start": "id7",
+      "end": "id5",
+      "value": 27.472781543551
     },
     {
-        "id": "曾盛誠->86649006",
-        "label": "曾盛誠->86649006",
-        "categoryLabel": "法人",
-        "start": "曾盛誠",
-        "end": "86649006",
-        "value": 0
+      "id": "id19",
+      "label": "label13",
+      "categoryLabel": "category1",
+      "start": "id6",
+      "end": "id5",
+      "value": 0
     },
     {
-        "id": "唐麗芬->86649006",
-        "label": "唐麗芬->86649006",
-        "categoryLabel": "法人",
-        "start": "唐麗芬",
-        "end": "86649006",
-        "value": 0
+      "id": "id20",
+      "label": "label14",
+      "categoryLabel": "category1",
+      "start": "id1",
+      "end": "id5",
+      "value": 0
     },
     {
-        "id": "李弘暉->86649006",
-        "label": "李弘暉->86649006",
-        "categoryLabel": "法人",
-        "start": "李弘暉",
-        "end": "86649006",
-        "value": 0
+      "id": "id21",
+      "label": "label15",
+      "categoryLabel": "category1",
+      "start": "id8",
+      "end": "id5",
+      "value": 0
     },
     {
-        "id": "黃成業->86649006",
-        "label": "黃成業->86649006",
-        "categoryLabel": "法人",
-        "start": "黃成業",
-        "end": "86649006",
-        "value": 0
+      "id": "id22",
+      "label": "label16",
+      "categoryLabel": "category1",
+      "start": "id12",
+      "end": "id5",
+      "value": 0
     },
     {
-        "id": "83204178->28776432",
-        "label": "83204178->28776432",
-        "categoryLabel": "自然人",
-        "start": "83204178",
-        "end": "28776432",
-        "value": 100
+      "id": "id23",
+      "label": "label17",
+      "categoryLabel": "category2",
+      "start": "id11",
+      "end": "id7",
+      "value": 100
     },
     {
-        "id": "80641013->42750428",
-        "label": "80641013->42750428",
-        "categoryLabel": "自然人",
-        "start": "80641013",
-        "end": "42750428",
-        "value": 100
+      "id": "id24",
+      "label": "label18",
+      "categoryLabel": "category2",
+      "start": "id0",
+      "end": "id9",
+      "value": 100
     },
     {
-        "id": "陳麗如->83204178",
-        "label": "陳麗如->83204178",
-        "categoryLabel": "法人",
-        "start": "陳麗如",
-        "end": "83204178",
-        "value": 29.495571697929
+      "id": "id25",
+      "label": "label19",
+      "categoryLabel": "category1",
+      "start": "id10",
+      "end": "id11",
+      "value": 29.495571697929
     },
     {
-        "id": "蔡德忠->83204178",
-        "label": "蔡德忠->83204178",
-        "categoryLabel": "法人",
-        "start": "蔡德忠",
-        "end": "83204178",
-        "value": 20.208972073742
+      "id": "id26",
+      "label": "label20",
+      "categoryLabel": "category1",
+      "start": "id2",
+      "end": "id11",
+      "value": 20.208972073742
     },
     {
-        "id": "86649006->53842500",
-        "label": "86649006->53842500",
-        "categoryLabel": "自然人",
-        "start": "86649006",
-        "end": "53842500",
-        "value": 100
+      "id": "id27",
+      "label": "label21",
+      "categoryLabel": "category2",
+      "start": "id5",
+      "end": "id13",
+      "value": 100
     }
-]
+  ]
 }
 
 /*
@@ -214,10 +214,56 @@ let edges = data.edges.map((d, i) => {
   return {
     id: d.id,
     label: d.id,
-    categoryLabel: isNaN(d['source-uniID']) === false ? '自然人' : '法人',
+    categoryLabel: isNaN(d['source-uniID']) === false ? 'category2' : 'category1',
     start: d['source-uniID'],
     end: d['target-uniID'],
     value: d.percentage
   }
 })
+*/
+
+/*
+function anonymizeData(data) {
+    let idMap = new Map();
+    let labelMap = new Map();
+    let idCounter = 0;
+    let labelCounter = 0;
+
+    function getIdReplacement(id) {
+        if (!idMap.has(id)) {
+            idMap.set(id, `id${idCounter++}`);
+        }
+        return idMap.get(id);
+    }
+
+    function getLabelReplacement(label) {
+        if (!labelMap.has(label)) {
+            labelMap.set(label, `label${labelCounter++}`);
+        }
+        return labelMap.get(label);
+    }
+
+    // Anonymize nodes
+    data.nodes.forEach((node) => {
+        node.id = getIdReplacement(node.id);
+        if (node.label) {
+            node.label = getLabelReplacement(node.label);
+        }
+    });
+
+    // Anonymize edges
+    data.edges.forEach((edge) => {
+        edge.id = getIdReplacement(edge.id);
+        edge.start = getIdReplacement(edge.start);
+        edge.end = getIdReplacement(edge.end);
+        if (edge.label) {
+            edge.label = getLabelReplacement(edge.label);
+        }
+    });
+
+    return data;
+}
+
+
+console.log(JSON.stringify(anonymizeData(data), null, 2));
 */
