@@ -91,23 +91,23 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BUBBLES
 
 let force: d3.Simulation<d3.SimulationNodeDatum, undefined> | undefined
 
-function makeForce (bubblesSelection: d3.Selection<SVGGElement, any, any, any>, fullParams: BubblesParams) {
+function makeForce (bubblesSelection: d3.Selection<SVGGElement, BubblesDatum, any, any>, fullParams: BubblesParams) {
   return d3.forceSimulation()
     .velocityDecay(fullParams.force!.velocityDecay!)
     // .alphaDecay(0.2)
     .force(
       "collision",
       d3.forceCollide()
-        .radius(d => {
-          // @ts-ignore
+        .radius((d: d3.SimulationNodeDatum & BubblesDatum) => {
           return d.r + fullParams.force!.collisionSpacing
         })
         // .strength(0.01)
     )
-    .force("charge", d3.forceManyBody().strength((d) => {
-      // @ts-ignore
+    .force("charge", d3.forceManyBody().strength((d: d3.SimulationNodeDatum & BubblesDatum) => {
       return - Math.pow(d.r, 2.0) * fullParams.force!.strength
     }))
+    // .force("charge", d3.forceManyBody().strength(-2000))
+    // .force("collision", d3.forceCollide(60).strength(1)) // @Q@ 60為泡泡的R，暫時是先寫死的
     // .force("x", d3.forceX().strength(forceStrength).x(this.graphicWidth / 2))
     // .force("y", d3.forceY().strength(forceStrength).y(this.graphicHeight / 2))
     .on("tick", () => {
@@ -121,6 +121,7 @@ function makeForce (bubblesSelection: d3.Selection<SVGGElement, any, any, any>, 
         // .attr("cx", (d) => d.x)
         // .attr("cy", (d) => d.y)
     })
+
 }
 
 
