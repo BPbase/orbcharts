@@ -271,10 +271,10 @@ export function transposeData<T> (seriesDirection: SeriesDirection, data: T[][])
 
 
 export function seriesColorPredicate (seriesIndex: number, chartParams: ChartParams) {
-  return seriesIndex < chartParams.colors[chartParams.colorScheme].series.length
-    ? chartParams.colors[chartParams.colorScheme].series[seriesIndex]
-    : chartParams.colors[chartParams.colorScheme].series[
-      seriesIndex % chartParams.colors[chartParams.colorScheme].series.length
+  return seriesIndex < chartParams.colors[chartParams.colorScheme].label.length
+    ? chartParams.colors[chartParams.colorScheme].label[seriesIndex]
+    : chartParams.colors[chartParams.colorScheme].label[
+      seriesIndex % chartParams.colors[chartParams.colorScheme].label.length
     ]
 }
 

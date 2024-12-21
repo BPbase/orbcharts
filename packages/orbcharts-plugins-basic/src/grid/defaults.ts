@@ -28,7 +28,7 @@ export const DEFAULT_LINE_AREAS_PARAMS: LineAreasParams = {
 export const DEFAULT_DOTS_PARAMS: DotsParams = {
   radius: 4,
   fillColorType: 'white',
-  strokeColorType: 'series',
+  strokeColorType: 'label',
   strokeWidth: 2,
   // strokeWidthWhileHighlight: 3,
   onlyShowHighlighted: false

@@ -8,8 +8,8 @@ import type {
 export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
   node: {
     dotRadius: 10,
-    dotFillColorType: 'series',
-    dotStrokeColorType: 'series',
+    dotFillColorType: 'label',
+    dotStrokeColorType: 'label',
     dotStrokeWidth: 1,
     dotStyleFn: (node) => '',
     labelColorType: 'primary',

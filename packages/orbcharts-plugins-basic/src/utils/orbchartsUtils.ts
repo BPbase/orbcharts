@@ -20,8 +20,8 @@ export function getMinMaxValue (data: (ComputedDatumBase & ComputedDatumBaseValu
 export function getColor (colorType: ColorType, fullChartParams: ChartParams) {
   const colors = fullChartParams.colors[fullChartParams.colorScheme]
   // 對應series資料中第1個顏色
-  if (colorType === 'series') {
-    return colors.series[0]
+  if (colorType === 'label') {
+    return colors.label[0]
   }
   // 對應colorType設定的顏色
   // return colors[colorType] != null
@@ -53,12 +53,12 @@ export function getCategoryValueColor ({ datum, colorType, fullChartParams }: { 
 // 取得Datum顏色 @Q@ 待重構完後刪除
 export function getDatumColor ({ datum, colorType, fullChartParams }: { datum: ComputedDatumBase, colorType: ColorType, fullChartParams: ChartParams }) {
   // 對應series資料中的顏色
-  if (colorType === 'series') {
+  if (colorType === 'label') {
     if ((datum as unknown as ComputedDatumBaseSeries).color) {
       return (datum as unknown as ComputedDatumBaseSeries).color
     } else {
       // 非series類型的資料則回傳陣列中第1個顏色
-      return fullChartParams.colors[fullChartParams.colorScheme].series[0]
+      return fullChartParams.colors[fullChartParams.colorScheme].label[0]
     }
   }
   // 對應colorType設定的顏色

@@ -82,15 +82,15 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
 
 export const DEFAULT_SCATTER_PARAMS: ScatterParams = {
   radius: 5,
-  fillColorType: 'series',
-  strokeColorType: 'series',
+  fillColorType: 'label',
+  strokeColorType: 'label',
   strokeWidth: 0,
 }
 
 export const DEFAULT_SCATTER_BUBBLES_PARAMS: ScatterBubblesParams = {
   // radius: 5,
-  fillColorType: 'series',
-  strokeColorType: 'series',
+  fillColorType: 'label',
+  strokeColorType: 'label',
   strokeWidth: 0,
   valueLinearOpacity: [0.8, 0.8],
   arcScaleType: 'area',

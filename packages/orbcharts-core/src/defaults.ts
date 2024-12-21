@@ -56,7 +56,7 @@ export const DEFAULT_CHART_PARAMS: ChartParams = {
   colorScheme: 'light',
   colors: {
     light: {
-      series: ['#67B7DC', '#6794DC', '#6771DC', '#8067DC', '#A367DC', '#C767DC', '#DC67CE', '#DC67AB', '#DC6788', '#DC6967', '#DC8C67', '#DCAF67'],
+      label: ['#67B7DC', '#6794DC', '#6771DC', '#8067DC', '#A367DC', '#C767DC', '#DC67CE', '#DC67AB', '#DC6788', '#DC6967', '#DC8C67', '#DCAF67'],
       // primary: '#454545',
       primary: '#1b1e23',
       secondary: '#e1e1e1',
@@ -64,7 +64,7 @@ export const DEFAULT_CHART_PARAMS: ChartParams = {
       background: '#ffffff'
     },
     dark: {
-      series: ['#67B7DC', '#6794DC', '#6771DC', '#8067DC', '#A367DC', '#C767DC', '#DC67CE', '#DC67AB', '#DC6788', '#DC6967', '#DC8C67', '#DCAF67'],
+      label: ['#67B7DC', '#6794DC', '#6771DC', '#8067DC', '#A367DC', '#C767DC', '#DC67CE', '#DC67AB', '#DC6788', '#DC6967', '#DC8C67', '#DCAF67'],
       primary: '#f0f0f0',
       secondary: '#e1e1e1',
       white: '#ffffff',
