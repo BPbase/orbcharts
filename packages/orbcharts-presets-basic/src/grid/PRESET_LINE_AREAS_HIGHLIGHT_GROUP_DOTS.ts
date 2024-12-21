@@ -18,11 +18,11 @@ export const PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS: PresetPartial<'grid', Parti
     highlightTarget: 'group'
   },
   dataFormatter: {
-    grid: {
+    // grid: {
       groupAxis: {
         scalePadding: 0
       }
-    }
+    // }
   },
   allPluginParams: {
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,

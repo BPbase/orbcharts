@@ -15,10 +15,10 @@ export const PRESET_GRID_SEPARATE_SERIES: PresetPartial<'grid', Partial<PresetGr
     },
   },
   dataFormatter: {
-    grid: {
+    // grid: {
       // seriesSlotIndexes: [0, 1],
       separateSeries: true,
-    },
+    // },
   },
   allPluginParams: {
     // ...ALL_PLUGIN_PARAMS_GRID,

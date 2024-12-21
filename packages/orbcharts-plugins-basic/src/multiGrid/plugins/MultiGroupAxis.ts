@@ -109,7 +109,7 @@ export const MultiGroupAxis = defineMultiGridPlugin(pluginConfig)(({ selection, 
 
           const isSeriesSeprate$ = d.dataFormatter$.pipe(
             takeUntil(destroy$),
-            map(d => d.grid.separateSeries),
+            map(d => d.separateSeries),
             distinctUntilChanged(),
             shareReplay(1)
           )

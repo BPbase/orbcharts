@@ -104,9 +104,9 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
         const gridDataFormatter: DataFormatterGrid = {
           type: 'grid',
           visibleFilter: data.fullDataFormatter.visibleFilter as any,
-          grid: {
-            ...grid
-          },
+          // grid: {
+            ...grid,
+          // },
           container: {
             ...data.fullDataFormatter.container
           }
@@ -137,7 +137,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
         // )
 
         const isSeriesSeprate$ = gridDataFormatter$.pipe(
-          map(d => d.grid.separateSeries),
+          map(d => d.separateSeries),
           distinctUntilChanged(),
           shareReplay(1)
         )

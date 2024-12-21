@@ -18,11 +18,11 @@ export const PRESET_LINE_AREAS_ROTATE_AXIS_LABEL: PresetPartial<'grid', Partial<
     highlightTarget: 'series'
   },
   dataFormatter: {
-    grid: {
+    // grid: {
       groupAxis: {
         scalePadding: 0
       }
-    }
+    // }
   },
   allPluginParams: {
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,

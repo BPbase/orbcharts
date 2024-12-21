@@ -17,7 +17,7 @@ export const PRESET_BARS_HORIZONTAL_AND_THIN: PresetPartial<'grid', Partial<Pres
     },
   },
   dataFormatter: {
-    grid: {
+    // grid: {
       valueAxis: {
         position: 'bottom'
         // position: 'top'
@@ -30,7 +30,7 @@ export const PRESET_BARS_HORIZONTAL_AND_THIN: PresetPartial<'grid', Partial<Pres
         // position: 'bottom'
         // position: 'top'
       },
-    }
+    // }
   },
   allPluginParams: {
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,

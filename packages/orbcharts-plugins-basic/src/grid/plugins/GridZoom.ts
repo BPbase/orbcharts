@@ -76,7 +76,7 @@ export const GridZoom = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //   })
 
   const initGroupAxis$ = observer.fullDataFormatter$.pipe(
-    map(d => d.grid.groupAxis),
+    map(d => d.groupAxis),
     // 只用第一次資料來計算scale才不會造成每次變動都受到影響
     first()
   )
@@ -156,7 +156,7 @@ export const GridZoom = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
           return Math.min(data.groupMaxIndex, Math.max(groupMinIndex, n));
         }
         
-        const zoomedDomain = data.fullDataFormatter.grid.groupAxis.position === 'bottom' || data.fullDataFormatter.grid.groupAxis.position === 'top'
+        const zoomedDomain = data.fullDataFormatter.groupAxis.position === 'bottom' || data.fullDataFormatter.groupAxis.position === 'top'
           ? t.rescaleX(shadowScale)
             .domain()
             .map(mapGroupindex)
@@ -193,13 +193,13 @@ export const GridZoom = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
 
         const newDataFormatter: DataFormatterGrid = {
           ...data.fullDataFormatter,
-          grid: {
-            ...data.fullDataFormatter.grid,
+          // grid: {
+            // ...data.fullDataFormatter.grid,
             groupAxis: {
-              ...data.fullDataFormatter.grid.groupAxis,
+              ...data.fullDataFormatter.groupAxis,
               scaleDomain: zoomedDomain
             }
-          }
+          // }
         }
         subject.dataFormatter$.next(newDataFormatter)
       })

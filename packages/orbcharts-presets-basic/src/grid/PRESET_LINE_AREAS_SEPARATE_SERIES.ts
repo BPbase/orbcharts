@@ -18,13 +18,13 @@ export const PRESET_LINE_AREAS_SEPARATE_SERIES: PresetPartial<'grid', Partial<Pr
     highlightTarget: 'series'
   },
   dataFormatter: {
-    grid: {
+    // grid: {
       // seriesSlotIndexes: [0, 1],
       separateSeries: true,
       groupAxis: {
         scalePadding: 0
       }
-    },
+    // },
   },
   allPluginParams: {
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,

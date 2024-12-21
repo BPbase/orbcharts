@@ -10,15 +10,15 @@ import type {
 
 export type SeriesDirection = 'row' | 'column' // default: 'row'
 
-export interface DataFormatterGrid extends DataFormatterBase<'grid'> {
+export interface DataFormatterGrid extends DataFormatterBase<'grid'>, DataFormatterGridGrid {
   visibleFilter: VisibleFilter<'grid'>
-  grid: DataFormatterGridGrid
+  // grid: DataFormatterGridGrid
   container: DataFormatterContainer
 }
 
-export interface DataFormatterGridPartial extends DataFormatterBasePartial<'grid'> {
+export interface DataFormatterGridPartial extends DataFormatterBasePartial<'grid'>, DataFormatterGridGridPartial {
   visibleFilter?: VisibleFilter<'grid'>
-  grid?: DataFormatterGridGridPartial
+  // grid?: DataFormatterGridGridPartial
   container?: Partial<DataFormatterContainer>
 }
 

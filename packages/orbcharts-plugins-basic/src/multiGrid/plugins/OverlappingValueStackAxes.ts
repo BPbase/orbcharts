@@ -195,13 +195,13 @@ export const OverlappingValueStackAxes = defineMultiGridPlugin(pluginConfig)(({ 
       return <DataFormatterGrid>{
         type: 'grid',
         visibleFilter: data.fullDataFormatter.visibleFilter as any,
-        grid: {
+        // grid: {
           ...data.fullDataFormatter.gridList[data.secondGridIndex],
           valueAxis: {
             ...data.fullDataFormatter.gridList[data.secondGridIndex].valueAxis,
             position: reversePosition
-          }
-        },
+          },
+        // },
         container: {
           ...data.fullDataFormatter.container
         }

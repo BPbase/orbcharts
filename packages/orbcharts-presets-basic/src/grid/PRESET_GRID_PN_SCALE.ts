@@ -15,12 +15,12 @@ export const PRESET_GRID_PN_SCALE: PresetPartial<'grid', Partial<PresetGridPlugi
     },
   },
   dataFormatter: {
-    grid: {
+    // grid: {
       valueAxis: {
         scaleDomain: ['auto', 'auto'],
         scaleRange: [0.05, 0.95],
       },
-    }
+    // }
   },
   allPluginParams: {
     // ...ALL_PLUGIN_PARAMS_GRID,

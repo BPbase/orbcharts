@@ -43,7 +43,7 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
 
   // 未篩選group範圍前的group scale（ * 不受到dataFormatter設定影響）
   function createOriginGroupScale (computedData: ComputedDatumGrid[][], dataFormatter: DataFormatterGrid, layout: Layout) {
-    const groupAxisWidth = (dataFormatter.grid.groupAxis.position === 'top' || dataFormatter.grid.groupAxis.position === 'bottom')
+    const groupAxisWidth = (dataFormatter.groupAxis.position === 'top' || dataFormatter.groupAxis.position === 'bottom')
       ? layout.width
       : layout.height
     const groupEndIndex = computedData[0] ? computedData[0].length - 1 : 0
@@ -60,7 +60,7 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
 
   // 未篩選group範圍及visible前的value scale（ * 不受到dataFormatter設定影響）
   function createOriginValueScale (computedData: ComputedDatumGrid[][], dataFormatter: DataFormatterGrid, layout: Layout) {
-    const valueAxisWidth = (dataFormatter.grid.valueAxis.position === 'left' || dataFormatter.grid.valueAxis.position === 'right')
+    const valueAxisWidth = (dataFormatter.valueAxis.position === 'left' || dataFormatter.valueAxis.position === 'right')
       ? layout.height
       : layout.width
   
@@ -148,8 +148,8 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
     ).subscribe(data => {
       
       const axisSize = calcAxesSize({
-        xAxisPosition: data.fullDataFormatter.grid.groupAxis.position,
-        yAxisPosition: data.fullDataFormatter.grid.valueAxis.position,
+        xAxisPosition: data.fullDataFormatter.groupAxis.position,
+        yAxisPosition: data.fullDataFormatter.valueAxis.position,
         width: data.layout.width,
         height: data.layout.height,
       })
@@ -234,7 +234,7 @@ export const gridContainerPositionObservable = ({ computedData$, fullDataFormatt
     switchMap(async (d) => d),
     map(data => {
       
-      if (data.fullDataFormatter.grid.separateSeries) {
+      if (data.fullDataFormatter.separateSeries) {
         // -- 依slotIndexes計算 --
         return calcGridContainerLayout(data.layout, data.fullDataFormatter.container, data.computedData.length)
         // return data.computedData.map((seriesData, seriesIndex) => {
@@ -323,7 +323,7 @@ export const groupScaleDomainValueObservable = ({ computedData$, fullDataFormatt
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-      const groupAxis = data.fullDataFormatter.grid.groupAxis
+      const groupAxis = data.fullDataFormatter.groupAxis
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
       // const groupScaleDomainMin = groupAxis.scaleDomain[0] === 'min'
@@ -472,8 +472,8 @@ export const gridAxesTransformObservable = ({ fullDataFormatter$, layout$ }: {
       switchMap(async (d) => d),
     ).subscribe(data => {
       const axesTransformData = calcAxesTransform({
-        xAxis: data.fullDataFormatter.grid.groupAxis,
-        yAxis: data.fullDataFormatter.grid.valueAxis,
+        xAxis: data.fullDataFormatter.groupAxis,
+        yAxis: data.fullDataFormatter.valueAxis,
         width: data.layout.width,
         height: data.layout.height
       })
@@ -634,8 +634,8 @@ export const gridGraphicTransformObservable = ({ computedData$, groupScaleDomain
     ).subscribe(data => {
       const dataAreaTransformData = calcGridDataAreaTransform ({
         data: data.computedData,
-        groupAxis: data.fullDataFormatter.grid.groupAxis,
-        valueAxis: data.fullDataFormatter.grid.valueAxis,
+        groupAxis: data.fullDataFormatter.groupAxis,
+        valueAxis: data.fullDataFormatter.valueAxis,
         groupScaleDomainValue: data.groupScaleDomainValue,
         filteredMinMaxValue: data.filteredMinMaxValue,
         width: data.layout.width,

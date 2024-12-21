@@ -180,18 +180,18 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
   //   ).subscribe(data => {
   //     const groupMin = 0
   //     const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-  //     const groupScaleDomainMin = data.dataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-  //       ? groupMin - data.dataFormatter.grid.groupAxis.scalePadding
-  //       : data.dataFormatter.grid.groupAxis.scaleDomain[0] as number - data.dataFormatter.grid.groupAxis.scalePadding
-  //     const groupScaleDomainMax = data.dataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
-  //       ? groupMax + data.dataFormatter.grid.groupAxis.scalePadding
-  //       : data.dataFormatter.grid.groupAxis.scaleDomain[1] as number + data.dataFormatter.grid.groupAxis.scalePadding
+  //     const groupScaleDomainMin = data.dataFormatter.groupAxis.scaleDomain[0] === 'auto'
+  //       ? groupMin - data.dataFormatter.groupAxis.scalePadding
+  //       : data.dataFormatter.groupAxis.scaleDomain[0] as number - data.dataFormatter.groupAxis.scalePadding
+  //     const groupScaleDomainMax = data.dataFormatter.groupAxis.scaleDomain[1] === 'auto'
+  //       ? groupMax + data.dataFormatter.groupAxis.scalePadding
+  //       : data.dataFormatter.groupAxis.scaleDomain[1] as number + data.dataFormatter.groupAxis.scalePadding
       
   //     // const groupingAmount = data.computedData[0]
   //     //   ? data.computedData[0].length
   //     //   : 0
 
-  //     let _labels = data.dataFormatter.grid.seriesDirection === 'row'
+  //     let _labels = data.dataFormatter.seriesDirection === 'row'
   //       ? (data.computedData[0] ?? []).map(d => d.groupLabel)
   //       : data.computedData.map(d => d[0].groupLabel)
 
@@ -218,13 +218,13 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
     map(data => {
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-      //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
-      //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
-        ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
-        : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
+      // const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] === 'auto'
+      //   ? groupMin - data.fullDataFormatter.groupAxis.scalePadding
+      //   : data.fullDataFormatter.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.groupAxis.scalePadding
+      const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] - data.fullDataFormatter.groupAxis.scalePadding
+      const groupScaleDomainMax = data.fullDataFormatter.groupAxis.scaleDomain[1] === 'max'
+        ? groupMax + data.fullDataFormatter.groupAxis.scalePadding
+        : data.fullDataFormatter.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.groupAxis.scalePadding
 
       return [groupScaleDomainMin, groupScaleDomainMax]
     }),
@@ -237,7 +237,7 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
   }).pipe(
     switchMap(async d => d),
     map(data => {
-      return data.fullDataFormatter.grid.seriesDirection === 'row'
+      return data.fullDataFormatter.seriesDirection === 'row'
         ? (data.computedData[0] ?? []).map(d => d.groupLabel)
         : data.computedData.map(d => d[0].groupLabel)
     })
@@ -293,22 +293,22 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
       switchMap(async (d) => d),
     ).subscribe(data => {
       
-      const reverse = data.dataFormatter.grid.valueAxis.position === 'right'
-        || data.dataFormatter.grid.valueAxis.position === 'bottom'
+      const reverse = data.dataFormatter.valueAxis.position === 'right'
+        || data.dataFormatter.valueAxis.position === 'bottom'
           ? true : false
 
       // 比例尺座標對應非連續資料索引
       const xIndexScale = createAxisToLabelIndexScale({
         axisLabels: data.scaleRangeGroupLabels,
         axisWidth: data.axisSize.width,
-        padding: data.dataFormatter.grid.groupAxis.scalePadding,
+        padding: data.dataFormatter.groupAxis.scalePadding,
         reverse
       })
 
       // 依比例尺位置計算座標
       const axisValuePredicate = (event: any) => {
-        return data.dataFormatter.grid.groupAxis.position === 'bottom'
-          || data.dataFormatter.grid.groupAxis.position === 'top'
+        return data.dataFormatter.groupAxis.position === 'bottom'
+          || data.dataFormatter.groupAxis.position === 'top'
             ? event.offsetX - data.fullChartParams.padding.left
             : event.offsetY - data.fullChartParams.padding.top
       }
@@ -364,13 +364,13 @@ export const gridGroupPositionObservable = ({ rootSelection, fullDataFormatter$,
     map(data => {
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-      //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
-      //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
-        ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
-        : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
+      // const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] === 'auto'
+      //   ? groupMin - data.fullDataFormatter.groupAxis.scalePadding
+      //   : data.fullDataFormatter.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.groupAxis.scalePadding
+      const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] - data.fullDataFormatter.groupAxis.scalePadding
+      const groupScaleDomainMax = data.fullDataFormatter.groupAxis.scaleDomain[1] === 'max'
+        ? groupMax + data.fullDataFormatter.groupAxis.scalePadding
+        : data.fullDataFormatter.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.groupAxis.scalePadding
 
       return [groupScaleDomainMin, groupScaleDomainMax]
     }),
@@ -383,7 +383,7 @@ export const gridGroupPositionObservable = ({ rootSelection, fullDataFormatter$,
   }).pipe(
     switchMap(async d => d),
     map(data => {
-      return data.fullDataFormatter.grid.seriesDirection === 'row'
+      return data.fullDataFormatter.seriesDirection === 'row'
         ? (data.computedData[0] ?? []).map(d => d.groupLabel)
         : data.computedData.map(d => d[0].groupLabel)
     })
@@ -404,7 +404,7 @@ export const gridGroupPositionObservable = ({ rootSelection, fullDataFormatter$,
 
   const reverse$ = fullDataFormatter$.pipe(
     map(d => {
-      return d.grid.valueAxis.position === 'right' || d.grid.valueAxis.position === 'bottom'
+      return d.valueAxis.position === 'right' || d.valueAxis.position === 'bottom'
           ? true
           : false
     })
@@ -422,7 +422,7 @@ export const gridGroupPositionObservable = ({ rootSelection, fullDataFormatter$,
       return createAxisToLabelIndexScale({
         axisLabels: data.scaleRangeGroupLabels,
         axisWidth: data.gridAxesSize.width,
-        padding: data.fullDataFormatter.grid.groupAxis.scalePadding,
+        padding: data.fullDataFormatter.groupAxis.scalePadding,
         reverse: data.reverse
       })
     })
@@ -463,8 +463,8 @@ export const gridGroupPositionObservable = ({ rootSelection, fullDataFormatter$,
         offsetX: data.rootMousemove.offsetX * data.columnAmount % data.layout.rootWidth,
         offsetY: data.rootMousemove.offsetY * data.rowAmount % data.layout.rootHeight
       }
-      return data.fullDataFormatter.grid.groupAxis.position === 'bottom'
-          || data.fullDataFormatter.grid.groupAxis.position === 'top'
+      return data.fullDataFormatter.groupAxis.position === 'bottom'
+          || data.fullDataFormatter.groupAxis.position === 'top'
             ? eventData.offsetX - data.fullChartParams.padding.left
             : eventData.offsetY - data.fullChartParams.padding.top
     })

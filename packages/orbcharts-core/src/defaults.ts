@@ -163,9 +163,9 @@ export const DEFAULT_DATA_FORMATTER_GRID_GRID: DataFormatterGridGrid = {
 export const DEFAULT_DATA_FORMATTER_GRID: DataFormatterGrid = {
   type: 'grid',
   visibleFilter: (datum, context) => true,
-  grid: {
-    ...DEFAULT_DATA_FORMATTER_GRID_GRID
-  },
+  // grid: {
+    ...DEFAULT_DATA_FORMATTER_GRID_GRID,
+  // },
   container: {
     ...DEFAULT_DATA_FORMATTER_CONTAINER
   }

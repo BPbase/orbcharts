@@ -76,16 +76,16 @@ export const computedDataFn: ComputedDataFn<'grid'> = (context) => {
   try {
     
     // 依seriesDirection轉置資料矩陣
-    const transposedDataGrid = createTransposedDataGrid(data, dataFormatter.grid)
+    const transposedDataGrid = createTransposedDataGrid(data, dataFormatter)
 
     const seriesLabels = createGridSeriesLabels({
       transposedDataGrid,
-      dataFormatterGrid: dataFormatter.grid,
+      dataFormatterGrid: dataFormatter,
       chartType: 'grid'
     })
     const groupLabels = createGridGroupLabels({
       transposedDataGrid,
-      dataFormatterGrid: dataFormatter.grid,
+      dataFormatterGrid: dataFormatter,
       chartType: 'grid'
     })
 
