@@ -1,6 +1,6 @@
 import type { 
   BaseBarsParams, 
-  BaseBarStackParams, 
+  BaseStackedBarParams, 
   BaseBarsTriangleParams, 
   BaseLinesParams, 
   BaseLineAreasParams, 
@@ -59,7 +59,7 @@ export interface MultiValueAxisParams extends BaseValueAxisParams {
   gridIndexes: number[] | 'all'
 }
 
-export interface MultiValueStackAxisParams extends BaseValueAxisParams {
+export interface MultiStackedValueAxisParams extends BaseValueAxisParams {
   gridIndexes: number[] | 'all'
 }
 
@@ -67,7 +67,7 @@ export interface MultiBarsParams extends BaseBarsParams {
   gridIndexes: number[] | 'all'
 }
 
-export interface MultiBarStackParams extends BaseBarStackParams {
+export interface MultiStackedBarParams extends BaseStackedBarParams {
   gridIndexes: number[] | 'all'
 }
 
@@ -93,4 +93,4 @@ export interface OverlappingValueAxesParams {
   gridIndexes: [number, number]
 }
 
-export interface OverlappingValueStackAxesParams extends OverlappingValueAxesParams {}
+export interface OverlappingStackedValueAxesParams extends OverlappingValueAxesParams {}

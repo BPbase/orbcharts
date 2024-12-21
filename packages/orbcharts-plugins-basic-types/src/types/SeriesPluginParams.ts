@@ -8,7 +8,7 @@ export interface BubblesParams {
     velocityDecay: number; // 衰減數
     collisionSpacing: number // 泡泡間距
   }
-  bubbleText: {
+  bubbleLabel: {
     fillRate: number
     lineHeight: number
     lineLengthMin: number
@@ -34,7 +34,7 @@ export interface PieParams {
 }
 
 export interface PieEventTextsParams {
-  eventFn: (d: EventSeries, eventName: EventName, t: number) => string[]
+  renderFn: (d: EventSeries) => string[] | string
   textAttrs: Array<{ [key:string]: string | number }>
   textStyles: Array<{ [key:string]: string | number }>
 }

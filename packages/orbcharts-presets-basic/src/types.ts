@@ -12,7 +12,7 @@ import type {
   // -- grid --
   BarsParams,
   BarsPNParams,
-  BarStackParams,
+  StackedBarParams,
   BarsTriangleParams,
   DotsParams,
   GridLegendParams,
@@ -23,11 +23,11 @@ import type {
   GridTooltipParams,
   GridZoomParams,
   ValueAxisParams,
-  ValueStackAxisParams,
+  StackedValueAxisParams,
 
   // -- multiGrid --
   MultiBarsParams,
-  MultiBarStackParams,
+  MultiStackedBarParams,
   MultiBarsTriangleParams,
   MultiDotsParams,
   MultiGridLegendParams,
@@ -36,9 +36,9 @@ import type {
   MultiLineAreasParams,
   MultiLinesParams,
   MultiValueAxisParams,
-  MultiValueStackAxisParams,
+  MultiStackedValueAxisParams,
   OverlappingValueAxesParams,
-  OverlappingValueStackAxesParams,
+  OverlappingStackedValueAxesParams,
 
   // -- multiValue --
   MultiValueLegendParams,
@@ -48,6 +48,11 @@ import type {
   XYAuxParams,
   XYAxesParams,
   XYZoomParams,
+
+  // -- relationship --
+  ForceDirectedParams,
+  RelationshipLegendParams,
+  RelationshipTooltipParams,
 
   // -- tree --
   TreeLegendParams,
@@ -107,7 +112,7 @@ export interface PresetSeriesTooltipParams {
 // grid的全部plugin參數
 export type PresetGridPluginParams = PresetBarsParams
   & PresetBarsPNParams
-  & PresetBarStackParams
+  & PresetStackedBarParams
   & PresetBarsTriangleParams
   & PresetDotsParams
   & PresetGridLegendParams
@@ -118,7 +123,7 @@ export type PresetGridPluginParams = PresetBarsParams
   & PresetLinesParams
   & PresetGridZoomParams
   & PresetValueAxisParams
-  & PresetValueStackAxisParams
+  & PresetStackedValueAxisParams
 
 export interface PresetBarsParams {
   Bars: Partial<BarsParams>
@@ -128,8 +133,8 @@ export interface PresetBarsPNParams {
   BarsPN: Partial<BarsPNParams>
 }
 
-export interface PresetBarStackParams {
-  BarStack: Partial<BarStackParams>
+export interface PresetStackedBarParams {
+  StackedBar: Partial<StackedBarParams>
 }
 
 export interface PresetBarsTriangleParams {
@@ -172,14 +177,14 @@ export interface PresetValueAxisParams {
   ValueAxis: Partial<ValueAxisParams>
 }
 
-export interface PresetValueStackAxisParams {
-  ValueStackAxis: Partial<ValueStackAxisParams>
+export interface PresetStackedValueAxisParams {
+  StackedValueAxis: Partial<StackedValueAxisParams>
 }
 
 // -- multiGrid --
 // multiGrid的全部plugin參數
 export type PresetMultiGridPluginParams = PresetMultiBarsParams
-  & PresetMultiBarStackParams
+  & PresetMultiStackedBarParams
   & PresetMultiBarsTriangleParams
   & PresetMultiDotsParams
   & PresetMultiGridLegendParams
@@ -188,12 +193,12 @@ export type PresetMultiGridPluginParams = PresetMultiBarsParams
   & PresetMultiLineAreasParams
   & PresetMultiLinesParams
   & PresetMultiValueAxisParams
-  & PresetMultiValueStackAxisParams
+  & PresetMultiStackedValueAxisParams
   & PresetOverlappingValueAxesParams
-  & PresetOverlappingValueStackAxesParams
+  & PresetOverlappingStackedValueAxesParams
 
 // multiGrid分開grid
-export type PresetMultiGridSepratedPluginParams = Omit<PresetMultiGridPluginParams, 'OverlappingValueAxes' | 'OverlappingValueStackAxes'>
+export type PresetMultiGridSepratedPluginParams = Omit<PresetMultiGridPluginParams, 'OverlappingValueAxes' | 'OverlappingStackedValueAxes'>
 
 // multiGrid重疊grid
 export type PresetMultiGridOverlappedPluginParams = Omit<PresetMultiGridPluginParams, 'PresetMultiGroupAxisParams' | 'PresetMultiValueAxisParams'>
@@ -202,8 +207,8 @@ export interface PresetMultiBarsParams {
   MultiBars: Partial<MultiBarsParams>
 }
 
-export interface PresetMultiBarStackParams {
-  MultiBarStack: Partial<MultiBarStackParams>
+export interface PresetMultiStackedBarParams {
+  MultiStackedBar: Partial<MultiStackedBarParams>
 }
 
 export interface PresetMultiBarsTriangleParams {
@@ -238,16 +243,16 @@ export interface PresetMultiValueAxisParams {
   MultiValueAxis: Partial<MultiValueAxisParams>
 }
 
-export interface PresetMultiValueStackAxisParams {
-  MultiValueStackAxis: Partial<MultiValueStackAxisParams>
+export interface PresetMultiStackedValueAxisParams {
+  MultiStackedValueAxis: Partial<MultiStackedValueAxisParams>
 }
 
 export interface PresetOverlappingValueAxesParams {
   OverlappingValueAxes: Partial<OverlappingValueAxesParams>
 }
 
-export interface PresetOverlappingValueStackAxesParams {
-  OverlappingValueStackAxes: Partial<OverlappingValueStackAxesParams>
+export interface PresetOverlappingStackedValueAxesParams {
+  OverlappingStackedValueAxes: Partial<OverlappingStackedValueAxesParams>
 }
 
 // -- multiValue --
@@ -263,8 +268,8 @@ export interface PresetMultiValueAxisParams {
   MultiValueAxis: Partial<MultiValueAxisParams>
 }
 
-export interface PresetMultiValueStackAxisParams {
-  MultiValueStackAxis: Partial<MultiValueStackAxisParams>
+export interface PresetMultiStackedValueAxisParams {
+  MultiStackedValueAxis: Partial<MultiStackedValueAxisParams>
 }
 
 export interface PresetMultiValueLegendParams {
@@ -293,6 +298,23 @@ export interface PresetXYAxesParams {
 
 export interface PresetXYZoomParams {
   XYZoom: Partial<XYZoomParams>
+}
+
+// -- relationship --
+export type PresetRelationshipPluginParams = PresetForceDirectedParams
+  & PresetRelationshipLegendParams
+  & PresetRelationshipTooltipParams
+
+export interface PresetForceDirectedParams {
+  ForceDirected: DeepPartial<ForceDirectedParams>
+}
+
+export interface PresetRelationshipLegendParams {
+  RelationshipLegend: Partial<RelationshipLegendParams>
+}
+
+export interface PresetRelationshipTooltipParams {
+  RelationshipTooltip: Partial<RelationshipTooltipParams>
 }
 
 // -- tree --

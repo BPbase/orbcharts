@@ -29,7 +29,7 @@ export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subje
   )
 
   const isSeriesSeprate$ = observer.fullDataFormatter$.pipe(
-    map(d => d.grid.separateSeries),
+    map(d => d.separateSeries),
     distinctUntilChanged(),
     shareReplay(1)
   )

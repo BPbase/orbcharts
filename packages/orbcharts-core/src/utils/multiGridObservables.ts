@@ -47,7 +47,7 @@ import {
   gridGraphicTransformObservable,
   gridGraphicReverseScaleObservable,
 } from './gridObservables'
-import { DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT } from '../defaults'
+import { DEFAULT_DATA_FORMATTER_MULTI_GRID_GRID } from '../defaults'
 import { calcGridContainerLayout } from './orbchartsUtils'
 
 // 每一個grid計算出來的所有Observable
@@ -95,7 +95,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
       // 每次重新計算時，清除之前的訂閱
       destroy$.next(undefined)
 
-      const defaultGrid = data.fullDataFormatter.gridList[0] ?? DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT
+      const defaultGrid = data.fullDataFormatter.gridList[0] ?? DEFAULT_DATA_FORMATTER_MULTI_GRID_GRID
 
       return data.computedData.map((gridComputedData, gridIndex) => {
 
@@ -104,9 +104,9 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
         const gridDataFormatter: DataFormatterGrid = {
           type: 'grid',
           visibleFilter: data.fullDataFormatter.visibleFilter as any,
-          grid: {
-            ...grid
-          },
+          // grid: {
+            ...grid,
+          // },
           container: {
             ...data.fullDataFormatter.container
           }
@@ -137,7 +137,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
         // )
 
         const isSeriesSeprate$ = gridDataFormatter$.pipe(
-          map(d => d.grid.separateSeries),
+          map(d => d.separateSeries),
           distinctUntilChanged(),
           shareReplay(1)
         )
@@ -314,7 +314,7 @@ export const multiGridContainerObservable = ({ computedData$, fullDataFormatter$
     switchMap(async (d) => d),
     map(data => {
 
-      const defaultGrid = data.fullDataFormatter.gridList[0] ?? DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT
+      const defaultGrid = data.fullDataFormatter.gridList[0] ?? DEFAULT_DATA_FORMATTER_MULTI_GRID_GRID
       const slotAmount = data.computedData.reduce((acc, gridData, gridIndex) => {
         const grid = data.fullDataFormatter.gridList[gridIndex] ?? defaultGrid
         const gridSlotAmount = grid.separateSeries

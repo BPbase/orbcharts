@@ -29,13 +29,13 @@ export const PRESET_MULTI_GRID_SEPARATE_GRID: PresetPartial<'multiGrid', Partial
     MultiValueAxis: {
       gridIndexes: 'all'
     },
-    MultiValueStackAxis: {
+    MultiStackedValueAxis: {
       gridIndexes: 'all'
     },
     MultiBars: {
       gridIndexes: 'all'
     },
-    MultiBarStack: {
+    MultiStackedBar: {
       gridIndexes: 'all'
     },
     MultiBarsTriangle: {

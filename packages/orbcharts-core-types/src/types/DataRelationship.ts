@@ -25,4 +25,5 @@ export interface Edge extends DatumBase {
   start: string
   end: string
   value?: number
+  categoryLabel?: string
 }

@@ -43,7 +43,7 @@ function getInvalidColumn<T> (data: T, rules: Partial<ValidatorRule<T>>) {
   const testOption: {[key in ToBeOption]: (value: any) => boolean} = {
     ColorType: (value: ColorType) => {
       return value === 'none'
-        || value === 'series'
+        || value === 'label'
         || value === 'primary'
         || value === 'secondary'
         || value === 'white'

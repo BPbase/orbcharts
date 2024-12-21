@@ -1,7 +1,7 @@
 import type {
   MultiGridLegendParams,
   MultiBarsParams,
-  MultiBarStackParams,
+  MultiStackedBarParams,
   MultiBarsTriangleParams,
   MultiLinesParams,
   MultiLineAreasParams,
@@ -9,9 +9,9 @@ import type {
   MultiGroupAxisParams,
   MultiGridTooltipParams,
   MultiValueAxisParams,
-  MultiValueStackAxisParams,
+  MultiStackedValueAxisParams,
   OverlappingValueAxesParams,
-  OverlappingValueStackAxesParams
+  OverlappingStackedValueAxesParams
 } from '../../lib/plugins-basic-types'
 import { measureTextWidth } from '../utils/commonUtils'
 
@@ -73,7 +73,7 @@ export const DEFAULT_MULTI_VALUE_AXIS_PARAMS: MultiValueAxisParams = {
   gridIndexes: [0]
 }
 
-export const DEFAULT_MULTI_VALUE_STACK_AXIS_PARAMS: MultiValueStackAxisParams = {
+export const DEFAULT_MULTI_STACKED_VALUE_AXIS_PARAMS: MultiStackedValueAxisParams = {
   ...DEFAULT_MULTI_VALUE_AXIS_PARAMS
 }
 
@@ -85,7 +85,7 @@ export const DEFAULT_MULTI_BARS_PARAMS: MultiBarsParams = {
   gridIndexes: [0]
 }
 
-export const DEFAULT_MULTI_BAR_STACK_PARAMS: MultiBarStackParams = {
+export const DEFAULT_MULTI_STACKED_BAR_PARAMS: MultiStackedBarParams = {
   barWidth: 0,
   barGroupPadding: 10,
   barRadius: false,
@@ -115,7 +115,7 @@ export const DEFAULT_MULTI_LINE_AREAS_PARAMS: MultiLineAreasParams = {
 export const DEFAULT_MULTI_DOTS_PARAMS: MultiDotsParams = {
   radius: 4,
   fillColorType: 'white',
-  strokeColorType: 'series',
+  strokeColorType: 'label',
   strokeWidth: 2,
   onlyShowHighlighted: false,
   gridIndexes: [1]
@@ -157,7 +157,7 @@ export const DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS: OverlappingValueAxesParams =
   gridIndexes: [0, 1]
 }
 
-export const DEFAULT_OVERLAPPING_VALUE_STACK_AXES_PARAMS: OverlappingValueStackAxesParams = {
+export const DEFAULT_OVERLAPPING_STACKED_VALUE_AXES_PARAMS: OverlappingStackedValueAxesParams = {
   ...DEFAULT_OVERLAPPING_VALUE_AXES_PARAMS
 }
 

@@ -20,19 +20,19 @@ import type {
   ContainerPositionScaled,
   Layout,
   TransformData } from '../../lib/core-types'
-import type { BaseBarStackParams } from '../../lib/plugins-basic-types'
+import type { BaseStackedBarParams } from '../../lib/plugins-basic-types'
 import { getD3TransitionEase } from '../utils/d3Utils'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 import { gridSelectionsObservable } from '../grid/gridObservables'
 import { shareReplay } from 'rxjs/operators'
 
-// export interface BaseBarStackParams {
+// export interface BaseStackedBarParams {
 //   barWidth: number
 //   barGroupPadding: number
 //   barRadius: number | boolean
 // }
 
-interface BaseBarStackContext {
+interface BaseStackedBarContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
   computedLayoutData$: Observable<ComputedLayoutDataGrid>
@@ -41,7 +41,7 @@ interface BaseBarStackContext {
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
-  fullParams$: Observable<BaseBarStackParams>
+  fullParams$: Observable<BaseStackedBarParams>
   fullDataFormatter$: Observable<DataFormatterGrid>
   fullChartParams$: Observable<ChartParams>
   gridAxesTransform$: Observable<TransformData>
@@ -70,7 +70,7 @@ interface RenderBarParams {
   zeroY: number
   groupLabels: string[]
   // barScale: d3.ScalePoint<string>
-  params: BaseBarStackParams
+  params: BaseStackedBarParams
   chartParams: ChartParams
   barWidth: number
   transformedBarRadius: [number, number][]
@@ -87,7 +87,7 @@ type ClipPathDatum = {
   height: number;
 }
 
-// const pluginName = 'BarStack'
+// const pluginName = 'StackedBar'
 // const rectClassName = getClassName(pluginName, 'rect')
 // group的delay在動畫中的佔比（剩餘部份的時間為圖形本身的動畫時間，因為delay時間和最後一個group的動畫時間加總為1）
 const groupDelayProportionOfDuration = 0.3
@@ -105,7 +105,7 @@ function calcBarWidth ({ axisWidth, groupAmount, barGroupPadding = 0 }: {
 
 }
 
-// function makeBarScale (barWidth: number, seriesLabels: string[], params: BarStackParams) {
+// function makeBarScale (barWidth: number, seriesLabels: string[], params: StackedBarParams) {
 //   const barHalfWidth = barWidth! / 2
 //   const barGroupWidth = barWidth * seriesLabels.length + params.barPadding! * seriesLabels.length
 //   return d3.scalePoint()
@@ -292,7 +292,7 @@ function highlight ({ selection, ids, fullChartParams }: {
 }
 
 
-export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName: string, {
+export const createBaseStackedBar: BasePluginFn<BaseStackedBarContext> = (pluginName: string, {
   selection,
   computedData$,
   computedLayoutData$,
@@ -488,13 +488,13 @@ export const createBaseBarStack: BasePluginFn<BaseBarStackContext> = (pluginName
     map(data => {
       const groupMin = 0
       const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      // const groupScaleDomainMin = data.dataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-      //   ? groupMin // - data.dataFormatter.grid.groupAxis.scalePadding
-      //   : data.dataFormatter.grid.groupAxis.scaleDomain[0] as number // - data.dataFormatter.grid.groupAxis.scalePadding
-      const groupScaleDomainMin = data.dataFormatter.grid.groupAxis.scaleDomain[0]
-      const groupScaleDomainMax = data.dataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
-        ? groupMax // + data.dataFormatter.grid.groupAxis.scalePadding
-        : data.dataFormatter.grid.groupAxis.scaleDomain[1] as number // + data.dataFormatter.grid.groupAxis.scalePadding
+      // const groupScaleDomainMin = data.dataFormatter.groupAxis.scaleDomain[0] === 'auto'
+      //   ? groupMin // - data.dataFormatter.groupAxis.scalePadding
+      //   : data.dataFormatter.groupAxis.scaleDomain[0] as number // - data.dataFormatter.groupAxis.scalePadding
+      const groupScaleDomainMin = data.dataFormatter.groupAxis.scaleDomain[0]
+      const groupScaleDomainMax = data.dataFormatter.groupAxis.scaleDomain[1] === 'max'
+        ? groupMax // + data.dataFormatter.groupAxis.scalePadding
+        : data.dataFormatter.groupAxis.scaleDomain[1] as number // + data.dataFormatter.groupAxis.scalePadding
 
       return [groupScaleDomainMin, groupScaleDomainMax]
     })

@@ -6,15 +6,15 @@ export type ComputedDataRelationship = {
 }
 
 export interface ComputedNode extends ComputedDatumBase, ComputedDatumBaseCategory, ComputedDatumBaseValue {
-  startNodes: ComputedNode[]
-  startNodeIds: string[]
-  endNodes: ComputedNode[]
-  endNodeIds: string[]
+  // startNodes: ComputedNode[]
+  // startNodeIds: string[]
+  // endNodes: ComputedNode[]
+  // endNodeIds: string[]
 }
 
-export interface ComputedEdge extends ComputedDatumBase {
+export interface ComputedEdge extends ComputedDatumBase, ComputedDatumBaseCategory, ComputedDatumBaseValue {
   startNode: ComputedNode
-  startNodeId: string
+  // startNodeId: string
   endNode: ComputedNode
-  endNodeId: string
+  // endNodeId: string
 }

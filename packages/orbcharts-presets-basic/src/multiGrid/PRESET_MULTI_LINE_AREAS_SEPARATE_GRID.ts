@@ -47,13 +47,13 @@ export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID: PresetPartial<'multiGrid', P
     MultiValueAxis: {
       gridIndexes: 'all'
     },
-    MultiValueStackAxis: {
+    MultiStackedValueAxis: {
       gridIndexes: 'all'
     },
     MultiBars: {
       gridIndexes: 'all'
     },
-    MultiBarStack: {
+    MultiStackedBar: {
       gridIndexes: 'all'
     },
     MultiBarsTriangle: {

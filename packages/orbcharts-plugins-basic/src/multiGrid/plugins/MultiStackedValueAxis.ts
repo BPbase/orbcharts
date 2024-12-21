@@ -15,7 +15,7 @@ import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { LAYER_INDEX_OF_AXIS } from '../../const'
 
-const pluginName = 'MultiValueStackAxis'
+const pluginName = 'MultiStackedValueAxis'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
@@ -81,7 +81,7 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_V
   }
 }
 
-export const MultiValueStackAxis = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
+export const MultiStackedValueAxis = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []
@@ -106,7 +106,7 @@ export const MultiValueStackAxis = defineMultiGridPlugin(pluginConfig)(({ select
 
           const isSeriesSeprate$ = d.dataFormatter$.pipe(
             takeUntil(destroy$),
-            map(d => d.grid.separateSeries),
+            map(d => d.separateSeries),
             distinctUntilChanged(),
             shareReplay(1)
           )

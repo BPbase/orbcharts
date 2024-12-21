@@ -1,7 +1,7 @@
 // import * as d3 from 'd3'
 import type { ComputedDataFn, DataGrid, DataGridDatum, DataFormatterGridGrid, ComputedDatumGrid } from '../../lib/core-types'
 import { formatValueToLabel, createDefaultDatumId, createDefaultSeriesLabel, createDefaultGroupLabel } from '../utils/orbchartsUtils'
-import { getMinAndMaxValue, transposeData, createGridSeriesLabels, createGridGroupLabels, seriesColorPredicate } from '../utils/orbchartsUtils'
+import { getMinMaxValue, transposeData, createGridSeriesLabels, createGridGroupLabels, seriesColorPredicate } from '../utils/orbchartsUtils'
 
 // 統一 DataGrid 格式、並欄列資料轉置為一致方式
 export function createTransposedDataGrid (data: DataGrid, dataFormatterGrid: DataFormatterGridGrid): DataGridDatum[][] {
@@ -76,16 +76,16 @@ export const computedDataFn: ComputedDataFn<'grid'> = (context) => {
   try {
     
     // 依seriesDirection轉置資料矩陣
-    const transposedDataGrid = createTransposedDataGrid(data, dataFormatter.grid)
+    const transposedDataGrid = createTransposedDataGrid(data, dataFormatter)
 
     const seriesLabels = createGridSeriesLabels({
       transposedDataGrid,
-      dataFormatterGrid: dataFormatter.grid,
+      dataFormatterGrid: dataFormatter,
       chartType: 'grid'
     })
     const groupLabels = createGridGroupLabels({
       transposedDataGrid,
-      dataFormatterGrid: dataFormatter.grid,
+      dataFormatterGrid: dataFormatter,
       chartType: 'grid'
     })
 

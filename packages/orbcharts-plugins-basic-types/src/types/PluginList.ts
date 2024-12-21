@@ -11,7 +11,7 @@ export type PluginListSeries = 'Bubbles'
 
 export type PluginListGrid = 'Bars'
   | 'BarsPN'
-  | 'BarStack'
+  | 'StackedBar'
   | 'BarsTriangle'
   | 'Dots'
   | 'GridLegend'
@@ -23,10 +23,10 @@ export type PluginListGrid = 'Bars'
   | 'Lines'
   // | 'ScalingArea'
   | 'ValueAxis'
-  | 'ValueStackAxis'
+  | 'StackedValueAxis'
 
 export type PluginListMultiGrid = 'MultiBars'
-  | 'MultiBarStack'
+  | 'MultiStackedBar'
   | 'MultiBarsTriangle'
   | 'MultiDots'
   | 'MultiGridLegend'
@@ -35,9 +35,9 @@ export type PluginListMultiGrid = 'MultiBars'
   | 'MultiLineAreas'
   | 'MultiLines'
   | 'MultiValueAxis'
-  | 'MultiValueStackAxis'
+  | 'MultiStackedValueAxis'
   | 'OverlappingValueAxes'
-  | 'OverlappingValueStackAxes'
+  | 'OverlappingStackedValueAxes'
 
 export type PluginListMultiValue = 'MultiValueLegend'
   | 'MultiValueTooltip'
@@ -47,6 +47,10 @@ export type PluginListMultiValue = 'MultiValueLegend'
   | 'XYAux'
   | 'XYAxes'
   | 'XYZoom'
+
+export type PluginListRelationship = 'ForceDirected'
+  | 'RelationshipLegend'
+  | 'RelationshipTooltip'
 
 export type PluginListTree = 'TreeLegend'
   | 'TreeMap'
@@ -62,8 +66,10 @@ export type PluginList<T extends ChartType> = T extends 'series'
       ? PluginListMultiGrid
       : T extends 'multiValue'
         ? PluginListMultiValue
-        : T extends 'tree'
-          ? PluginListTree
-          // : T extends 'noneData'
-          //   ? PluginListNoneData
-            : never
+        : T extends 'relationshiop'
+          ? PluginListRelationship
+          : T extends 'tree'
+            ? PluginListTree
+            // : T extends 'noneData'
+            //   ? PluginListNoneData
+              : never

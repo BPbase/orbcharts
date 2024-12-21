@@ -7,15 +7,15 @@ import {
   Observable } from 'rxjs'
 import type { DefinePluginConfig } from '../../../lib/core-types'
 import { defineGridPlugin } from '../../../lib/core'
-import { DEFAULT_BAR_STACK_PARAMS } from '../defaults'
+import { DEFAULT_STACKED_BAR_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
-import { createBaseBarStack } from '../../base/BaseBarStack'
+import { createBaseStackedBar } from '../../base/BaseStackedBar'
 
-const pluginName = 'BarStack'
+const pluginName = 'StackedBar'
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BAR_STACK_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_STACKED_BAR_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_BAR_STACK_PARAMS,
+  defaultParams: DEFAULT_STACKED_BAR_PARAMS,
   layerIndex: 5,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {
@@ -33,10 +33,10 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BAR_STA
   }
 }
 
-export const BarStack = defineGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
+export const StackedBar = defineGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
-  const unsubscribeBaseBars = createBaseBarStack(pluginName, {
+  const unsubscribeBaseBars = createBaseStackedBar(pluginName, {
     selection,
     computedData$: observer.computedData$,
     computedLayoutData$: observer.computedLayoutData$,

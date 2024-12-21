@@ -18,7 +18,7 @@ export const PRESET_LINE_AREAS_HORIZONTAL: PresetPartial<'grid', Partial<PresetG
     highlightTarget: 'series'
   },
   dataFormatter: {
-    grid: {
+    // grid: {
       valueAxis: {
         position: 'bottom'
       },
@@ -26,7 +26,7 @@ export const PRESET_LINE_AREAS_HORIZONTAL: PresetPartial<'grid', Partial<PresetG
         position: 'left',
         scalePadding: 0
       },
-    }
+    // }
   },
   allPluginParams: {
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,

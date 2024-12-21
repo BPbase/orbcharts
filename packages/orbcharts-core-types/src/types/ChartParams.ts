@@ -32,7 +32,7 @@ export interface Styles {
 }
 
 export interface ColorScheme {
-  series: string[]
+  label: string[]
   primary: string
   secondary: string
   white: string

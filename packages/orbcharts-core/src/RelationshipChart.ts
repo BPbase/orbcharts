@@ -1,7 +1,7 @@
 import type {
   ChartEntity,
   ChartOptionsPartial } from '../lib/core-types'
-import { DATA_FORMATTER_RELATIONAL_DEFAULT} from './defaults'
+import { DEFAULT_DATA_FORMATTER_RELATIONAL} from './defaults'
 import { dataFormatterValidator } from './relationship/dataFormatterValidator'
 import { computedDataFn } from './relationship/computedDataFn'
 import { dataValidator } from './relationship/dataValidator'
@@ -12,7 +12,7 @@ export class RelationshipChart extends AbstractChart<'relationship'> implements 
   constructor (element: HTMLElement | Element, options?: ChartOptionsPartial<'relationship'>) {
     super(
       {
-        defaultDataFormatter: DATA_FORMATTER_RELATIONAL_DEFAULT,
+        defaultDataFormatter: DEFAULT_DATA_FORMATTER_RELATIONAL,
         dataFormatterValidator,
         computedDataFn,
         dataValidator,

@@ -16,7 +16,7 @@ export const PRESET_GRID_HORIZONTAL: PresetPartial<'grid', Partial<PresetGridPlu
     },
   },
   dataFormatter: {
-    grid: {
+    // grid: {
       valueAxis: {
         position: 'bottom'
         // position: 'top'
@@ -29,7 +29,7 @@ export const PRESET_GRID_HORIZONTAL: PresetPartial<'grid', Partial<PresetGridPlu
         // position: 'bottom'
         // position: 'top'
       },
-    }
+    // }
   },
   allPluginParams: {
     // ...ALL_PLUGIN_PARAMS_GRID,

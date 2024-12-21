@@ -1,7 +1,7 @@
 import type {
   ChartEntity,
   ChartOptionsPartial } from '../lib/core-types'
-import { DATA_FORMATTER_MULTI_GRID_DEFAULT } from './defaults'
+import { DEFAULT_DATA_FORMATTER_MULTI_GRID } from './defaults'
 import { dataFormatterValidator } from './multiGrid/dataFormatterValidator'
 import { computedDataFn } from './multiGrid/computedDataFn'
 import { dataValidator } from './multiGrid/dataValidator'
@@ -12,7 +12,7 @@ export class MultiGridChart extends AbstractChart<'multiGrid'> implements ChartE
   constructor (element: HTMLElement | Element, options?: ChartOptionsPartial<'multiGrid'>) {
     super(
       {
-        defaultDataFormatter: DATA_FORMATTER_MULTI_GRID_DEFAULT,
+        defaultDataFormatter: DEFAULT_DATA_FORMATTER_MULTI_GRID,
         dataFormatterValidator,
         computedDataFn,
         dataValidator,

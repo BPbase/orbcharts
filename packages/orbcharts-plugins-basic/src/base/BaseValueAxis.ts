@@ -22,7 +22,7 @@ import type {
 } from '../../lib/core-types'
 import type { BaseValueAxisParams } from '../../lib/plugins-basic-types'
 import { parseTickFormatValue } from '../utils/d3Utils'
-import { getColor, getMinAndMaxValue, getClassName, getUniID } from '../utils/orbchartsUtils'
+import { getColor, getMinMaxValue, getClassName, getUniID } from '../utils/orbchartsUtils'
 
 // export interface BaseValueAxisParams {
 //   labelOffset: [number, number]
@@ -83,35 +83,35 @@ function renderAxisLabel ({ selection, textClassName, fullParams, axisLabelAlign
   const offsetY = fullParams.tickPadding + fullParams.labelOffset[1]
   let labelX = 0
   let labelY = 0
-  if (fullDataFormatter.grid.groupAxis.position === 'bottom') {
+  if (fullDataFormatter.groupAxis.position === 'bottom') {
     // labelY = - gridAxesSize.height - offsetY
     labelY = - offsetY
-    if (fullDataFormatter.grid.valueAxis.position === 'left') {
+    if (fullDataFormatter.valueAxis.position === 'left') {
       labelX = - offsetX
-    } else if (fullDataFormatter.grid.valueAxis.position === 'right') {
+    } else if (fullDataFormatter.valueAxis.position === 'right') {
       labelX = offsetX
     }
-  } else if (fullDataFormatter.grid.groupAxis.position === 'top') {
+  } else if (fullDataFormatter.groupAxis.position === 'top') {
     // labelY = gridAxesSize.height + offsetY
     labelY = offsetY
-    if (fullDataFormatter.grid.valueAxis.position === 'left') {
+    if (fullDataFormatter.valueAxis.position === 'left') {
       labelX = - offsetX
-    } else if (fullDataFormatter.grid.valueAxis.position === 'right') {
+    } else if (fullDataFormatter.valueAxis.position === 'right') {
       labelX = offsetX
     }
-  } else if (fullDataFormatter.grid.groupAxis.position === 'left') {
+  } else if (fullDataFormatter.groupAxis.position === 'left') {
     // labelX = gridAxesSize.width + offsetX
     labelX = offsetX
-    if (fullDataFormatter.grid.valueAxis.position === 'bottom') {
+    if (fullDataFormatter.valueAxis.position === 'bottom') {
       labelY = offsetY
-    } else if (fullDataFormatter.grid.valueAxis.position === 'top') {
+    } else if (fullDataFormatter.valueAxis.position === 'top') {
       labelY = - offsetY
     }
-  } else if (fullDataFormatter.grid.groupAxis.position === 'right') {
+  } else if (fullDataFormatter.groupAxis.position === 'right') {
     labelX = - offsetX
-    if (fullDataFormatter.grid.valueAxis.position === 'bottom') {
+    if (fullDataFormatter.valueAxis.position === 'bottom') {
       labelY = offsetY
-    } else if (fullDataFormatter.grid.valueAxis.position === 'top') {
+    } else if (fullDataFormatter.valueAxis.position === 'top') {
       labelY = - offsetY
     }
   }
@@ -142,7 +142,7 @@ function renderAxisLabel ({ selection, textClassName, fullParams, axisLabelAlign
         // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
         .attr('x', labelX)
         .attr('y', labelY)
-        .text(d => fullDataFormatter.grid.valueAxis.label)
+        .text(d => fullDataFormatter.valueAxis.label)
     })
     .attr('transform', d => `translate(0, ${gridAxesSize.height})`)
     // .attr('transform', d => `translate(${- fullParams.tickPadding + fullParams.labelOffset[0]}, ${gridAxesSize.height + fullParams.tickPadding + fullParams.labelOffset[1]})`)
@@ -176,16 +176,16 @@ function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gri
   // 刻度文字偏移
   let tickPadding = 0
   let textY = 0
-  if (fullDataFormatter.grid.valueAxis.position === 'left') {
+  if (fullDataFormatter.valueAxis.position === 'left') {
     tickPadding = fullParams.tickPadding
     textY = 0
-  } else if (fullDataFormatter.grid.valueAxis.position === 'right') {
+  } else if (fullDataFormatter.valueAxis.position === 'right') {
     tickPadding = - fullParams.tickPadding
     textY = 0
-  } else if (fullDataFormatter.grid.valueAxis.position === 'bottom') {
+  } else if (fullDataFormatter.valueAxis.position === 'bottom') {
     tickPadding = 0
     textY = fullParams.tickPadding
-  } else if (fullDataFormatter.grid.valueAxis.position === 'top') {
+  } else if (fullDataFormatter.valueAxis.position === 'top') {
     tickPadding = 0
     textY = - fullParams.tickPadding
   }
@@ -230,7 +230,7 @@ function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gri
   yText.style('transform', textReverseTransformWithRotate)
   
   // 抵消掉預設的偏移
-  if (fullDataFormatter.grid.valueAxis.position === 'bottom' || fullDataFormatter.grid.valueAxis.position === 'top') {
+  if (fullDataFormatter.valueAxis.position === 'bottom' || fullDataFormatter.valueAxis.position === 'top') {
     yText.attr('dy', 0)
   }
 
@@ -407,7 +407,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     })
   )
 
-  // const minAndMax$: Observable<[number, number]> = new Observable(subscriber => {
+  // const minMax$: Observable<[number, number]> = new Observable(subscriber => {
   //   combineLatest({
   //     fullDataFormatter: fullDataFormatter$,
   //     computedData: computedData$
@@ -417,13 +417,13 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   //   ).subscribe(data => {
   //     const groupMin = 0
   //     const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-  //     // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-  //     //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
-  //     //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
-  //     const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
-  //     const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
-  //       ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
-  //       : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     // const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] === 'auto'
+  //     //   ? groupMin - data.fullDataFormatter.groupAxis.scalePadding
+  //     //   : data.fullDataFormatter.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.groupAxis.scalePadding
+  //     const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] - data.fullDataFormatter.groupAxis.scalePadding
+  //     const groupScaleDomainMax = data.fullDataFormatter.groupAxis.scaleDomain[1] === 'max'
+  //       ? groupMax + data.fullDataFormatter.groupAxis.scalePadding
+  //       : data.fullDataFormatter.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.groupAxis.scalePadding
         
   //     const filteredData = data.computedData.map((d, i) => {
   //       return d.filter((_d, _i) => {
@@ -431,11 +431,11 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   //       })
   //     })
     
-  //     const filteredMinAndMax = getMinAndMaxValue(filteredData.flat())
-  //     if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
-  //       filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+  //     const filteredMinMax = getMinMaxValue(filteredData.flat())
+  //     if (filteredMinMax[0] === filteredMinMax[1]) {
+  //       filteredMinMax[0] = filteredMinMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
   //     }
-  //     subscriber.next(filteredMinAndMax)
+  //     subscriber.next(filteredMinMax)
   //   })
   // })
 
@@ -443,7 +443,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     combineLatest({
       fullDataFormatter: fullDataFormatter$,
       gridAxesSize: gridAxesSize$,
-      // minAndMax: minAndMax$
+      // minMax: minMax$
       filteredMinMaxValue: filteredMinMaxValue$
     }).pipe(
       takeUntil(destroy$),
@@ -460,8 +460,8 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
         maxValue,
         minValue,
         axisWidth: data.gridAxesSize.height,
-        scaleDomain: data.fullDataFormatter.grid.valueAxis.scaleDomain,
-        scaleRange: data.fullDataFormatter.grid.valueAxis.scaleRange
+        scaleDomain: data.fullDataFormatter.valueAxis.scaleDomain,
+        scaleRange: data.fullDataFormatter.valueAxis.scaleRange
       })
 
       subscriber.next(valueScale)
@@ -478,18 +478,18 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       let textAnchor: 'start' | 'middle' | 'end' = 'start'
       let dominantBaseline: 'auto' | 'middle' | 'hanging' = 'hanging'
 
-      if (data.fullDataFormatter.grid.valueAxis.position === 'left') {
+      if (data.fullDataFormatter.valueAxis.position === 'left') {
         textAnchor = 'end'
         dominantBaseline = 'middle'
-      } else if (data.fullDataFormatter.grid.valueAxis.position === 'right') {
+      } else if (data.fullDataFormatter.valueAxis.position === 'right') {
         textAnchor = 'start'
         dominantBaseline = 'middle'
-      } else if (data.fullDataFormatter.grid.valueAxis.position === 'bottom') {
+      } else if (data.fullDataFormatter.valueAxis.position === 'bottom') {
         textAnchor = data.fullParams.tickTextRotate
           ? 'end'
           : 'middle'
         dominantBaseline = 'hanging'
-      } else if (data.fullDataFormatter.grid.valueAxis.position === 'top') {
+      } else if (data.fullDataFormatter.valueAxis.position === 'top') {
         textAnchor = data.fullParams.tickTextRotate
           ? 'start'
           : 'middle'
@@ -508,22 +508,22 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
       let textAnchor: 'start' | 'middle' | 'end' = 'start'
       let dominantBaseline: 'auto' | 'middle' | 'hanging' = 'hanging'
 
-      if (d.grid.groupAxis.position === 'bottom') {
+      if (d.groupAxis.position === 'bottom') {
         dominantBaseline = 'auto'
-      } else if (d.grid.groupAxis.position === 'top') {
+      } else if (d.groupAxis.position === 'top') {
         dominantBaseline = 'hanging'
-      } else if (d.grid.groupAxis.position === 'left') {
+      } else if (d.groupAxis.position === 'left') {
         textAnchor = 'start'
-      } else if (d.grid.groupAxis.position === 'right') {
+      } else if (d.groupAxis.position === 'right') {
         textAnchor = 'end'
       }
-      if (d.grid.valueAxis.position === 'left') {
+      if (d.valueAxis.position === 'left') {
         textAnchor = 'end'
-      } else if (d.grid.valueAxis.position === 'right') {
+      } else if (d.valueAxis.position === 'right') {
         textAnchor = 'start'
-      } else if (d.grid.valueAxis.position === 'bottom') {
+      } else if (d.valueAxis.position === 'bottom') {
         dominantBaseline = 'hanging'
-      } else if (d.grid.valueAxis.position === 'top') {
+      } else if (d.valueAxis.position === 'top') {
         dominantBaseline = 'auto'
       }
       return {

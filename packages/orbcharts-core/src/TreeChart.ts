@@ -1,7 +1,7 @@
 import type {
   ChartEntity,
   ChartOptionsPartial } from '../lib/core-types'
-import { DATA_FORMATTER_TREE_DEFAULT } from './defaults'
+import { DEFAULT_DATA_FORMATTER_TREE } from './defaults'
 import { dataFormatterValidator } from './tree/dataFormatterValidator'
 import { computedDataFn } from './tree/computedDataFn'
 import { dataValidator } from './tree/dataValidator'
@@ -12,7 +12,7 @@ export class TreeChart extends AbstractChart<'tree'> implements ChartEntity<'tre
   constructor (element: HTMLElement | Element, options?: ChartOptionsPartial<'tree'>) {
     super(
       {
-        defaultDataFormatter: DATA_FORMATTER_TREE_DEFAULT,
+        defaultDataFormatter: DEFAULT_DATA_FORMATTER_TREE,
         dataFormatterValidator,
         computedDataFn,
         dataValidator,

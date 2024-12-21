@@ -22,7 +22,7 @@ export const PRESET_LINES_WITH_SOLID_DOTS: PresetPartial<'grid', Partial<PresetG
     Lines: {},
     Dots: {
       radius: 3,
-      fillColorType: 'series',
+      fillColorType: 'label',
       onlyShowHighlighted: false
     },
     GroupAxis: {},

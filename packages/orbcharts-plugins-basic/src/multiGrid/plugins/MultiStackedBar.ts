@@ -9,19 +9,19 @@ import {
 import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineMultiGridPlugin } from '../../../lib/core'
-import { DEFAULT_MULTI_BAR_STACK_PARAMS } from '../defaults'
-import { createBaseBarStack } from '../../base/BaseBarStack'
+import { DEFAULT_MULTI_STACKED_BAR_PARAMS } from '../defaults'
+import { createBaseStackedBar } from '../../base/BaseStackedBar'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 
-const pluginName = 'MultiBarStack'
+const pluginName = 'MultiStackedBar'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_BAR_STACK_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_STACKED_BAR_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_MULTI_BAR_STACK_PARAMS,
+  defaultParams: DEFAULT_MULTI_STACKED_BAR_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {
@@ -45,7 +45,7 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_B
   }
 }
 
-export const MultiBarStack = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
+export const MultiStackedBar = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []
@@ -70,12 +70,12 @@ export const MultiBarStack = defineMultiGridPlugin(pluginConfig)(({ selection, n
 
           const isSeriesSeprate$ = d.dataFormatter$.pipe(
             takeUntil(destroy$),
-            map(d => d.grid.separateSeries),
+            map(d => d.separateSeries),
             distinctUntilChanged(),
             shareReplay(1)
           )
 
-          unsubscribeFnArr[i] = createBaseBarStack(pluginName, {
+          unsubscribeFnArr[i] = createBaseStackedBar(pluginName, {
             selection: gridSelection,
             computedData$: d.computedData$,
             visibleComputedData$: d.visibleComputedData$,

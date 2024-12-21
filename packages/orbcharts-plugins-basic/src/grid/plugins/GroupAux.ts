@@ -225,18 +225,18 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
       // -- label偏移位置 --
       let rectX = - rectWidth / 2
       let rectY = -2
-      if (fullDataFormatter.grid.groupAxis.position === 'bottom') {
+      if (fullDataFormatter.groupAxis.position === 'bottom') {
         rectX = fullParams.labelRotate
           ? - rectWidth + rectHeight // 有傾斜時以末端對齊（+height是為了修正移動太多）
           : - rectWidth / 2
         rectY = 2
-      } else if (fullDataFormatter.grid.groupAxis.position === 'left') {
+      } else if (fullDataFormatter.groupAxis.position === 'left') {
         rectX = - rectWidth + 2
         rectY = - rectHeight / 2
-      } else if (fullDataFormatter.grid.groupAxis.position === 'right') {
+      } else if (fullDataFormatter.groupAxis.position === 'right') {
         rectX = - 2
         rectY = - rectHeight / 2
-      } else if (fullDataFormatter.grid.groupAxis.position === 'top') {
+      } else if (fullDataFormatter.groupAxis.position === 'top') {
         rectX = fullParams.labelRotate
           ? - rectWidth + rectHeight // 有傾斜時以末端對齊（+height是為了修正移動太多）
           : - rectWidth / 2
@@ -301,7 +301,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
           renderTspansOnAxis(d3.select(n[i]), {
             textArr: datum.textArr,
             textSizePx,
-            groupAxisPosition: fullDataFormatter.grid.groupAxis.position
+            groupAxisPosition: fullDataFormatter.groupAxis.position
           })
         })
 
@@ -327,7 +327,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
       //   renderTspansOnAxis(d3.select(n[i]), {
       //     textArr: datum.textArr,
       //     textSizePx,
-      //     groupAxisPosition: fullDataFormatter.grid.groupAxis.position
+      //     groupAxisPosition: fullDataFormatter.groupAxis.position
       //   })
       // })
     })
@@ -488,20 +488,20 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //   ).subscribe(data => {
   //     const groupMin = 0
   //     const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-  //     const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-  //       ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
-  //       : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
-  //     const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'auto'
-  //       ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
-  //       : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] === 'auto'
+  //       ? groupMin - data.fullDataFormatter.groupAxis.scalePadding
+  //       : data.fullDataFormatter.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.groupAxis.scalePadding
+  //     const groupScaleDomainMax = data.fullDataFormatter.groupAxis.scaleDomain[1] === 'auto'
+  //       ? groupMax + data.fullDataFormatter.groupAxis.scalePadding
+  //       : data.fullDataFormatter.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.groupAxis.scalePadding
       
   //     const groupingLength = data.computedData[0]
   //       ? data.computedData[0].length
   //       : 0
 
-  //     let _labels = data.fullDataFormatter.grid.seriesDirection === 'row'
-  //       // ? data.fullDataFormatter.grid.columnLabels
-  //       // : data.fullDataFormatter.grid.rowLabels
+  //     let _labels = data.fullDataFormatter.seriesDirection === 'row'
+  //       // ? data.fullDataFormatter.columnLabels
+  //       // : data.fullDataFormatter.rowLabels
   //       ? (data.computedData[0] ?? []).map(d => d.groupLabel)
   //       : data.computedData.map(d => d[0].groupLabel)
 
@@ -516,7 +516,7 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //       })
 
       
-  //     const padding = data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     const padding = data.fullDataFormatter.groupAxis.scalePadding
       
   //     const groupScale = createLabelToAxisScale({
   //       axisLabels,
@@ -538,13 +538,13 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   //   map(data => {
   //     const groupMin = 0
   //     const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-  //     // const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] === 'auto'
-  //     //   ? groupMin - data.fullDataFormatter.grid.groupAxis.scalePadding
-  //     //   : data.fullDataFormatter.grid.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.grid.groupAxis.scalePadding
-  //     const groupScaleDomainMin = data.fullDataFormatter.grid.groupAxis.scaleDomain[0] - data.fullDataFormatter.grid.groupAxis.scalePadding
-  //     const groupScaleDomainMax = data.fullDataFormatter.grid.groupAxis.scaleDomain[1] === 'max'
-  //       ? groupMax + data.fullDataFormatter.grid.groupAxis.scalePadding
-  //       : data.fullDataFormatter.grid.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.grid.groupAxis.scalePadding
+  //     // const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] === 'auto'
+  //     //   ? groupMin - data.fullDataFormatter.groupAxis.scalePadding
+  //     //   : data.fullDataFormatter.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.groupAxis.scalePadding
+  //     const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] - data.fullDataFormatter.groupAxis.scalePadding
+  //     const groupScaleDomainMax = data.fullDataFormatter.groupAxis.scaleDomain[1] === 'max'
+  //       ? groupMax + data.fullDataFormatter.groupAxis.scalePadding
+  //       : data.fullDataFormatter.groupAxis.scaleDomain[1] as number + data.fullDataFormatter.groupAxis.scalePadding
 
   //     return [groupScaleDomainMin, groupScaleDomainMax]
   //   }),

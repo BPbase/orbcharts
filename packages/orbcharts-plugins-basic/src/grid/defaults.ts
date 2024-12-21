@@ -4,11 +4,11 @@ import type {
   GroupAuxParams,
   DotsParams,
   BarsParams,
-  BarStackParams,
+  StackedBarParams,
   BarsTriangleParams,
   GroupAxisParams,
   ValueAxisParams,
-  ValueStackAxisParams,
+  StackedValueAxisParams,
   GridTooltipParams,
   GridZoomParams,
   GridLegendParams
@@ -28,7 +28,7 @@ export const DEFAULT_LINE_AREAS_PARAMS: LineAreasParams = {
 export const DEFAULT_DOTS_PARAMS: DotsParams = {
   radius: 4,
   fillColorType: 'white',
-  strokeColorType: 'series',
+  strokeColorType: 'label',
   strokeWidth: 2,
   // strokeWidthWhileHighlight: 3,
   onlyShowHighlighted: false
@@ -59,7 +59,7 @@ export const DEFAULT_BARS_DIVERGING_PARAMS: BarsParams = {
   ...DEFAULT_BARS_PARAMS
 }
 
-export const DEFAULT_BAR_STACK_PARAMS: BarStackParams = {
+export const DEFAULT_STACKED_BAR_PARAMS: StackedBarParams = {
   barWidth: 0,
   barGroupPadding: 10,
   barRadius: false,
@@ -109,7 +109,7 @@ export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
 }
 DEFAULT_VALUE_AXIS_PARAMS.tickFormat.toString = () => 'v => v'
 
-export const DEFAULT_VALUE_STACK_AXIS_PARAMS: ValueStackAxisParams = {
+export const DEFAULT_STACKED_VALUE_AXIS_PARAMS: StackedValueAxisParams = {
   ...DEFAULT_VALUE_AXIS_PARAMS
 }
 

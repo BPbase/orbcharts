@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { GridChart } from '../../../packages/orbcharts-core/src'
-import { Bars, BarStack, BarsTriangle, Lines, LineAreas, Dots, GroupAux, GroupAxis, ValueAxis, ValueStackAxis, GridZoom, GridTooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { Bars, StackedBar, BarsTriangle, Lines, LineAreas, Dots, GroupAux, GroupAxis, ValueAxis, StackedValueAxis, GridZoom, GridTooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
 // import gridData1 from '../../../packages/orbcharts-demo/src/data/gridData1'
 import gridData5 from '../../../packages/orbcharts-demo/src/data/gridData5'
@@ -37,7 +37,7 @@ onMounted(() => {
 
   const bars = new Bars()
 
-  const barStack = new BarStack()
+  const stackedBar = new StackedBar()
 
   const barsTriangle = new BarsTriangle()
 
@@ -58,7 +58,7 @@ onMounted(() => {
 
   const valueAxis = new ValueAxis()
 
-  const valueStackAxis = new ValueStackAxis()
+  const stackedValueAxis = new StackedValueAxis()
 
 
   // bars.params$.next({

@@ -17,7 +17,7 @@ export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
     velocityDecay: 0.3, // 衰減數
     collisionSpacing: 2 // 泡泡間距
   },
-  bubbleText: {
+  bubbleLabel: {
     fillRate: 0.6,
     lineHeight: 12,
     lineLengthMin: 4
@@ -51,8 +51,8 @@ export const DEFAULT_PIE_PARAMS: PieParams = {
 }
 
 export const DEFAULT_PIE_EVENT_TEXTS_PARAMS: PieEventTextsParams = {
-  eventFn: (eventData: EventSeries, eventName: EventName, t: number) => {
-    if (eventName === 'mouseover' || eventName === 'mousemove') {
+  renderFn: (eventData: EventSeries) => {
+    if (eventData.eventName === 'mouseover' || eventData.eventName === 'mousemove') {
       return [String(eventData.datum!.value)]
     }
     return [
@@ -62,7 +62,7 @@ export const DEFAULT_PIE_EVENT_TEXTS_PARAMS: PieEventTextsParams = {
             return acc + seriesData.reduce((_acc, data) => {
               return _acc + (data.value ?? 0)
             }, 0)
-          }, 0) * t
+          }, 0) * (eventData.tween ?? 1)
         )
       )
     ]
@@ -83,9 +83,9 @@ export const DEFAULT_PIE_EVENT_TEXTS_PARAMS: PieEventTextsParams = {
     }
   ]
 }
-DEFAULT_PIE_EVENT_TEXTS_PARAMS.eventFn.toString = () => `(eventData: EventSeries, eventName: EventName, t: number) => {
-  if (eventName === 'mouseover' || eventName === 'mousemove') {
-    return [String(eventData.datum!.value)]
+DEFAULT_PIE_EVENT_TEXTS_PARAMS.renderFn.toString = () => `(eventData) => {
+  if (eventData.eventName === 'mouseover' || eventData.eventName === 'mousemove') {
+    return [String(eventData.datum.value)]
   }
   return [
     String(
@@ -94,7 +94,7 @@ DEFAULT_PIE_EVENT_TEXTS_PARAMS.eventFn.toString = () => `(eventData: EventSeries
           return acc + seriesData.reduce((_acc, data) => {
             return _acc + (data.value ?? 0)
           }, 0)
-        }, 0) * t
+        }, 0) * (eventData.tween ?? 1)
       )
     )
   ]

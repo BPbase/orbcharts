@@ -98,10 +98,10 @@ const defaultListStyle: ListStyle = {
 }
 
 function getSeriesColor (seriesIndex: number, fullChartParams: ChartParams) {
-  const colorIndex = seriesIndex < fullChartParams.colors[fullChartParams.colorScheme].series.length
+  const colorIndex = seriesIndex < fullChartParams.colors[fullChartParams.colorScheme].label.length
     ? seriesIndex
-    : seriesIndex % fullChartParams.colors[fullChartParams.colorScheme].series.length
-  return fullChartParams.colors[fullChartParams.colorScheme].series[colorIndex]
+    : seriesIndex % fullChartParams.colors[fullChartParams.colorScheme].label.length
+  return fullChartParams.colors[fullChartParams.colorScheme].label[colorIndex]
 }
 
 
@@ -668,7 +668,7 @@ export const createBaseLegend: BasePluginFn<BaseLegendContext> = (pluginName: st
             )
             .attr('x', data.textSizePx * 1.5)
             .attr('font-size', data.fullChartParams.styles.textSize)
-            .attr('fill', d => data.fullParams.textColorType === 'series'
+            .attr('fill', d => data.fullParams.textColorType === 'label'
               ? getSeriesColor(d.seriesIndex, data.fullChartParams)
               : getColor(data.fullParams.textColorType, data.fullChartParams))
             .text(d => d.text)

@@ -259,7 +259,7 @@ export const createBaseTooltip: BasePluginFn<BaseTooltipContext> = (pluginName: 
         textSize: data.fullChartParams.styles.textSize,
         textSizePx: data.textSizePx,
         textColor: getColor(data.fullParams.textColorType, data.fullChartParams),
-        seriesColors: data.fullChartParams.colors[data.fullChartParams.colorScheme].series
+        seriesColors: data.fullChartParams.colors[data.fullChartParams.colorScheme].label
       }
     })
   )

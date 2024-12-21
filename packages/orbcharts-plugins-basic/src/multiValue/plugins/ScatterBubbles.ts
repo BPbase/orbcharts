@@ -26,7 +26,7 @@ import type {
 } from '../../../lib/core-types'
 import {
   defineMultiValuePlugin,
-  getMinAndMax
+  getMinMax
 } from '../../../lib/core'
 import type { ScatterBubblesParams } from '../../../lib/plugins-basic-types'
 import { DEFAULT_SCATTER_BUBBLES_PARAMS } from '../defaults'
@@ -299,7 +299,7 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
   const filteredMinMaxValue$ = observer.filteredMinMaxXYData$.pipe(
     takeUntil(destroy$),
     map(data => {
-      return getMinAndMax(data.datumList.flat().map(d => d.value[2] ?? 0))
+      return getMinMax(data.datumList.flat().map(d => d.value[2] ?? 0))
     })
   )
 

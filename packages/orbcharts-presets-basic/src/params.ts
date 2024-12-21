@@ -21,7 +21,7 @@ export const ALL_PLUGIN_PARAMS_SERIES: PresetSeriesPluginParams = {
 export const ALL_PLUGIN_PARAMS_GRID: PresetGridPluginParams = {
   Bars: {},
   BarsPN: {},
-  BarStack: {},
+  StackedBar: {},
   BarsTriangle: {},
   Dots: {},
   GridLegend: {},
@@ -32,12 +32,12 @@ export const ALL_PLUGIN_PARAMS_GRID: PresetGridPluginParams = {
   Lines: {},
   GridZoom: {},
   ValueAxis: {},
-  ValueStackAxis: {},
+  StackedValueAxis: {},
 }
 
 export const ALL_PLUGIN_PARAMS_MULTI_GRID: PresetMultiGridPluginParams = {
   MultiBars: {},
-  MultiBarStack: {},
+  MultiStackedBar: {},
   MultiBarsTriangle: {},
   MultiDots: {},
   MultiGridLegend: {},
@@ -46,9 +46,9 @@ export const ALL_PLUGIN_PARAMS_MULTI_GRID: PresetMultiGridPluginParams = {
   MultiLineAreas: {},
   MultiLines: {},
   MultiValueAxis: {},
-  MultiValueStackAxis: {},
+  MultiStackedValueAxis: {},
   OverlappingValueAxes: {},
-  OverlappingValueStackAxes: {},
+  OverlappingStackedValueAxes: {},
 }
 
 export const ALL_PLUGIN_PARAMS_MULTI_VALUE: PresetMultiValuePluginParams = {

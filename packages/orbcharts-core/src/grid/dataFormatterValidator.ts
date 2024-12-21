@@ -6,15 +6,15 @@ export const dataFormatterValidator: DataFormatterValidator<'grid'> = (dataForma
     visibleFilter: {
       toBeTypes: ['Function']
     },
-    grid: {
-      toBeTypes: ['object']
-    },
+    // grid: {
+    //   toBeTypes: ['object']
+    // },
     container: {
       toBeTypes: ['object']
     }
   })
-  if (dataFormatter.grid) {
-    const visibleFilterResult = validateColumns(dataFormatter.grid, {
+  // if (dataFormatter.grid) {
+    const visibleFilterResult = validateColumns(dataFormatter, {
       seriesDirection: {
         toBe: '"row" | "column"',
         test: (value) => value === 'row' || value === 'column'
@@ -38,8 +38,8 @@ export const dataFormatterValidator: DataFormatterValidator<'grid'> = (dataForma
     if (visibleFilterResult.status === 'error') {
       return visibleFilterResult
     }
-    if (dataFormatter.grid.valueAxis) {
-      const valueAxisResult = validateColumns(dataFormatter.grid.valueAxis, {
+    if (dataFormatter.valueAxis) {
+      const valueAxisResult = validateColumns(dataFormatter.valueAxis, {
         position: {
           toBe: '"bottom" | "left" | "top" | "right"',
           test: (value) => value === 'bottom' || value === 'left' || value === 'top' || value === 'right'
@@ -60,8 +60,8 @@ export const dataFormatterValidator: DataFormatterValidator<'grid'> = (dataForma
         return valueAxisResult
       }
     }
-    if (dataFormatter.grid.groupAxis) {
-      const groupAxisResult = validateColumns(dataFormatter.grid.groupAxis, {
+    if (dataFormatter.groupAxis) {
+      const groupAxisResult = validateColumns(dataFormatter.groupAxis, {
         position: {
           toBe: '"bottom" | "left" | "top" | "right"',
           test: (value) => value === 'bottom' || value === 'left' || value === 'top' || value === 'right'
@@ -81,7 +81,7 @@ export const dataFormatterValidator: DataFormatterValidator<'grid'> = (dataForma
         return groupAxisResult
       }
     }
-  }
+  // }
   if (dataFormatter.container) {
     const containerResult = validateColumns(dataFormatter.container, {
       gap: {
