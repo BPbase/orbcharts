@@ -6,14 +6,14 @@ import type {
   ComputedDatumBaseValue,
   ComputedDatumBaseSeries,
   ComputedDatumBaseCategory } from '../../lib/core-types'
-import { getMinAndMax } from './commonUtils'
+import { getMinMax } from './commonUtils'
 
 // 取得最小及最大值 - datum格式陣列資料
-export function getMinAndMaxValue (data: (ComputedDatumBase & ComputedDatumBaseValue)[]): [number, number] {
+export function getMinMaxValue (data: (ComputedDatumBase & ComputedDatumBaseValue)[]): [number, number] {
   const arr = data
     .filter(d => d.value != null && d.visible != false)
     .map(d => d.value as number)
-  return getMinAndMax(arr)
+  return getMinMax(arr)
 }
 
 // 取得colorType顏色

@@ -30,10 +30,10 @@ import type {
   HighlightTarget,
   Layout,
   TransformData } from '../../lib/core-types'
-import { getMinAndMaxGrid } from './orbchartsUtils'
+import { getMinMaxGrid } from './orbchartsUtils'
 import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from './d3Scale'
 import { calcGridContainerLayout } from './orbchartsUtils'
-import { getMinAndMaxValue } from './orbchartsUtils'
+import { getMinMaxValue } from './orbchartsUtils'
 
 export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'grid'>>
@@ -65,7 +65,7 @@ export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormat
       : layout.width
   
     const listData = computedData.flat()
-    let [minValue, maxValue] = getMinAndMaxValue(listData)
+    let [minValue, maxValue] = getMinMaxValue(listData)
     if (minValue === maxValue && maxValue === 0) {
       // 避免最大及最小值相同造成無法計算scale
       maxValue = 1
@@ -356,11 +356,11 @@ export const filteredMinMaxValueObservable = ({ computedData$, groupScaleDomainV
         })
       })
     
-      const filteredMinAndMax = getMinAndMaxGrid(filteredData)
-      // if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
-      //   filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+      const filteredMinMax = getMinMaxGrid(filteredData)
+      // if (filteredMinMax[0] === filteredMinMax[1]) {
+      //   filteredMinMax[0] = filteredMinMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
       // }
-      return filteredMinAndMax
+      return filteredMinMax
     }),
   )
 }
@@ -574,7 +574,7 @@ export const gridGraphicTransformObservable = ({ computedData$, groupScaleDomain
     //   })
     // })
   
-    // const filteredMinAndMax = getMinAndMaxGrid(filteredData)
+    // const filteredMinMax = getMinMaxGrid(filteredData)
     if (filteredMinMaxValue[0] === filteredMinMaxValue[1] && filteredMinMaxValue[1] === 0) {
       // filteredMinMaxValue[0] = filteredMinMaxValue[1] - 1 // 避免最大及最小值相同造成無法計算scale
       filteredMinMaxValue[1] = 1 // 避免最大及最小值同等於 0 造成無法計算scale
@@ -599,14 +599,14 @@ export const gridGraphicTransformObservable = ({ computedData$, groupScaleDomain
   //   scaleRange: valueAxis.scaleRange
   // })
     // -- translateY, scaleY --
-    const minAndMax = getMinAndMaxGrid(data)
-    if (minAndMax[0] === minAndMax[1] && minAndMax[1] === 0) {
-      // minAndMax[0] = minAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
-      minAndMax[1] = 1 // 避免最大及最小值同等於 0 造成無法計算scale
+    const minMax = getMinMaxGrid(data)
+    if (minMax[0] === minMax[1] && minMax[1] === 0) {
+      // minMax[0] = minMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+      minMax[1] = 1 // 避免最大及最小值同等於 0 造成無法計算scale
     }
-    // const rangeMinY = valueScale(minAndMax[0])
-    const rangeMinY = valueScale(minAndMax[0] > 0 ? 0 : minAndMax[0]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
-    const rangeMaxY = valueScale(minAndMax[1] < 0 ? 0 : minAndMax[1]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
+    // const rangeMinY = valueScale(minMax[0])
+    const rangeMinY = valueScale(minMax[0] > 0 ? 0 : minMax[0]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
+    const rangeMaxY = valueScale(minMax[1] < 0 ? 0 : minMax[1]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
     translateY = rangeMinY
     const gHeight = rangeMaxY - rangeMinY
     scaleY = gHeight / valueAxisWidth

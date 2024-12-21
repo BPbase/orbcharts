@@ -61,11 +61,11 @@ import { elementValidator } from './validators/elementValidator'
 import { chartParamsValidator } from './validators/chartParamsValidator'
 import { pluginsValidator } from './validators/pluginsValidator'
 import {
-  CHART_OPTIONS_DEFAULT,
-  PADDING_DEFAULT,
-  CHART_PARAMS_DEFAULT,
-  CHART_WIDTH_DEFAULT,
-  CHART_HEIGHT_DEFAULT } from '../defaults'
+  DEFAULT_CHART_OPTIONS,
+  DEFAULT_PADDING,
+  DEFAULT_CHART_PARAMS,
+  DEFAULT_CHART_WIDTH,
+  DEFAULT_CHART_HEIGHT } from '../defaults'
 
 // 判斷dataFormatter是否需要size參數
 // const isAxesTypeMap: {[key in ChartType]: Boolean} = {
@@ -174,15 +174,15 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
 
     // options
     const mergedPresetWithDefault: Preset<T, any> = ((options) => {
-      const _options = options ? options : CHART_OPTIONS_DEFAULT as ChartOptionsPartial<T>
+      const _options = options ? options : DEFAULT_CHART_OPTIONS as ChartOptionsPartial<T>
       const preset = _options.preset ? _options.preset : {} as PresetPartial<T, any>
 
       return {
         name: preset.name ?? '',
         description: preset.description ?? '',
         chartParams: preset.chartParams
-          ? mergeOptionsWithDefault(preset.chartParams, CHART_PARAMS_DEFAULT)
-          : CHART_PARAMS_DEFAULT,
+          ? mergeOptionsWithDefault(preset.chartParams, DEFAULT_CHART_PARAMS)
+          : DEFAULT_CHART_PARAMS,
         dataFormatter: preset.dataFormatter
           // ? mergeOptionsWithDefault(preset.dataFormatter, defaultDataFormatter)
           ? mergeDataFormatter(preset.dataFormatter, defaultDataFormatter, chartType)
@@ -270,7 +270,7 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
         takeUntil(destroy$),
         startWith({}),
         map((d: any) => {
-          return mergeOptionsWithDefault(d.padding ?? {}, PADDING_DEFAULT)
+          return mergeOptionsWithDefault(d.padding ?? {}, DEFAULT_PADDING)
         })
       )
     mergedPadding$
@@ -290,8 +290,8 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
 
     // 監聽外層的element尺寸
     const rootSize$: Observable<{ width: number; height: number }> = of({
-      width: options?.width ?? CHART_OPTIONS_DEFAULT.width,
-      height: options?.height ?? CHART_OPTIONS_DEFAULT.height
+      width: options?.width ?? DEFAULT_CHART_OPTIONS.width,
+      height: options?.height ?? DEFAULT_CHART_OPTIONS.height
     }).pipe(
         switchMap(size => {
           return iif(
@@ -334,10 +334,10 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
       switchMap(async (d) => {
         const rootWidth = d.rootSize.width > 0
           ? d.rootSize.width
-          : CHART_WIDTH_DEFAULT
+          : DEFAULT_CHART_WIDTH
         const rootHeight = d.rootSize.height > 0
           ? d.rootSize.height
-          : CHART_HEIGHT_DEFAULT
+          : DEFAULT_CHART_HEIGHT
         return {
           width: rootWidth - d.mergedPadding.left - d.mergedPadding.right,
           height: rootHeight - d.mergedPadding.top - d.mergedPadding.bottom,

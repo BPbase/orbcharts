@@ -1,13 +1,13 @@
 import * as d3 from 'd3'
-import { DATA_FORMATTER_VALUE_AXIS_DEFAULT } from '../defaults'
+import { DEFAULT_DATA_FORMATTER_VALUE_AXIS } from '../defaults'
 
 // scaleLinear - 連續資料 -> 座標
 export const createValueToAxisScale = ({
   maxValue = 1,
   minValue = 0,
   axisWidth,
-  scaleDomain = DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain,
-  scaleRange = DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange,
+  scaleDomain = DEFAULT_DATA_FORMATTER_VALUE_AXIS.scaleDomain,
+  scaleRange = DEFAULT_DATA_FORMATTER_VALUE_AXIS.scaleRange,
   reverse = false
 }: {
   maxValue: number
@@ -23,10 +23,10 @@ export const createValueToAxisScale = ({
   // }
   
   // -- 無值補上預設值 --
-  const domainMin: number | 'min' | 'auto' = scaleDomain[0] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[0]
-  const domainMax: number | 'max' | 'auto' = scaleDomain[1] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[1]
-  const rangeMin: number = scaleRange[0] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange[0]
-  const rangeMax: number = scaleRange[1] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange[1]
+  const domainMin: number | 'min' | 'auto' = scaleDomain[0] ?? DEFAULT_DATA_FORMATTER_VALUE_AXIS.scaleDomain[0]
+  const domainMax: number | 'max' | 'auto' = scaleDomain[1] ?? DEFAULT_DATA_FORMATTER_VALUE_AXIS.scaleDomain[1]
+  const rangeMin: number = scaleRange[0] ?? DEFAULT_DATA_FORMATTER_VALUE_AXIS.scaleRange[0]
+  const rangeMax: number = scaleRange[1] ?? DEFAULT_DATA_FORMATTER_VALUE_AXIS.scaleRange[1]
 
   // -- 'auto' | 'max' | 'min' 替換成實際值 --
   let domainMinValue: number = (() => {
@@ -83,8 +83,8 @@ export const createAxisToValueScale = ({
   maxValue = 1,
   minValue = 0,
   axisWidth,
-  scaleDomain = DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain,
-  scaleRange = DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange,
+  scaleDomain = DEFAULT_DATA_FORMATTER_VALUE_AXIS.scaleDomain,
+  scaleRange = DEFAULT_DATA_FORMATTER_VALUE_AXIS.scaleRange,
   reverse = false
 }: {
   maxValue: number
@@ -100,10 +100,10 @@ export const createAxisToValueScale = ({
   }
   
   // -- 無值補上預設值 --
-  const domainMin: number | 'min' | 'auto' = scaleDomain[0] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[0]
-  const domainMax: number | 'max' | 'auto' = scaleDomain[1] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleDomain[1]
-  const rangeMin: number = scaleRange[0] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange[0]
-  const rangeMax: number = scaleRange[1] ?? DATA_FORMATTER_VALUE_AXIS_DEFAULT.scaleRange[1]
+  const domainMin: number | 'min' | 'auto' = scaleDomain[0] ?? DEFAULT_DATA_FORMATTER_VALUE_AXIS.scaleDomain[0]
+  const domainMax: number | 'max' | 'auto' = scaleDomain[1] ?? DEFAULT_DATA_FORMATTER_VALUE_AXIS.scaleDomain[1]
+  const rangeMin: number = scaleRange[0] ?? DEFAULT_DATA_FORMATTER_VALUE_AXIS.scaleRange[0]
+  const rangeMax: number = scaleRange[1] ?? DEFAULT_DATA_FORMATTER_VALUE_AXIS.scaleRange[1]
 
   // -- 'auto' | 'max' | 'min' 替換成實際值 --
   let domainMinValue: number = (() => {

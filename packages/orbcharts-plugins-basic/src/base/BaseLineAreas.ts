@@ -23,7 +23,7 @@ import type {
 } from '../../lib/core-types'
 import type { BaseLineAreasParams } from '../../lib/plugins-basic-types'
 import { getD3TransitionEase } from '../utils/d3Utils'
-import { getClassName, getUniID, getMinAndMaxValue } from '../utils/orbchartsUtils'
+import { getClassName, getUniID, getMinMaxValue } from '../utils/orbchartsUtils'
 import { gridGroupPositionFnObservable } from '../grid/gridObservables'
 import { gridSelectionsObservable } from '../grid/gridObservables'
 

@@ -27,7 +27,7 @@ import type {
   HighlightTarget,
   Layout,
   TransformData } from '../../lib/core-types'
-import { getMinAndMax, getMinAndMaxMultiValue } from './orbchartsUtils'
+import { getMinMax, getMinMaxMultiValue } from './orbchartsUtils'
 import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from './d3Scale'
 import { calcGridContainerLayout } from './orbchartsUtils'
 
@@ -35,8 +35,8 @@ export const minMaxXYObservable = ({ computedData$ }: { computedData$: Observabl
   return computedData$.pipe(
     map(data => {
       const flatData = data.flat()
-      const [minX, maxX] = getMinAndMax(flatData.map(d => d.value[0]))
-      const [minY, maxY] = getMinAndMax(flatData.map(d => d.value[1]))
+      const [minX, maxX] = getMinMax(flatData.map(d => d.value[0]))
+      const [minY, maxY] = getMinMax(flatData.map(d => d.value[1]))
       return { minX, maxX, minY, maxY }
     })
   )
@@ -483,7 +483,7 @@ export const multiValueGraphicTransformObservable = ({ minMaxXY$, filteredMinMax
     // // minX, maxX, filteredMinX, filteredMaxX
     // let filteredMinX = 0
     // let filteredMaxX = 0
-    // let [minX, maxX] = getMinAndMax(flatData.map(d => d.value[0]))
+    // let [minX, maxX] = getMinMax(flatData.map(d => d.value[0]))
     // if (minX === maxX) {
     //   minX = maxX - 1 // 避免最大及最小值相同造成無法計算scale
     // }
@@ -508,7 +508,7 @@ export const multiValueGraphicTransformObservable = ({ minMaxXY$, filteredMinMax
     // // minY, maxY, filteredMinY, filteredMaxY
     // let filteredMinY = 0
     // let filteredMaxY = 0
-    // let [minY, maxY] = getMinAndMax(flatData.map(d => d.value[1]))
+    // let [minY, maxY] = getMinMax(flatData.map(d => d.value[1]))
 // console.log('filteredMinMaxXYData', filteredMinMaxXYData)
     let { minX, maxX, minY, maxY } = minMaxXY
     // console.log({ minX, maxX, minY, maxY })

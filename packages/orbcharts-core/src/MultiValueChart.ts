@@ -1,7 +1,7 @@
 import type {
   ChartEntity,
   ChartOptionsPartial } from '../lib/core-types'
-import { DATA_FORMATTER_MULTI_VALUE_DEFAULT } from './defaults'
+import { DEFAULT_DATA_FORMATTER_MULTI_VALUE } from './defaults'
 import { dataFormatterValidator } from './multiValue/dataFormatterValidator'
 import { computedDataFn } from './multiValue/computedDataFn'
 import { dataValidator } from './multiValue/dataValidator'
@@ -12,7 +12,7 @@ export class MultiValueChart extends AbstractChart<'multiValue'> implements Char
   constructor (element: HTMLElement | Element, options?: ChartOptionsPartial<'multiValue'>) {
     super(
       {
-        defaultDataFormatter: DATA_FORMATTER_MULTI_VALUE_DEFAULT,
+        defaultDataFormatter: DEFAULT_DATA_FORMATTER_MULTI_VALUE,
         dataFormatterValidator,
         computedDataFn,
         dataValidator,

@@ -22,7 +22,7 @@ import type {
 } from '../../lib/core-types'
 import type { BaseValueAxisParams } from '../../lib/plugins-basic-types'
 import { parseTickFormatValue } from '../utils/d3Utils'
-import { getColor, getMinAndMaxValue, getClassName, getUniID } from '../utils/orbchartsUtils'
+import { getColor, getMinMaxValue, getClassName, getUniID } from '../utils/orbchartsUtils'
 
 // export interface BaseValueAxisParams {
 //   labelOffset: [number, number]
@@ -407,7 +407,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     })
   )
 
-  // const minAndMax$: Observable<[number, number]> = new Observable(subscriber => {
+  // const minMax$: Observable<[number, number]> = new Observable(subscriber => {
   //   combineLatest({
   //     fullDataFormatter: fullDataFormatter$,
   //     computedData: computedData$
@@ -431,11 +431,11 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   //       })
   //     })
     
-  //     const filteredMinAndMax = getMinAndMaxValue(filteredData.flat())
-  //     if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
-  //       filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+  //     const filteredMinMax = getMinMaxValue(filteredData.flat())
+  //     if (filteredMinMax[0] === filteredMinMax[1]) {
+  //       filteredMinMax[0] = filteredMinMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
   //     }
-  //     subscriber.next(filteredMinAndMax)
+  //     subscriber.next(filteredMinMax)
   //   })
   // })
 
@@ -443,7 +443,7 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     combineLatest({
       fullDataFormatter: fullDataFormatter$,
       gridAxesSize: gridAxesSize$,
-      // minAndMax: minAndMax$
+      // minMax: minMax$
       filteredMinMaxValue: filteredMinMaxValue$
     }).pipe(
       takeUntil(destroy$),

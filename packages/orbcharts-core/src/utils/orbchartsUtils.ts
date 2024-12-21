@@ -123,60 +123,60 @@ export function createMultiGridGroupLabels ({ transposedDataGrid, dataFormatterG
 }
 
 // 取得最小及最大值 - 數字陣列
-export function getMinAndMax (data: number[]): [number, number] {
-  const defaultMinAndMax: [number, number] = [0, 0] // default
+export function getMinMax (data: number[]): [number, number] {
+  const defaultMinMax: [number, number] = [0, 0] // default
   if (!data.length) {
-    return defaultMinAndMax
+    return defaultMinMax
   }
-  const minAndMax: [number, number] = data.reduce((prev, current) => {
+  const minMax: [number, number] = data.reduce((prev, current) => {
     // [min, max]
     return [
       current < prev[0] ? current : prev[0],
       current > prev[1] ? current : prev[1]
     ]
   }, [data[0], data[0]])
-  return minAndMax
+  return minMax
 }
 
 // 取得最小及最大值 - datum格式陣列資料
-export function getMinAndMaxValue (data: DatumValue[]): [number, number] {
+export function getMinMaxValue (data: DatumValue[]): [number, number] {
   const arr = data
     .filter(d => d != null && d.value != null)
     .map(d => d.value )
-  return getMinAndMax(arr)
+  return getMinMax(arr)
 }
 
 // 取得最小及最大值 - Series Data
-export function getMinAndMaxSeries (data: DataSeries): [number, number] {
+export function getMinMaxSeries (data: DataSeries): [number, number] {
   const flatData: (DataSeriesValue | DataSeriesDatum)[] = data[0] && Array.isArray((data as (DataSeriesValue | DataSeriesDatum)[][])[0])
     ? data.flat()
     : data as (DataSeriesValue | DataSeriesDatum)[]
   const arr = flatData
     .filter(d => (d == null || (isPlainObject(d) && (d as DataSeriesDatum).value == null)) === false) // 過濾掉null &
     .map(d => typeof d === 'number' ? d : d.value )
-  return getMinAndMax(arr)
+  return getMinMax(arr)
 }
 
 // 取得最小及最大值 - Grid Data
-export function getMinAndMaxGrid (data: DataGrid): [number, number] {
+export function getMinMaxGrid (data: DataGrid): [number, number] {
   const flatData: (DataGridValue | DataGridDatum)[] = data.flat()
   const arr = flatData
     .filter(d => (d == null || (isPlainObject(d) && (d as DataGridDatum).value == null)) === false) // 過濾掉null
     .map(d => typeof d === 'number' ? d : d.value )
-  return getMinAndMax(arr)
+  return getMinMax(arr)
 }
 
 // 取得最小及最大值 - MultiGrid Data
-export function getMinAndMaxMultiGrid (data: DataMultiGrid): [number, number] {
+export function getMinMaxMultiGrid (data: DataMultiGrid): [number, number] {
   const flatData: (DataGridValue | DataGridDatum)[] = data.flat().flat()
   const arr = flatData
     .filter(d => (d == null || (isPlainObject(d) && (d as DataGridDatum).value == null)) === false) // 過濾掉null
     .map(d => typeof d === 'number' ? d : d.value )
-  return getMinAndMax(arr)
+  return getMinMax(arr)
 }
 
 // 取得最小及最大值 - MultiValue Data
-export function getMinAndMaxMultiValue (data: DataMultiValue, valueIndex: number): [number, number] {
+export function getMinMaxMultiValue (data: DataMultiValue, valueIndex: number): [number, number] {
   const arr: number[] = data
     .map(d => {
       if (Array.isArray(d)) {
@@ -188,10 +188,10 @@ export function getMinAndMaxMultiValue (data: DataMultiValue, valueIndex: number
       }
     })
     .filter(d => d != null)
-  return getMinAndMax(arr)
+  return getMinMax(arr)
 }
 
-export function getMinAndMaxMultiValueXY ({ data, minX, maxX, minY, maxY }: {
+export function getMinMaxMultiValueXY ({ data, minX, maxX, minY, maxY }: {
   data: ComputedLayoutDatumMultiValue[][]
   minX: number
   maxX: number
@@ -235,13 +235,13 @@ export function getMinAndMaxMultiValueXY ({ data, minX, maxX, minY, maxY }: {
 
 // @Q@ 待處理
 // // 取得最小及最大值 - Relationship Data
-// export function getMinAndMaxRelationship (data: DataRelationship, target: 'nodes' | 'edges' = 'nodes'): [number, number] {
+// export function getMinMaxRelationship (data: DataRelationship, target: 'nodes' | 'edges' = 'nodes'): [number, number] {
 
 // }
 
 // @Q@ 待處理
 // // 取得最小及最大值 - Tree Data
-// export function getMinAndMaxTree (data: DataTree): [number, number] {
+// export function getMinMaxTree (data: DataTree): [number, number] {
 
 // }
 

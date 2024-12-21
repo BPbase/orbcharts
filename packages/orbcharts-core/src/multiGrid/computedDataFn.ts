@@ -1,5 +1,5 @@
 import type { ComputedDataFn, ComputedDatumGrid, DataFormatterGridGrid, ComputedDataMultiGrid } from '../../lib/core-types'
-import { DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT } from '../defaults'
+import { DEFAULT_DATA_FORMATTER_MULTI_GRID_GRID } from '../defaults'
 import {
   createDefaultDatumId,
   seriesColorPredicate,
@@ -18,7 +18,7 @@ export const computedDataFn: ComputedDataFn<'multiGrid'> = (context) => {
   let multiGridData: ComputedDataMultiGrid = []
 
   try {
-    const defaultGrid = dataFormatter.gridList[0] || DATA_FORMATTER_MULTI_GRID_GRID_DEFAULT
+    const defaultGrid = dataFormatter.gridList[0] || DEFAULT_DATA_FORMATTER_MULTI_GRID_GRID
 
     // 計算每個grid的dataFormatter
     const gridDataFormatterList: DataFormatterGridGrid[] = data.map((gridData, gridIndex) => {

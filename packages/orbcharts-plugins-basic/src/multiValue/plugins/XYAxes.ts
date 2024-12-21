@@ -19,7 +19,7 @@ import type {
 import {
   defineMultiValuePlugin,
   createValueToAxisScale,
-  getMinAndMax
+  getMinMax
 } from '../../../lib/core'
 import type { XYAxesParams
 } from '../../../lib/plugins-basic-types'
@@ -510,7 +510,7 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
     distinctUntilChanged()
   )
 
-  // const minAndMax$: Observable<[number, number]> = new Observable(subscriber => {
+  // const minMax$: Observable<[number, number]> = new Observable(subscriber => {
   //   combineLatest({
   //     fullDataFormatter: observer.fullDataFormatter$,
   //     computedData: observer.computedData$
@@ -534,11 +534,11 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
   //       })
   //     })
     
-  //     const filteredMinAndMax = getMinAndMax(filteredData.flat().map(d => d.value[1]))
-  //     if (filteredMinAndMax[0] === filteredMinAndMax[1]) {
-  //       filteredMinAndMax[0] = filteredMinAndMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
+  //     const filteredMinMax = getMinMax(filteredData.flat().map(d => d.value[1]))
+  //     if (filteredMinMax[0] === filteredMinMax[1]) {
+  //       filteredMinMax[0] = filteredMinMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
   //     }
-  //     subscriber.next(filteredMinAndMax)
+  //     subscriber.next(filteredMinMax)
   //   })
   // })
 
