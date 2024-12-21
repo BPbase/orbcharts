@@ -4,18 +4,18 @@
 
 <script lang="ts" setup>
 import { GridChart } from '../../../../packages/orbcharts-core/src'
-import { BarStack, GridLegend } from '../../../../packages/orbcharts-plugins-basic/src'
+import { StackedBar, GridLegend } from '../../../../packages/orbcharts-plugins-basic/src'
 
 onMounted(() => {
   const el = document.querySelector('#chart')
 
   const chart = new GridChart(el!)
 
-  const barStack = new BarStack()
+  const stackedBar = new StackedBar()
 
   const gridLegend = new GridLegend()
 
-  chart.plugins$.next([barStack, gridLegend])
+  chart.plugins$.next([stackedBar, gridLegend])
 
   chart.data$.next([
     [

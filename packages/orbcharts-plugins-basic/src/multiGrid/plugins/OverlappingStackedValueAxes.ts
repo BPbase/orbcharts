@@ -14,20 +14,20 @@ import type { DefinePluginConfig } from '../../../lib/core-types'
 import type { ContextObserverMultiGrid, DataFormatterGrid, DataFormatterTypeMap, Layout } from '../../../lib/core-types'
 import {
   defineMultiGridPlugin } from '../../../lib/core'
-import { DEFAULT_OVERLAPPING_VALUE_STACK_AXES_PARAMS } from '../defaults'
+import { DEFAULT_OVERLAPPING_STACKED_VALUE_AXES_PARAMS } from '../defaults'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { gridAxesTransformObservable, gridAxesReverseTransformObservable, gridContainerPositionObservable } from '../../../lib/core'
 import { LAYER_INDEX_OF_AXIS } from '../../const'
 
-const pluginName = 'OverlappingValueStackAxes'
+const pluginName = 'OverlappingStackedValueAxes'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_OVERLAPPING_VALUE_STACK_AXES_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_OVERLAPPING_STACKED_VALUE_AXES_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_OVERLAPPING_VALUE_STACK_AXES_PARAMS,
+  defaultParams: DEFAULT_OVERLAPPING_STACKED_VALUE_AXES_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {
@@ -153,7 +153,7 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_OVERLAP
 }
 
 // 第一個圖軸使用堆疊的資料，第二個圖軸使用原始資料
-export const OverlappingValueStackAxes = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
+export const OverlappingStackedValueAxes = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []

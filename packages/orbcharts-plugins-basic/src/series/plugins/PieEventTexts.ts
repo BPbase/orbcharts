@@ -40,7 +40,7 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_PIE_EVE
   layerIndex: LAYER_INDEX_OF_LABEL,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {
-      eventFn: {
+      renderFn: {
         toBeTypes: ['Function'],
       },
       textAttrs: {
@@ -84,16 +84,16 @@ function renderText (
   return text
 }
 
-function makeTextData ({ eventData, eventName, t, eventFn, textAttrs, textStyles }: {
+function createTextData ({ eventData, renderFn, textAttrs, textStyles }: {
   eventData: EventSeries,
-  eventName: EventName,
-  t: number,
-  eventFn: (d: EventSeries, eventName: EventName, t: number) => string[]
+  // t: number,
+  renderFn: (d: EventSeries) => string[] | string
   textAttrs: Array<{ [key:string]: string | number }>
   textStyles: Array<{ [key:string]: string | number }>
 }): TextDatum[] {
-  const callbackText = eventFn(eventData, eventName, t)
-  return callbackText.map((d, i) => {
+  const callbackText = renderFn(eventData)
+  const textArr = Array.isArray(callbackText) ? callbackText : [callbackText]
+  return textArr.map((d, i) => {
     return {
       text: d,
       attr: textAttrs[i],
@@ -159,12 +159,13 @@ function createEachPieEventTexts (pluginName: string, context: {
       // .ease(getD3TransitionEase(data.fullChartParams.transitionEase!))
       .tween('move', (event, datum) => {
         return (t) => {
-          const renderData = makeTextData({
+          const renderData = createTextData({
             eventData: {
               type: 'series',
               pluginName,
               eventName: 'transitionMove',
               event,
+              tween: t,
               highlightTarget: data.highlightTarget,
               data: data.computedData,
               series: [],
@@ -172,9 +173,9 @@ function createEachPieEventTexts (pluginName: string, context: {
               seriesLabel: '',
               datum: null
             },
-            eventName: 'transitionMove',
-            t,
-            eventFn: data.fullParams.eventFn!,
+            // eventName: 'transitionMove',
+            // t,
+            renderFn: data.fullParams.renderFn!,
             textAttrs: data.fullParams.textAttrs!,
             textStyles: data.fullParams.textStyles!
           })
@@ -182,12 +183,13 @@ function createEachPieEventTexts (pluginName: string, context: {
         }
       })
       .on('end', (event, datum) => {
-        const renderData = makeTextData({
+        const renderData = createTextData({
           eventData: {
             type: 'series',
             pluginName,
             eventName: 'transitionEnd',
             event,
+            tween: 1,
             highlightTarget: data.highlightTarget,
             data: data.computedData,
             series: [],
@@ -195,9 +197,9 @@ function createEachPieEventTexts (pluginName: string, context: {
             seriesLabel: '',
             datum: null
           },
-          eventName: 'transitionMove',
-          t: 1,
-          eventFn: data.fullParams.eventFn!,
+          // eventName: 'transitionMove',
+          // t: 1,
+          renderFn: data.fullParams.renderFn!,
           textAttrs: data.fullParams.textAttrs!,
           textStyles: data.fullParams.textStyles!
         })
@@ -208,11 +210,10 @@ function createEachPieEventTexts (pluginName: string, context: {
         }
         storeEventSubscription = context.event$
           .subscribe(eventData => {
-            const renderData = makeTextData({
+            const renderData = createTextData({
               eventData,
-              eventName: eventData.eventName,
-              t: 1,
-              eventFn: data.fullParams.eventFn!,
+              // t: 1,
+              renderFn: data.fullParams.renderFn!,
               textAttrs: data.fullParams.textAttrs!,
               textStyles: data.fullParams.textStyles!
             })

@@ -55,13 +55,13 @@ export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', Partial<Pre
     MultiValueAxis: {
       gridIndexes: [0, 1]
     },
-    MultiValueStackAxis: {
+    MultiStackedValueAxis: {
       gridIndexes: [0, 1]
     },
     MultiBars: {
       gridIndexes: [0, 1]
     },
-    MultiBarStack: {
+    MultiStackedBar: {
       gridIndexes: [0, 1]
     },
     MultiBarsTriangle: {

@@ -45,7 +45,7 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BUBBLES
       force: {
         toBeTypes: ['object']
       },
-      bubbleText: {
+      bubbleLabel: {
         toBeTypes: ['object']
       },
       arcScaleType: {
@@ -69,8 +69,8 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BUBBLES
         return forceResult
       }
     }
-    if (params.bubbleText) {
-      const bubbleTextResult = validateColumns(params.bubbleText, {
+    if (params.bubbleLabel) {
+      const bubbleLabelResult = validateColumns(params.bubbleLabel, {
         fillRate: {
           toBeTypes: ['number']
         },
@@ -81,8 +81,8 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BUBBLES
           toBeTypes: ['number']
         },
       })
-      if (bubbleTextResult.status === 'error') {
-        return bubbleTextResult
+      if (bubbleLabelResult.status === 'error') {
+        return bubbleLabelResult
       }
     }
     return result
@@ -260,13 +260,13 @@ function renderBubbles ({ selection, bubblesData, fullParams, sumSeries }: {
     .each((d,i,g) => {
       const gSelection = d3.select(g[i])
       let breakAll = true
-      if (d[textDataColumn].length <= fullParams.bubbleText.lineLengthMin) {
+      if (d[textDataColumn].length <= fullParams.bubbleLabel.lineLengthMin) {
         breakAll = false
       }
       gSelection.call(renderCircleText, {
         text: d[textDataColumn],
-        radius: d.r * fullParams.bubbleText.fillRate,
-        lineHeight: fullParams.bubbleText.lineHeight,
+        radius: d.r * fullParams.bubbleLabel.fillRate,
+        lineHeight: fullParams.bubbleLabel.lineHeight,
         isBreakAll: breakAll
       })
 

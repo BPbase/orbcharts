@@ -28,7 +28,7 @@ export const PRESET_MULTI_GRID_ROUND_STYLE: PresetPartial<'multiGrid', Partial<P
       barGroupPadding: 10,
       barRadius: true,
     },
-    MultiBarStack: {},
+    MultiStackedBar: {},
     MultiDots: {},
     MultiGridLegend: {
       // position: 'bottom',
@@ -51,8 +51,8 @@ export const PRESET_MULTI_GRID_ROUND_STYLE: PresetPartial<'multiGrid', Partial<P
       lineWidth: 3
     },
     MultiValueAxis: {},
-    MultiValueStackAxis: {},
+    MultiStackedValueAxis: {},
     OverlappingValueAxes: {},
-    OverlappingValueStackAxes: {},
+    OverlappingStackedValueAxes: {},
   }
 }

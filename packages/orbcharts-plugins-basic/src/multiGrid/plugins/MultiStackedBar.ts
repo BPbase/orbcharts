@@ -9,20 +9,20 @@ import {
 import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineMultiGridPlugin } from '../../../lib/core'
-import { DEFAULT_MULTI_VALUE_AXIS_PARAMS } from '../defaults'
-import { createBaseValueAxis } from '../../base/BaseValueAxis'
+import { DEFAULT_MULTI_STACKED_BAR_PARAMS } from '../defaults'
+import { createBaseStackedBar } from '../../base/BaseStackedBar'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
-import { LAYER_INDEX_OF_AXIS } from '../../const'
+import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 
-const pluginName = 'MultiValueStackAxis'
+const pluginName = 'MultiStackedBar'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_VALUE_AXIS_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_STACKED_BAR_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_MULTI_VALUE_AXIS_PARAMS,
-  layerIndex: LAYER_INDEX_OF_AXIS,
+  defaultParams: DEFAULT_MULTI_STACKED_BAR_PARAMS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {
       gridIndexes: {
@@ -31,57 +31,21 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_V
           return value === 'all' || (Array.isArray(value) && value.every((v: any) => typeof v === 'number'))
         }
       },
-      labelOffset: {
-        toBe: '[number, number]',
-        test: (value: any) => {
-          return Array.isArray(value)
-            && value.length === 2
-            && typeof value[0] === 'number'
-            && typeof value[1] === 'number'
-        }
-      },
-      labelColorType: {
-        toBeOption: 'ColorType',
-      },
-      axisLineVisible: {
-        toBeTypes: ['boolean']
-      },
-      axisLineColorType: {
-        toBeOption: 'ColorType',
-      },
-      ticks: {
-        toBeTypes: ['number', 'null']
-      },
-      tickFormat: {
-        toBeTypes: ['string', 'Function']
-      },
-      tickLineVisible: {
-        toBeTypes: ['boolean']
-      },
-      tickPadding: {
+      barWidth: {
         toBeTypes: ['number']
       },
-      tickFullLine: {
-        toBeTypes: ['boolean']
-      },
-      tickFullLineDasharray: {
-        toBeTypes: ['string']
-      },
-      tickColorType: {
-        toBeOption: 'ColorType',
-      },
-      tickTextRotate: {
+      barGroupPadding: {
         toBeTypes: ['number']
       },
-      tickTextColorType: {
-        toBeOption: 'ColorType',
+      barRadius: {
+        toBeTypes: ['number', 'boolean']
       }
     })
     return result
   }
 }
 
-export const MultiValueStackAxis = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
+export const MultiStackedBar = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []
@@ -111,18 +75,26 @@ export const MultiValueStackAxis = defineMultiGridPlugin(pluginConfig)(({ select
             shareReplay(1)
           )
 
-          unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
+          unsubscribeFnArr[i] = createBaseStackedBar(pluginName, {
             selection: gridSelection,
-            computedData$: d.computedStackedData$, // 計算疊加value的資料
-            filteredMinMaxValue$: d.filteredMinMaxValue$,
+            computedData$: d.computedData$,
+            visibleComputedData$: d.visibleComputedData$,
+            computedLayoutData$: d.computedLayoutData$,
+            visibleComputedLayoutData$: d.visibleComputedLayoutData$,
+            seriesLabels$: d.seriesLabels$,
+            SeriesDataMap$: d.SeriesDataMap$,
+            GroupDataMap$: d.GroupDataMap$,
             fullParams$: observer.fullParams$,
             fullDataFormatter$: d.dataFormatter$,
-            fullChartParams$: observer.fullChartParams$,  
+            fullChartParams$: observer.fullChartParams$,
             gridAxesTransform$: d.gridAxesTransform$,
-            gridAxesReverseTransform$: d.gridAxesReverseTransform$,
+            gridGraphicTransform$: d.gridGraphicTransform$,
+            gridGraphicReverseScale$: d.gridGraphicReverseScale$,
             gridAxesSize$: d.gridAxesSize$,
+            gridHighlight$: d.gridHighlight$,
             gridContainerPosition$: d.gridContainerPosition$,
             isSeriesSeprate$,
+            event$: subject.event$ as Subject<any>,
           })
         })
     })

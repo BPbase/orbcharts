@@ -51,7 +51,7 @@ export interface BarsParams {
 
 export interface BarsPNParams extends BarsParams {}
 
-export interface BarStackParams {
+export interface StackedBarParams {
   barWidth: number
   barGroupPadding: number
   barRadius: number | boolean
@@ -104,7 +104,7 @@ export interface ValueAxisParams {
   tickTextColorType: ColorType
 }
 
-export interface ValueStackAxisParams extends ValueAxisParams {}
+export interface StackedValueAxisParams extends ValueAxisParams {}
 
 export interface GridZoomParams {
 

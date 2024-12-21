@@ -224,48 +224,48 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
         ]
       },
       {
-        title: 'BarStack',
+        title: 'StackedBar',
         description: 'Stacked Bar Chart',
         descriptionZh: '堆疊長條圖',
-        mainPluginNames: ['BarStack'],
+        mainPluginNames: ['StackedBar'],
         list: [
           {
             title: 'PRESET_GRID_BASIC',
             presetName: 'PRESET_GRID_BASIC',
-            allPluginNames: ['GroupAxis', 'ValueStackAxis', 'BarStack', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'StackedValueAxis', 'StackedBar', 'GridZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_GRID_ROTATE_AXIS_LABEL',
             presetName: 'PRESET_GRID_ROTATE_AXIS_LABEL',
-            allPluginNames: ['GroupAxis', 'ValueStackAxis', 'BarStack', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'StackedValueAxis', 'StackedBar', 'GridZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_GRID_HORIZONTAL',
             presetName: 'PRESET_GRID_HORIZONTAL',
-            allPluginNames: ['GroupAxis', 'ValueStackAxis', 'BarStack', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'StackedValueAxis', 'StackedBar', 'GridZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           // {
           //   chartType: 'grid',
-          //   pluginName: 'BarStack',
+          //   pluginName: 'StackedBar',
           //   presetName: 'PRESET_GRID_2_SERIES_SLOT'
           // },
           // {
           //   chartType: 'grid',
-          //   pluginName: 'BarStack',
+          //   pluginName: 'StackedBar',
           //   presetName: 'PRESET_GRID_3_SERIES_SLOT'
           // },
           // {
           //   chartType: 'grid',
-          //   pluginName: 'BarStack',
+          //   pluginName: 'StackedBar',
           //   presetName: 'PRESET_GRID_4_SERIES_SLOT'
           // },
           {
             title: 'PRESET_GRID_SEPARATE_SERIES',
             presetName: 'PRESET_GRID_SEPARATE_SERIES',
-            allPluginNames: ['GroupAxis', 'ValueStackAxis', 'BarStack', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'StackedValueAxis', 'StackedBar', 'GridZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
         ]
@@ -499,30 +499,30 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
         ]
       },
       {
-        title: 'MultiBarStack',
+        title: 'MultiStackedBar',
         description: 'Multi Stacked Bar Chart',
         descriptionZh: '多組堆疊長條圖',
-        mainPluginNames: ['MultiBarStack'],
+        mainPluginNames: ['MultiStackedBar'],
         list: [
           {
             title: 'PRESET_MULTI_GRID_SEPARATE_GRID',
             presetName: 'PRESET_MULTI_GRID_SEPARATE_GRID',
-            allPluginNames: ['MultiGroupAxis', 'MultiValueStackAxis', 'MultiBarStack', 'MultiGridLegend', 'MultiGridTooltip'],
+            allPluginNames: ['MultiGroupAxis', 'MultiStackedValueAxis', 'MultiStackedBar', 'MultiGridLegend', 'MultiGridTooltip'],
             getData: () => import('./data/multiGridData3')
           },
           // {
           //   chartType: 'multiGrid',
-          //   pluginName: 'MultiBarStack',
+          //   pluginName: 'MultiStackedBar',
           //   presetName: 'PRESET_MULTI_GRID_2_GRID_SLOT'
           // },
           // {
           //   chartType: 'multiGrid',
-          //   pluginName: 'MultiBarStack',
+          //   pluginName: 'MultiStackedBar',
           //   presetName: 'PRESET_MULTI_GRID_3_GRID_SLOT'
           // },
           // {
           //   chartType: 'multiGrid',
-          //   pluginName: 'MultiBarStack',
+          //   pluginName: 'MultiStackedBar',
           //   presetName: 'PRESET_MULTI_GRID_4_GRID_SLOT'
           // },
         ]
@@ -635,15 +635,15 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
         ]
       },
       {
-        title: 'MultiBarStack, MultiLines',
+        title: 'MultiStackedBar, MultiLines',
         description: 'Dual-Axis Stacked Bar and Line Chart',
         descriptionZh: '雙圖軸堆疊長條及折線圖',
-        mainPluginNames: ['MultiBarStack', 'MultiLines'],
+        mainPluginNames: ['MultiStackedBar', 'MultiLines'],
         list: [
           {
             title: 'PRESET_MULTI_GRID_BASIC',
             presetName: 'PRESET_MULTI_GRID_BASIC',
-            allPluginNames: ['MultiGroupAxis', 'OverlappingValueStackAxes', 'MultiBarStack', 'MultiLines', 'MultiDots', 'MultiGridLegend', 'MultiGridTooltip'],
+            allPluginNames: ['MultiGroupAxis', 'OverlappingStackedValueAxes', 'MultiStackedBar', 'MultiLines', 'MultiDots', 'MultiGridLegend', 'MultiGridTooltip'],
             getData: () => import('./data/multiGridData1')
           },
         ]

@@ -10,15 +10,15 @@ import {
 import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineGridPlugin } from '../../../lib/core'
-import { DEFAULT_VALUE_STACK_AXIS_PARAMS } from '../defaults'
+import { DEFAULT_STACKED_VALUE_AXIS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_AXIS } from '../../const'
 import { createBaseValueAxis } from '../../base/BaseValueAxis'
 
-const pluginName = 'ValueStackAxis'
+const pluginName = 'StackedValueAxis'
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_VALUE_STACK_AXIS_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_STACKED_VALUE_AXIS_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_VALUE_STACK_AXIS_PARAMS,
+  defaultParams: DEFAULT_STACKED_VALUE_AXIS_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {
@@ -72,7 +72,7 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_VALUE_S
   }
 }
 
-export const ValueStackAxis = defineGridPlugin(pluginConfig)(({ selection, name, observer, subject }) => {
+export const StackedValueAxis = defineGridPlugin(pluginConfig)(({ selection, name, observer, subject }) => {
   
   const destroy$ = new Subject()
 
