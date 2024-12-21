@@ -92,7 +92,7 @@ export default <DataRelationship>{
     },
     {
       "id": "id15",
-      "label": "label9",
+      "label": "",
       "categoryLabel": "category2",
       "start": "id5",
       "end": "id3",
@@ -100,7 +100,7 @@ export default <DataRelationship>{
     },
     {
       "id": "id16",
-      "label": "label10",
+      "label": "",
       "categoryLabel": "category2",
       "start": "id5",
       "end": "id4",
@@ -108,7 +108,7 @@ export default <DataRelationship>{
     },
     {
       "id": "id17",
-      "label": "label11",
+      "label": "",
       "categoryLabel": "category2",
       "start": "id11",
       "end": "id5",
@@ -116,7 +116,7 @@ export default <DataRelationship>{
     },
     {
       "id": "id18",
-      "label": "label12",
+      "label": "",
       "categoryLabel": "category2",
       "start": "id7",
       "end": "id5",
@@ -124,7 +124,7 @@ export default <DataRelationship>{
     },
     {
       "id": "id19",
-      "label": "label13",
+      "label": "",
       "categoryLabel": "category1",
       "start": "id6",
       "end": "id5",
@@ -132,7 +132,7 @@ export default <DataRelationship>{
     },
     {
       "id": "id20",
-      "label": "label14",
+      "label": "",
       "categoryLabel": "category1",
       "start": "id1",
       "end": "id5",
@@ -140,7 +140,7 @@ export default <DataRelationship>{
     },
     {
       "id": "id21",
-      "label": "label15",
+      "label": "",
       "categoryLabel": "category1",
       "start": "id8",
       "end": "id5",
@@ -148,7 +148,7 @@ export default <DataRelationship>{
     },
     {
       "id": "id22",
-      "label": "label16",
+      "label": "",
       "categoryLabel": "category1",
       "start": "id12",
       "end": "id5",
@@ -156,7 +156,7 @@ export default <DataRelationship>{
     },
     {
       "id": "id23",
-      "label": "label17",
+      "label": "",
       "categoryLabel": "category2",
       "start": "id11",
       "end": "id7",
@@ -164,7 +164,7 @@ export default <DataRelationship>{
     },
     {
       "id": "id24",
-      "label": "label18",
+      "label": "",
       "categoryLabel": "category2",
       "start": "id0",
       "end": "id9",
@@ -172,7 +172,7 @@ export default <DataRelationship>{
     },
     {
       "id": "id25",
-      "label": "label19",
+      "label": "",
       "categoryLabel": "category1",
       "start": "id10",
       "end": "id11",
@@ -188,7 +188,7 @@ export default <DataRelationship>{
     },
     {
       "id": "id27",
-      "label": "label21",
+      "label": "",
       "categoryLabel": "category2",
       "start": "id5",
       "end": "id13",

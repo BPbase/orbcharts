@@ -48,6 +48,10 @@ export type PluginListMultiValue = 'MultiValueLegend'
   | 'XYAxes'
   | 'XYZoom'
 
+export type PluginListRelationship = 'ForceDirected'
+  | 'RelationshipLegend'
+  | 'RelationshipTooltip'
+
 export type PluginListTree = 'TreeLegend'
   | 'TreeMap'
   | 'TreeTooltip'
@@ -62,8 +66,10 @@ export type PluginList<T extends ChartType> = T extends 'series'
       ? PluginListMultiGrid
       : T extends 'multiValue'
         ? PluginListMultiValue
-        : T extends 'tree'
-          ? PluginListTree
-          // : T extends 'noneData'
-          //   ? PluginListNoneData
-            : never
+        : T extends 'relationshiop'
+          ? PluginListRelationship
+          : T extends 'tree'
+            ? PluginListTree
+            // : T extends 'noneData'
+            //   ? PluginListNoneData
+              : never

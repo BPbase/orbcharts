@@ -12,7 +12,7 @@ DEFAULT_TREE_MAP_PARAMS.sort.toString = () => `(a, b) => b.value - a.value`
 export const DEFAULT_TREE_LEGEND_PARAMS: TreeLegendParams = {
   // position: 'right',
   // justify: 'end',
-  placement: 'bottom',
+  placement: 'right-end',
   padding: 28,
   backgroundFill: 'none',
   backgroundStroke: 'none',

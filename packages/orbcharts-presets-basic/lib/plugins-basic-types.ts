@@ -1,6 +1,6 @@
 
 
-export * from '@orbcharts/plugins-basic-types'
+// export * from '@orbcharts/plugins-basic-types'
 
 // test
-// export * from '../../orbcharts-plugins-basic-types/src'
+export * from '../../orbcharts-plugins-basic-types/src'

@@ -49,6 +49,11 @@ import type {
   XYAxesParams,
   XYZoomParams,
 
+  // -- relationship --
+  ForceDirectedParams,
+  RelationshipLegendParams,
+  RelationshipTooltipParams,
+
   // -- tree --
   TreeLegendParams,
   TreeMapParams,
@@ -293,6 +298,23 @@ export interface PresetXYAxesParams {
 
 export interface PresetXYZoomParams {
   XYZoom: Partial<XYZoomParams>
+}
+
+// -- relationship --
+export type PresetRelationshipPluginParams = PresetForceDirectedParams
+  & PresetRelationshipLegendParams
+  & PresetRelationshipTooltipParams
+
+export interface PresetForceDirectedParams {
+  ForceDirected: DeepPartial<ForceDirectedParams>
+}
+
+export interface PresetRelationshipLegendParams {
+  RelationshipLegend: Partial<RelationshipLegendParams>
+}
+
+export interface PresetRelationshipTooltipParams {
+  RelationshipTooltip: Partial<RelationshipTooltipParams>
 }
 
 // -- tree --

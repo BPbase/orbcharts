@@ -1,5 +1,7 @@
 import type {
-  ForceDirectedParams
+  ForceDirectedParams,
+  RelationshipLegendParams,
+  RelationshipTooltipParams
 } from '../../lib/plugins-basic-types'
 
 
@@ -20,7 +22,7 @@ export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
     arrowWidth: 5,
     arrowHeight: 5,
     arrowStyleFn: (node) => '',
-    labelColorType: 'primary',
+    labelColorType: 'secondary',
     labelSizeFixed: false,
     labelStyleFn: (node) => ''
   },
@@ -42,3 +44,70 @@ export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
     max: Infinity
   }
 }
+
+export const DEFAULT_RELATIONSHIP_LEGEND_PARAMS: RelationshipLegendParams = {
+  placement: 'right-end',
+  padding: 28,
+  backgroundFill: 'none',
+  backgroundStroke: 'none',
+  gap: 10,
+  listRectWidth: 14,
+  listRectHeight: 14,
+  listRectRadius: 0,
+  textColorType: 'primary'
+}
+
+export const DEFAULT_RELATIONSHIP_TOOLTIP_PARAMS: RelationshipTooltipParams = {
+  backgroundColorType: 'background',
+  strokeColorType: 'primary',
+  backgroundOpacity: 0.8,
+  textColorType: 'primary',
+  offset: [20, 5],
+  padding: 10,
+  renderFn: (eventData, { styles, utils }) => {
+    const hasCategoryLabel = eventData.categoryLabel ? true : false
+    const hasDatumLabel = eventData.datum.label ? true : false
+    const bulletWidth = styles.textSizePx * 0.7
+    const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
+    const categorySvg = hasCategoryLabel
+      ? `<rect width="${bulletWidth}" height="${bulletWidth}" x="${offset}" y="${offset - 1}" rx="${bulletWidth / 2}" fill="${eventData.datum.color}"></rect>
+  <text x="${styles.textSizePx * 1.5}" font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
+    <tspan>${eventData.categoryLabel}</tspan>
+  </text>`
+      : ''
+    const datumLabelSvg = hasDatumLabel
+      ? `<tspan>${eventData.datum.label}</tspan>  `
+      : ''
+    const datumSvg = `<text font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
+    ${datumLabelSvg}<tspan font-weight="bold">${eventData.datum.value}</tspan>
+  </text>`
+
+    return `${categorySvg}
+  <g ${hasCategoryLabel ? `transform="translate(0, ${styles.textSizePx * 2})"` : ''}>
+    ${datumSvg}
+  </g>`
+  },
+}
+DEFAULT_RELATIONSHIP_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils }) => {
+  const hasCategoryLabel = eventData.categoryLabel ? true : false
+  const hasDatumLabel = eventData.datum.label ? true : false
+  const bulletWidth = styles.textSizePx * 0.7
+  const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
+  const categorySvg = hasCategoryLabel
+    ? \`<rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${offset - 1}" rx="\${bulletWidth / 2}" fill="\${eventData.datum.color}"></rect>
+<text x="\${styles.textSizePx * 1.5}" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
+  <tspan>\${eventData.categoryLabel}</tspan>
+</text>\`
+    : ''
+  const datumLabelSvg = hasDatumLabel
+    ? \`<tspan>\${eventData.datum.label}</tspan>  \`
+    : ''
+  const datumSvg = \`<text font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
+  \${datumLabelSvg}<tspan font-weight="bold">\${eventData.datum.value}</tspan>
+</text>\`
+
+  return \`\${categorySvg}
+<g \${hasCategoryLabel ? \`transform="translate(0, \${styles.textSizePx * 2})"\` : ''}>
+  \${datumSvg}
+</g>\`
+}`

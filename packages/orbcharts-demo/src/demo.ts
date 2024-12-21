@@ -723,6 +723,44 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
     ]
   },
   {
+    title: 'Relationship',
+    chartType: 'relationship',
+    list: [
+      {
+        title: 'ForceDirected',
+        description: 'Force Directed Chart',
+        descriptionZh: '力導向圖',
+        mainPluginNames: ['ForceDirected'],
+        list: [
+          {
+            title: 'PRESET_FORCE_DIRECTED_BASIC',
+            presetName: 'PRESET_FORCE_DIRECTED_BASIC',
+            allPluginNames: ['ForceDirected', 'RelationshipLegend', 'RelationshipTooltip'],
+            getData: () => import('./data/relationshipData1')
+          },
+          {
+            title: 'PRESET_FORCE_DIRECTED_FIX_FONT_SIZE',
+            presetName: 'PRESET_FORCE_DIRECTED_FIX_FONT_SIZE',
+            allPluginNames: ['ForceDirected', 'RelationshipLegend', 'RelationshipTooltip'],
+            getData: () => import('./data/relationshipData1')
+          },
+          {
+            title: 'PRESET_FORCE_DIRECTED_NONE_ARROW',
+            presetName: 'PRESET_FORCE_DIRECTED_NONE_ARROW',
+            allPluginNames: ['ForceDirected', 'RelationshipLegend', 'RelationshipTooltip'],
+            getData: () => import('./data/relationshipData1')
+          },
+          {
+            title: 'PRESET_FORCE_DIRECTED_NONE_ZOOM',
+            presetName: 'PRESET_FORCE_DIRECTED_NONE_ZOOM',
+            allPluginNames: ['ForceDirected', 'RelationshipLegend', 'RelationshipTooltip'],
+            getData: () => import('./data/relationshipData1')
+          }
+        ]
+      }
+    ]
+  },
+  {
     title: 'Tree',
     chartType: 'tree',
     list: [
@@ -734,7 +772,7 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
         list: [
           {
             title: 'PRESET_TREE_BASIC',
-            presetName: 'PRESET_TREE_BASIC',
+            presetName: 'PRESET_TREE_MAP_BASIC',
             allPluginNames: ['TreeMap', 'TreeLegend', 'TreeTooltip'],
             getData: () => import('./data/treeData1')
           },

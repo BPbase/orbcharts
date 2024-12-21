@@ -95,12 +95,13 @@ const defsArrowMarkerClassName = getClassName(pluginName, 'arrow-marker')
 const edgeListGClassName = getClassName(pluginName, 'edge-list-g')
 const edgeGClassName = getClassName(pluginName, 'edge-g')
 const edgeArrowPathClassName = getClassName(pluginName, 'edge-arrow-path')
-const edgeArrowTextClassName = getClassName(pluginName, 'edge-arrow-text')
+const edgeLabelGClassName = getClassName(pluginName, 'edge-label-g')
+const edgeLabelClassName = getClassName(pluginName, 'edge-label')
 const nodeListGClassName = getClassName(pluginName, 'node-list-g')
 const nodeGClassName = getClassName(pluginName, 'node-g')
 const nodeCircleClassName = getClassName(pluginName, 'node-circle')
-const nodeTextGClassName = getClassName(pluginName, 'node-text-g')
-const nodeTextClassName = getClassName(pluginName, 'node-text')
+const nodeLabelGClassName = getClassName(pluginName, 'node-label-g')
+const nodeLabelClassName = getClassName(pluginName, 'node-label')
 
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_FORCE_DIRECTED_PARAMS> = {
   name: pluginName,
@@ -192,8 +193,8 @@ function translateFn (d: any): string {
 
 function translateCenterFn (d: any): string {
   // console.log('translateCenterFn', d)
-  const x = d.source.x + ((d.target.x - d.source.x) / 1.8) // 置中的話除2
-  const y = d.source.y + ((d.target.y - d.source.y) / 1.8) // 置中的話除2
+  const x = d.source.x + ((d.target.x - d.source.x) / 2) // 置中的話除2
+  const y = d.source.y + ((d.target.y - d.source.y) / 2) // 置中的話除2
   return "translate(" + x + "," + y + ")";
 }
 
@@ -352,7 +353,7 @@ function renderNodeG ({ nodeListGSelection, nodes }: {
         const enterSelection = enter
           .append('g')
           .classed(nodeGClassName, true)
-          .attr('cursor', 'pointer')
+          // .attr('cursor', 'pointer')
         return enterSelection
       },
       update => {
@@ -399,9 +400,8 @@ function renderNodeCircle ({ nodeGSelection, nodes, fullParams, fullChartParams 
   return nodeGSelection.select<SVGCircleElement>(`circle.${nodeCircleClassName}`)
 }
 
-function renderNodeLabelG ({ nodeGSelection, nodes }: {
+function renderNodeLabelG ({ nodeGSelection }: {
   nodeGSelection: d3.Selection<SVGGElement, any, any, unknown>
-  nodes: RenderNode[]
 }) {
   nodeGSelection.each((data,i,g) => {
     const gSelection = d3.select(g[i])
@@ -411,8 +411,8 @@ function renderNodeLabelG ({ nodeGSelection, nodes }: {
         enter => {
           const enterSelection = enter
             .append('g')
-            .classed(nodeTextGClassName, true)
-            .attr('cursor', 'pointer')
+            .classed(nodeLabelGClassName, true)
+            // .attr('cursor', 'pointer')
           return enterSelection
         },
         update => {
@@ -424,13 +424,11 @@ function renderNodeLabelG ({ nodeGSelection, nodes }: {
       )
   })
 
-  return nodeGSelection.select<SVGTextElement>(`g.${nodeTextGClassName}`)
+  return nodeGSelection.select<SVGTextElement>(`g.${nodeLabelGClassName}`)
 }
 
 function renderNodeLabel ({ nodeLabelGSelection, fullParams, fullChartParams }: {
-  // nodeListGSelection: d3.Selection<SVGGElement, any, any, unknown>
   nodeLabelGSelection: d3.Selection<SVGGElement, RenderNode, any, unknown>
-  // nodes: RenderNode[]
   fullParams: ForceDirectedParams
   fullChartParams: ChartParams
 }) {
@@ -442,8 +440,8 @@ function renderNodeLabel ({ nodeLabelGSelection, fullParams, fullChartParams }: 
         enter => {
           const enterSelection = enter
             .append('text')
-            .classed(nodeTextClassName, true)
-            .attr('cursor', 'pointer')
+            .classed(nodeLabelClassName, true)
+            // .attr('cursor', 'pointer')
             .attr('text-anchor', 'middle')
             .attr('pointer-events', 'none')
           return enterSelection
@@ -457,10 +455,11 @@ function renderNodeLabel ({ nodeLabelGSelection, fullParams, fullChartParams }: 
       )
       .text(d => d.label)
       .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.node.labelColorType, fullChartParams }))
+      .attr('font-size', fullChartParams.styles.textSize)
       .attr('style', d => fullParams.node.labelStyleFn(d))
   })
 
-  return nodeLabelGSelection.select<SVGTextElement>(`text.${nodeTextClassName}`)
+  return nodeLabelGSelection.select<SVGTextElement>(`text.${nodeLabelClassName}`)
 }
 
 function renderEdgeG ({ edgeListGSelection, edges }: {
@@ -473,8 +472,8 @@ function renderEdgeG ({ edgeListGSelection, edges }: {
       enter => {
         const enterSelection = enter
           .append('g')
-          .classed(nodeGClassName, true)
-          .attr('cursor', 'pointer')
+          .classed(edgeGClassName, true)
+          // .attr('cursor', 'pointer')
         return enterSelection
       },
       update => {
@@ -486,16 +485,15 @@ function renderEdgeG ({ edgeListGSelection, edges }: {
     )
 }
 
-function renderArrowPath ({ edgeGSelection, edges, fullParams, fullChartParams }: {
+function renderEdgeArrowPath ({ edgeGSelection, fullParams, fullChartParams }: {
   edgeGSelection: d3.Selection<SVGGElement, any, any, unknown>
-  edges: ComputedEdge[]
   fullParams: ForceDirectedParams
   fullChartParams: ChartParams
 }) {
   edgeGSelection.each((data,i,g) => {
     const gSelection = d3.select(g[i])
     gSelection.selectAll<SVGPathElement, ComputedEdge>('path')
-      .data(edges, d => d.id)
+      .data([data])
       .join(
         enter => {
           return enter
@@ -516,6 +514,68 @@ function renderArrowPath ({ edgeGSelection, edges, fullParams, fullChartParams }
   })
 
   return edgeGSelection.select<SVGPathElement>(`path.${edgeArrowPathClassName}`)
+}
+
+function renderEdgeLabelG ({ edgeGSelection }: {
+  edgeGSelection: d3.Selection<SVGGElement, any, any, unknown>
+}) {
+  edgeGSelection.each((data,i,g) => {
+    const gSelection = d3.select(g[i])
+    gSelection.selectAll<SVGGElement, RenderEdge>('g')
+      .data([data])
+      .join(
+        enter => {
+          const enterSelection = enter
+            .append('g')
+            .classed(edgeLabelGClassName, true)
+            // .attr('cursor', 'pointer')
+          return enterSelection
+        },
+        update => {
+          return update
+        },
+        exit => {
+          return exit.remove()
+        }
+      )
+  })
+
+  return edgeGSelection.select<SVGTextElement>(`g.${edgeLabelGClassName}`)
+}
+
+function renderEdgeLabel ({ edgeLabelGSelection, fullParams, fullChartParams }: {
+  edgeLabelGSelection: d3.Selection<SVGGElement, RenderEdge, any, unknown>
+  fullParams: ForceDirectedParams
+  fullChartParams: ChartParams
+}) {
+  edgeLabelGSelection.each((data,i,g) => {
+    const gSelection = d3.select(g[i])
+    gSelection.selectAll<SVGTextElement, RenderEdge>('text')
+      .data([data], d => d.id)
+      .join(
+        enter => {
+          const enterSelection = enter
+            .append('text')
+            .classed(edgeLabelClassName, true)
+            // .attr('cursor', 'pointer')
+            .attr('text-anchor', 'middle')
+            .attr('pointer-events', 'none')
+          return enterSelection
+        },
+        update => {
+          return update
+        },
+        exit => {
+          return exit.remove()
+        }
+      )
+      .text(d => d.label)
+      .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.edge.labelColorType, fullChartParams }))
+      .attr('font-size', fullChartParams.styles.textSize)
+      .attr('style', d => fullParams.edge.labelStyleFn(d))
+  })
+
+  return edgeLabelGSelection.select<SVGTextElement>(`text.${edgeLabelClassName}`)
 }
 
 
@@ -720,6 +780,8 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
   let nodeLabelSelection: d3.Selection<SVGTextElement, RenderNode, SVGGElement, any>
   let edgeGSelection: d3.Selection<SVGGElement, RenderEdge, SVGGElement, any>
   let edgeArrowSelection: d3.Selection<SVGPathElement, RenderEdge, SVGGElement, any>
+  let edgeLabelGSelection: d3.Selection<SVGGElement, RenderEdge, SVGGElement, any>
+  let edgeLabelSelection: d3.Selection<SVGTextElement, RenderEdge, SVGGElement, any>
 
   const dragStatus$ = new BehaviorSubject<DragStatus>('end') // start, drag, end
   const mouseEvent$ = new Subject<EventRelationship>()
@@ -756,7 +818,12 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
           )`)
 
           if (data.node.labelSizeFixed) {
+            // 反向 scale 抵消掉放大縮小
             nodeLabelSelection.attr('transform', `scale(${1 / event.transform.k})`)
+          }
+          if (data.edge.labelSizeFixed) {
+            // 反向 scale 抵消掉放大縮小
+            edgeLabelSelection.attr('transform', `scale(${1 / event.transform.k})`)
           }
         })
         : d3.zoom().on('zoom', null)
@@ -843,12 +910,10 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
 
     nodeLabelGSelection = renderNodeLabelG({
       nodeGSelection: nodeGSelection,
-      nodes: data.renderData.nodes,
     })
 
     nodeLabelSelection = renderNodeLabel({
       nodeLabelGSelection: nodeLabelGSelection,
-      // nodes: data.renderData.nodes,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
@@ -858,13 +923,22 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
       edges: data.renderData.edges
     })
 
-    edgeArrowSelection = renderArrowPath({
+    edgeArrowSelection = renderEdgeArrowPath({
       edgeGSelection: edgeGSelection,
-      // edges: data.computedData.edges,
-      edges: data.renderData.edges,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
+
+    edgeLabelGSelection = renderEdgeLabelG({
+      edgeGSelection: edgeGSelection,
+    })
+
+    edgeLabelSelection = renderEdgeLabel({
+      edgeLabelGSelection: edgeLabelGSelection,
+      fullParams: data.fullParams,
+      fullChartParams: data.fullChartParams
+    })
+
     data.simulation.nodes(data.renderData.nodes)
       .on('tick', () => {
         edgeArrowSelection.attr('d', linkArcFn)
@@ -873,6 +947,7 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
           x: d.x,
           y: d.y - data.fullParams.node.dotRadius - 10
         }))
+        edgeLabelGSelection.attr('transform', d => translateCenterFn(d))
       })
     ;(data.simulation.force("link") as any).links(data.renderData.edges)
 

@@ -4,9 +4,9 @@
 
 <script setup lang="ts">
 import { RelationshipChart } from '../../../packages/orbcharts-core/src'
-import { ForceDirected } from '../../../packages/orbcharts-plugins-basic/src'
+import { ForceDirected, RelationshipLegend, RelationshipTooltip } from '../../../packages/orbcharts-plugins-basic/src'
 // import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
-import relationshipData1 from '../../../packages/orbcharts-demo/src/data/relationshipData3.js'
+import relationshipData1 from '../../../packages/orbcharts-demo/src/data/relationshipData1.js'
 
 onMounted(() => {
 
@@ -40,8 +40,10 @@ onMounted(() => {
   // }, 2000)
 
   const forceDirected = new ForceDirected()
+  const relationshipLegend = new RelationshipLegend()
+  const relationshipTooltip = new RelationshipTooltip()
 
-  chart!.plugins$.next([ forceDirected ])
+  chart!.plugins$.next([ forceDirected, relationshipLegend, relationshipTooltip ])
 
 
 
