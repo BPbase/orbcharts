@@ -108,55 +108,137 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_FORCE_D
   defaultParams: DEFAULT_FORCE_DIRECTED_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
   validator: (params, { validateColumns }) => {
-    // const result = validateColumns(params, {
-    //   force: {
-    //     toBeTypes: ['object']
-    //   },
-    //   label: {
-    //     toBeTypes: ['object']
-    //   },
-    //   arcScaleType: {
-    //     toBe: '"area" | "radius"',
-    //     test: (value) => value === 'area' || value === 'radius'
-    //   }
-    // })
-    // if (params.force) {
-    //   const forceResult = validateColumns(params.force, {
-    //     velocityDecay: {
-    //       toBeTypes: ['number']
-    //     },
-    //     collisionSpacing: {
-    //       toBeTypes: ['number']
-    //     },
-    //     strength: {
-    //       toBeTypes: ['number']
-    //     },
-    //   })
-    //   if (forceResult.status === 'error') {
-    //     return forceResult
-    //   }
-    // }
-    // if (params.label) {
-    //   const labelResult = validateColumns(params.label, {
-    //     fillRate: {
-    //       toBeTypes: ['number']
-    //     },
-    //     lineHeight: {
-    //       toBeTypes: ['number']
-    //     },
-    //     lineLengthMin: {
-    //       toBeTypes: ['number']
-    //     },
-    //   })
-    //   if (labelResult.status === 'error') {
-    //     return labelResult
-    //   }
-    // }
-    return {
-      status: 'success',
-      columnName: '',
-      expectToBe: ''
+    const result = validateColumns(params, {
+      node: {
+        toBeTypes: ['object']
+      },
+      edge: {
+        toBeTypes: ['object']
+      },
+      force: {
+        toBeTypes: ['object']
+      },
+      zoomable: {
+        toBeTypes: ['boolean']
+      },
+      transform: {
+        toBeTypes: ['object']
+      },
+      scaleExtent: {
+        toBeTypes: ['object']
+      }
+    })
+    if (params.node) {
+      const nodeResult = validateColumns(params.node, {
+        dotRadius: {
+          toBeTypes: ['number']
+        },
+        dotFillColorType: {
+          toBeOption: 'ColorType'
+        },
+        dotStrokeColorType: {
+          toBeOption: 'ColorType'
+        },
+        dotStrokeWidth: {
+          toBeTypes: ['number']
+        },
+        dotStyleFn: {
+          toBeTypes: ['Function']
+        },
+        labelColorType: {
+          toBeOption: 'ColorType'
+        },
+        labelSizeFixed: {
+          toBeTypes: ['boolean']
+        },
+        labelStyleFn: {
+          toBeTypes: ['Function']
+        },
+      })
+      if (nodeResult.status === 'error') {
+        return nodeResult
+      }
     }
+    if (params.edge) {
+      const edgeResult = validateColumns(params.edge, {
+        arrowColorType: {
+          toBeOption: 'ColorType'
+        },
+        arrowStrokeWidth: {
+          toBeTypes: ['number']
+        },
+        arrowWidth: {
+          toBeTypes: ['number']
+        },
+        arrowHeight: {
+          toBeTypes: ['number']
+        },
+        arrowStyleFn: {
+          toBeTypes: ['Function']
+        },
+        labelColorType: {
+          toBeOption: 'ColorType'
+        },
+        labelSizeFixed: {
+          toBeTypes: ['boolean']
+        },
+        labelStyleFn: {
+          toBeTypes: ['Function']
+        },
+      })
+      if (edgeResult.status === 'error') {
+        return edgeResult
+      }
+    }
+    if (params.force) {
+      const forceResult = validateColumns(params.force, {
+        nodeStrength: {
+          toBeTypes: ['number']
+        },
+        linkDistance: {
+          toBeTypes: ['number']
+        },
+        velocityDecay: {
+          toBeTypes: ['number']
+        },
+        alphaDecay: {
+          toBeTypes: ['number']
+        },
+      })
+      if (forceResult.status === 'error') {
+        return forceResult
+      }
+    }
+    if (params.transform) {
+      const transformResult = validateColumns(params.transform, {
+        x: {
+          toBeTypes: ['number']
+        },
+        y: {
+          toBeTypes: ['number']
+        },
+        k: {
+          toBeTypes: ['number']
+        },
+      })
+      if (transformResult.status === 'error') {
+        return transformResult
+      }
+    }
+    if (params.scaleExtent) {
+      const scaleExtentResult = validateColumns(params.scaleExtent, {
+        min: {
+          toBeTypes: ['number']
+        },
+        max: {
+          toBeTypes: ['number']
+        },
+      })
+      if (scaleExtentResult.status === 'error') {
+        return scaleExtentResult
+      }
+    }
+    return result
   }
 }
 
@@ -774,14 +856,14 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
   const edgeListGSelection = gSelection.append('g').classed(edgeListGClassName, true)
   const nodeListGSelection = gSelection.append('g').classed(nodeListGClassName, true)
 
-  let nodeGSelection: d3.Selection<SVGGElement, RenderNode, SVGGElement, any>
-  let nodeCircleSelection: d3.Selection<SVGCircleElement, RenderNode, SVGGElement, any>
-  let nodeLabelGSelection: d3.Selection<SVGGElement, RenderNode, SVGGElement, any>
-  let nodeLabelSelection: d3.Selection<SVGTextElement, RenderNode, SVGGElement, any>
-  let edgeGSelection: d3.Selection<SVGGElement, RenderEdge, SVGGElement, any>
-  let edgeArrowSelection: d3.Selection<SVGPathElement, RenderEdge, SVGGElement, any>
-  let edgeLabelGSelection: d3.Selection<SVGGElement, RenderEdge, SVGGElement, any>
-  let edgeLabelSelection: d3.Selection<SVGTextElement, RenderEdge, SVGGElement, any>
+  let nodeGSelection: d3.Selection<SVGGElement, RenderNode, SVGGElement, any> | undefined
+  let nodeCircleSelection: d3.Selection<SVGCircleElement, RenderNode, SVGGElement, any> | undefined
+  let nodeLabelGSelection: d3.Selection<SVGGElement, RenderNode, SVGGElement, any> | undefined
+  let nodeLabelSelection: d3.Selection<SVGTextElement, RenderNode, SVGGElement, any> | undefined
+  let edgeGSelection: d3.Selection<SVGGElement, RenderEdge, SVGGElement, any> | undefined
+  let edgeArrowSelection: d3.Selection<SVGPathElement, RenderEdge, SVGGElement, any> | undefined
+  let edgeLabelGSelection: d3.Selection<SVGGElement, RenderEdge, SVGGElement, any> | undefined
+  let edgeLabelSelection: d3.Selection<SVGTextElement, RenderEdge, SVGGElement, any> | undefined
 
   const dragStatus$ = new BehaviorSubject<DragStatus>('end') // start, drag, end
   const mouseEvent$ = new Subject<EventRelationship>()
@@ -817,11 +899,11 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
             ${event.transform.k}
           )`)
 
-          if (data.node.labelSizeFixed) {
+          if (data.node.labelSizeFixed && nodeLabelSelection) {
             // 反向 scale 抵消掉放大縮小
             nodeLabelSelection.attr('transform', `scale(${1 / event.transform.k})`)
           }
-          if (data.edge.labelSizeFixed) {
+          if (data.edge.labelSizeFixed && edgeLabelSelection) {
             // 反向 scale 抵消掉放大縮小
             edgeLabelSelection.attr('transform', `scale(${1 / event.transform.k})`)
           }

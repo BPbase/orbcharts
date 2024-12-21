@@ -83,7 +83,7 @@ export function chartParamsValidator (chartType: ChartType, chartParamsPartial: 
 
     if (chartParamsPartial.colors.light) {
       const lightResult = validateColumns(chartParamsPartial.colors.light, {
-        series: {
+        label: {
           toBeTypes: ['string[]'],
         },
         primary: {
@@ -107,7 +107,7 @@ export function chartParamsValidator (chartType: ChartType, chartParamsPartial: 
 
     if (chartParamsPartial.colors.dark) {
       const darkResult = validateColumns(chartParamsPartial.colors.dark, {
-        series: {
+        label: {
           toBeTypes: ['string[]'],
         },
         primary: {
