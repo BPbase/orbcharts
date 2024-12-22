@@ -36,6 +36,8 @@ type BubblesSimulationDatum = BubblesDatum & d3.SimulationNodeDatum
 
 const pluginName = 'Bubbles'
 
+const baseLineHeight = 12 // 未變形前的字體大小（代入計算用而已，數字多少都不會有影響）
+
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BUBBLES_PARAMS> = {
   name: pluginName,
   defaultParams: DEFAULT_BUBBLES_PARAMS,
@@ -215,7 +217,7 @@ function renderBubbles ({ selection, bubblesData, fullParams, sumSeries }: {
         const enterSelection = enter
           .append('g')
           .attr('cursor', 'pointer')
-          .attr('font-size', 12)
+          .attr('font-size', baseLineHeight)
           .style('fill', '#ffffff')
           .attr("text-anchor", "middle")
         
@@ -266,7 +268,7 @@ function renderBubbles ({ selection, bubblesData, fullParams, sumSeries }: {
       gSelection.call(renderCircleText, {
         text: d[textDataColumn],
         radius: d.r * fullParams.bubbleLabel.fillRate,
-        lineHeight: fullParams.bubbleLabel.lineHeight,
+        lineHeight: baseLineHeight * fullParams.bubbleLabel.lineHeight,
         isBreakAll: breakAll
       })
 

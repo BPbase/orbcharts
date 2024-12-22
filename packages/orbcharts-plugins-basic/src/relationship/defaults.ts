@@ -1,30 +1,55 @@
 import type {
   ForceDirectedParams,
+  ForceDirectedBubblesParams,
   RelationshipLegendParams,
   RelationshipTooltipParams
 } from '../../lib/plugins-basic-types'
 
 
 export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
-  node: {
-    dotRadius: 10,
-    dotFillColorType: 'label',
-    dotStrokeColorType: 'label',
-    dotStrokeWidth: 1,
-    dotStyleFn: (node) => '',
-    labelColorType: 'primary',
-    labelSizeFixed: false,
-    labelStyleFn: (node) => 'text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff'
+  // node: {
+  //   dotRadius: 10,
+  //   dotFillColorType: 'label',
+  //   dotStrokeColorType: 'label',
+  //   dotStrokeWidth: 1,
+  //   dotStyleFn: (node) => '',
+  //   labelColorType: 'primary',
+  //   labelSizeFixed: false,
+  //   labelStyleFn: (node) => 'text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff'
+  // },
+  // edge: {
+  //   arrowColorType: 'primary',
+  //   arrowStrokeWidth: 1.5,
+  //   arrowWidth: 5,
+  //   arrowHeight: 5,
+  //   arrowStyleFn: (node) => '',
+  //   labelColorType: 'secondary',
+  //   labelSizeFixed: false,
+  //   labelStyleFn: (node) => ''
+  // },
+  dot: {
+    radius: 10,
+    fillColorType: 'label',
+    strokeColorType: 'label',
+    strokeWidth: 1,
+    styleFn: (node) => '',
   },
-  edge: {
-    arrowColorType: 'primary',
-    arrowStrokeWidth: 1.5,
-    arrowWidth: 5,
-    arrowHeight: 5,
-    arrowStyleFn: (node) => '',
-    labelColorType: 'secondary',
-    labelSizeFixed: false,
-    labelStyleFn: (node) => ''
+  dotLabel: {
+    colorType: 'primary',
+    sizeFixed: false,
+    styleFn: (node) => 'text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff'
+  },
+  arrow: {
+    colorType: 'primary',
+    strokeWidth: 1.5,
+    pointerWidth: 5,
+    pointerHeight: 5,
+    styleFn: (node) => '',
+  },
+  arrowLabel: {
+    colorType: 'secondary',
+    sizeFixed: false,
+    styleFn: (node) => ''
   },
   force: {
     nodeStrength: -500, // 泡泡引力
@@ -44,6 +69,64 @@ export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
     max: Infinity
   }
 }
+DEFAULT_FORCE_DIRECTED_PARAMS.dot.styleFn.toString = () => `(node) => ''`
+DEFAULT_FORCE_DIRECTED_PARAMS.dotLabel.styleFn.toString = () => `(node) => 'text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff'`
+DEFAULT_FORCE_DIRECTED_PARAMS.arrow.styleFn.toString = () => `(node) => ''`
+DEFAULT_FORCE_DIRECTED_PARAMS.arrowLabel.styleFn.toString = () => `(node) => ''`
+
+export const DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS: ForceDirectedBubblesParams = {
+  bubble: {
+    radiusMin: 30,
+    radiusMax: 60,
+    arcScaleType: 'area',
+    fillColorType: 'label',
+    strokeColorType: 'label',
+    strokeWidth: 1,
+    styleFn: (node) => '',
+  },
+  bubbleLabel: {
+    fillRate: 0.8,
+    lineHeight: 1,
+    lineLengthMin: 4,
+    colorType: 'primary',
+    styleFn: (node) => ''
+  },
+  arrow: {
+    colorType: 'primary',
+    strokeWidthMin: 1.5,
+    strokeWidthMax: 4.5,
+    pointerWidth: 5,
+    pointerHeight: 5,
+    styleFn: (node) => '',
+  },
+  arrowLabel: {
+    colorType: 'secondary',
+    sizeFixed: false,
+    styleFn: (node) => ''
+  },
+  force: {
+    nodeStrength: -500, // 泡泡引力
+    linkDistance: 200, // 連結長度
+    velocityDecay: 0.1, // 衰減數
+    alphaDecay: 0.05
+    // collisionSpacing: 2 // 泡泡間距
+  },
+  zoomable: true,
+  transform: {
+    x: 0,
+    y: 0,
+    k: 1
+  },
+  scaleExtent: {
+    min: 0,
+    max: Infinity
+  }
+}
+DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS.bubble.styleFn.toString = () => `(node) => ''`
+DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS.bubbleLabel.styleFn.toString = () => `(node) => ''`
+DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS.arrow.styleFn.toString = () => `(node) => ''`
+DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS.arrowLabel.styleFn.toString = () => `(node) => ''`
+
 
 export const DEFAULT_RELATIONSHIP_LEGEND_PARAMS: RelationshipLegendParams = {
   placement: 'right-end',

@@ -51,6 +51,7 @@ import type {
 
   // -- relationship --
   ForceDirectedParams,
+  ForceDirectedBubblesParams,
   RelationshipLegendParams,
   RelationshipTooltipParams,
 
@@ -302,11 +303,16 @@ export interface PresetXYZoomParams {
 
 // -- relationship --
 export type PresetRelationshipPluginParams = PresetForceDirectedParams
+  & PresetForceDirectedBubblesParams
   & PresetRelationshipLegendParams
   & PresetRelationshipTooltipParams
 
 export interface PresetForceDirectedParams {
   ForceDirected: DeepPartial<ForceDirectedParams>
+}
+
+export interface PresetForceDirectedBubblesParams {
+  ForceDirectedBubbles: DeepPartial<ForceDirectedBubblesParams>
 }
 
 export interface PresetRelationshipLegendParams {

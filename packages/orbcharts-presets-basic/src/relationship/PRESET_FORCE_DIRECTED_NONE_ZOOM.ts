@@ -5,7 +5,7 @@ import type { PresetRelationshipPluginParams, PresetNoneDataPluginParams } from 
 export const PRESET_FORCE_DIRECTED_NONE_ZOOM: PresetPartial<'relationship', Partial<PresetRelationshipPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_FORCE_DIRECTED_NONE_ZOOM',
-  description: '基本Force Directed參數',
+  description: 'Force Directed無滑鼠托曳及縮放控制',
   // chartParams: {
   //   padding: {
   //     top: 40,

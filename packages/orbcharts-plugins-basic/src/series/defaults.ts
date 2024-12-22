@@ -19,7 +19,7 @@ export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
   },
   bubbleLabel: {
     fillRate: 0.6,
-    lineHeight: 12,
+    lineHeight: 1,
     lineLengthMin: 4
   },
   // highlightRIncrease: 0,

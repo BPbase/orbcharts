@@ -109,10 +109,16 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_FORCE_D
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {
-      node: {
+      dot: {
         toBeTypes: ['object']
       },
-      edge: {
+      dotLabel: {
+        toBeTypes: ['object']
+      },
+      arrow: {
+        toBeTypes: ['object']
+      },
+      arrowLabel: {
         toBeTypes: ['object']
       },
       force: {
@@ -128,66 +134,80 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_FORCE_D
         toBeTypes: ['object']
       }
     })
-    if (params.node) {
-      const nodeResult = validateColumns(params.node, {
-        dotRadius: {
+    if (params.dot) {
+      const dotResult = validateColumns(params.dot, {
+        radius: {
           toBeTypes: ['number']
         },
-        dotFillColorType: {
+        fillColorType: {
           toBeOption: 'ColorType'
         },
-        dotStrokeColorType: {
+        strokeColorType: {
           toBeOption: 'ColorType'
         },
-        dotStrokeWidth: {
+        strokeWidth: {
           toBeTypes: ['number']
         },
-        dotStyleFn: {
-          toBeTypes: ['Function']
-        },
-        labelColorType: {
-          toBeOption: 'ColorType'
-        },
-        labelSizeFixed: {
-          toBeTypes: ['boolean']
-        },
-        labelStyleFn: {
+        styleFn: {
           toBeTypes: ['Function']
         },
       })
-      if (nodeResult.status === 'error') {
-        return nodeResult
+      if (dotResult.status === 'error') {
+        return dotResult
       }
     }
-    if (params.edge) {
-      const edgeResult = validateColumns(params.edge, {
-        arrowColorType: {
+    if (params.dotLabel) {
+      const dotLabelResult = validateColumns(params.dotLabel, {
+        colorType: {
           toBeOption: 'ColorType'
         },
-        arrowStrokeWidth: {
-          toBeTypes: ['number']
-        },
-        arrowWidth: {
-          toBeTypes: ['number']
-        },
-        arrowHeight: {
-          toBeTypes: ['number']
-        },
-        arrowStyleFn: {
-          toBeTypes: ['Function']
-        },
-        labelColorType: {
-          toBeOption: 'ColorType'
-        },
-        labelSizeFixed: {
+        sizeFixed: {
           toBeTypes: ['boolean']
         },
-        labelStyleFn: {
+        styleFn: {
           toBeTypes: ['Function']
         },
       })
-      if (edgeResult.status === 'error') {
-        return edgeResult
+      if (dotLabelResult.status === 'error') {
+        return dotLabelResult
+      }
+    }
+    if (params.arrow) {
+      const arrowResult = validateColumns(params.arrow, {
+        colorType: {
+          toBeOption: 'ColorType'
+        },
+        strokeWidth: {
+          toBeTypes: ['number']
+        },
+        pointerWidth: {
+          toBeTypes: ['number']
+        },
+        pointerHeight: {
+          toBeTypes: ['number']
+        },
+        styleFn: {
+          toBeTypes: ['Function']
+        },
+      })
+      if (arrowResult.status === 'error') {
+        return arrowResult
+      }
+    }
+    if (params.arrowLabel) {
+      const arrowLabelResult = validateColumns(params.arrowLabel, {
+        colorType: {
+          toBeOption: 'ColorType'
+        },
+        sizeFixed: {
+          toBeTypes: ['boolean']
+        },
+        styleFn: {
+          toBeTypes: ['Function']
+        },
+      })
+      if (arrowLabelResult.status === 'error') {
+        return arrowLabelResult
       }
     }
     if (params.force) {
@@ -263,7 +283,7 @@ function createSimulation (layout: Layout, fullParams: ForceDirectedParams) {
         })
     )
     .force("charge", d3.forceManyBody().strength(fullParams.force.nodeStrength))
-    .force("collision", d3.forceCollide(fullParams.node.dotRadius).strength(1))
+    .force("collision", d3.forceCollide(fullParams.dot.radius).strength(1))
     .force("center", d3.forceCenter(layout.width / 2, layout.height / 2))
 
 }
@@ -307,14 +327,10 @@ function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any
           .append("marker")
           .classed(defsArrowMarkerClassName, true)
           .attr('id', defsArrowMarkerId)
-          // .attr("viewBox", "0 -5 10 10")
-          // .attr("viewBox", d => `0 -${d.edge.arrowHeight / 2} ${d.edge.arrowWidth} ${d.edge.arrowHeight}`)
-          .attr("viewBox", d => `-${d.edge.arrowWidth} -${d.edge.arrowHeight / 2} ${d.edge.arrowWidth} ${d.edge.arrowHeight}`)
+          .attr("viewBox", d => `-${d.arrow.pointerWidth} -${d.arrow.pointerHeight / 2} ${d.arrow.pointerWidth} ${d.arrow.pointerHeight}`)
           .attr("orient", "auto")
         enterSelection.append("path")
-          // .attr("d", "M0,-5L10,0L0,5")
-          // .attr("d", d => `M0,${-d.edge.arrowHeight / 2}L${d.edge.arrowWidth},0L0,${d.edge.arrowHeight / 2}`)
-          .attr("d", d => `M${-d.edge.arrowWidth},${-d.edge.arrowHeight / 2}L0,0L${-d.edge.arrowWidth},${d.edge.arrowHeight / 2}`)
+          .attr("d", d => `M${-d.arrow.pointerWidth},${-d.arrow.pointerHeight / 2}L0,0L${-d.arrow.pointerWidth},${d.arrow.pointerHeight / 2}`) // 箭頭的尖端為(0,0)
         return enterSelection
       },
       update => {
@@ -324,16 +340,16 @@ function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any
         return exit.remove()
       }
     )
-    .attr("markerWidth", d => d.edge.arrowWidth)
-    .attr("markerHeight", d => d.edge.arrowHeight)
-    // .attr("refX", d => {
-    //   return d.node.dotRadius + d.edge.arrowStrokeWidth / 2
-    // })
-    .attr('refX', d => d.node.dotRadius / d.edge.arrowStrokeWidth)
-    // .attr('refX', 0)
+    .attr("markerWidth", d => d.arrow.pointerWidth)
+    .attr("markerHeight", d => d.arrow.pointerHeight)
+    /* refX:修正marker位置（計算出和circle半徑相等的寬度）
+    (1)circle半徑需加上 strokeWidth/2 是因為框線是以 circle 的邊緣往內及往外擴展，所以 stroke 多出來的寬度是一半而已
+    (2)circle半徑需除以 path 寬度是因為「marker 的位置會受到 path 的stroke-width影響」，所以要進行修正
+    (3)- 1 是要修正奇怪的誤差（不知原因）
+    */
+    .attr('refX', d => ((d.dot.radius + (fullParams.dot.strokeWidth / 2)) / d.arrow.strokeWidth) - 1)
     .attr("refY", 0)
     
-
 }
 
 // function drag (): d3.DragBehavior<Element, unknown, unknown> {
@@ -447,9 +463,8 @@ function renderNodeG ({ nodeListGSelection, nodes }: {
     )
 }
 
-function renderNodeCircle ({ nodeGSelection, nodes, fullParams, fullChartParams }: {
-  nodeGSelection: d3.Selection<SVGGElement, any, any, unknown>
-  nodes: RenderNode[]
+function renderNodeCircle ({ nodeGSelection, fullParams, fullChartParams }: {
+  nodeGSelection: d3.Selection<SVGGElement, RenderNode, any, unknown>
   fullParams: ForceDirectedParams
   fullChartParams: ChartParams
 }) {
@@ -472,18 +487,19 @@ function renderNodeCircle ({ nodeGSelection, nodes, fullParams, fullChartParams 
           return exit.remove()
         }
       )
-      .attr('r', fullParams.node.dotRadius)
-      .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.node.dotFillColorType, fullChartParams }))
-      .attr('stroke', d => getDatumColor({ datum: d, colorType: fullParams.node.dotStrokeColorType, fullChartParams }))
-      .attr('stroke-width', fullParams.node.dotStrokeWidth)
-      .attr('style', d => fullParams.node.dotStyleFn(d))
+      .attr('r', fullParams.dot.radius)
+      .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.dot.fillColorType, fullChartParams }))
+      .attr('stroke', d => getDatumColor({ datum: d, colorType: fullParams.dot.strokeColorType, fullChartParams }))
+      .attr('stroke-width', fullParams.dot.strokeWidth)
+      .attr('style', d => fullParams.dot.styleFn(d))
   })
 
   return nodeGSelection.select<SVGCircleElement>(`circle.${nodeCircleClassName}`)
 }
 
-function renderNodeLabelG ({ nodeGSelection }: {
+function renderNodeLabelG ({ nodeGSelection, fullParams }: {
   nodeGSelection: d3.Selection<SVGGElement, any, any, unknown>
+  fullParams: ForceDirectedParams
 }) {
   nodeGSelection.each((data,i,g) => {
     const gSelection = d3.select(g[i])
@@ -504,6 +520,7 @@ function renderNodeLabelG ({ nodeGSelection }: {
           return exit.remove()
         }
       )
+      .attr('transform', `translate(0, ${- fullParams.dot.radius - 10})`)
   })
 
   return nodeGSelection.select<SVGTextElement>(`g.${nodeLabelGClassName}`)
@@ -536,9 +553,9 @@ function renderNodeLabel ({ nodeLabelGSelection, fullParams, fullChartParams }: 
         }
       )
       .text(d => d.label)
-      .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.node.labelColorType, fullChartParams }))
+      .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.dotLabel.colorType, fullChartParams }))
       .attr('font-size', fullChartParams.styles.textSize)
-      .attr('style', d => fullParams.node.labelStyleFn(d))
+      .attr('style', d => fullParams.dotLabel.styleFn(d))
   })
 
   return nodeLabelGSelection.select<SVGTextElement>(`text.${nodeLabelClassName}`)
@@ -568,7 +585,7 @@ function renderEdgeG ({ edgeListGSelection, edges }: {
 }
 
 function renderEdgeArrowPath ({ edgeGSelection, fullParams, fullChartParams }: {
-  edgeGSelection: d3.Selection<SVGGElement, any, any, unknown>
+  edgeGSelection: d3.Selection<SVGGElement, RenderEdge, any, unknown>
   fullParams: ForceDirectedParams
   fullChartParams: ChartParams
 }) {
@@ -590,9 +607,9 @@ function renderEdgeArrowPath ({ edgeGSelection, fullParams, fullChartParams }: {
           return exit.remove()
         }
       )
-      .attr('stroke', d => getDatumColor({ datum: d.data, colorType: fullParams.edge.arrowColorType, fullChartParams }))
-      .attr('stroke-width', fullParams.edge.arrowStrokeWidth)
-      .attr('style', d => fullParams.edge.arrowStyleFn(d))
+      .attr('stroke', d => getDatumColor({ datum: d.data, colorType: fullParams.arrow.colorType, fullChartParams }))
+      .attr('stroke-width', fullParams.arrow.strokeWidth)
+      .attr('style', d => fullParams.arrow.styleFn(d))
   })
 
   return edgeGSelection.select<SVGPathElement>(`path.${edgeArrowPathClassName}`)
@@ -652,9 +669,9 @@ function renderEdgeLabel ({ edgeLabelGSelection, fullParams, fullChartParams }: 
         }
       )
       .text(d => d.label)
-      .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.edge.labelColorType, fullChartParams }))
+      .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.arrowLabel.colorType, fullChartParams }))
       .attr('font-size', fullChartParams.styles.textSize)
-      .attr('style', d => fullParams.edge.labelStyleFn(d))
+      .attr('style', d => fullParams.arrowLabel.styleFn(d))
   })
 
   return edgeLabelGSelection.select<SVGTextElement>(`text.${edgeLabelClassName}`)
@@ -868,7 +885,7 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
   const dragStatus$ = new BehaviorSubject<DragStatus>('end') // start, drag, end
   const mouseEvent$ = new Subject<EventRelationship>()
 
-  // // <marker> marker selection
+  // <marker> marker selection
   observer.fullParams$.pipe(
     takeUntil(destroy$),
     map(fullParams => {
@@ -899,11 +916,11 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
             ${event.transform.k}
           )`)
 
-          if (data.node.labelSizeFixed && nodeLabelSelection) {
+          if (data.dotLabel.sizeFixed && nodeLabelSelection) {
             // 反向 scale 抵消掉放大縮小
             nodeLabelSelection.attr('transform', `scale(${1 / event.transform.k})`)
           }
-          if (data.edge.labelSizeFixed && edgeLabelSelection) {
+          if (data.arrowLabel.sizeFixed && edgeLabelSelection) {
             // 反向 scale 抵消掉放大縮小
             edgeLabelSelection.attr('transform', `scale(${1 / event.transform.k})`)
           }
@@ -946,6 +963,7 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
     fullParams: observer.fullParams$
   }).pipe(
     takeUntil(destroy$),
+    switchMap(async d => d),
     map(data => createSimulation(data.layout, data.fullParams)),
     shareReplay(1)
   )
@@ -962,7 +980,8 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
           return d
         })
       }
-    })
+    }),
+    shareReplay(1)
   )
 
   combineLatest({
@@ -984,7 +1003,6 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
 
     nodeCircleSelection = renderNodeCircle({
       nodeGSelection: nodeGSelection,
-      nodes: data.renderData.nodes,
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
@@ -992,6 +1010,7 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
 
     nodeLabelGSelection = renderNodeLabelG({
       nodeGSelection: nodeGSelection,
+      fullParams: data.fullParams
     })
 
     nodeLabelSelection = renderNodeLabel({
@@ -1024,11 +1043,11 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
     data.simulation.nodes(data.renderData.nodes)
       .on('tick', () => {
         edgeArrowSelection.attr('d', linkArcFn)
-        nodeCircleSelection.attr('transform', translateFn)
-        nodeLabelGSelection.attr('transform', d => translateFn({
-          x: d.x,
-          y: d.y - data.fullParams.node.dotRadius - 10
-        }))
+        nodeGSelection.attr('transform', translateFn)
+        // nodeLabelGSelection.attr('transform', d => translateFn({
+        //   x: d.x,
+        //   y: d.y - data.fullParams.dot.radius - 10
+        // }))
         edgeLabelGSelection.attr('transform', d => translateCenterFn(d))
       })
     ;(data.simulation.force("link") as any).links(data.renderData.edges)
