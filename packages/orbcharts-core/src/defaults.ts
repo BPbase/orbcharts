@@ -218,7 +218,7 @@ export const DEFAULT_DATA_FORMATTER_TREE: DataFormatterTree = {
 }
 DEFAULT_DATA_FORMATTER_TREE.visibleFilter.toString = () => `(datum, context) => true`
 
-export const DEFAULT_DATA_FORMATTER_RELATIONAL: DataFormatterRelationship = {
+export const DEFAULT_DATA_FORMATTER_RELATIONSHIP: DataFormatterRelationship = {
   type: 'relationship',
   visibleFilter: (datum, context) => true,
   categoryLabels: []
@@ -231,5 +231,5 @@ export const DEFAULT_DATA_FORMATTER_RELATIONAL: DataFormatterRelationship = {
   //   descriptionFormat: (edge: any) => (edge && edge.label) ?? ''
   // },
 }
-DEFAULT_DATA_FORMATTER_RELATIONAL.visibleFilter.toString = () => `(datum, context) => true`
+DEFAULT_DATA_FORMATTER_RELATIONSHIP.visibleFilter.toString = () => `(datum, context) => true`
 
