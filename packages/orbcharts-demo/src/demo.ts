@@ -757,6 +757,38 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             getData: () => import('./data/relationshipData1')
           }
         ]
+      },
+      {
+        title: 'ForceDirectedBubbles',
+        description: 'Force Directed Bubbles Chart',
+        descriptionZh: '力導向泡泡圖',
+        mainPluginNames: ['ForceDirectedBubbles'],
+        list: [
+          {
+            title: 'PRESET_FORCE_DIRECTED_BUBBLES_BASIC',
+            presetName: 'PRESET_FORCE_DIRECTED_BUBBLES_BASIC',
+            allPluginNames: ['ForceDirectedBubbles', 'RelationshipLegend', 'RelationshipTooltip'],
+            getData: () => import('./data/relationshipData1')
+          },
+          {
+            title: 'PRESET_FORCE_DIRECTED_BUBBLES_FIX_ARROW_WIDTH',
+            presetName: 'PRESET_FORCE_DIRECTED_BUBBLES_FIX_ARROW_WIDTH',
+            allPluginNames: ['ForceDirectedBubbles', 'RelationshipLegend', 'RelationshipTooltip'],
+            getData: () => import('./data/relationshipData1')
+          },
+          {
+            title: 'PRESET_FORCE_DIRECTED_BUBBLES_NONE_ARROW',
+            presetName: 'PRESET_FORCE_DIRECTED_BUBBLES_NONE_ARROW',
+            allPluginNames: ['ForceDirectedBubbles', 'RelationshipLegend', 'RelationshipTooltip'],
+            getData: () => import('./data/relationshipData1')
+          },
+          {
+            title: 'PRESET_FORCE_DIRECTED_BUBBLES_NONE_ZOOM',
+            presetName: 'PRESET_FORCE_DIRECTED_BUBBLES_NONE_ZOOM',
+            allPluginNames: ['ForceDirectedBubbles', 'RelationshipLegend', 'RelationshipTooltip'],
+            getData: () => import('./data/relationshipData1')
+          }
+        ]
       }
     ]
   },

@@ -2,10 +2,10 @@ import type { PresetPartial } from '../../lib/core-types'
 import type { PresetRelationshipPluginParams, PresetNoneDataPluginParams } from '../types'
 // import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_FORCE_DIRECTED_NONE_ARROW: PresetPartial<'relationship', Partial<PresetRelationshipPluginParams>
+export const PRESET_FORCE_DIRECTED_BUBBLES_NONE_ZOOM: PresetPartial<'relationship', Partial<PresetRelationshipPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
-  name: 'PRESET_FORCE_DIRECTED_NONE_ARROW',
-  description: 'Force Directed沒有箭頭',
+  name: 'PRESET_FORCE_DIRECTED_BUBBLES_NONE_ZOOM',
+  description: 'Force Directed Bubbles無滑鼠托曳及縮放控制',
   // chartParams: {
   //   padding: {
   //     top: 40,
@@ -15,11 +15,8 @@ export const PRESET_FORCE_DIRECTED_NONE_ARROW: PresetPartial<'relationship', Par
   //   },
   // },
   allPluginParams: {
-    ForceDirected: {
-      arrow: {
-        pointerWidth: 0,
-        pointerHeight: 0
-      }
+    ForceDirectedBubbles: {
+      zoomable: false,
     },
     RelationshipLegend: {
       listRectRadius: 7 // 圓型圖例列點

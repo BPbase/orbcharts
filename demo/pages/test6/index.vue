@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { RelationshipChart } from '../../../packages/orbcharts-core/src'
-import { ForceDirected, RelationshipLegend, RelationshipTooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { ForceDirectedBubbles, RelationshipLegend, RelationshipTooltip } from '../../../packages/orbcharts-plugins-basic/src'
 // import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 import relationshipData1 from '../../../packages/orbcharts-demo/src/data/relationshipData1.js'
 
@@ -39,11 +39,11 @@ onMounted(() => {
   //   })
   // }, 2000)
 
-  const forceDirected = new ForceDirected()
+  const forceDirectedBubbles = new ForceDirectedBubbles()
   const relationshipLegend = new RelationshipLegend()
   const relationshipTooltip = new RelationshipTooltip()
 
-  chart!.plugins$.next([ forceDirected, relationshipLegend, relationshipTooltip ])
+  chart!.plugins$.next([ forceDirectedBubbles, relationshipLegend, relationshipTooltip ])
 
 
 

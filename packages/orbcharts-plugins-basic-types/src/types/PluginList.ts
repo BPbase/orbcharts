@@ -49,6 +49,7 @@ export type PluginListMultiValue = 'MultiValueLegend'
   | 'XYZoom'
 
 export type PluginListRelationship = 'ForceDirected'
+  | 'ForceDirectedBubbles'
   | 'RelationshipLegend'
   | 'RelationshipTooltip'
 

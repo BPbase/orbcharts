@@ -3,6 +3,7 @@ import type {
   PresetGridPluginParams,
   PresetMultiGridPluginParams,
   PresetMultiValuePluginParams,
+  PresetRelationshipPluginParams,
   PresetTreePluginParams,
   PresetNoneDataPluginParams
 } from './types'
@@ -60,6 +61,14 @@ export const ALL_PLUGIN_PARAMS_MULTI_VALUE: PresetMultiValuePluginParams = {
   XYAux: {},
   XYZoom: {}
 }
+
+export const ALL_PLUGIN_PARAMS_RELATIONSHIP: PresetRelationshipPluginParams = {
+  ForceDirected: {},
+  ForceDirectedBubbles: {},
+  RelationshipLegend: {},
+  RelationshipTooltip: {},
+}
+
 
 export const ALL_PLUGIN_PARAMS_TREE: PresetTreePluginParams = {
   TreeLegend: {},
