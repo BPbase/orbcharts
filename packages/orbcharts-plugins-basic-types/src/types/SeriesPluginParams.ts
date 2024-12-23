@@ -11,7 +11,8 @@ export interface BubblesParams {
   bubbleLabel: {
     fillRate: number
     lineHeight: number
-    lineLengthMin: number
+    maxLineLength: number
+    wordBreakAll: boolean
   }
   // highlightRIncrease: number
   arcScaleType: ArcScaleType

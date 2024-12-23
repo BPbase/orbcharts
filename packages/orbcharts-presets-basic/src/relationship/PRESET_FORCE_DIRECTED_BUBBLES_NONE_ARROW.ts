@@ -19,8 +19,8 @@ export const PRESET_FORCE_DIRECTED_BUBBLES_NONE_ARROW: PresetPartial<'relationsh
       arrow: {
         pointerWidth: 0,
         pointerHeight: 0,
-        strokeWidthMin: 1.5,
-        strokeWidthMax: 9
+        // strokeWidthMin: 1.5,
+        // strokeWidthMax: 9
       }
     },
     RelationshipLegend: {
