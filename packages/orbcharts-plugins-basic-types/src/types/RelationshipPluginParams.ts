@@ -77,7 +77,8 @@ export interface ForceDirectedBubblesParams {
   bubbleLabel: {
     fillRate: number
     lineHeight: number
-    lineLengthMin: number
+    maxLineLength: number
+    wordBreakAll: boolean
     colorType: ColorType
     styleFn: (node: ComputedNode) => string
   }

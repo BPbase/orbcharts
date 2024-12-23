@@ -47,7 +47,7 @@ export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
     styleFn: (node) => '',
   },
   arrowLabel: {
-    colorType: 'secondary',
+    colorType: 'primary',
     sizeFixed: false,
     styleFn: (node) => ''
   },
@@ -76,8 +76,8 @@ DEFAULT_FORCE_DIRECTED_PARAMS.arrowLabel.styleFn.toString = () => `(node) => ''`
 
 export const DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS: ForceDirectedBubblesParams = {
   bubble: {
-    radiusMin: 30,
-    radiusMax: 60,
+    radiusMin: 15,
+    radiusMax: 45,
     arcScaleType: 'area',
     fillColorType: 'label',
     strokeColorType: 'label',
@@ -85,9 +85,10 @@ export const DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS: ForceDirectedBubblesParams =
     styleFn: (node) => '',
   },
   bubbleLabel: {
-    fillRate: 0.8,
+    fillRate: 0.9,
     lineHeight: 1,
-    lineLengthMin: 4,
+    maxLineLength: 6,
+    wordBreakAll: true,
     colorType: 'primary',
     styleFn: (node) => ''
   },
@@ -100,13 +101,13 @@ export const DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS: ForceDirectedBubblesParams =
     styleFn: (node) => '',
   },
   arrowLabel: {
-    colorType: 'secondary',
+    colorType: 'primary',
     sizeFixed: false,
     styleFn: (node) => ''
   },
   force: {
     nodeStrength: -500, // 泡泡引力
-    linkDistance: 200, // 連結長度
+    linkDistance: 130, // 連結長度
     velocityDecay: 0.1, // 衰減數
     alphaDecay: 0.05
     // collisionSpacing: 2 // 泡泡間距

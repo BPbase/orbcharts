@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
+
   app: {
     baseURL: process.env.NODE_ENV === 'production' ? '/orbcharts/' : '/',
     buildAssetsDir: '/static/',
@@ -31,11 +32,7 @@ export default defineNuxtConfig({
       ]
     }
   },
-  nitro: {
-    prerender:{
-      failOnError:false,
-    }
-  },
+
   // alias: {
   //   'orbcharts': '/../packages/orbcharts',
   //   '@orbcharts/core': '/../packages/orbcharts-core',
@@ -43,4 +40,11 @@ export default defineNuxtConfig({
   //   '@orbcharts/presets-basic': '/../packages/orbcharts-basic',
   //   '@orbcharts/demo': '/../packages/orbcharts-demo',
   // }
+  nitro: {
+    prerender:{
+      failOnError:false,
+    }
+  },
+
+  compatibilityDate: '2024-12-23'
 })

@@ -411,25 +411,25 @@ function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any
 // }
 
 function drag (simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>, dragStatus$: BehaviorSubject<DragStatus>) {    
-  function dragstarted (event: D3DragEvent) {
-    if (!event.active) simulation.alphaTarget(0.3).restart();
-    event.subject.fx = event.subject.x;
-    event.subject.fy = event.subject.y;
+  function dragstarted (event: D3DragEvent, node: RenderNode) {
+    if (!event.active) simulation.alphaTarget(0.3).restart()
+    event.subject.fx = event.x
+    event.subject.fy = event.y
     
     dragStatus$.next('start')
   }
   
-  function dragged (event: D3DragEvent) {
-    event.subject.fx = event.x;
-    event.subject.fy = event.y;
+  function dragged (event: D3DragEvent, node: RenderNode) {
+    event.subject.fx = event.x
+    event.subject.fy = event.y
 
     dragStatus$.next('drag')
   }
   
-  function dragended (event: D3DragEvent) {
+  function dragended (event: D3DragEvent, node: RenderNode) {
     if (!event.active) simulation.alphaTarget(0);
-    event.subject.fx = null;
-    event.subject.fy = null;
+    event.subject.fx = null
+    event.subject.fy = null
 
     dragStatus$.next('end')
   }
@@ -437,7 +437,7 @@ function drag (simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>, dra
   return d3.drag()
     .on("start", dragstarted)
     .on("drag", dragged)
-    .on("end", dragended);
+    .on("end", dragended)
 }
 
 function renderNodeG ({ nodeListGSelection, nodes }: {
@@ -736,7 +736,7 @@ function renderEdgeLabel ({ edgeLabelGSelection, fullParams, fullChartParams }: 
 //     .each((d,i,g) => {
 //       const gSelection = d3.select(g[i])
 //       let breakAll = true
-//       if (d[textDataColumn].length <= fullParams.label.lineLengthMin) {
+//       if (d[textDataColumn].length <= fullParams.label.maxLineLength) {
 //         breakAll = false
 //       }
 //       gSelection.call(renderCircleText, {
@@ -801,6 +801,7 @@ function highlightNodes ({ nodeGSelection, edgeGSelection, highlightIds, fullCha
   highlightIds: string[]
 }) {
   nodeGSelection.interrupt('highlight')
+  edgeGSelection.interrupt('highlight')
   // console.log(highlightIds)
   if (!highlightIds.length) {
     nodeGSelection
@@ -1006,7 +1007,7 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
       fullParams: data.fullParams,
       fullChartParams: data.fullChartParams
     })
-    nodeCircleSelection.call(drag(data.simulation, dragStatus$))
+    nodeGSelection.call(drag(data.simulation, dragStatus$))
 
     nodeLabelGSelection = renderNodeLabelG({
       nodeGSelection: nodeGSelection,
@@ -1122,6 +1123,7 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
   })
 
   dragStatus$.pipe(
+    distinctUntilChanged((a, b) => a === b),
     // 只有沒有托曳時才執行
     switchMap(d => iif(() => d === 'end', mouseEvent$, EMPTY))
   ).subscribe(data => {

@@ -20,7 +20,8 @@ export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
   bubbleLabel: {
     fillRate: 0.6,
     lineHeight: 1,
-    lineLengthMin: 4
+    maxLineLength: 6,
+    wordBreakAll: true,
   },
   // highlightRIncrease: 0,
   arcScaleType: 'area'

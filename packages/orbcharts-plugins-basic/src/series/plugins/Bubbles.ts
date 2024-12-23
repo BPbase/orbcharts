@@ -79,7 +79,7 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BUBBLES
         lineHeight: {
           toBeTypes: ['number']
         },
-        lineLengthMin: {
+        maxLineLength: {
           toBeTypes: ['number']
         },
       })
@@ -261,15 +261,12 @@ function renderBubbles ({ selection, bubblesData, fullParams, sumSeries }: {
   bubblesSelection
     .each((d,i,g) => {
       const gSelection = d3.select(g[i])
-      let breakAll = true
-      if (d[textDataColumn].length <= fullParams.bubbleLabel.lineLengthMin) {
-        breakAll = false
-      }
+      
       gSelection.call(renderCircleText, {
         text: d[textDataColumn],
         radius: d.r * fullParams.bubbleLabel.fillRate,
         lineHeight: baseLineHeight * fullParams.bubbleLabel.lineHeight,
-        isBreakAll: breakAll
+        isBreakAll: fullParams.bubbleLabel.wordBreakAll
       })
 
     })
