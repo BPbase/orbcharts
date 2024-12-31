@@ -261,12 +261,15 @@ function renderBubbles ({ selection, bubblesData, fullParams, sumSeries }: {
   bubblesSelection
     .each((d,i,g) => {
       const gSelection = d3.select(g[i])
+      const text = d[textDataColumn] ?? ''
       
       gSelection.call(renderCircleText, {
-        text: d[textDataColumn],
+        text,
         radius: d.r * fullParams.bubbleLabel.fillRate,
         lineHeight: baseLineHeight * fullParams.bubbleLabel.lineHeight,
-        isBreakAll: fullParams.bubbleLabel.wordBreakAll
+        isBreakAll: text.length <= fullParams.bubbleLabel.maxLineLength
+          ? false
+          : fullParams.bubbleLabel.wordBreakAll
       })
 
     })
