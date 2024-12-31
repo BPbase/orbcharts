@@ -547,7 +547,9 @@ function renderNodeCircle ({ nodeGSelection, fullParams, fullChartParams }: {
         text: d.label,
         radius: d.r * fullParams.bubbleLabel.fillRate,
         lineHeight: baseLineHeight * fullParams.bubbleLabel.lineHeight,
-        isBreakAll: fullParams.bubbleLabel.wordBreakAll
+        isBreakAll: d.label.length <= fullParams.bubbleLabel.maxLineLength
+          ? false
+          : fullParams.bubbleLabel.wordBreakAll
       })
 
     })
