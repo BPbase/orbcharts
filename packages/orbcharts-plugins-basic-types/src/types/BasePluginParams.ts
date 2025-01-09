@@ -1,4 +1,6 @@
 import type { ChartType, EventTypeMap, ColorType } from '../../lib/core-types'
+import type { Placement } from './Common'
+
 
 export interface BaseBarsParams {
   // barType: BarType
@@ -53,7 +55,7 @@ export interface BaseGroupAxisParams {
 export interface BaseLegendParams {
   // position: 'top' | 'bottom' | 'left' | 'right'
   // justify: 'start' | 'center' | 'end'
-  placement: 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end'
+  placement: Placement
   padding: number
   // offset: [number, number]
   backgroundFill: ColorType
