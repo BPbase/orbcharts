@@ -145,13 +145,13 @@ export const DEFAULT_GRID_TOOLTIP_PARAMS: GridTooltipParams = {
 //     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
 //     if (eventData.highlightTarget === 'group') {
 //       const titleSvg = `<g><text dominant-baseline="hanging" font-size="${styles.textSizePx}">${eventData.groupLabel}</text></g>`
-//       const maxLengthText = eventData.groups.reduce((acc, group) => {
+//       const maxLengthText = eventData.group.reduce((acc, group) => {
 //         const text = `${group.seriesLabel}${group.value}`
 //         return text.length > acc.length ? text : acc
 //       }, '')
 //       const maxTextWidth = measureTextWidth(maxLengthText, styles.textSizePx)
 //       const lineEndX = maxTextWidth + styles.textSizePx * 2
-//       const contentSvg = eventData.groups
+//       const contentSvg = eventData.group
 //         .map((group, i) => {
 //           const y = i * styles.textSizePx * 1.5
 //           return `<g transform="translate(0, ${styles.textSizePx * 2})">
@@ -195,13 +195,13 @@ export const DEFAULT_GRID_TOOLTIP_PARAMS: GridTooltipParams = {
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
 
     const titleSvg = `<g><text dominant-baseline="hanging" font-size="${styles.textSizePx}">${eventData.groupLabel}</text></g>`
-    const maxLengthText = eventData.groups.reduce((acc, group) => {
+    const maxLengthText = eventData.group.reduce((acc, group) => {
       const text = `${group.seriesLabel}${group.value}`
       return text.length > acc.length ? text : acc
     }, '')
     const maxTextWidth = utils.measureTextWidth(maxLengthText, styles.textSizePx)
     const lineEndX = maxTextWidth + styles.textSizePx * 2
-    const contentSvg = eventData.groups
+    const contentSvg = eventData.group
       .map((group, i) => {
         const y = i * styles.textSizePx * 1.5
         const isHighlight = group.id === (eventData.datum && eventData.datum.id)
@@ -223,13 +223,13 @@ DEFAULT_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, uti
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
 
     const titleSvg = \`<g><text dominant-baseline="hanging" font-size="\${styles.textSizePx}">\${eventData.groupLabel}</text></g>\`
-    const maxLengthText = eventData.groups.reduce((acc, group) => {
+    const maxLengthText = eventData.group.reduce((acc, group) => {
       const text = \`\${group.seriesLabel}\${group.value}\`
       return text.length > acc.length ? text : acc
     }, '')
     const maxTextWidth = utils.measureTextWidth(maxLengthText, styles.textSizePx)
     const lineEndX = maxTextWidth + styles.textSizePx * 2
-    const contentSvg = eventData.groups
+    const contentSvg = eventData.group
       .map((group, i) => {
         const y = i * styles.textSizePx * 1.5
         const isHighlight = group.id === (eventData.datum && eventData.datum.id)

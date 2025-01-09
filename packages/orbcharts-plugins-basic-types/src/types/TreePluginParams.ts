@@ -1,5 +1,6 @@
 import type { ColorType, ComputedDataTree, EventTree } from '../../lib/core-types'
 import type { BaseTooltipStyle, BaseTooltipUtils } from './BasePluginParams'
+import type { Placement } from './Common'
 
 export interface TreeMapParams {
   paddingInner: number
@@ -12,7 +13,7 @@ export interface TreeMapParams {
 export interface TreeLegendParams {
   // position: 'top' | 'bottom' | 'left' | 'right'
   // justify: 'start' | 'center' | 'end'
-  placement: 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end'
+  placement: Placement
   padding: number
   backgroundFill: ColorType
   backgroundStroke: ColorType

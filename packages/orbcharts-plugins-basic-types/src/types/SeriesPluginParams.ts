@@ -1,6 +1,6 @@
 import type { ChartType, ComputedDatumSeries, EventSeries, EventName, ColorType } from '../../lib/core-types'
 import type { BaseTooltipStyle, BaseTooltipUtils } from './BasePluginParams'
-import type { ArcScaleType } from './Common'
+import type { ArcScaleType, Placement } from './Common'
 
 export interface BubblesParams {
   force: {
@@ -76,7 +76,7 @@ export interface RoseLabelsParams {
 export interface SeriesLegendParams {
   // position: 'top' | 'bottom' | 'left' | 'right'
   // justify: 'start' | 'center' | 'end'
-  placement: 'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end'
+  placement: Placement
   padding: number
   backgroundFill: ColorType
   backgroundStroke: ColorType

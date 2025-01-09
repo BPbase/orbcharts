@@ -56,9 +56,9 @@ export const DEFAULT_CHART_PARAMS: ChartParams = {
   colorScheme: 'light',
   colors: {
     light: {
-      // label: ['#67B7DC', '#6794DC', '#6771DC', '#8067DC', '#A367DC', '#C767DC', '#DC67CE', '#DC67AB', '#DC6788', '#DC6967', '#DC8C67', '#DCAF67'],
+      label: ['#67B7DC', '#6794DC', '#6771DC', '#8067DC', '#A367DC', '#C767DC', '#DC67CE', '#DC67AB', '#DC6788', '#DC6967', '#DC8C67', '#DCAF67'],
       // label: ['#F3A356', '#7A60F0', '#38B1AF', '#60A2F0', '#F06062', '#FF383C', '#6580EA', '#079F9C', '#9F65EA', '#EA7465', '#EA7465', '#8657D2', '#59B757', '#2797FF', '#D25786', '#F54BA6', '#4BECF5', '#74FD72', '#CA4BF5', '#EFE26E'],
-      label: ['#60A2F0', '#F3A356', '#7A60F0', '#38B1AF', '#F06062', '#FF383C', '#6580EA', '#079F9C', '#9F65EA', '#EA7465', '#EA7465', '#8657D2', '#59B757', '#2797FF', '#D25786', '#F54BA6', '#4BECF5', '#74FD72', '#CA4BF5', '#EFE26E'],
+      // label: ['#60A2F0', '#F3A356', '#7A60F0', '#38B1AF', '#F06062', '#FF383C', '#6580EA', '#079F9C', '#9F65EA', '#EA7465', '#EA7465', '#8657D2', '#59B757', '#2797FF', '#D25786', '#F54BA6', '#4BECF5', '#74FD72', '#CA4BF5', '#EFE26E'],
       // primary: '#454545',
       primary: '#1b1e23',
       secondary: '#e1e1e1',
@@ -66,8 +66,8 @@ export const DEFAULT_CHART_PARAMS: ChartParams = {
       background: '#ffffff'
     },
     dark: {
-      // label: ['#67B7DC', '#6794DC', '#38B1AF', '#6771DC', '#8067DC', '#A367DC', '#C767DC', '#DC67CE', '#DC67AB', '#DC6788', '#DC6967', '#DC8C67', '#DCAF67'],
-      label: ['#60A2F0', '#F3A356', '#7A60F0', '#38B1AF', '#F06062', '#FF383C', '#6580EA', '#079F9C', '#9F65EA', '#EA7465', '#EA7465', '#8657D2', '#59B757', '#2797FF', '#D25786', '#F54BA6', '#4BECF5', '#74FD72', '#CA4BF5', '#EFE26E'],
+      label: ['#67B7DC', '#6794DC', '#38B1AF', '#6771DC', '#8067DC', '#A367DC', '#C767DC', '#DC67CE', '#DC67AB', '#DC6788', '#DC6967', '#DC8C67', '#DCAF67'],
+      // label: ['#60A2F0', '#F3A356', '#7A60F0', '#38B1AF', '#F06062', '#FF383C', '#6580EA', '#079F9C', '#9F65EA', '#EA7465', '#EA7465', '#8657D2', '#59B757', '#2797FF', '#D25786', '#F54BA6', '#4BECF5', '#74FD72', '#CA4BF5', '#EFE26E'],
       primary: '#f0f0f0',
       secondary: '#e1e1e1',
       white: '#ffffff',

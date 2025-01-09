@@ -68,7 +68,7 @@ export interface EventBaseGridValue<T extends 'grid' | 'multiGrid'> {
   series: ComputedDatumTypeMap<T>[]
   seriesIndex: number
   seriesLabel: string
-  groups: ComputedDatumTypeMap<T>[]
+  group: ComputedDatumTypeMap<T>[]
   groupIndex: number
   groupLabel: string
   // datum: ComputedDatumTypeMap<T> | null
