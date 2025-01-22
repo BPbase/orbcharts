@@ -121,7 +121,7 @@ export const DEFAULT_ROSE_PARAMS: RoseParams = {
   outerRadius: 0.85,
   padAngle: 0,
   strokeColorType: 'background',
-  strokeWidth: 0,
+  strokeWidth: 0.5,
   cornerRadius: 0,
   arcScaleType: 'area',
   angleIncreaseWhileHighlight: 0.05
@@ -173,8 +173,19 @@ export const DEFAULT_SERIES_TOOLTIP_PARAMS: SeriesTooltipParams = {
     const datumLabelSvg = hasDatumLabel
       ? `<tspan>${eventData.datum.label}</tspan>  `
       : ''
+    const seriesLabelTextWidth = hasSeriesLabel
+      ? utils.measureTextWidth(`${eventData.seriesLabel}${eventData.datum.value}`, styles.textSizePx) + styles.textSizePx * 1.5
+      : 0
+    const datumLabelTextWidth = hasDatumLabel
+      ? utils.measureTextWidth(`${eventData.datum.label}${eventData.datum.value}`, styles.textSizePx)
+      : 0
+    const maxTextWidth = Math.max(seriesLabelTextWidth, datumLabelTextWidth)
+    const lineEndX = hasDatumLabel
+      ? maxTextWidth + styles.textSizePx * 1.5
+      : 0
+    const valueTextAnchor = hasDatumLabel ? 'end' : 'start'
     const datumSvg = `<text font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
-    ${datumLabelSvg}<tspan font-weight="bold">${eventData.datum.value}</tspan>
+    ${datumLabelSvg}<tspan font-weight="bold" text-anchor="${valueTextAnchor}" x="${lineEndX}">${eventData.datum.value}</tspan>
   </text>`
 
     return `${seriesSvg}
@@ -197,8 +208,19 @@ DEFAULT_SERIES_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, u
     const datumLabelSvg = hasDatumLabel
       ? \`<tspan>\${eventData.datum.label}</tspan>  \`
       : ''
+    const seriesLabelTextWidth = hasSeriesLabel
+      ? utils.measureTextWidth(\`\${eventData.seriesLabel}\${eventData.datum.value}\`, styles.textSizePx) + styles.textSizePx * 1.5
+      : 0
+    const datumLabelTextWidth = hasDatumLabel
+      ? utils.measureTextWidth(\`\${eventData.datum.label}\${eventData.datum.value}\`, styles.textSizePx)
+      : 0
+    const maxTextWidth = Math.max(seriesLabelTextWidth, datumLabelTextWidth)
+    const lineEndX = hasDatumLabel
+      ? maxTextWidth + styles.textSizePx * 1.5
+      : 0
+    const valueTextAnchor = hasDatumLabel ? 'end' : 'start'
     const datumSvg = \`<text font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
-    \${datumLabelSvg}<tspan font-weight="bold">\${eventData.datum.value}</tspan>
+    \${datumLabelSvg}<tspan font-weight="bold" text-anchor="\${valueTextAnchor}" x="\${lineEndX}">\${eventData.datum.value}</tspan>
   </text>\`
 
     return \`\${seriesSvg}

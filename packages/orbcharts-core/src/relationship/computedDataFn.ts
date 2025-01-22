@@ -106,30 +106,45 @@ export const computedDataFn: ComputedDataFn<'relationship'> = (context) => {
     // })()
 
     // -- edges --
-    computedEdges = edges.map((edge, i) => {
-      const categoryLabel = edge.categoryLabel ?? defaultCategoryLabel
-      const startNode = NodesMap.get(edge.start)
-      const endNode = NodesMap.get(edge.end)
+    computedEdges = edges
+      .map((edge, i) => {
+        const startNode = NodesMap.get(edge.start)
+        const endNode = NodesMap.get(edge.end)
+        return {
+          edge,
+          startNode,
+          endNode
+        }
+      })
+      .filter(({ edge }) => {
+        const startNode = NodesMap.get(edge.start)
+        const endNode = NodesMap.get(edge.end)
+        return startNode != null && endNode != null
+      })
+      .map(({ edge, startNode, endNode }, i) => {
+        const categoryLabel = edge.categoryLabel ?? defaultCategoryLabel
+        // const startNode = NodesMap.get(edge.start)
+        // const endNode = NodesMap.get(edge.end)
 
-      const computedEdge: ComputedEdge = {
-        id: edge.id,
-        index: i,
-        label: edge.label ?? '',
-        description: edge.description ?? '',
-        data: edge.data ?? {},
-        value: edge.value ?? 0,
-        categoryIndex: CategoryIndexMap.get(categoryLabel),
-        categoryLabel,
-        color: seriesColorPredicate(i, chartParams),
-        startNode,
-        // startNodeId: edge.start,
-        endNode,
-        // endNodeId: edge.end,
-        visible: startNode.visible && endNode.visible
-      }
+        const computedEdge: ComputedEdge = {
+          id: edge.id,
+          index: i,
+          label: edge.label ?? '',
+          description: edge.description ?? '',
+          data: edge.data ?? {},
+          value: edge.value ?? 0,
+          categoryIndex: CategoryIndexMap.get(categoryLabel),
+          categoryLabel,
+          color: seriesColorPredicate(i, chartParams),
+          startNode,
+          // startNodeId: edge.start,
+          endNode,
+          // endNodeId: edge.end,
+          visible: startNode.visible && endNode.visible
+        }
 
-      return computedEdge
-    })
+        return computedEdge
+      })
 
     
   } catch (e) {

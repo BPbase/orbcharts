@@ -35,12 +35,12 @@ onMounted(() => {
   const seriesLegend = new SeriesLegend()
   // chart!.plugins$.next([ multiGroupAxis, overlappingValueAxes, multiBars, multiLines, multiDots, multiGridLegend])
 
-  pieLabels.params$.next({
-    outerRadius: 1.2
-  })
-  roseLabels.params$.next({
-    outerRadius: 1.2
-  })
+  // pieLabels.params$.next({
+  //   outerRadius: 1.2
+  // })
+  // roseLabels.params$.next({
+  //   outerRadius: 1.2
+  // })
 
   chart.chartParams$.next({
     padding: {

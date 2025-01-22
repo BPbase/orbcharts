@@ -1,4 +1,4 @@
-import type { ColorType, ComputedNode, EventRelationship } from '../../lib/core-types'
+import type { ColorType, ComputedNode, ComputedEdge, EventRelationship } from '../../lib/core-types'
 import type { BaseTooltipStyle, BaseTooltipUtils } from './BasePluginParams'
 import type { Placement } from './Common'
 
@@ -40,12 +40,12 @@ export interface ForceDirectedParams {
     strokeWidth: number
     pointerWidth: number
     pointerHeight: number
-    styleFn: (node: ComputedNode) => string
+    styleFn: (edge: ComputedEdge) => string
   }
   arrowLabel: {
     colorType: ColorType
     sizeFixed: boolean
-    styleFn: (node: ComputedNode) => string
+    styleFn: (edge: ComputedEdge) => string
   }
   force: {
     nodeStrength: number // 泡泡引力
@@ -89,12 +89,12 @@ export interface ForceDirectedBubblesParams {
     strokeWidthMax: number // 對應value最大值
     pointerWidth: number
     pointerHeight: number
-    styleFn: (node: ComputedNode) => string
+    styleFn: (edge: ComputedEdge) => string
   }
   arrowLabel: {
     colorType: ColorType
     sizeFixed: boolean
-    styleFn: (node: ComputedNode) => string
+    styleFn: (edge: ComputedEdge) => string
   }
   force: {
     nodeStrength: number // 泡泡引力

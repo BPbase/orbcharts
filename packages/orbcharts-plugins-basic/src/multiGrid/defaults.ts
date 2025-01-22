@@ -70,7 +70,7 @@ export const DEFAULT_MULTI_VALUE_AXIS_PARAMS: MultiValueAxisParams = {
   tickColorType: 'secondary',
   tickTextRotate: 0,
   tickTextColorType: 'primary',
-  gridIndexes: [0]
+  gridIndexes: 'all'
 }
 
 export const DEFAULT_MULTI_STACKED_VALUE_AXIS_PARAMS: MultiStackedValueAxisParams = {
@@ -172,13 +172,15 @@ export const DEFAULT_MULTI_GRID_TOOLTIP_PARAMS: MultiGridTooltipParams = {
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
 
-    const titleSvg = `<g><text dominant-baseline="hanging" font-size="${styles.textSizePx}">${eventData.groupLabel}</text></g>`
-    const maxLengthText = eventData.group.reduce((acc, group) => {
+    const titleSvg = `<g><text dominant-baseline="hanging" font-size="${styles.textSizePx}" fill="${styles.textColor}">${eventData.groupLabel}</text></g>`
+    const groupLabelTextWidth = utils.measureTextWidth(eventData.groupLabel, styles.textSizePx)
+    const listTextWidth = eventData.group.reduce((acc, group) => {
       const text = `${group.seriesLabel}${group.value}`
-      return text.length > acc.length ? text : acc
-    }, '')
-    const maxTextWidth = utils.measureTextWidth(maxLengthText, styles.textSizePx)
-    const lineEndX = maxTextWidth + styles.textSizePx * 2
+      const _maxTextWidth = utils.measureTextWidth(text, styles.textSizePx)
+      return _maxTextWidth > acc ? _maxTextWidth : acc
+    }, 0)
+    const maxTextWidth = Math.max(groupLabelTextWidth, listTextWidth)
+    const lineEndX = maxTextWidth + styles.textSizePx * 3
     const contentSvg = eventData.group
       .map((group, i) => {
         const y = i * styles.textSizePx * 1.5
@@ -200,13 +202,15 @@ DEFAULT_MULTI_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { style
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
 
-    const titleSvg = \`<g><text dominant-baseline="hanging" font-size="\${styles.textSizePx}">\${eventData.groupLabel}</text></g>\`
-    const maxLengthText = eventData.group.reduce((acc, group) => {
+    const titleSvg = \`<g><text dominant-baseline="hanging" font-size="\${styles.textSizePx}" fill="\${styles.textColor}">\${eventData.groupLabel}</text></g>\`
+    const groupLabelTextWidth = utils.measureTextWidth(eventData.groupLabel, styles.textSizePx)
+    const listTextWidth = eventData.group.reduce((acc, group) => {
       const text = \`\${group.seriesLabel}\${group.value}\`
-      return text.length > acc.length ? text : acc
-    }, '')
-    const maxTextWidth = utils.measureTextWidth(maxLengthText, styles.textSizePx)
-    const lineEndX = maxTextWidth + styles.textSizePx * 2
+      const _maxTextWidth = utils.measureTextWidth(text, styles.textSizePx)
+      return _maxTextWidth > acc ? _maxTextWidth : acc
+    }, 0)
+    const maxTextWidth = Math.max(groupLabelTextWidth, listTextWidth)
+    const lineEndX = maxTextWidth + styles.textSizePx * 3
     const contentSvg = eventData.group
       .map((group, i) => {
         const y = i * styles.textSizePx * 1.5

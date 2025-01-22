@@ -71,8 +71,8 @@ export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
 }
 DEFAULT_FORCE_DIRECTED_PARAMS.dot.styleFn.toString = () => `(node) => ''`
 DEFAULT_FORCE_DIRECTED_PARAMS.dotLabel.styleFn.toString = () => `(node) => 'text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff'`
-DEFAULT_FORCE_DIRECTED_PARAMS.arrow.styleFn.toString = () => `(node) => ''`
-DEFAULT_FORCE_DIRECTED_PARAMS.arrowLabel.styleFn.toString = () => `(node) => ''`
+DEFAULT_FORCE_DIRECTED_PARAMS.arrow.styleFn.toString = () => `(edge) => ''`
+DEFAULT_FORCE_DIRECTED_PARAMS.arrowLabel.styleFn.toString = () => `(edge) => ''`
 
 export const DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS: ForceDirectedBubblesParams = {
   bubble: {
@@ -125,8 +125,8 @@ export const DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS: ForceDirectedBubblesParams =
 }
 DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS.bubble.styleFn.toString = () => `(node) => ''`
 DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS.bubbleLabel.styleFn.toString = () => `(node) => ''`
-DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS.arrow.styleFn.toString = () => `(node) => ''`
-DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS.arrowLabel.styleFn.toString = () => `(node) => ''`
+DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS.arrow.styleFn.toString = () => `(edge) => ''`
+DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS.arrowLabel.styleFn.toString = () => `(edge) => ''`
 
 
 export const DEFAULT_RELATIONSHIP_LEGEND_PARAMS: RelationshipLegendParams = {
@@ -162,8 +162,19 @@ export const DEFAULT_RELATIONSHIP_TOOLTIP_PARAMS: RelationshipTooltipParams = {
     const datumLabelSvg = hasDatumLabel
       ? `<tspan>${eventData.datum.label}</tspan>  `
       : ''
+    const categoryLabelTextWidth = hasCategoryLabel
+      ? utils.measureTextWidth(`${eventData.categoryLabel}${eventData.datum.value}`, styles.textSizePx) + styles.textSizePx * 1.5
+      : 0
+    const datumLabelTextWidth = hasDatumLabel
+      ? utils.measureTextWidth(`${eventData.datum.label}${eventData.datum.value}`, styles.textSizePx)
+      : 0
+    const maxTextWidth = Math.max(categoryLabelTextWidth, datumLabelTextWidth)
+    const lineEndX = hasDatumLabel
+      ? maxTextWidth + styles.textSizePx * 0.5
+      : 0
+    const valueTextAnchor = hasDatumLabel ? 'end' : 'start'
     const datumSvg = `<text font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
-    ${datumLabelSvg}<tspan font-weight="bold">${eventData.datum.value}</tspan>
+    ${datumLabelSvg}<tspan font-weight="bold" text-anchor="${valueTextAnchor}" x="${lineEndX}">${eventData.datum.value}</tspan>
   </text>`
 
     return `${categorySvg}
@@ -174,24 +185,35 @@ export const DEFAULT_RELATIONSHIP_TOOLTIP_PARAMS: RelationshipTooltipParams = {
 }
 DEFAULT_RELATIONSHIP_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils }) => {
   const hasCategoryLabel = eventData.categoryLabel ? true : false
-  const hasDatumLabel = eventData.datum.label ? true : false
-  const bulletWidth = styles.textSizePx * 0.7
-  const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
-  const categorySvg = hasCategoryLabel
-    ? \`<rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${offset - 1}" rx="\${bulletWidth / 2}" fill="\${eventData.datum.color}"></rect>
-<text x="\${styles.textSizePx * 1.5}" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
-  <tspan>\${eventData.categoryLabel}</tspan>
-</text>\`
-    : ''
-  const datumLabelSvg = hasDatumLabel
-    ? \`<tspan>\${eventData.datum.label}</tspan>  \`
-    : ''
-  const datumSvg = \`<text font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
-  \${datumLabelSvg}<tspan font-weight="bold">\${eventData.datum.value}</tspan>
-</text>\`
+    const hasDatumLabel = eventData.datum.label ? true : false
+    const bulletWidth = styles.textSizePx * 0.7
+    const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
+    const categorySvg = hasCategoryLabel
+      ? \`<rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${offset - 1}" rx="\${bulletWidth / 2}" fill="\${eventData.datum.color}"></rect>
+  <text x="\${styles.textSizePx * 1.5}" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
+    <tspan>\${eventData.categoryLabel}</tspan>
+  </text>\`
+      : ''
+    const datumLabelSvg = hasDatumLabel
+      ? \`<tspan>\${eventData.datum.label}</tspan>  \`
+      : ''
+    const categoryLabelTextWidth = hasCategoryLabel
+      ? utils.measureTextWidth(\`\${eventData.categoryLabel}\${eventData.datum.value}\`, styles.textSizePx) + styles.textSizePx * 1.5
+      : 0
+    const datumLabelTextWidth = hasDatumLabel
+      ? utils.measureTextWidth(\`\${eventData.datum.label}\${eventData.datum.value}\`, styles.textSizePx)
+      : 0
+    const maxTextWidth = Math.max(categoryLabelTextWidth, datumLabelTextWidth)
+    const lineEndX = hasDatumLabel
+      ? maxTextWidth + styles.textSizePx * 0.5
+      : 0
+    const valueTextAnchor = hasDatumLabel ? 'end' : 'start'
+    const datumSvg = \`<text font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
+    \${datumLabelSvg}<tspan font-weight="bold" text-anchor="\${valueTextAnchor}" x="\${lineEndX}">\${eventData.datum.value}</tspan>
+  </text>\`
 
-  return \`\${categorySvg}
-<g \${hasCategoryLabel ? \`transform="translate(0, \${styles.textSizePx * 2})"\` : ''}>
-  \${datumSvg}
-</g>\`
+    return \`\${categorySvg}
+  <g \${hasCategoryLabel ? \`transform="translate(0, \${styles.textSizePx * 2})"\` : ''}>
+    \${datumSvg}
+  </g>\`
 }`
