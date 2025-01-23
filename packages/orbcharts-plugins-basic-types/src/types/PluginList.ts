@@ -46,7 +46,7 @@ export type PluginListMultiValue = 'MultiValueLegend'
   | 'ScatterBubbles'
   | 'XYAux'
   | 'XYAxes'
-  | 'XYZoom'
+  | 'XZoom'
 
 export type PluginListRelationship = 'ForceDirected'
   | 'ForceDirectedBubbles'

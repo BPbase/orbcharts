@@ -5,7 +5,7 @@ import type {
   ScatterBubblesParams,
   XYAuxParams,
   XYAxesParams,
-  XYZoomParams
+  XZoomParams
 } from '../../lib/plugins-basic-types'
 
 
@@ -162,6 +162,6 @@ export const DEFAULT_X_Y_AXES_PARAMS: XYAxesParams = {
 DEFAULT_X_Y_AXES_PARAMS.xAxis.tickFormat.toString = () => `v => v`
 DEFAULT_X_Y_AXES_PARAMS.yAxis.tickFormat.toString = () => `v => v`
 
-export const DEFAULT_X_Y_ZOOM_PARAMS: XYZoomParams = {
+export const DEFAULT_X_Y_ZOOM_PARAMS: XZoomParams = {
 
 }

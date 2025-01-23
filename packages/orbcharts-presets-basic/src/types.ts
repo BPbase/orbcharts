@@ -47,7 +47,7 @@ import type {
   ScatterBubblesParams,
   XYAuxParams,
   XYAxesParams,
-  XYZoomParams,
+  XZoomParams,
 
   // -- relationship --
   ForceDirectedParams,
@@ -263,7 +263,7 @@ export type PresetMultiValuePluginParams = PresetMultiValueLegendParams
   & PresetScatterBubblesParams
   & PresetXYAuxParams
   & PresetXYAxesParams
-  & PresetXYZoomParams
+  & PresetXZoomParams
 
 export interface PresetMultiValueAxisParams {
   MultiValueAxis: Partial<MultiValueAxisParams>
@@ -297,8 +297,8 @@ export interface PresetXYAxesParams {
   XYAxes: Partial<XYAxesParams>
 }
 
-export interface PresetXYZoomParams {
-  XYZoom: Partial<XYZoomParams>
+export interface PresetXZoomParams {
+  XZoom: Partial<XZoomParams>
 }
 
 // -- relationship --

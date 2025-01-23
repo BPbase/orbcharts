@@ -214,6 +214,7 @@ export const DEFAULT_DATA_FORMATTER_MULTI_VALUE: DataFormatterMultiValue = {
   type: 'multiValue',
   visibleFilter: (datum, context) => true,
   categoryLabels: [],
+  valueLabels: [],
   xAxis: { ...DEFAULT_DATA_FORMATTER_AXIS },
   yAxis: { ...DEFAULT_DATA_FORMATTER_AXIS },
   container: {

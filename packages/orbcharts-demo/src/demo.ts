@@ -677,13 +677,13 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_MULTI_VALUE_BASIC',
             presetName: 'PRESET_MULTI_VALUE_BASIC',
-            allPluginNames: ['Scatter', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XYZoom'],
+            allPluginNames: ['Scatter', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XZoom'],
             getData: () => import('./data/multiValue1')
           },
           {
             title: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
             presetName: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
-            allPluginNames: ['Scatter', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XYZoom'],
+            allPluginNames: ['Scatter', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XZoom'],
             getData: () => import('./data/multiValue1')
           },
         ]
@@ -697,25 +697,25 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_MULTI_VALUE_BASIC',
             presetName: 'PRESET_MULTI_VALUE_BASIC',
-            allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XYZoom'],
+            allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XZoom'],
             getData: () => import('./data/multiValue1')
           },
           {
             title: 'PRESET_SCATTER_BUBBLES_LINEAR_OPACITY',
             presetName: 'PRESET_SCATTER_BUBBLES_LINEAR_OPACITY',
-            allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XYZoom'],
+            allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XZoom'],
             getData: () => import('./data/multiValue1')
           },
           {
             title: 'PRESET_SCATTER_BUBBLES_SCALING_BY_RADIUS',
             presetName: 'PRESET_SCATTER_BUBBLES_SCALING_BY_RADIUS',
-            allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XYZoom'],
+            allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XZoom'],
             getData: () => import('./data/multiValue1')
           },
           {
             title: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
             presetName: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
-            allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XYZoom'],
+            allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XZoom'],
             getData: () => import('./data/multiValue1')
           },
         ]

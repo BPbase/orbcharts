@@ -116,6 +116,6 @@ export interface XYAxesParams {
 }
 
 
-export interface XYZoomParams {
+export interface XZoomParams {
 
 }

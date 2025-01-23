@@ -7,7 +7,7 @@ export const dataValidator: DataValidator<'tree'> = (data: DataTypeMap<'tree'>) 
     data: {
       toBe: 'DataTreeObj | DataTreeDatum[]',
       // 畢免資料量過大檢查不完，不深度檢查
-      test: (value) => isPlainObject(value) && value.id !== undefined
+      test: (value) => (isPlainObject(value) && value.id !== undefined) || Array.isArray(value)
     }
   })
   return result

@@ -59,7 +59,7 @@ export const ALL_PLUGIN_PARAMS_MULTI_VALUE: PresetMultiValuePluginParams = {
   ScatterBubbles: {},
   XYAxes: {},
   XYAux: {},
-  XYZoom: {}
+  XZoom: {}
 }
 
 export const ALL_PLUGIN_PARAMS_RELATIONSHIP: PresetRelationshipPluginParams = {

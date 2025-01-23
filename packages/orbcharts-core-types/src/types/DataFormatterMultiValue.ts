@@ -11,6 +11,7 @@ export interface DataFormatterMultiValue extends DataFormatterBase<'multiValue'>
   visibleFilter: VisibleFilter<'multiValue'>
   // labelFormat: (datum: unknown) => string
   categoryLabels: string[]
+  valueLabels: string[]
   // multiValue: Array<DataFormatterMultiValueMultiValue>
   xAxis: DataFormatterAxis
   yAxis: DataFormatterAxis
@@ -21,6 +22,7 @@ export interface DataFormatterMultiValue extends DataFormatterBase<'multiValue'>
 export interface DataFormatterMultiValuePartial extends DataFormatterBasePartial<'multiValue'> {
   visibleFilter?: VisibleFilter<'multiValue'>
   categoryLabels?: string[]
+  valueLabels?: string[]
   // multiValue?: Array<Partial<DataFormatterMultiValueMultiValue>>
   xAxis?: Partial<DataFormatterAxis>
   yAxis?: Partial<DataFormatterAxis>

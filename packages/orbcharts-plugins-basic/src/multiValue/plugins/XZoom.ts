@@ -17,7 +17,7 @@ import { DEFAULT_X_Y_ZOOM_PARAMS } from '../defaults'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { LAYER_INDEX_OF_ROOT } from '../../const'
 
-const pluginName = 'XYZoom'
+const pluginName = 'XZoom'
 const rectClassName = getClassName(pluginName, 'rect')
 
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_X_Y_ZOOM_PARAMS> = {
@@ -33,7 +33,7 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_X_Y_ZOO
   }
 }
 
-export const XYZoom = defineMultiValuePlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
+export const XZoom = defineMultiValuePlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
 
   const destroy$ = new Subject()
 
