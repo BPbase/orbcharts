@@ -35,7 +35,8 @@ export interface ColorScheme {
   label: string[]
   primary: string
   secondary: string
-  white: string
+  // white: string
+  labelContrast: [string, string]
   background: string
 }
 

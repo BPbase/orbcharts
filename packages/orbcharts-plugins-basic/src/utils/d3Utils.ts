@@ -71,4 +71,22 @@ export const parseDateTickFormatValue = (value: any, tickFormat: string | ((text
   return d3.timeFormat(tickFormat as string)!(value)
 }
 
+export function isLightColor (color: string) {
+  // 1. 用 HSL 的亮度（較符合數學）
+  // const hslColor = d3.hsl(color) // 轉換為 HSL 格式
+  // const lightness = hslColor.l // 取得亮度值 (0 ~ 1)
+  // 2. 用 LAB 的明度（較符合人眼感知）
+  const labColor = d3.lab(color) // 轉換為 LAB 格式
+  const lightness = labColor.l // 取得明度值 (0 ~ 100)
 
+  // console.log(`顏色的亮度為: ${lightness}`);
+  
+  // 判斷顏色深淺
+  if (lightness <= 60) {
+    // console.log("這是一個深色系");
+    return false
+  } else {
+    // console.log("這是一個淺色系");
+    return true
+  }
+}

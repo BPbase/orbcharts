@@ -27,7 +27,7 @@ export const DEFAULT_LINE_AREAS_PARAMS: LineAreasParams = {
 
 export const DEFAULT_DOTS_PARAMS: DotsParams = {
   radius: 4,
-  fillColorType: 'white',
+  fillColorType: 'background',
   strokeColorType: 'label',
   strokeWidth: 2,
   // strokeWidthWhileHighlight: 3,
@@ -194,13 +194,15 @@ export const DEFAULT_GRID_TOOLTIP_PARAMS: GridTooltipParams = {
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
 
-    const titleSvg = `<g><text dominant-baseline="hanging" font-size="${styles.textSizePx}">${eventData.groupLabel}</text></g>`
-    const maxLengthText = eventData.group.reduce((acc, group) => {
+    const titleSvg = `<g><text dominant-baseline="hanging" font-size="${styles.textSizePx}" fill="${styles.textColor}">${eventData.groupLabel}</text></g>`
+    const groupLabelTextWidth = utils.measureTextWidth(eventData.groupLabel, styles.textSizePx)
+    const listTextWidth = eventData.group.reduce((acc, group) => {
       const text = `${group.seriesLabel}${group.value}`
-      return text.length > acc.length ? text : acc
-    }, '')
-    const maxTextWidth = utils.measureTextWidth(maxLengthText, styles.textSizePx)
-    const lineEndX = maxTextWidth + styles.textSizePx * 2
+      const _maxTextWidth = utils.measureTextWidth(text, styles.textSizePx)
+      return _maxTextWidth > acc ? _maxTextWidth : acc
+    }, 0)
+    const maxTextWidth = Math.max(groupLabelTextWidth, listTextWidth)
+    const lineEndX = maxTextWidth + styles.textSizePx * 3
     const contentSvg = eventData.group
       .map((group, i) => {
         const y = i * styles.textSizePx * 1.5
@@ -222,13 +224,15 @@ DEFAULT_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, uti
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
 
-    const titleSvg = \`<g><text dominant-baseline="hanging" font-size="\${styles.textSizePx}">\${eventData.groupLabel}</text></g>\`
-    const maxLengthText = eventData.group.reduce((acc, group) => {
+    const titleSvg = \`<g><text dominant-baseline="hanging" font-size="\${styles.textSizePx}" fill="\${styles.textColor}">\${eventData.groupLabel}</text></g>\`
+    const groupLabelTextWidth = utils.measureTextWidth(eventData.groupLabel, styles.textSizePx)
+    const listTextWidth = eventData.group.reduce((acc, group) => {
       const text = \`\${group.seriesLabel}\${group.value}\`
-      return text.length > acc.length ? text : acc
-    }, '')
-    const maxTextWidth = utils.measureTextWidth(maxLengthText, styles.textSizePx)
-    const lineEndX = maxTextWidth + styles.textSizePx * 2
+      const _maxTextWidth = utils.measureTextWidth(text, styles.textSizePx)
+      return _maxTextWidth > acc ? _maxTextWidth : acc
+    }, 0)
+    const maxTextWidth = Math.max(groupLabelTextWidth, listTextWidth)
+    const lineEndX = maxTextWidth + styles.textSizePx * 3
     const contentSvg = eventData.group
       .map((group, i) => {
         const y = i * styles.textSizePx * 1.5

@@ -7,6 +7,7 @@ import type {
   ComputedDatumBaseSeries,
   ComputedDatumBaseCategory } from '../../lib/core-types'
 import { getMinMax } from './commonUtils'
+import { isLightColor } from './d3Utils'
 
 // 取得最小及最大值 - datum格式陣列資料
 export function getMinMaxValue (data: (ComputedDatumBase & ComputedDatumBaseValue)[]): [number, number] {
@@ -19,14 +20,13 @@ export function getMinMaxValue (data: (ComputedDatumBase & ComputedDatumBaseValu
 // 取得colorType顏色
 export function getColor (colorType: ColorType, fullChartParams: ChartParams) {
   const colors = fullChartParams.colors[fullChartParams.colorScheme]
-  // 對應series資料中第1個顏色
   if (colorType === 'label') {
-    return colors.label[0]
+    return colors.label[0] // default label color
+  } else if (colorType === 'labelContrast') {
+    return isLightColor(colors.label[0]) // default label color
+      ? colors.labelContrast[1]
+      : colors.labelContrast[0]
   }
-  // 對應colorType設定的顏色
-  // return colors[colorType] != null
-  //   ? colors[colorType]
-  //   : colors.primary
   return colorType == 'none'
     ? 'none'
     : colors[colorType] != undefined
@@ -42,7 +42,7 @@ export function getCategoryValueColor ({ datum, colorType, fullChartParams }: { 
 
 }
 
-// // 取得Series顏色 @Q@ 待重構完後刪除
+// // 取得Series顏色
 // export function getSeriesColor (seriesIndex: number, fullChartParams: ChartParams) {
 //   const colorIndex = seriesIndex < fullChartParams.colors[fullChartParams.colorScheme].series.length
 //     ? seriesIndex
@@ -50,23 +50,37 @@ export function getCategoryValueColor ({ datum, colorType, fullChartParams }: { 
 //   return fullChartParams.colors[fullChartParams.colorScheme].series[colorIndex]
 // }
 
-// 取得Datum顏色 @Q@ 待重構完後刪除
+// 取得Datum顏色
 export function getDatumColor ({ datum, colorType, fullChartParams }: { datum: ComputedDatumBase, colorType: ColorType, fullChartParams: ChartParams }) {
-  // 對應series資料中的顏色
+  const colors = fullChartParams.colors[fullChartParams.colorScheme]
+
   if (colorType === 'label') {
-    if ((datum as unknown as ComputedDatumBaseSeries).color) {
-      return (datum as unknown as ComputedDatumBaseSeries).color
+    const datumColor: string | undefined = (datum as unknown as ComputedDatumBaseSeries).color
+    if (datumColor) {
+      return datumColor
     } else {
-      // 非series類型的資料則回傳陣列中第1個顏色
-      return fullChartParams.colors[fullChartParams.colorScheme].label[0]
+      // default label color
+      return colors.label[0]
+    }
+  } else if (colorType === 'labelContrast') {
+    const datumColor: string | undefined = (datum as unknown as ComputedDatumBaseSeries).color
+    if (datumColor) {
+      return isLightColor(datumColor)
+        ? colors.labelContrast[1]
+        : colors.labelContrast[0]
+    } else {
+      // default label color
+      return  isLightColor(colors.label[0])
+        ? colors.labelContrast[1]
+        : colors.labelContrast[0]
     }
   }
   // 對應colorType設定的顏色
   return colorType == 'none'
     ? 'none' 
-    : fullChartParams.colors[fullChartParams.colorScheme][colorType] != undefined
-      ? fullChartParams.colors[fullChartParams.colorScheme][colorType]
-      : fullChartParams.colors[fullChartParams.colorScheme].primary
+    : colors[colorType] != undefined
+      ? colors[colorType]
+      : colors.primary
 }
 
 export function getClassName (pluginName: string, elementName: string, modifier?: string) {

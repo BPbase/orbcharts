@@ -3,7 +3,7 @@ import type { TreeMapParams, TreeLegendParams, TreeTooltipParams } from '../../l
 export const DEFAULT_TREE_MAP_PARAMS: TreeMapParams = {
   paddingInner: 2,
   paddingOuter: 2,
-  labelColorType: 'primary',
+  labelColorType: 'labelContrast',
   squarifyRatio: 1.618034, // 黃金比例
   sort: (a, b) => b.value - a.value
 }
@@ -44,8 +44,19 @@ export const DEFAULT_TREE_TOOLTIP_PARAMS: TreeTooltipParams = {
     const datumLabelSvg = hasDatumLabel
       ? `<tspan>${eventData.datum.label}</tspan>  `
       : ''
+    const categoryLabelTextWidth = hasCategoryLabel
+      ? utils.measureTextWidth(`${eventData.categoryLabel}${eventData.datum.value}`, styles.textSizePx) + styles.textSizePx * 1.5
+      : 0
+    const datumLabelTextWidth = hasDatumLabel
+      ? utils.measureTextWidth(`${eventData.datum.label}${eventData.datum.value}`, styles.textSizePx)
+      : 0
+    const maxTextWidth = Math.max(categoryLabelTextWidth, datumLabelTextWidth)
+    const lineEndX = hasDatumLabel
+      ? maxTextWidth + styles.textSizePx * 0.5
+      : 0
+    const valueTextAnchor = hasDatumLabel ? 'end' : 'start'
     const datumSvg = `<text font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
-    ${datumLabelSvg}<tspan font-weight="bold">${eventData.datum.value}</tspan>
+    ${datumLabelSvg}<tspan font-weight="bold" text-anchor="${valueTextAnchor}" x="${lineEndX}">${eventData.datum.value}</tspan>
   </text>`
 
     return `${categorySvg}
@@ -55,7 +66,7 @@ export const DEFAULT_TREE_TOOLTIP_PARAMS: TreeTooltipParams = {
   },
 }
 DEFAULT_TREE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils }) => {
-    const hasCategoryLabel = eventData.categoryLabel ? true : false
+  const hasCategoryLabel = eventData.categoryLabel ? true : false
     const hasDatumLabel = eventData.datum.label ? true : false
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
@@ -68,8 +79,19 @@ DEFAULT_TREE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, uti
     const datumLabelSvg = hasDatumLabel
       ? \`<tspan>\${eventData.datum.label}</tspan>  \`
       : ''
+    const categoryLabelTextWidth = hasCategoryLabel
+      ? utils.measureTextWidth(\`\${eventData.categoryLabel}\${eventData.datum.value}\`, styles.textSizePx) + styles.textSizePx * 1.5
+      : 0
+    const datumLabelTextWidth = hasDatumLabel
+      ? utils.measureTextWidth(\`\${eventData.datum.label}\${eventData.datum.value}\`, styles.textSizePx)
+      : 0
+    const maxTextWidth = Math.max(categoryLabelTextWidth, datumLabelTextWidth)
+    const lineEndX = hasDatumLabel
+      ? maxTextWidth + styles.textSizePx * 0.5
+      : 0
+    const valueTextAnchor = hasDatumLabel ? 'end' : 'start'
     const datumSvg = \`<text font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
-    \${datumLabelSvg}<tspan font-weight="bold">\${eventData.datum.value}</tspan>
+    \${datumLabelSvg}<tspan font-weight="bold" text-anchor="\${valueTextAnchor}" x="\${lineEndX}">\${eventData.datum.value}</tspan>
   </text>\`
 
     return \`\${categorySvg}

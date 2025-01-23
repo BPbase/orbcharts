@@ -92,8 +92,8 @@ export function chartParamsValidator (chartType: ChartType, chartParamsPartial: 
         secondary: {
           toBeTypes: ['string'],
         },
-        white: {
-          toBeTypes: ['string'],
+        labelContrast: {
+          toBeTypes: ['string[]'],
         },
         background: {
           toBeTypes: ['string'],
@@ -116,8 +116,8 @@ export function chartParamsValidator (chartType: ChartType, chartParamsPartial: 
         secondary: {
           toBeTypes: ['string'],
         },
-        white: {
-          toBeTypes: ['string'],
+        labelContrast: {
+          toBeTypes: ['string[]'],
         },
         background: {
           toBeTypes: ['string'],

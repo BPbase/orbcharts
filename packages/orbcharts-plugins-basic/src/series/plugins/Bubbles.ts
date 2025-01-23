@@ -24,6 +24,7 @@ import type { BubblesParams, ArcScaleType } from '../../../lib/plugins-basic-typ
 import { DEFAULT_BUBBLES_PARAMS } from '../defaults'
 import { renderCircleText } from '../../utils/d3Graphics'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
+import { getDatumColor } from '../../utils/orbchartsUtils'
 
 interface BubblesDatum extends ComputedDatumSeries {
   x: number
@@ -73,6 +74,9 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BUBBLES
     }
     if (params.bubbleLabel) {
       const bubbleLabelResult = validateColumns(params.bubbleLabel, {
+        colorType: {
+          toBeOption: 'ColorType'
+        },
         fillRate: {
           toBeTypes: ['number']
         },
@@ -204,10 +208,11 @@ function createBubblesData ({ visibleComputedLayoutData, LastBubbleDataMap, grap
   })
 }
 
-function renderBubbles ({ selection, bubblesData, fullParams, sumSeries }: {
+function renderBubbles ({ selection, bubblesData, fullParams, fullChartParams, sumSeries }: {
   selection: d3.Selection<SVGGElement, any, any, any>
   bubblesData: BubblesDatum[]
   fullParams: BubblesParams
+  fullChartParams: ChartParams
   sumSeries: boolean
 }) {
   const bubblesSelection = selection.selectAll<SVGGElement, BubblesDatum>("g")
@@ -271,6 +276,13 @@ function renderBubbles ({ selection, bubblesData, fullParams, sumSeries }: {
           ? false
           : fullParams.bubbleLabel.wordBreakAll
       })
+
+      // -- text color --
+      gSelection.select('text').attr('fill', _ => getDatumColor({
+        datum: d,
+        colorType: fullParams.bubbleLabel.colorType,
+        fullChartParams: fullChartParams
+      }))
 
     })
 
@@ -436,6 +448,7 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
   const bubblesSelection$ = combineLatest({
     bubblesData: bubblesData$,
     fullParams: observer.fullParams$,
+    fullChartParams: observer.fullChartParams$,
     SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
     sumSeries: sumSeries$
   }).pipe(
@@ -450,6 +463,7 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
         selection,
         bubblesData: data.bubblesData,
         fullParams: data.fullParams,
+        fullChartParams: data.fullChartParams,
         sumSeries: data.sumSeries
       })
       

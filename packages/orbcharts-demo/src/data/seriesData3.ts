@@ -179,90 +179,6 @@ export default [
             "label": "劇情",
             "value": 449,
             "type": "keyword"
-        },
-        {
-            "id": "口罩",
-            "label": "口罩",
-            "value": 449,
-            "type": "keyword"
-        },
-        {
-            "id": "醫生",
-            "label": "醫生",
-            "value": 438,
-            "type": "keyword"
-        },
-        {
-            "id": "戴口罩",
-            "label": "戴口罩",
-            "value": 437,
-            "type": "keyword"
-        },
-        {
-            "id": "開車",
-            "label": "開車",
-            "value": 436,
-            "type": "keyword"
-        },
-        {
-            "id": "投票",
-            "label": "投票",
-            "value": 425,
-            "type": "keyword"
-        },
-        {
-            "id": "失敗",
-            "label": "失敗",
-            "value": 424,
-            "type": "keyword"
-        },
-        {
-            "id": "傷害",
-            "label": "傷害",
-            "value": 422,
-            "type": "keyword"
-        },
-        {
-            "id": "幸福",
-            "label": "幸福",
-            "value": 414,
-            "type": "keyword"
-        },
-        {
-            "id": "資格",
-            "label": "資格",
-            "value": 411,
-            "type": "keyword"
-        },
-        {
-            "id": "乖乖",
-            "label": "乖乖",
-            "value": 410,
-            "type": "keyword"
-        },
-        {
-            "id": "感恩",
-            "label": "感恩",
-            "value": 407,
-            "type": "keyword"
-        },
-        {
-            "id": "投資",
-            "label": "投資",
-            "value": 405,
-            "type": "keyword"
-        },
-        {
-            "id": "堅持",
-            "label": "堅持",
-            "value": 402,
-            "type": "keyword"
-        },
-        {
-            "id": "APP",
-            "label": "APP",
-            "value": 144,
-            "type": "keyword"
         }
     ],
     [
@@ -276,12 +192,6 @@ export default [
             "id": "國民黨",
             "label": "國民黨",
             "value": 903,
-            "type": "group"
-        },
-        {
-            "id": "KMT",
-            "label": "KMT",
-            "value": 448,
             "type": "group"
         }
     ],
@@ -308,12 +218,6 @@ export default [
             "id": "台中",
             "label": "台中",
             "value": 558,
-            "type": "location"
-        },
-        {
-            "id": "韓國",
-            "label": "韓國",
-            "value": 416,
             "type": "location"
         }
     ],
@@ -348,24 +252,6 @@ export default [
             "id": "蘋果",
             "label": "蘋果",
             "value": 581,
-            "type": "brand"
-        },
-        {
-            "id": "臉書",
-            "label": "臉書",
-            "value": 439,
-            "type": "brand"
-        },
-        {
-            "id": "IG",
-            "label": "IG",
-            "value": 269,
-            "type": "brand"
-        },
-        {
-            "id": "LINE",
-            "label": "LINE",
-            "value": 165,
             "type": "brand"
         }
     ]

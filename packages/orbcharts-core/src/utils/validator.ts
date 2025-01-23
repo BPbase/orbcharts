@@ -46,7 +46,7 @@ function getInvalidColumn<T> (data: T, rules: Partial<ValidatorRule<T>>) {
         || value === 'label'
         || value === 'primary'
         || value === 'secondary'
-        || value === 'white'
+        || value === 'labelContrast'
         || value === 'background'
     },
   }

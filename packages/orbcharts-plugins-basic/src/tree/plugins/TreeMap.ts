@@ -15,7 +15,7 @@ import {
 import type { Layout, ComputedDataTree, DataFormatterTree, ChartParams } from '../../../lib/core-types'
 import type { TreeMapParams } from '../../../lib/plugins-basic-types'
 import { DEFAULT_TREE_MAP_PARAMS } from '../defaults'
-import { getClassName, getColor } from '../../utils/orbchartsUtils'
+import { getClassName, getDatumColor } from '../../utils/orbchartsUtils'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 
 const pluginName = 'TreeMap'
@@ -112,7 +112,11 @@ function renderTree ({ selection, treeData, fullParams, fullChartParams, textSiz
                 .text(null)
                 .append("tspan")
                 .attr('cursor', 'pointer')
-                .attr('fill', getColor(fullParams.labelColorType, fullChartParams))
+                .attr('fill', getDatumColor({
+                  colorType: fullParams.labelColorType,
+                  datum: d.data,
+                  fullChartParams
+                }))
                 .attr('font-size', fullChartParams.styles.textSize)
                 .attr("x", x)
                 .attr("y", y)
@@ -128,7 +132,11 @@ function renderTree ({ selection, treeData, fullParams, fullChartParams, textSiz
                   tspan = textElement
                     .append("tspan")
                     .attr('cursor', 'pointer')
-                    .attr('fill', getColor(fullParams.labelColorType, fullChartParams))
+                    .attr('fill', getDatumColor({
+                      colorType: fullParams.labelColorType,
+                      datum: d.data,
+                      fullChartParams
+                    }))
                     .attr('font-size', fullChartParams.styles.textSize)
                     .attr("x", x)
                     .attr("y", y)

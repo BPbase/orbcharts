@@ -14,7 +14,7 @@ export const PRESET_PIE_WITH_INNER_LABELS: PresetPartial<'series', Partial<Prese
     Pie: {},
     PieLabels: {
       "labelCentroid": 1.3, // 圖內資料標籤
-      "labelColorType": "primary"
+      "labelColorType": "labelContrast"
     },
     PieEventTexts: {},
     SeriesLegend: {

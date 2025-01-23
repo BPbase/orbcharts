@@ -8,6 +8,7 @@ import type {
   DataRelationship,
   DataFormatterValueAxis,
   DataFormatterGroupAxis,
+  DataFormatterAxis,
   DataFormatterContainer,
   DataFormatterSeries,
   DataFormatterGrid,
@@ -62,15 +63,18 @@ export const DEFAULT_CHART_PARAMS: ChartParams = {
       // primary: '#454545',
       primary: '#1b1e23',
       secondary: '#e1e1e1',
-      white: '#ffffff',
+      // white: '#ffffff',
+      labelContrast: ['#ffffff', '#1b1e23'],
       background: '#ffffff'
     },
     dark: {
-      label: ['#67B7DC', '#6794DC', '#38B1AF', '#6771DC', '#8067DC', '#A367DC', '#C767DC', '#DC67CE', '#DC67AB', '#DC6788', '#DC6967', '#DC8C67', '#DCAF67'],
+      label: ['#67B7DC', '#6794DC', '#6771DC', '#8067DC', '#A367DC', '#C767DC', '#DC67CE', '#DC67AB', '#DC6788', '#DC6967', '#DC8C67', '#DCAF67'],
+      // label: ['#67B7DC', '#6794DC', '#38B1AF', '#6771DC', '#8067DC', '#A367DC', '#C767DC', '#DC67CE', '#DC67AB', '#DC6788', '#DC6967', '#DC8C67', '#DCAF67'],
       // label: ['#60A2F0', '#F3A356', '#7A60F0', '#38B1AF', '#F06062', '#FF383C', '#6580EA', '#079F9C', '#9F65EA', '#EA7465', '#EA7465', '#8657D2', '#59B757', '#2797FF', '#D25786', '#F54BA6', '#4BECF5', '#74FD72', '#CA4BF5', '#EFE26E'],
       primary: '#f0f0f0',
       secondary: '#e1e1e1',
-      white: '#ffffff',
+      // white: '#ffffff',
+      labelContrast: ['#ffffff', '#1b1e23'],
       background: '#000000'
     }
   },
@@ -118,6 +122,12 @@ export const DEFAULT_DATA_FORMATTER_GROUP_AXIS: DataFormatterGroupAxis = {
   scaleDomain: [0, 'max'],
   scalePadding: 0.5,
   label: ''
+}
+
+export const DEFAULT_DATA_FORMATTER_AXIS: DataFormatterAxis = {
+  scaleDomain: ['auto', 'auto'],
+  scaleRange: [0, 0.9],
+  label: '',
 }
 
 export const DEFAULT_DATA_FORMATTER_CONTAINER: DataFormatterContainer = {
@@ -204,8 +214,8 @@ export const DEFAULT_DATA_FORMATTER_MULTI_VALUE: DataFormatterMultiValue = {
   type: 'multiValue',
   visibleFilter: (datum, context) => true,
   categoryLabels: [],
-  xAxis: { ...DEFAULT_DATA_FORMATTER_VALUE_AXIS },
-  yAxis: { ...DEFAULT_DATA_FORMATTER_VALUE_AXIS },
+  xAxis: { ...DEFAULT_DATA_FORMATTER_AXIS },
+  yAxis: { ...DEFAULT_DATA_FORMATTER_AXIS },
   container: {
     ...DEFAULT_DATA_FORMATTER_CONTAINER
   },

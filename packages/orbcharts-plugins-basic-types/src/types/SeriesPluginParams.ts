@@ -9,6 +9,7 @@ export interface BubblesParams {
     collisionSpacing: number // 泡泡間距
   }
   bubbleLabel: {
+    colorType: ColorType
     fillRate: number
     lineHeight: number
     maxLineLength: number

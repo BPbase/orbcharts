@@ -45,6 +45,15 @@ export function resizeObservable(elem: HTMLElement | Element): Observable<DOMRec
   })
 }
 
+interface HighlightTargetValue {
+  id: string | null
+  label: string | null
+  seriesLabel: string | null
+  groupLabel: string | null
+  categoryLabel: string | null
+  highlightDefault: string | null
+}
+
 // 通用 highlight Observable
 export const highlightObservable = <T extends ChartType, D>({ datumList$, fullChartParams$, event$ }: {
   datumList$: Observable<D[]>
@@ -54,11 +63,12 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
   const destroy$ = new Subject()
 
   // 預設的highlight
-  const highlightDefault$ = fullChartParams$.pipe(
+  const highlightDefault$: Observable<HighlightTargetValue> = fullChartParams$.pipe(
     takeUntil(destroy$),
     map(d => {
       return {
         id: null,
+        label: null,
         seriesLabel: null,
         groupLabel: null,
         categoryLabel: null,
@@ -69,22 +79,25 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
   )
 
   // 事件觸發的highlight
-  const highlightMouseover$ = event$.pipe(
+  const highlightMouseover$: Observable<HighlightTargetValue> = event$.pipe(
     takeUntil(destroy$),
     // filter(d => d.eventName === 'mouseover' || d.eventName === 'mousemove'),
     filter(d => d.eventName === 'mouseover'),
     // distinctUntilChanged((prev, current) => prev.eventName === current.eventName)
-    map(d => {
-      return (d as any).datum
+    map(_d => {
+      const d = _d as any
+      return d.datum
         ? {
-          id: ((d as any).datum as any).id,
-          seriesLabel: ((d as any).datum as any).seriesLabel,
-          groupLabel: ((d as any).datum as any).groupLabel,
-          categoryLabel: ((d as any).datum as any).categoryLabel,
+          id: d.datum.id,
+          label: d.datum.label,
+          seriesLabel: d.datum.seriesLabel,
+          groupLabel: d.datum.groupLabel,
+          categoryLabel: d.datum.categoryLabel,
           highlightDefault: null
         }
         : {
           id: null,
+          label: null,
           seriesLabel: null,
           groupLabel: null,
           categoryLabel: null,
@@ -102,9 +115,14 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
     switchMap(d => highlightDefault$)
   )
 
-  function getDatumIds (datumList: ComputedDatumTypeMap<T>[], id: string | null) {
-    const datum = datumList.find(d => (d as ComputedDatumBase).id === id)
-    return datum ? [datum] : []
+  // function getDatumIds (datumList: ComputedDatumTypeMap<T>[], id: string | null) {
+  //   const datum = datumList.find(d => (d as ComputedDatumBase).id === id)
+  //   return datum ? [datum] : []
+  // }
+  function getDatumIds (datumList: ComputedDatumTypeMap<T>[], id: string | null, label: string | null) {
+    return id == null && label == null
+      ? []
+      : datumList.filter(d => (d as ComputedDatumBase).id === id || (d as ComputedDatumBase).label === label)
   }
 
   function getSeriesIds (datumList: ComputedDatumTypeMap<T>[], seriesLabel: string | null) {
@@ -136,7 +154,7 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
     ).subscribe(data => {
       let datumList: ComputedDatumTypeMap<T>[] = []
       if (data.fullChartParams.highlightTarget === 'datum') {
-        datumList = getDatumIds(data.datumList as ComputedDatumTypeMap<T>[], data.target.id)
+        datumList = getDatumIds(data.datumList as ComputedDatumTypeMap<T>[], data.target.id, data.target.label)
       } else if (data.fullChartParams.highlightTarget === 'series') {
         datumList = getSeriesIds(data.datumList as ComputedDatumTypeMap<T>[], data.target.seriesLabel)
       } else if (data.fullChartParams.highlightTarget === 'group') {
