@@ -3,7 +3,7 @@ import type { TreeMapParams, TreeLegendParams, TreeTooltipParams } from '../../l
 export const DEFAULT_TREE_MAP_PARAMS: TreeMapParams = {
   paddingInner: 2,
   paddingOuter: 2,
-  labelColorType: 'primary',
+  labelColorType: 'labelContrast',
   squarifyRatio: 1.618034, // 黃金比例
   sort: (a, b) => b.value - a.value
 }

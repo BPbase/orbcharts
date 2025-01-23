@@ -89,7 +89,7 @@ export const DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS: ForceDirectedBubblesParams =
     lineHeight: 1,
     maxLineLength: 6,
     wordBreakAll: true,
-    colorType: 'primary',
+    colorType: 'labelContrast',
     styleFn: (node) => ''
   },
   arrow: {

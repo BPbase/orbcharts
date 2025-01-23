@@ -552,6 +552,14 @@ function renderNodeCircle ({ nodeGSelection, fullParams, fullChartParams }: {
           : fullParams.bubbleLabel.wordBreakAll
       })
 
+      // -- text color --
+      gSelection.select('text').attr('fill', _ => getDatumColor({
+        datum: d,
+        colorType: fullParams.bubbleLabel.colorType,
+        fullChartParams: fullChartParams
+      }))
+
+
     })
 
   nodeGSelection.select('text')

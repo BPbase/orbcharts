@@ -114,7 +114,7 @@ export const DEFAULT_MULTI_LINE_AREAS_PARAMS: MultiLineAreasParams = {
 
 export const DEFAULT_MULTI_DOTS_PARAMS: MultiDotsParams = {
   radius: 4,
-  fillColorType: 'white',
+  fillColorType: 'background',
   strokeColorType: 'label',
   strokeWidth: 2,
   onlyShowHighlighted: false,

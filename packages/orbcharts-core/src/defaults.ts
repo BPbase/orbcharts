@@ -63,7 +63,8 @@ export const DEFAULT_CHART_PARAMS: ChartParams = {
       // primary: '#454545',
       primary: '#1b1e23',
       secondary: '#e1e1e1',
-      white: '#ffffff',
+      // white: '#ffffff',
+      labelContrast: ['#ffffff', '#1b1e23'],
       background: '#ffffff'
     },
     dark: {
@@ -72,7 +73,8 @@ export const DEFAULT_CHART_PARAMS: ChartParams = {
       // label: ['#60A2F0', '#F3A356', '#7A60F0', '#38B1AF', '#F06062', '#FF383C', '#6580EA', '#079F9C', '#9F65EA', '#EA7465', '#EA7465', '#8657D2', '#59B757', '#2797FF', '#D25786', '#F54BA6', '#4BECF5', '#74FD72', '#CA4BF5', '#EFE26E'],
       primary: '#f0f0f0',
       secondary: '#e1e1e1',
-      white: '#ffffff',
+      // white: '#ffffff',
+      labelContrast: ['#ffffff', '#1b1e23'],
       background: '#000000'
     }
   },

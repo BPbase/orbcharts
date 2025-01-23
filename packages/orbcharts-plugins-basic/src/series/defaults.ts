@@ -18,6 +18,7 @@ export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
     collisionSpacing: 2 // 泡泡間距
   },
   bubbleLabel: {
+    colorType: 'labelContrast',
     fillRate: 0.6,
     lineHeight: 1,
     maxLineLength: 6,
