@@ -36,6 +36,30 @@ export interface MultiValueTooltipParams {
   )
 }
 
+export interface OrdinalAxisParams {
+
+}
+
+export interface OrdinalZoomParams {
+
+}
+
+export interface RankingAxisParams {
+  
+}
+
+export interface RankingBarsParams {
+
+}
+
+export interface RankingBubblesParams {
+
+}
+
+export interface RankingTextParams {
+
+}
+
 export interface ScatterParams {
   radius: number
   fillColorType: ColorType
@@ -51,6 +75,24 @@ export interface ScatterBubblesParams {
   valueLinearOpacity: [number, number]
   arcScaleType: ArcScaleType
   sizeAdjust: number
+}
+
+export interface XAxisParams {
+  labelOffset: [number, number]
+  labelColorType: ColorType
+  axisLineVisible: boolean
+  axisLineColorType: ColorType
+  ticks: number | null
+  tickFormat: string | ((text: d3.NumberValue) => string | d3.NumberValue)
+  tickLineVisible: boolean
+  tickPadding: number
+  tickFullLine: boolean
+  tickFullLineDasharray: string
+  tickColorType: ColorType
+  // axisLineColor: string
+  // axisLabelColor: string
+  // tickTextRotate: number
+  tickTextColorType: ColorType
 }
 
 export interface XYAuxParams {
@@ -118,4 +160,22 @@ export interface XYAxesParams {
 
 export interface XZoomParams {
 
+}
+
+export interface YAxisParams {
+  labelOffset: [number, number]
+  labelColorType: ColorType
+  axisLineVisible: boolean
+  axisLineColorType: ColorType
+  ticks: number | null
+  tickFormat: string | ((text: d3.NumberValue) => string | d3.NumberValue)
+  tickLineVisible: boolean
+  tickPadding: number
+  tickFullLine: boolean
+  tickFullLineDasharray: string
+  tickColorType: ColorType
+  // axisLineColor: string
+  // axisLabelColor: string
+  // tickTextRotate: number
+  tickTextColorType: ColorType
 }

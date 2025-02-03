@@ -40,7 +40,7 @@ import { getColor, getMinMaxValue, getClassName, getUniID } from '../utils/orbch
 //   tickTextColorType: ColorType
 // }
 
-interface BaseLinesContext {
+interface BaseValueAxisContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
   filteredMinMaxValue$: Observable<[number, number]>
@@ -239,7 +239,7 @@ function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gri
 
 
 
-export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: string, {
+export const createBaseValueAxis: BasePluginFn<BaseValueAxisContext> = (pluginName: string, {
   selection,
   computedData$,
   filteredMinMaxValue$,

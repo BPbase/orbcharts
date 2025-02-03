@@ -3,6 +3,7 @@ import type {
   MultiValueTooltipParams,
   ScatterParams,
   ScatterBubblesParams,
+  XAxisParams,
   XYAuxParams,
   XYAxesParams,
   XZoomParams
@@ -95,6 +96,22 @@ export const DEFAULT_SCATTER_BUBBLES_PARAMS: ScatterBubblesParams = {
   valueLinearOpacity: [0.8, 0.8],
   arcScaleType: 'area',
   sizeAdjust: 0.5
+}
+
+export const DEFAULT_X_AXIS_PARAMS: XAxisParams = {
+  labelOffset: [0, 0],
+  labelColorType: 'primary',
+  axisLineVisible: false,
+  axisLineColorType: 'primary',
+  ticks: null,
+  // tickFormat: ',.0f',
+  tickFormat: v => v,
+  tickLineVisible: true,
+  tickPadding: 20,
+  tickFullLine: true,
+  tickFullLineDasharray: 'none',
+  tickColorType: 'secondary',
+  tickTextColorType: 'primary'
 }
 
 export const DEFAULT_X_Y_AUX_PARAMS: XYAuxParams = {
