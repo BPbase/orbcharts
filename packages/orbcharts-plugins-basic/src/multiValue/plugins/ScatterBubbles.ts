@@ -290,13 +290,13 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
     })
   })
 
-  const filteredValueList$ = observer.filteredMinMaxXYData$.pipe(
+  const filteredValueList$ = observer.filteredXYMinMaxData$.pipe(
     takeUntil(destroy$),
     map(data => data.datumList.flat().map(d => d.value[2] ?? 0)),
     shareReplay(1)
   )
 
-  const filteredMinMaxValue$ = observer.filteredMinMaxXYData$.pipe(
+  const filteredMinMaxValue$ = observer.filteredXYMinMaxData$.pipe(
     takeUntil(destroy$),
     map(data => {
       return getMinMax(data.datumList.flat().map(d => d.value[2] ?? 0))

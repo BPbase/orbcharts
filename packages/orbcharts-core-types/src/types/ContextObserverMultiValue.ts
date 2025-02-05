@@ -12,22 +12,24 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
   multiValueHighlight$: Observable<ComputedDatumMultiValue[]>
   categoryLabels$: Observable<string[]>
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
-  minMaxXY$: Observable<{
+  xyMinMax$: Observable<{ // xy
     minX: number
     maxX: number
     minY: number
     maxY: number
   }>
-  filteredMinMaxXYData$: Observable<{
-    datumList: ComputedLayoutDatumMultiValue[]
-    minXDatum: ComputedLayoutDatumMultiValue | null
-    maxXDatum: ComputedLayoutDatumMultiValue | null
-    minYDatum: ComputedLayoutDatumMultiValue | null
-    maxYDatum: ComputedLayoutDatumMultiValue | null
+  filteredXYMinMaxData$: Observable<{ // xy
+    datumList: ComputedXYDatumMultiValue[]
+    minXDatum: ComputedXYDatumMultiValue | null
+    maxXDatum: ComputedXYDatumMultiValue | null
+    minYDatum: ComputedXYDatumMultiValue | null
+    maxYDatum: ComputedXYDatumMultiValue | null
   }>
   visibleComputedData$: Observable<ComputedDataMultiValue>
-  computedLayoutData$: Observable<ComputedLayoutDataMultiValue>
-  visibleComputedLayoutData$: Observable<ComputedLayoutDataMultiValue>
+  computedXYData$: Observable<ComputedXYDataMultiValue> // xy
+  visibleComputedXYData$: Observable<ComputedXYDataMultiValue> // xy
+  visibleComputedRankingData$: Observable<ComputedDatumMultiValue[]>// ranking
+  rankingScale$: Observable<d3.ScalePoint<string>> // ranking
   // multiValueAxesTransform$: Observable<TransformData>
   // multiValueAxesReverseTransform$: Observable<TransformData>
   multiValueGraphicTransform$: Observable<TransformData>
@@ -35,15 +37,15 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
 }
 
 // export type MultiValueMinMaxData = {
-//   minXDatum: ComputedLayoutDatumMultiValue
-//   maxXDatum: ComputedLayoutDatumMultiValue
-//   minYDatum: ComputedLayoutDatumMultiValue
-//   maxYDatum: ComputedLayoutDatumMultiValue
+//   minXDatum: ComputedXYDatumMultiValue
+//   maxXDatum: ComputedXYDatumMultiValue
+//   minYDatum: ComputedXYDatumMultiValue
+//   maxYDatum: ComputedXYDatumMultiValue
 // }
 
-export type ComputedLayoutDataMultiValue = ComputedLayoutDatumMultiValue[][]
+export type ComputedXYDataMultiValue = ComputedXYDatumMultiValue[][]
 
-export interface ComputedLayoutDatumMultiValue extends ComputedDatumMultiValue {
+export interface ComputedXYDatumMultiValue extends ComputedDatumMultiValue {
   axisX: number
   axisY: number
 }

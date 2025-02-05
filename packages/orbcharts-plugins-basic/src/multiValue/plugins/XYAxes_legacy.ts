@@ -27,7 +27,7 @@ import { DEFAULT_X_Y_AXES_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_AXIS } from '../../const'
 import { getColor, getDatumColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { parseTickFormatValue } from '../../utils/d3Utils'
-// import { filteredMinMaxXYDataObservable } from '../../../../orbcharts-core/src/utils/multiValueObservables'
+// import { filteredXYMinMaxDataObservable } from '../../../../orbcharts-core/src/utils/multiValueObservables'
 // import { multiValueSelectionsObservable } from '../multiValueObservables'
 
 // interface TextAlign {
@@ -270,7 +270,7 @@ function renderYAxisLabel ({ selection, yLabelClassName, fullParams, layout, ful
     // .attr('transform', d => `translate(0, ${layout.height})`)
 }
 
-function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullDataFormatter, fullChartParams, xScale, textReverseTransform, minMaxXY }: {
+function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullDataFormatter, fullChartParams, xScale, textReverseTransform, xyMinMax }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   xAxisClassName: string
   fullParams: XYAxesParams
@@ -280,7 +280,7 @@ function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullDataF
   fullChartParams: ChartParams
   xScale: d3.ScaleLinear<number, number>
   textReverseTransform: string,
-  minMaxXY: {
+  xyMinMax: {
     minX: number;
     maxX: number;
     minY: number;
@@ -349,7 +349,7 @@ function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullDataF
   return xAxisSelection
 }
 
-function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataFormatter, fullChartParams, yScale, textReverseTransform, minMaxXY }: {
+function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataFormatter, fullChartParams, yScale, textReverseTransform, xyMinMax }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   yAxisClassName: string
   fullParams: XYAxesParams
@@ -359,7 +359,7 @@ function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataF
   fullChartParams: ChartParams
   yScale: d3.ScaleLinear<number, number>
   textReverseTransform: string,
-  minMaxXY: {
+  xyMinMax: {
     minX: number;
     maxX: number;
     minY: number;
@@ -545,19 +545,19 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
     combineLatest({
       fullDataFormatter: observer.fullDataFormatter$,
       layout: observer.layout$,
-      // minMaxXY: observer.minMaxXY$
-      filteredMinMaxXYData: observer.filteredMinMaxXYData$
+      // xyMinMax: observer.xyMinMax$
+      filteredXYMinMaxData: observer.filteredXYMinMaxData$
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
-      if (!data.filteredMinMaxXYData.minXDatum || !data.filteredMinMaxXYData.maxXDatum
-        || data.filteredMinMaxXYData.minXDatum.value[0] == null || data.filteredMinMaxXYData.maxXDatum.value[0] == null
+      if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
+        || data.filteredXYMinMaxData.minXDatum.value[0] == null || data.filteredXYMinMaxData.maxXDatum.value[0] == null
       ) {
         return
       }
-      let maxValue = data.filteredMinMaxXYData.maxXDatum.value[0]
-      let minValue = data.filteredMinMaxXYData.minXDatum.value[0]
+      let maxValue = data.filteredXYMinMaxData.maxXDatum.value[0]
+      let minValue = data.filteredXYMinMaxData.minXDatum.value[0]
       if (maxValue === minValue && maxValue === 0) {
         // 避免最大及最小值同等於 0 造成無法計算scale
         maxValue = 1
@@ -579,19 +579,19 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
     combineLatest({
       fullDataFormatter: observer.fullDataFormatter$,
       layout: observer.layout$,
-      // minMaxXY: observer.minMaxXY$
-      filteredMinMaxXYData: observer.filteredMinMaxXYData$
+      // xyMinMax: observer.xyMinMax$
+      filteredXYMinMaxData: observer.filteredXYMinMaxData$
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
-      if (!data.filteredMinMaxXYData.minYDatum || !data.filteredMinMaxXYData.maxYDatum
-        || data.filteredMinMaxXYData.minYDatum.value[1] == null || data.filteredMinMaxXYData.maxYDatum.value[1] == null
+      if (!data.filteredXYMinMaxData.minYDatum || !data.filteredXYMinMaxData.maxYDatum
+        || data.filteredXYMinMaxData.minYDatum.value[1] == null || data.filteredXYMinMaxData.maxYDatum.value[1] == null
       ) {
         return
       }
-      let maxValue = data.filteredMinMaxXYData.maxYDatum.value[1]
-      let minValue = data.filteredMinMaxXYData.minYDatum.value[1]
+      let maxValue = data.filteredXYMinMaxData.maxYDatum.value[1]
+      let minValue = data.filteredXYMinMaxData.minYDatum.value[1]
       if (maxValue === minValue && maxValue === 0) {
         // 避免最大及最小值同等於 0 造成無法計算scale
         maxValue = 1
@@ -623,7 +623,7 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
     xScale: xScale$,
     yScale: yScale$,
     textReverseTransform: textReverseTransform$,
-    minMaxXY: observer.minMaxXY$
+    xyMinMax: observer.xyMinMax$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -639,7 +639,7 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
       fullChartParams: data.fullChartParams,
       xScale: data.xScale,
       textReverseTransform: data.textReverseTransform,
-      minMaxXY: data.minMaxXY
+      xyMinMax: data.xyMinMax
     })
 
     renderYAxis({
@@ -652,7 +652,7 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
       fullChartParams: data.fullChartParams,
       yScale: data.yScale,
       textReverseTransform: data.textReverseTransform,
-      minMaxXY: data.minMaxXY
+      xyMinMax: data.xyMinMax
     })
 
     renderXAxisLabel({

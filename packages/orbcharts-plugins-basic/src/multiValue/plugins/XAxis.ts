@@ -92,8 +92,8 @@ export const XAxis = defineMultiValuePlugin(pluginConfig)(({ selection, name, ob
     isCategorySeprate$: observer.isCategorySeprate$,
     multiValueContainerPosition$: observer.multiValueContainerPosition$,
     layout$: observer.layout$,
-    filteredMinMaxXYData$: observer.filteredMinMaxXYData$,
-    minMaxXY$: observer.minMaxXY$,
+    filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
+    xyMinMax$: observer.xyMinMax$,
   })
 
   return () => {

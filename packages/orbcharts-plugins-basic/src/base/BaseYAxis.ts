@@ -14,7 +14,7 @@ import type {
   ChartParams,
   ComputedDatumMultiValue,
   ComputedDataMultiValue,
-  ComputedLayoutDatumMultiValue,
+  ComputedXYDatumMultiValue,
   ContainerPositionScaled,
   DataFormatterMultiValue,
   DefinePluginConfig,
@@ -45,14 +45,14 @@ interface BaseYAxisContext {
   isCategorySeprate$: Observable<boolean>
   multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
   layout$: Observable<Layout>
-  filteredMinMaxXYData$: Observable<{
-    datumList: ComputedLayoutDatumMultiValue[];
-    minXDatum: ComputedLayoutDatumMultiValue | null;
-    maxXDatum: ComputedLayoutDatumMultiValue | null;
-    minYDatum: ComputedLayoutDatumMultiValue | null;
-    maxYDatum: ComputedLayoutDatumMultiValue | null;
+  filteredXYMinMaxData$: Observable<{
+    datumList: ComputedXYDatumMultiValue[];
+    minXDatum: ComputedXYDatumMultiValue | null;
+    maxXDatum: ComputedXYDatumMultiValue | null;
+    minYDatum: ComputedXYDatumMultiValue | null;
+    maxYDatum: ComputedXYDatumMultiValue | null;
   }>
-  minMaxXY$: Observable<{
+  xyMinMax$: Observable<{
     minX: number;
     maxX: number;
     minY: number;
@@ -118,7 +118,7 @@ function renderYAxisLabel ({ selection, yLabelClassName, fullParams, layout, ful
     // .attr('transform', d => `translate(0, ${layout.height})`)
 }
 
-function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataFormatter, fullChartParams, yScale, textReverseTransform, minMaxXY }: {
+function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataFormatter, fullChartParams, yScale, textReverseTransform, xyMinMax }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   yAxisClassName: string
   fullParams: BaseYAxisParams
@@ -128,7 +128,7 @@ function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataF
   fullChartParams: ChartParams
   yScale: d3.ScaleLinear<number, number>
   textReverseTransform: string,
-  minMaxXY: {
+  xyMinMax: {
     minX: number;
     maxX: number;
     minY: number;
@@ -205,8 +205,8 @@ export const createBaseYAxis: BasePluginFn<BaseYAxisContext> = (pluginName: stri
   isCategorySeprate$,
   multiValueContainerPosition$,
   layout$,
-  filteredMinMaxXYData$,
-  minMaxXY$
+  filteredXYMinMaxData$,
+  xyMinMax$
 }) => {
   
   const destroy$ = new Subject()
@@ -290,19 +290,20 @@ export const createBaseYAxis: BasePluginFn<BaseYAxisContext> = (pluginName: stri
     combineLatest({
       fullDataFormatter: fullDataFormatter$,
       layout: layout$,
-      // minMaxXY: observer.minMaxXY$
-      filteredMinMaxXYData: filteredMinMaxXYData$
+      // xyMinMax: observer.xyMinMax$
+      filteredXYMinMaxData: filteredXYMinMaxData$
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
-      if (!data.filteredMinMaxXYData.minYDatum || !data.filteredMinMaxXYData.maxYDatum
-        || data.filteredMinMaxXYData.minYDatum.value[1] == null || data.filteredMinMaxXYData.maxYDatum.value[1] == null
+      const valueIndex = data.fullDataFormatter.xAxis.valueIndex
+      if (!data.filteredXYMinMaxData.minYDatum || !data.filteredXYMinMaxData.maxYDatum
+        || data.filteredXYMinMaxData.minYDatum.value[valueIndex] == null || data.filteredXYMinMaxData.maxYDatum.value[valueIndex] == null
       ) {
         return
       }
-      let maxValue = data.filteredMinMaxXYData.maxYDatum.value[1]
-      let minValue = data.filteredMinMaxXYData.minYDatum.value[1]
+      let maxValue = data.filteredXYMinMaxData.maxYDatum.value[valueIndex]
+      let minValue = data.filteredXYMinMaxData.minYDatum.value[valueIndex]
       if (maxValue === minValue && maxValue === 0) {
         // 避免最大及最小值同等於 0 造成無法計算scale
         maxValue = 1
@@ -333,7 +334,7 @@ export const createBaseYAxis: BasePluginFn<BaseYAxisContext> = (pluginName: stri
     fullChartParams: fullChartParams$,
     yScale: yScale$,
     textReverseTransform: textReverseTransform$,
-    minMaxXY: minMaxXY$
+    xyMinMax: xyMinMax$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -349,7 +350,7 @@ export const createBaseYAxis: BasePluginFn<BaseYAxisContext> = (pluginName: stri
       fullChartParams: data.fullChartParams,
       yScale: data.yScale,
       textReverseTransform: data.textReverseTransform,
-      minMaxXY: data.minMaxXY
+      xyMinMax: data.xyMinMax
     })
 
     renderYAxisLabel({

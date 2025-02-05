@@ -8,7 +8,7 @@ import type {
   DataRelationship,
   DataFormatterValueAxis,
   DataFormatterGroupAxis,
-  DataFormatterAxis,
+  DataFormatterXYAxis,
   DataFormatterContainer,
   DataFormatterSeries,
   DataFormatterGrid,
@@ -124,10 +124,11 @@ export const DEFAULT_DATA_FORMATTER_GROUP_AXIS: DataFormatterGroupAxis = {
   label: ''
 }
 
-export const DEFAULT_DATA_FORMATTER_AXIS: DataFormatterAxis = {
+export const DEFAULT_DATA_FORMATTER_X_Y_AXIS: DataFormatterXYAxis = {
   scaleDomain: ['auto', 'auto'],
   scaleRange: [0, 0.9],
   label: '',
+  valueIndex: 0
 }
 
 export const DEFAULT_DATA_FORMATTER_CONTAINER: DataFormatterContainer = {
@@ -215,8 +216,14 @@ export const DEFAULT_DATA_FORMATTER_MULTI_VALUE: DataFormatterMultiValue = {
   visibleFilter: (datum, context) => true,
   categoryLabels: [],
   valueLabels: [],
-  xAxis: { ...DEFAULT_DATA_FORMATTER_AXIS },
-  yAxis: { ...DEFAULT_DATA_FORMATTER_AXIS },
+  xAxis: {
+    ...DEFAULT_DATA_FORMATTER_X_Y_AXIS,
+    valueIndex: 0
+  },
+  yAxis: {
+    ...DEFAULT_DATA_FORMATTER_X_Y_AXIS,
+    valueIndex: 1
+  },
   container: {
     ...DEFAULT_DATA_FORMATTER_CONTAINER
   },

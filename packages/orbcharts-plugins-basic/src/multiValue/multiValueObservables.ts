@@ -19,7 +19,7 @@ import type {
   DataFormatterMultiValue,
   ComputedDataMultiValue,
   ComputedDatumMultiValue,
-  ComputedLayoutDatumMultiValue,
+  ComputedXYDatumMultiValue,
   TransformData,
   ContainerPositionScaled,
   Layout,
@@ -153,16 +153,16 @@ export const multiValueSelectionsObservable = ({ selection, pluginName, clipPath
 }
 
 
-export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatter$, filteredMinMaxXYData$, multiValueContainerPosition$, layout$ }: {
+export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatter$, filteredXYMinMaxData$, multiValueContainerPosition$, layout$ }: {
   rootSelection: d3.Selection<any, unknown, any, unknown>
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   // computedData$: Observable<ComputedDataMultiValue>
-  // minMaxXY$: Observable<{ minX: number, maxX: number, minY: number, maxY: number }>
-  filteredMinMaxXYData$: Observable<{
-    minXDatum: ComputedLayoutDatumMultiValue
-    maxXDatum: ComputedLayoutDatumMultiValue
-    minYDatum: ComputedLayoutDatumMultiValue
-    maxYDatum: ComputedLayoutDatumMultiValue
+  // xyMinMax$: Observable<{ minX: number, maxX: number, minY: number, maxY: number }>
+  filteredXYMinMaxData$: Observable<{
+    minXDatum: ComputedXYDatumMultiValue
+    maxXDatum: ComputedXYDatumMultiValue
+    minYDatum: ComputedXYDatumMultiValue
+    maxYDatum: ComputedXYDatumMultiValue
   }>
   multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
   layout$: Observable<Layout>
@@ -195,7 +195,7 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
 
   // const xyScale$ = combineLatest({
   //   layout: layout$,
-  //   filteredMinMaxXYData: filteredMinMaxXYData$,
+  //   filteredXYMinMaxData: filteredXYMinMaxData$,
   //   fullDataFormatter: fullDataFormatter$,
   //   columnAmount: columnAmount$,
   //   rowAmount: rowAmount$
@@ -203,15 +203,15 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
   //   switchMap(async d => d),
   //   map(data => {
   //     const xScale = createAxisToValueScale({
-  //       maxValue: data.filteredMinMaxXYData.maxXDatum.value[0],
-  //       minValue: data.filteredMinMaxXYData.minXDatum.value[0],
+  //       maxValue: data.filteredXYMinMaxData.maxXDatum.value[0],
+  //       minValue: data.filteredXYMinMaxData.minXDatum.value[0],
   //       axisWidth: data.layout.width,
   //       scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
   //       scaleRange: data.fullDataFormatter.xAxis.scaleRange,
   //     })
   //     const yScale = createAxisToValueScale({
-  //       maxValue: data.filteredMinMaxXYData.maxYDatum.value[1],
-  //       minValue: data.filteredMinMaxXYData.minYDatum.value[1],
+  //       maxValue: data.filteredXYMinMaxData.maxYDatum.value[1],
+  //       minValue: data.filteredXYMinMaxData.minYDatum.value[1],
   //       axisWidth: data.layout.height,
   //       scaleDomain: data.fullDataFormatter.yAxis.scaleDomain,
   //       scaleRange: data.fullDataFormatter.yAxis.scaleRange,
@@ -227,30 +227,32 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
   }> = new Observable(subscriber => {
     combineLatest({
       layout: layout$,
-      filteredMinMaxXYData: filteredMinMaxXYData$,
+      filteredXYMinMaxData: filteredXYMinMaxData$,
       fullDataFormatter: fullDataFormatter$,
       columnAmount: columnAmount$,
       rowAmount: rowAmount$
     }).pipe(
       switchMap(async d => d),
     ).subscribe(data => {
-      if (!data.filteredMinMaxXYData.minXDatum || !data.filteredMinMaxXYData.maxXDatum
-        || data.filteredMinMaxXYData.minXDatum.value[0] == null || data.filteredMinMaxXYData.maxXDatum.value[0] == null
-        || !data.filteredMinMaxXYData.minYDatum || !data.filteredMinMaxXYData.maxYDatum
-        || data.filteredMinMaxXYData.minYDatum.value[1] == null || data.filteredMinMaxXYData.maxYDatum.value[1] == null
+      const xValueIndex = data.fullDataFormatter.xAxis.valueIndex
+      const yValueIndex = data.fullDataFormatter.yAxis.valueIndex
+      if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
+        || data.filteredXYMinMaxData.minXDatum.value[xValueIndex] == null || data.filteredXYMinMaxData.maxXDatum.value[xValueIndex] == null
+        || !data.filteredXYMinMaxData.minYDatum || !data.filteredXYMinMaxData.maxYDatum
+        || data.filteredXYMinMaxData.minYDatum.value[yValueIndex] == null || data.filteredXYMinMaxData.maxYDatum.value[yValueIndex] == null
       ) {
         return
       }
       const xScale = createAxisToValueScale({
-        maxValue: data.filteredMinMaxXYData.maxXDatum.value[0],
-        minValue: data.filteredMinMaxXYData.minXDatum.value[0],
+        maxValue: data.filteredXYMinMaxData.maxXDatum.value[xValueIndex],
+        minValue: data.filteredXYMinMaxData.minXDatum.value[xValueIndex],
         axisWidth: data.layout.width,
         scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.xAxis.scaleRange,
       })
       const yScale = createAxisToValueScale({
-        maxValue: data.filteredMinMaxXYData.maxYDatum.value[1],
-        minValue: data.filteredMinMaxXYData.minYDatum.value[1],
+        maxValue: data.filteredXYMinMaxData.maxYDatum.value[yValueIndex],
+        minValue: data.filteredXYMinMaxData.minYDatum.value[yValueIndex],
         axisWidth: data.layout.height,
         scaleDomain: data.fullDataFormatter.yAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.yAxis.scaleRange,

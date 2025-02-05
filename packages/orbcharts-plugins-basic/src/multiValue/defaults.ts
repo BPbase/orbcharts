@@ -1,6 +1,7 @@
 import type {
   MultiValueLegendParams,
   MultiValueTooltipParams,
+  RankingAxisParams,
   ScatterParams,
   ScatterBubblesParams,
   XAxisParams,
@@ -81,6 +82,22 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
   </g>\`
 }`
 
+export const DEFAULT_RANKING_AXIS_PARAMS: RankingAxisParams = {
+  labelOffset: [0, 0],
+  labelColorType: 'primary',
+  axisLineVisible: false,
+  axisLineColorType: 'primary',
+  // ticks: null,
+  // tickFormat: v => v,
+  tickLineVisible: true,
+  tickPadding: 20,
+  // tickFullLine: true,
+  // tickFullLineDasharray: 'none',
+  tickColorType: 'secondary',
+  tickTextRotate: 0,
+  tickTextColorType: 'primary'
+}
+
 export const DEFAULT_SCATTER_PARAMS: ScatterParams = {
   radius: 5,
   fillColorType: 'label',
@@ -102,7 +119,7 @@ export const DEFAULT_X_AXIS_PARAMS: XAxisParams = {
   labelOffset: [0, 0],
   labelColorType: 'primary',
   axisLineVisible: false,
-  axisLineColorType: 'primary',
+  axisLineColorType: 'secondary',
   ticks: null,
   // tickFormat: ',.0f',
   tickFormat: v => v,

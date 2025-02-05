@@ -512,7 +512,7 @@ export const XYAux = defineMultiValuePlugin(pluginConfig)(({ selection, rootSele
   const xyPosition$ = multiValueXYPositionObservable({
     rootSelection,
     fullDataFormatter$: observer.fullDataFormatter$,
-    filteredMinMaxXYData$: observer.filteredMinMaxXYData$,
+    filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
     multiValueContainerPosition$: observer.multiValueContainerPosition$,
     layout$: observer.layout$
   }).pipe(

@@ -40,6 +40,9 @@ export const dataFormatterValidator: DataFormatterValidator<'multiValue'> = (dat
       },
       label: {
         toBeTypes: ['string']
+      },
+      valueIndex: {
+        toBeTypes: ['number']
       }
     })
     if (valueAxisResult.status === 'error') {
@@ -58,6 +61,9 @@ export const dataFormatterValidator: DataFormatterValidator<'multiValue'> = (dat
       },
       label: {
         toBeTypes: ['string']
+      },
+      valueIndex: {
+        toBeTypes: ['number']
       }
     })
     if (groupAxisResult.status === 'error') {

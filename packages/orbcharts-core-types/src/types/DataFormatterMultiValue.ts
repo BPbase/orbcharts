@@ -2,7 +2,7 @@
 import {
   DataFormatterBase,
   DataFormatterBasePartial,
-  DataFormatterAxis,
+  DataFormatterXYAxis,
   VisibleFilter,
   DataFormatterContainer
 } from './DataFormatter'
@@ -13,8 +13,8 @@ export interface DataFormatterMultiValue extends DataFormatterBase<'multiValue'>
   categoryLabels: string[]
   valueLabels: string[]
   // multiValue: Array<DataFormatterMultiValueMultiValue>
-  xAxis: DataFormatterAxis
-  yAxis: DataFormatterAxis
+  xAxis: DataFormatterXYAxis
+  yAxis: DataFormatterXYAxis
   container: DataFormatterContainer
   separateCategory: boolean
 }
@@ -24,8 +24,8 @@ export interface DataFormatterMultiValuePartial extends DataFormatterBasePartial
   categoryLabels?: string[]
   valueLabels?: string[]
   // multiValue?: Array<Partial<DataFormatterMultiValueMultiValue>>
-  xAxis?: Partial<DataFormatterAxis>
-  yAxis?: Partial<DataFormatterAxis>
+  xAxis?: Partial<DataFormatterXYAxis>
+  yAxis?: Partial<DataFormatterXYAxis>
   container?: Partial<DataFormatterContainer>
   separateCategory?: boolean
 }
