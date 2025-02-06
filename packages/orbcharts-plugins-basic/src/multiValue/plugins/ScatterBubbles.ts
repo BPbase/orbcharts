@@ -14,8 +14,8 @@ import {
 import type {
   ComputedDatumMultiValue,
   ComputedDataMultiValue,
-  ComputedLayoutDatumMultiValue,
-  ComputedLayoutDataMultiValue,
+  ComputedXYDatumMultiValue,
+  ComputedXYDataMultiValue,
   DefinePluginConfig,
   EventMultiValue,
   ChartParams, 
@@ -42,7 +42,7 @@ type ClipPathDatum = {
   height: number;
 }
 
-interface BubbleDatum extends ComputedLayoutDatumMultiValue {
+interface BubbleDatum extends ComputedXYDatumMultiValue {
   r: number
   opacity: number
 }
@@ -91,7 +91,7 @@ function renderDots ({ graphicGSelection, circleGClassName, circleClassName, bub
   graphicGSelection: d3.Selection<SVGGElement, any, any, any>
   circleGClassName: string
   circleClassName: string
-  // visibleComputedLayoutData: ComputedLayoutDataMultiValue
+  // visibleComputedLayoutData: ComputedXYDataMultiValue
   bubbleData: BubbleDatum[][]
   fullParams: ScatterBubblesParams
   fullChartParams: ChartParams
@@ -376,7 +376,7 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
   )
 
   const bubbleData$ = combineLatest({
-    computedLayoutData: observer.computedLayoutData$,
+    computedXYData: observer.computedXYData$,
     opacityScale: opacityScale$,
     radiusScale: radiusScale$,
     scaleFactor: scaleFactor$,
@@ -385,7 +385,7 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      return data.computedLayoutData.map(category => {
+      return data.computedXYData.map(category => {
         return category.map(_d => {
           const d: BubbleDatum = _d as BubbleDatum
           d.r = data.radiusScale(d.value[2]) * data.scaleFactor * adjustmentFactor

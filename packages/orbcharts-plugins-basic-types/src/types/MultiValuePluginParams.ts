@@ -44,24 +44,48 @@ export interface OrdinalZoomParams {
 
 }
 
-export interface RankingAxisParams {
-  labelOffset: [number, number]
-  labelColorType: ColorType
-  axisLineVisible: boolean
-  axisLineColorType: ColorType
-  // ticks: number | null
-  // tickFormat: string | ((text: d3.NumberValue) => string | d3.NumberValue)
-  tickLineVisible: boolean
-  tickPadding: number
-  // tickFullLine: boolean
-  // tickFullLineDasharray: string
-  tickColorType: ColorType
-  tickTextRotate: number
-  tickTextColorType: ColorType
-}
+// export interface RankingAxisParams {
+//   labelOffset: [number, number]
+//   labelColorType: ColorType
+//   axisLineVisible: boolean
+//   axisLineColorType: ColorType
+//   // ticks: number | null
+//   // tickFormat: string | ((text: d3.NumberValue) => string | d3.NumberValue)
+//   tickLineVisible: boolean
+//   tickPadding: number
+//   // tickFullLine: boolean
+//   // tickFullLineDasharray: string
+//   tickColorType: ColorType
+//   tickTextRotate: number
+//   tickTextColorType: ColorType
+// }
 
 export interface RankingBarsParams {
-
+  bar: {
+    barWidth: number
+    barPadding: number
+    barRadius: number | boolean
+  }
+  barLabel: {
+    // // axisLineVisible: boolean
+    // // axisLineColorType: ColorType
+    // // ticks: number | null
+    // // tickFormat: string | ((text: d3.NumberValue) => string | d3.NumberValue)
+    // // tickLineVisible: boolean
+    // tickPadding: number
+    // // tickFullLine: boolean
+    // // tickFullLineDasharray: string
+    // // tickColorType: ColorType
+    // tickTextRotate: number
+    // tickTextColorType: ColorType
+    padding: number
+    rotate: number
+    colorType: ColorType
+  }
+  axisLabel: {
+    offset: [number, number]
+    colorType: ColorType
+  }
 }
 
 export interface RankingBubblesParams {

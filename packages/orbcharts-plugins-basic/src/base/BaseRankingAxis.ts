@@ -20,15 +20,32 @@ import type {
   DefinePluginConfig,
   TransformData,
   Layout
-} from '../../../lib/core-types'
-import type { RankingAxisParams } from '../../../lib/plugins-basic-types'
-import {
-  defineMultiValuePlugin,
-} from '../../../lib/core'
-import { DEFAULT_RANKING_AXIS_PARAMS } from '../defaults'
-import { LAYER_INDEX_OF_AXIS } from '../../const'
-import { getColor, getMinMaxValue, getClassName, getUniID } from '../../utils/orbchartsUtils'
-import { createLabelToAxisScale, createValueToAxisScale } from '../../../lib/core'
+} from '../../lib/core-types'
+import type { BaseRankingAxisParams } from '../../lib/plugins-basic-types'
+import type { BasePluginFn } from './types'
+import { getColor, getMinMaxValue, getClassName, getUniID } from '../utils/orbchartsUtils'
+import { createLabelToAxisScale, createValueToAxisScale } from '../../lib/core'
+
+interface BaseRankingAxisContext {
+  selection: d3.Selection<any, unknown, any, unknown>
+  computedData$: Observable<ComputedDataMultiValue>
+  // visibleComputedData$: Observable<ComputedDataMultiValue>
+  visibleComputedRankingData$: Observable<ComputedDatumMultiValue[]>
+  rankingScale$: Observable<d3.ScalePoint<string>>
+  fullParams$: Observable<BaseRankingAxisParams>
+  fullDataFormatter$: Observable<DataFormatterMultiValue>
+  fullChartParams$: Observable<ChartParams>
+  xyMinMax$: Observable<{
+    minX: number;
+    maxX: number;
+    minY: number;
+    maxY: number;
+  }>
+  textSizePx$: Observable<number>
+  layout$: Observable<Layout>
+  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+  isCategorySeprate$: Observable<boolean>
+}
 
 const pluginName = 'RankingAxis'
 
@@ -38,85 +55,29 @@ const yAxisLabelAnchor = 'end'
 const yAxisLabelDominantBaseline = 'auto'
 const yLabelClassName = getClassName(pluginName, 'yLabel')
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING_AXIS_PARAMS> = {
-  name: pluginName,
-  defaultParams: DEFAULT_RANKING_AXIS_PARAMS,
-  layerIndex: LAYER_INDEX_OF_AXIS,
-  validator: (params, { validateColumns }) => {
-    const result = validateColumns(params, {
-      labelOffset: {
-        toBe: '[number, number]',
-        test: (value: any) => {
-          return Array.isArray(value)
-            && value.length === 2
-            && typeof value[0] === 'number'
-            && typeof value[1] === 'number'
-        }
-      },
-      labelColorType: {
-        toBeOption: 'ColorType',
-      },
-      axisLineVisible: {
-        toBeTypes: ['boolean']
-      },
-      axisLineColorType: {
-        toBeOption: 'ColorType',
-      },
-      // ticks: {
-      //   toBeTypes: ['number', 'null']
-      // },
-      // tickFormat: {
-      //   toBeTypes: ['string', 'Function']
-      // },
-      tickLineVisible: {
-        toBeTypes: ['boolean']
-      },
-      tickPadding: {
-        toBeTypes: ['number']
-      },
-      // tickFullLine: {
-      //   toBeTypes: ['boolean']
-      // },
-      // tickFullLineDasharray: {
-      //   toBeTypes: ['string']
-      // },
-      tickColorType: {
-        toBeOption: 'ColorType',
-      },
-      tickTextColorType: {
-        toBeOption: 'ColorType',
-      }
-    })
-    if (result.status === 'error') {
-      return result
-    }
-    return result
-  }
-}
-
 function renderRankingAxisLabel ({ selection, yLabelClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   yLabelClassName: string
-  fullParams: RankingAxisParams
+  fullParams: BaseRankingAxisParams
   // axisLabelAlign: TextAlign
   layout: { width: number, height: number }
   fullDataFormatter: DataFormatterMultiValue,
   fullChartParams: ChartParams
   textReverseTransform: string,
 }) {
-  const offsetX = fullParams.tickPadding - fullParams.labelOffset[0]
-  const offsetY = fullParams.tickPadding + fullParams.labelOffset[1]
+  const offsetX = fullParams.barLabel.padding - fullParams.axisLabel.offset[0]
+  const offsetY = fullParams.barLabel.padding + fullParams.axisLabel.offset[1]
   let labelX = - offsetX
   let labelY = - offsetY
 
   const axisLabelSelection = selection
-    .selectAll<SVGGElement, RankingAxisParams>(`g.${yLabelClassName}`)
+    .selectAll<SVGGElement, BaseRankingAxisParams>(`g.${yLabelClassName}`)
     .data([fullParams])
     .join('g')
     .classed(yLabelClassName, true)
     .each((d, i, g) => {
       const text = d3.select(g[i])
-        .selectAll<SVGTextElement, RankingAxisParams>(`text`)
+        .selectAll<SVGTextElement, BaseRankingAxisParams>(`text`)
         .data([d])
         .join(
           enter => {
@@ -130,7 +91,7 @@ function renderRankingAxisLabel ({ selection, yLabelClassName, fullParams, layou
         .attr('text-anchor', yAxisLabelAnchor)
         .attr('dominant-baseline', yAxisLabelDominantBaseline)
         .attr('font-size', fullChartParams.styles.textSize)
-        .style('fill', getColor(fullParams.labelColorType, fullChartParams))
+        .style('fill', getColor(fullParams.axisLabel.colorType, fullChartParams))
         .style('transform', textReverseTransform)
         // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
         .attr('x', labelX)
@@ -143,7 +104,7 @@ function renderRankingAxisLabel ({ selection, yLabelClassName, fullParams, layou
 function renderRankingAxis ({ selection, yAxisClassName, fullParams, fullChartParams, rankingScale, renderLabels, textReverseTransformWithRotate, xyMinMax }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   yAxisClassName: string
-  fullParams: RankingAxisParams
+  fullParams: BaseRankingAxisParams
   // tickTextAlign: TextAlign
   fullChartParams: ChartParams
   rankingScale: d3.ScalePoint<string>
@@ -158,7 +119,7 @@ function renderRankingAxis ({ selection, yAxisClassName, fullParams, fullChartPa
 }) {
 
   const yAxisSelection = selection
-    .selectAll<SVGGElement, RankingAxisParams>(`g.${yAxisClassName}`)
+    .selectAll<SVGGElement, BaseRankingAxisParams>(`g.${yAxisClassName}`)
     .data(renderLabels)
     .join('g')
     .classed(yAxisClassName, true)
@@ -178,10 +139,10 @@ function renderRankingAxis ({ selection, yAxisClassName, fullParams, fullChartPa
         .attr('text-anchor', yTickTextAnchor)
         .attr('dominant-baseline', yTickDominantBaseline)
         .attr('font-size', fullChartParams.styles.textSize)
-        .style('fill', getColor(fullParams.labelColorType, fullChartParams))
+        .style('fill', getColor(fullParams.barLabel.colorType, fullChartParams))
         .style('transform', textReverseTransformWithRotate)
         // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
-        .attr('x', - fullParams.tickPadding)
+        .attr('x', - fullParams.barLabel.padding)
         .attr('y', d => rankingScale(d)!)
         .text(d => d)
     })
@@ -189,7 +150,7 @@ function renderRankingAxis ({ selection, yAxisClassName, fullParams, fullChartPa
   return yAxisSelection
 
   // const yAxisSelection = selection
-  //   .selectAll<SVGGElement, RankingAxisParams>(`g.${yAxisClassName}`)
+  //   .selectAll<SVGGElement, BaseRankingAxisParams>(`g.${yAxisClassName}`)
   //   .data([fullParams])
   //   .join('g')
   //   .classed(yAxisClassName, true)
@@ -248,23 +209,37 @@ function renderRankingAxis ({ selection, yAxisClassName, fullParams, fullChartPa
   // return yAxisSelection
 }
 
-export const RankingAxis = defineMultiValuePlugin(pluginConfig)(({ selection, name, observer, subject }) => {
-  
-  const destroy$ = new Subject()
+export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (pluginName: string, {
+  selection,
+  computedData$,
+  // visibleComputedData$,
+  visibleComputedRankingData$,
+  rankingScale$,
+  fullParams$,
+  fullDataFormatter$,
+  fullChartParams$,
+  xyMinMax$,
+  textSizePx$,
+  layout$,
+  multiValueContainerPosition$,
+  isCategorySeprate$
+}) => {
 
+  const destroy$ = new Subject()
+  
   const containerClassName = getClassName(pluginName, 'container')
   const yAxisGClassName = getClassName(pluginName, 'yAxisG')
   const yAxisClassName = getClassName(pluginName, 'yAxis')
   const textClassName = getClassName(pluginName, 'text')
 
   const containerSelection$ = combineLatest({
-    computedData: observer.computedData$.pipe(
+    computedData: computedData$.pipe(
       distinctUntilChanged((a, b) => {
         // 只有當series的數量改變時，才重新計算
         return a.length === b.length
       }),
     ),
-    isCategorySeprate: observer.isCategorySeprate$
+    isCategorySeprate: isCategorySeprate$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -297,7 +272,7 @@ export const RankingAxis = defineMultiValuePlugin(pluginConfig)(({ selection, na
 
   combineLatest({
     containerSelection: containerSelection$,
-    gridContainerPosition: observer.multiValueContainerPosition$
+    gridContainerPosition: multiValueContainerPosition$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
@@ -314,7 +289,7 @@ export const RankingAxis = defineMultiValuePlugin(pluginConfig)(({ selection, na
       // .attr('opacity', 1)
   })
 
-  const textReverseTransform$ = observer.multiValueContainerPosition$.pipe(
+  const textReverseTransform$ = multiValueContainerPosition$.pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(multiValueContainerPosition => {
@@ -329,17 +304,17 @@ export const RankingAxis = defineMultiValuePlugin(pluginConfig)(({ selection, na
 
   const textReverseTransformWithRotate$ = combineLatest({
     textReverseTransform: textReverseTransform$,
-    fullParams: observer.fullParams$,
+    fullParams: fullParams$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
       // 必須按照順序（先抵消外層rotate，再抵消最外層scale，最後再做本身的rotate）
-      return `${data.textReverseTransform} rotate(${data.fullParams.tickTextRotate}deg)`
+      return `${data.textReverseTransform} rotate(${data.fullParams.barLabel.rotate}deg)`
     })
   )
 
-  const sortedLabels$ = observer.visibleComputedData$.pipe(
+  const sortedLabels$ = visibleComputedData$.pipe(
     takeUntil(destroy$),
     map(visibleComputedData => visibleComputedData
       .flat()
@@ -354,8 +329,8 @@ export const RankingAxis = defineMultiValuePlugin(pluginConfig)(({ selection, na
   )
   
   const labelAmountLimit$ = combineLatest({
-    layout: observer.layout$,
-    textSizePx: observer.textSizePx$,
+    layout: layout$,
+    textSizePx: textSizePx$,
     sortedLabels: sortedLabels$
   }).pipe(
     takeUntil(destroy$),
@@ -384,7 +359,7 @@ export const RankingAxis = defineMultiValuePlugin(pluginConfig)(({ selection, na
 
   const rankingScale$: Observable<d3.ScalePoint<string>> = new Observable(subscriber => {
     combineLatest({
-      layout: observer.layout$,
+      layout: layout$,
       renderLabels: renderLabels$,
       labelAmountLimit: labelAmountLimit$
     }).pipe(
@@ -404,18 +379,18 @@ export const RankingAxis = defineMultiValuePlugin(pluginConfig)(({ selection, na
 
   combineLatest({
     axisSelection: axisSelection$,
-    fullParams: observer.fullParams$,
+    fullParams: fullParams$,
     // tickTextAlign: tickTextAlign$,
     // axisLabelAlign: axisLabelAlign$,
-    computedData: observer.computedData$,
-    layout: observer.layout$,
-    fullDataFormatter: observer.fullDataFormatter$,
-    fullChartParams: observer.fullChartParams$,
+    computedData: computedData$,
+    layout: layout$,
+    fullDataFormatter: fullDataFormatter$,
+    fullChartParams: fullChartParams$,
     renderLabels: renderLabels$,
     rankingScale: rankingScale$,
     textReverseTransform: textReverseTransform$,
     textReverseTransformWithRotate: textReverseTransformWithRotate$,
-    xyMinMax: observer.xyMinMax$
+    xyMinMax: xyMinMax$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -449,4 +424,4 @@ export const RankingAxis = defineMultiValuePlugin(pluginConfig)(({ selection, na
   return () => {
     destroy$.next(undefined)
   }
-})
+}

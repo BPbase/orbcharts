@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { MultiValueChart } from '../../../packages/orbcharts-core/src'
-import { RankingAxis, XAxis, MultiValueLegend, MultiValueTooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { RankingBars, XAxis, MultiValueLegend, MultiValueTooltip } from '../../../packages/orbcharts-plugins-basic/src'
 // import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 import multiValue1 from '../../../packages/orbcharts-demo/src/data/multiValue1'
 
@@ -63,12 +63,12 @@ onMounted(() => {
   //   })
   // }, 2000)
 
-  const rankingAxis = new RankingAxis()
+  const rankingBars = new RankingBars()
   const xAxis = new XAxis()
   const multiValueLegend = new MultiValueLegend()
   const multiValueTooltip = new MultiValueTooltip()
 
-  chart!.plugins$.next([ rankingAxis, xAxis, multiValueLegend, multiValueTooltip ])
+  chart!.plugins$.next([ rankingBars, xAxis, multiValueLegend, multiValueTooltip ])
 
 
 

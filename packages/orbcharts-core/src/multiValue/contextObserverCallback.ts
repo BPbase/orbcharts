@@ -7,7 +7,7 @@ import {
   textSizePxObservable
 } from '../utils/observables'
 import {
-  multiValueComputedLayoutDataObservable,
+  multiValueComputedXYDataObservable,
   // multiValueAxesTransformObservable,
   // multiValueAxesReverseTransformObservable,
   multiValueGraphicTransformObservable,
@@ -18,9 +18,9 @@ import {
   multiValueContainerPositionObservable,
   xyMinMaxObservable,
   filteredXYMinMaxDataObservable,
-  visibleComputedRankingDataObservable,
-  rankingAmountLimitObservable,
-  rankingScaleObservable
+  // visibleComputedRankingDataObservable,
+  // rankingAmountLimitObservable,
+  // rankingScaleObservable
 } from '../utils/multiValueObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({ subject, observer }) => {
@@ -88,7 +88,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
   )
 
 
-  const computedXYData$ = multiValueComputedLayoutDataObservable({
+  const computedXYData$ = multiValueComputedXYDataObservable({
     computedData$: observer.computedData$,
     xyMinMax$,
     xyValueIndex$,
@@ -119,28 +119,26 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
 
-  const visibleComputedRankingData$ = visibleComputedRankingDataObservable({
-    visibleComputedData$,
-    layout$: observer.layout$,
-    textSizePx$
-  }).pipe(
-    shareReplay(1)
-  )
+  // const visibleComputedRankingData$ = visibleComputedRankingDataObservable({
+  //   visibleComputedData$
+  // }).pipe(
+  //   shareReplay(1)
+  // )
 
-  const rankingAmountLimit$ = rankingAmountLimitObservable({
-    layout$: observer.layout$,
-    textSizePx$
-  }).pipe(
-    shareReplay(1)
-  )
+  // const rankingAmountLimit$ = rankingAmountLimitObservable({
+  //   layout$: observer.layout$,
+  //   textSizePx$
+  // }).pipe(
+  //   shareReplay(1)
+  // )
 
-  const rankingScale$ = rankingScaleObservable({
-    layout$: observer.layout$,
-    visibleComputedRankingData$,
-    rankingAmountLimit$
-  }).pipe(
-    shareReplay(1)
-  )
+  // const rankingScale$ = rankingScaleObservable({
+  //   layout$: observer.layout$,
+  //   visibleComputedRankingData$,
+  //   rankingAmountLimit$
+  // }).pipe(
+  //   shareReplay(1)
+  // )
 
   // const multiValueAxesTransform$ = multiValueAxesTransformObservable({
   //   fullDataFormatter$: observer.fullDataFormatter$,
@@ -186,12 +184,13 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     categoryLabels$,
     CategoryDataMap$,
     xyMinMax$,
+    xyValueIndex$,
     computedXYData$,
     visibleComputedData$,
     visibleComputedXYData$,
     filteredXYMinMaxData$,
-    visibleComputedRankingData$,
-    rankingScale$,
+    // visibleComputedRankingData$,
+    // rankingScale$,
     // multiValueAxesTransform$,
     // multiValueAxesReverseTransform$,
     multiValueGraphicTransform$,

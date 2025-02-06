@@ -22,15 +22,13 @@ import type {
   Layout
 } from '../../lib/core-types'
 import {
-  defineMultiValuePlugin,
   createValueToAxisScale,
-  getMinMax
 } from '../../lib/core'
 import type { BaseYAxisParams
 } from '../../lib/plugins-basic-types'
 import type { BasePluginFn } from './types'
 // import { DEFAULT_X_Y_AXES_PARAMS } from '../defaults'
-import { LAYER_INDEX_OF_AXIS } from '../const'
+// import { LAYER_INDEX_OF_AXIS } from '../const'
 import { getColor, getDatumColor, getClassName, getUniID } from '../utils/orbchartsUtils'
 import { parseTickFormatValue } from '../utils/d3Utils'
 

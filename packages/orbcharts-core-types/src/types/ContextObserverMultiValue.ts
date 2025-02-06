@@ -18,6 +18,7 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
     minY: number
     maxY: number
   }>
+  xyValueIndex$: Observable<[number, number]> // xy
   filteredXYMinMaxData$: Observable<{ // xy
     datumList: ComputedXYDatumMultiValue[]
     minXDatum: ComputedXYDatumMultiValue | null
@@ -28,8 +29,8 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
   visibleComputedData$: Observable<ComputedDataMultiValue>
   computedXYData$: Observable<ComputedXYDataMultiValue> // xy
   visibleComputedXYData$: Observable<ComputedXYDataMultiValue> // xy
-  visibleComputedRankingData$: Observable<ComputedDatumMultiValue[]>// ranking
-  rankingScale$: Observable<d3.ScalePoint<string>> // ranking
+  // visibleComputedRankingData$: Observable<ComputedDatumMultiValue[]>// ranking
+  // rankingScale$: Observable<d3.ScalePoint<string>> // ranking
   // multiValueAxesTransform$: Observable<TransformData>
   // multiValueAxesReverseTransform$: Observable<TransformData>
   multiValueGraphicTransform$: Observable<TransformData>

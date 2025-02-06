@@ -1,7 +1,7 @@
 import type {
   MultiValueLegendParams,
   MultiValueTooltipParams,
-  RankingAxisParams,
+  RankingBarsParams,
   ScatterParams,
   ScatterBubblesParams,
   XAxisParams,
@@ -82,20 +82,37 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
   </g>\`
 }`
 
-export const DEFAULT_RANKING_AXIS_PARAMS: RankingAxisParams = {
-  labelOffset: [0, 0],
-  labelColorType: 'primary',
-  axisLineVisible: false,
-  axisLineColorType: 'primary',
-  // ticks: null,
-  // tickFormat: v => v,
-  tickLineVisible: true,
-  tickPadding: 20,
-  // tickFullLine: true,
-  // tickFullLineDasharray: 'none',
-  tickColorType: 'secondary',
-  tickTextRotate: 0,
-  tickTextColorType: 'primary'
+// export const DEFAULT_RANKING_AXIS_PARAMS: RankingAxisParams = {
+//   labelOffset: [0, 0],
+//   labelColorType: 'primary',
+//   axisLineVisible: false,
+//   axisLineColorType: 'primary',
+//   // ticks: null,
+//   // tickFormat: v => v,
+//   tickLineVisible: true,
+//   tickPadding: 20,
+//   // tickFullLine: true,
+//   // tickFullLineDasharray: 'none',
+//   tickColorType: 'secondary',
+//   tickTextRotate: 0,
+//   tickTextColorType: 'primary'
+// }
+
+export const DEFAULT_RANKING_BARS_PARAMS: RankingBarsParams = {
+  bar: {
+    barWidth: 16,
+    barPadding: 0,
+    barRadius: false,
+  },
+  barLabel: {
+    padding: 20,
+    rotate: 0,
+    colorType: 'primary'
+  },
+  axisLabel: {
+    offset: [0, 0],
+    colorType: 'primary'
+  }
 }
 
 export const DEFAULT_SCATTER_PARAMS: ScatterParams = {

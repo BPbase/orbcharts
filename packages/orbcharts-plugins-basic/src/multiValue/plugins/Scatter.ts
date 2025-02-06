@@ -11,7 +11,7 @@ import {
 import type {
   ComputedDatumMultiValue,
   ComputedDataMultiValue,
-  ComputedLayoutDataMultiValue,
+  ComputedXYDataMultiValue,
   DefinePluginConfig,
   EventMultiValue,
   ChartParams, 
@@ -68,11 +68,11 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_SCATTER
   }
 }
 
-function renderDots ({ graphicGSelection, circleGClassName, circleClassName, visibleComputedLayoutData, fullParams, fullChartParams, graphicReverseScale }: {
+function renderDots ({ graphicGSelection, circleGClassName, circleClassName, visibleComputedXYData, fullParams, fullChartParams, graphicReverseScale }: {
   graphicGSelection: d3.Selection<SVGGElement, any, any, any>
   circleGClassName: string
   circleClassName: string
-  visibleComputedLayoutData: ComputedLayoutDataMultiValue
+  visibleComputedXYData: ComputedXYDataMultiValue
   fullParams: ScatterParams
   fullChartParams: ChartParams
   graphicReverseScale: [number, number][]
@@ -89,7 +89,7 @@ function renderDots ({ graphicGSelection, circleGClassName, circleClassName, vis
     .each((categoryData, categoryIndex, g) => {
       d3.select(g[categoryIndex])
         .selectAll<SVGGElement, ComputedDatumMultiValue>('g')
-        .data(visibleComputedLayoutData[categoryIndex], d => d.id)
+        .data(visibleComputedXYData[categoryIndex], d => d.id)
         .join(
           enter => {
             // enterDuration
@@ -272,7 +272,7 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
 
   const graphicSelection$ = combineLatest({
     graphicGSelection: graphicGSelection$,
-    visibleComputedLayoutData: observer.visibleComputedLayoutData$,
+    visibleComputedXYData: observer.visibleComputedXYData$,
     graphicReverseScale: graphicReverseScale$,
     fullChartParams: observer.fullChartParams$,
     fullParams: observer.fullParams$,
@@ -284,7 +284,7 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
         graphicGSelection: data.graphicGSelection,
         circleGClassName,
         circleClassName,
-        visibleComputedLayoutData: data.visibleComputedLayoutData,
+        visibleComputedXYData: data.visibleComputedXYData,
         fullParams: data.fullParams,
         fullChartParams: data.fullChartParams,
         graphicReverseScale: data.graphicReverseScale
@@ -408,8 +408,8 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
   //   console.log('graphicGSelection$', data)
   // })
 
-  // observer.visibleComputedLayoutData$.subscribe(data => {
-  //   console.log('visibleComputedLayoutData$', data)
+  // observer.visibleComputedXYData$.subscribe(data => {
+  //   console.log('visibleComputedXYData$', data)
   // })
 
   // observer.fullChartParams$.subscribe(data => {
