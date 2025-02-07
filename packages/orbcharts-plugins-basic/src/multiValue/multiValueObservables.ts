@@ -397,53 +397,99 @@ export const visibleComputedRankingDataObservable = ({ valueIndex$, isCategorySe
 
 }
 
-export const rankingAmountLimitObservable = ({ layout$, textSizePx$ }: {
+const layoutHeightObservable = ({ layout$, multiValueContainerPosition$ }: {
   layout$: Observable<Layout>
-  textSizePx$: Observable<number>
+  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
 }) => {
+  const rowAmount$ = multiValueContainerPosition$.pipe(
+    map(multiValueContainerPosition => {
+      const maxRowIndex = multiValueContainerPosition.reduce((acc, current) => {
+        return current.rowIndex > acc ? current.rowIndex : acc
+      }, 0)
+      return maxRowIndex + 1
+    }),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
+
   return combineLatest({
     layout: layout$,
-    textSizePx: textSizePx$
+    rowAmount: rowAmount$
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      return (data.layout.rootHeight / data.rowAmount) - (data.layout.top + data.layout.bottom)
+    }),
+    shareReplay(1)
+  )
+}
+
+const rankingAmountLimitObservable = ({ layout$, textSizePx$, multiValueContainerPosition$ }: {
+  layout$: Observable<Layout>
+  textSizePx$: Observable<number>
+  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+}) => {
+
+  const layoutHeight$ = layoutHeightObservable({ layout$, multiValueContainerPosition$ })
+
+  return combineLatest({
+    textSizePx: textSizePx$,
+    layoutHeight: layoutHeight$
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
       const lineHeight = data.textSizePx * 2 // 2倍行高
-      const labelAmountLimit = Math.floor(data.layout.height / lineHeight)
+      const labelAmountLimit = Math.floor(data.layoutHeight / lineHeight)
       return labelAmountLimit
     }),
-    distinctUntilChanged()
+    distinctUntilChanged(),
+    shareReplay(1)
   )
 }
 
-export const rankingScaleObservable = ({ layout$, visibleComputedRankingData$, rankingAmountLimit$ }: {
+export const rankingScaleListObservable = ({ layout$, visibleComputedRankingData$, textSizePx$, multiValueContainerPosition$ }: {
   layout$: Observable<Layout>
   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
-  rankingAmountLimit$: Observable<number>
+  // rankingAmountLimit$: Observable<number>
+  textSizePx$: Observable<number>
+  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
 }) => {
+
+  const layoutHeight$ = layoutHeightObservable({ layout$, multiValueContainerPosition$ })
+
+  const rankingAmountLimit$ = rankingAmountLimitObservable({
+    layout$,
+    textSizePx$,
+    multiValueContainerPosition$
+  })
+
   return combineLatest({
-    layout: layout$,
+    layoutHeight: layoutHeight$,
     rankingAmountLimit: rankingAmountLimit$,
     visibleComputedRankingData: visibleComputedRankingData$,
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-      let labelAmount = 0
-      let lineHeight = 0
-      let totalHeight = 0
-      if (data.visibleComputedRankingData.length > data.rankingAmountLimit) {
-        labelAmount = data.rankingAmountLimit
-        lineHeight = data.layout.height / labelAmount
-        totalHeight = lineHeight * labelAmount // 用全部的數量來算而不是要顯示的數量（要超出圖軸高度）
-      } else {
-        labelAmount = data.visibleComputedRankingData.length
-        lineHeight = data.layout.height / labelAmount
-        totalHeight = data.layout.height
-      }
+      // 依每個 category 計算 scale
+      return data.visibleComputedRankingData.map((categoryData, i) => {
+        let labelAmount = 0
+        let lineHeight = 0
+        let totalHeight = 0
+        if (categoryData.length > data.rankingAmountLimit) {
+          labelAmount = data.rankingAmountLimit
+          lineHeight = data.layoutHeight / labelAmount
+          totalHeight = lineHeight * labelAmount // 用全部的數量來算而不是要顯示的數量（要超出圖軸高度）
+        } else {
+          labelAmount = categoryData.length
+          lineHeight = data.layoutHeight / labelAmount
+          totalHeight = data.layoutHeight
+        }
 
-      return createLabelToAxisScale({
-        axisLabels: data.visibleComputedRankingData.map(d => d.label),
-        axisWidth: totalHeight,
-        padding: 0.5
+        return createLabelToAxisScale({
+          axisLabels: categoryData.map(d => d.label),
+          axisWidth: totalHeight,
+          padding: 0.5
+        })
       })
     })
   )

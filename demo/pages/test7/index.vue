@@ -20,7 +20,8 @@ onMounted(() => {
     },
     yAxis: {
       label: 'yyyyyyy'
-    }
+    },
+    separateCategory: true
   })
 
   setTimeout(() => {
@@ -31,7 +32,8 @@ onMounted(() => {
       },
       yAxis: {
         label: 'yyyyyyy'
-      }
+      },
+      separateCategory: true
     })
 
     setTimeout(() => {
@@ -42,7 +44,8 @@ onMounted(() => {
         },
         yAxis: {
           label: 'yyyyyyy'
-        }
+        },
+        separateCategory: true
       })
     }, 1000)
   }, 1000)

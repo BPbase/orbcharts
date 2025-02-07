@@ -30,8 +30,8 @@ interface BaseRankingAxisContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataMultiValue>
   // visibleComputedData$: Observable<ComputedDataMultiValue>
-  visibleComputedRankingData$: Observable<ComputedDatumMultiValue[]>
-  rankingScale$: Observable<d3.ScalePoint<string>>
+  visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
+  rankingScaleList$: Observable<Array<d3.ScalePoint<string>>>
   fullParams$: Observable<BaseRankingAxisParams>
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   fullChartParams$: Observable<ChartParams>
@@ -214,7 +214,7 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
   computedData$,
   // visibleComputedData$,
   visibleComputedRankingData$,
-  rankingScale$,
+  rankingScaleList$,
   fullParams$,
   fullDataFormatter$,
   fullChartParams$,
@@ -314,80 +314,90 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
     })
   )
 
-  const sortedLabels$ = visibleComputedData$.pipe(
+  const rankingLabelList$ = visibleComputedRankingData$.pipe(
     takeUntil(destroy$),
-    map(visibleComputedData => visibleComputedData
-      .flat()
-      .map(d => {
-        // 新增總計資料欄位
-        ;(d as any)._sum = d.value.reduce((acc, curr) => acc + curr, 0)
-        return d
-      })
-      .sort((a: any, b: any) => b._sum - a._sum)
-      .map(d => d.label)
-    )
-  )
-  
-  const labelAmountLimit$ = combineLatest({
-    layout: layout$,
-    textSizePx: textSizePx$,
-    sortedLabels: sortedLabels$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async (d) => d),
     map(data => {
-      const lineHeight = data.textSizePx * 2 // 2倍行高
-      const labelAmountLimit = Math.floor(data.layout.height / lineHeight)
-      return labelAmountLimit
-    }),
-    distinctUntilChanged()
-  )
-
-  // 要顯示的labels
-  const renderLabels$ = combineLatest({
-    sortedLabels: sortedLabels$,
-    labelAmountLimit: labelAmountLimit$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async (d) => d),
-    map(data => {
-      // 篩選顯示上限
-      return data.sortedLabels.slice(0, data.labelAmountLimit)
-    }),
-    distinctUntilChanged()
-  )
-
-  const rankingScale$: Observable<d3.ScalePoint<string>> = new Observable(subscriber => {
-    combineLatest({
-      layout: layout$,
-      renderLabels: renderLabels$,
-      labelAmountLimit: labelAmountLimit$
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async (d) => d),
-    ).subscribe(data => {
-      
-      const rankingScale = createLabelToAxisScale({
-        axisLabels: data.renderLabels,
-        axisWidth: data.layout.height,
-        padding: 0.5
-      })
-
-      subscriber.next(rankingScale)
+      return data.map(categoryData => categoryData.map(d => d.label))
     })
-  })
+  )
+
+  // const sortedLabels$ = visibleComputedData$.pipe(
+  //   takeUntil(destroy$),
+  //   map(visibleComputedData => visibleComputedData
+  //     .flat()
+  //     .map(d => {
+  //       // 新增總計資料欄位
+  //       ;(d as any)._sum = d.value.reduce((acc, curr) => acc + curr, 0)
+  //       return d
+  //     })
+  //     .sort((a: any, b: any) => b._sum - a._sum)
+  //     .map(d => d.label)
+  //   )
+  // )
+  
+  // const labelAmountLimit$ = combineLatest({
+  //   layout: layout$,
+  //   textSizePx: textSizePx$,
+  //   sortedLabels: sortedLabels$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(data => {
+  //     const lineHeight = data.textSizePx * 2 // 2倍行高
+  //     const labelAmountLimit = Math.floor(data.layout.height / lineHeight)
+  //     return labelAmountLimit
+  //   }),
+  //   distinctUntilChanged()
+  // )
+
+  // // 要顯示的labels
+  // const renderLabels$ = combineLatest({
+  //   sortedLabels: sortedLabels$,
+  //   labelAmountLimit: labelAmountLimit$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(data => {
+  //     // 篩選顯示上限
+  //     return data.sortedLabels.slice(0, data.labelAmountLimit)
+  //   }),
+  //   distinctUntilChanged()
+  // )
+
+  // const rankingScale$: Observable<d3.ScalePoint<string>> = new Observable(subscriber => {
+  //   combineLatest({
+  //     layout: layout$,
+  //     renderLabels: renderLabels$,
+  //     labelAmountLimit: labelAmountLimit$
+  //   }).pipe(
+  //     takeUntil(destroy$),
+  //     switchMap(async (d) => d),
+  //   ).subscribe(data => {
+      
+  //     const rankingScale = createLabelToAxisScale({
+  //       axisLabels: data.renderLabels,
+  //       axisWidth: data.layout.height,
+  //       padding: 0.5
+  //     })
+
+  //     subscriber.next(rankingScale)
+  //   })
+  // })
 
   combineLatest({
     axisSelection: axisSelection$,
     fullParams: fullParams$,
     // tickTextAlign: tickTextAlign$,
     // axisLabelAlign: axisLabelAlign$,
-    computedData: computedData$,
+    // computedData: computedData$,
+    visibleComputedRankingData: visibleComputedRankingData$,
     layout: layout$,
     fullDataFormatter: fullDataFormatter$,
     fullChartParams: fullChartParams$,
-    renderLabels: renderLabels$,
-    rankingScale: rankingScale$,
+    // renderLabels: renderLabels$,
+    // rankingScale: rankingScale$,
+    rankingLabelList: rankingLabelList$,
+    rankingScaleList: rankingScaleList$,
     textReverseTransform: textReverseTransform$,
     textReverseTransformWithRotate: textReverseTransformWithRotate$,
     xyMinMax: xyMinMax$
@@ -396,27 +406,32 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
     switchMap(async (d) => d),
   ).subscribe(data => {
 
-    renderRankingAxis({
-      selection: data.axisSelection,
-      yAxisClassName,
-      fullParams: data.fullParams,
-      // tickTextAlign: data.tickTextAlign,
-      fullChartParams: data.fullChartParams,
-      rankingScale: data.rankingScale,
-      renderLabels: data.renderLabels,
-      textReverseTransformWithRotate: data.textReverseTransformWithRotate,
-      xyMinMax: data.xyMinMax
-    })
+    console.log(data.visibleComputedRankingData)
 
-    renderRankingAxisLabel({
-      selection: data.axisSelection,
-      yLabelClassName,
-      fullParams: data.fullParams,
-      // axisLabelAlign: data.axisLabelAlign,
-      layout: data.layout,
-      fullDataFormatter: data.fullDataFormatter,
-      fullChartParams: data.fullChartParams,
-      textReverseTransform: data.textReverseTransform,
+    data.rankingLabelList.forEach((rankingLabels, i) => {
+      const rankingScale = data.rankingScaleList[i]
+      renderRankingAxis({
+        selection: data.axisSelection,
+        yAxisClassName,
+        fullParams: data.fullParams,
+        // tickTextAlign: data.tickTextAlign,
+        fullChartParams: data.fullChartParams,
+        rankingScale: rankingScale,
+        renderLabels: rankingLabels,
+        textReverseTransformWithRotate: data.textReverseTransformWithRotate,
+        xyMinMax: data.xyMinMax
+      })
+  
+      renderRankingAxisLabel({
+        selection: data.axisSelection,
+        yLabelClassName,
+        fullParams: data.fullParams,
+        // axisLabelAlign: data.axisLabelAlign,
+        layout: data.layout,
+        fullDataFormatter: data.fullDataFormatter,
+        fullChartParams: data.fullChartParams,
+        textReverseTransform: data.textReverseTransform,
+      })
     })
 
   })
