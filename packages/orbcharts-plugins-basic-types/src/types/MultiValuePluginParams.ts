@@ -86,6 +86,7 @@ export interface RankingBarsParams {
     offset: [number, number]
     colorType: ColorType
   }
+  rankingAmount: 'auto' | number
 }
 
 export interface RankingBubblesParams {

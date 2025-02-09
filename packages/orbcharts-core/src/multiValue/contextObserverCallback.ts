@@ -16,6 +16,7 @@ import {
   multiValueVisibleComputedDataObservable,
   multiValueVisibleComputedXYDataObservable,
   multiValueContainerPositionObservable,
+  multiValueContainerSizeObservable,
   xyMinMaxObservable,
   filteredXYMinMaxDataObservable,
   // visibleComputedRankingDataObservable,
@@ -39,7 +40,16 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$,
     layout$: observer.layout$,
-  })
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const multiValueContainerSize$ = multiValueContainerSizeObservable({
+    layout$: observer.layout$,
+    multiValueContainerPosition$
+  }).pipe(
+    shareReplay(1)
+  )
 
   // const multiValueAxesSize$ = multiValueAxesSizeObservable({
   //   fullDataFormatter$: observer.fullDataFormatter$,
@@ -72,7 +82,9 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
   const categoryLabels$ = multiValueCategoryLabelsObservable({
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$,
-  })
+  }).pipe(
+    shareReplay(1)
+  )
 
   const CategoryDataMap$ = categoryDataMapObservable({
     datumList$: datumList$
@@ -167,7 +179,9 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     multiValueContainerPosition$: multiValueContainerPosition$,
     // multiValueAxesTransform$: multiValueAxesTransform$,
     multiValueGraphicTransform$: multiValueGraphicTransform$,
-  })
+  }).pipe(
+    shareReplay(1)
+  )
 
 
   return <ContextObserverTypeMap<'multiValue', any>>{
@@ -179,6 +193,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     textSizePx$,
     isCategorySeprate$,
     multiValueContainerPosition$,
+    multiValueContainerSize$,
     // multiValueAxesSize$,
     multiValueHighlight$,
     categoryLabels$,

@@ -48,7 +48,7 @@ import {
   gridGraphicReverseScaleObservable,
 } from './gridObservables'
 import { DEFAULT_DATA_FORMATTER_MULTI_GRID_GRID } from '../defaults'
-import { calcGridContainerLayout } from './orbchartsUtils'
+import { calcContainerPositionScaled } from './orbchartsUtils'
 
 // 每一個grid計算出來的所有Observable
 export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData$, layout$, fullChartParams$, event$ }: {
@@ -325,7 +325,7 @@ export const multiGridContainerObservable = ({ computedData$, fullDataFormatter$
         return acc + gridSlotAmount
       }, 0) || 1
 
-      const gridContainerLayout = calcGridContainerLayout(data.layout, data.fullDataFormatter.container, slotAmount)
+      const gridContainerLayout = calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, slotAmount)
 
       let accGridSlotIndex = 0
       const gridContainerPositionArr = data.computedData.map((gridData, gridIndex) => {

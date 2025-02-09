@@ -38,7 +38,9 @@ export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subje
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$,
     layout$: observer.layout$,
-  })
+  }).pipe(
+    shareReplay(1)
+  )
 
   const gridAxesSize$ = gridAxesSizeObservable({
     fullDataFormatter$: observer.fullDataFormatter$,
@@ -145,7 +147,9 @@ export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subje
     gridContainerPosition$: gridContainerPosition$,
     gridAxesTransform$: gridAxesTransform$,
     gridGraphicTransform$: gridGraphicTransform$,
-  })
+  }).pipe(
+    shareReplay(1)
+  )
 
 
   return {

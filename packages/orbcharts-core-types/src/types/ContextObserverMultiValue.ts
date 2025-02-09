@@ -2,12 +2,13 @@ import { Observable } from 'rxjs'
 import type { ContextObserverBase } from './ContextObserver'
 import type { ComputedDataMultiValue, ComputedDatumMultiValue } from './ComputedDataMultiValue'
 import type { TransformData } from './TransformData'
-import type { ContainerPositionScaled } from './ContextObserver'
+import type { ContainerPositionScaled, ContainerSize } from './ContextObserver'
 
 export interface ContextObserverMultiValue<PluginParams> extends ContextObserverBase<'multiValue', PluginParams> {
   textSizePx$: Observable<number>
   isCategorySeprate$: Observable<boolean>
   multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+  multiValueContainerSize$: Observable<ContainerSize>
   // multiValueAxesSize$: Observable<{ width: number; height: number; }>
   multiValueHighlight$: Observable<ComputedDatumMultiValue[]>
   categoryLabels$: Observable<string[]>

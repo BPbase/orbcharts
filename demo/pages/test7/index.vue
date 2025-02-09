@@ -21,7 +21,11 @@ onMounted(() => {
     yAxis: {
       label: 'yyyyyyy'
     },
-    separateCategory: true
+    separateCategory: true,
+    container: {
+      columnAmount: 1,
+      rowAmount: 3
+    }
   })
 
   setTimeout(() => {
@@ -33,7 +37,11 @@ onMounted(() => {
       yAxis: {
         label: 'yyyyyyy'
       },
-      separateCategory: true
+      separateCategory: true,
+      container: {
+        columnAmount: 1,
+        rowAmount: 3
+      }
     })
 
     setTimeout(() => {
@@ -45,7 +53,11 @@ onMounted(() => {
         yAxis: {
           label: 'yyyyyyy'
         },
-        separateCategory: true
+        separateCategory: true,
+        container: {
+          columnAmount: 1,
+          rowAmount: 3
+        }
       })
     }, 1000)
   }, 1000)

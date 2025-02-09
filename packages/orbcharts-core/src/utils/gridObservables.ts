@@ -32,7 +32,7 @@ import type {
   TransformData } from '../../lib/core-types'
 import { getMinMaxGrid } from './orbchartsUtils'
 import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from './d3Scale'
-import { calcGridContainerLayout } from './orbchartsUtils'
+import { calcContainerPositionScaled } from './orbchartsUtils'
 import { getMinMaxValue } from './orbchartsUtils'
 
 export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
@@ -236,7 +236,7 @@ export const gridContainerPositionObservable = ({ computedData$, fullDataFormatt
       
       if (data.fullDataFormatter.separateSeries) {
         // -- 依slotIndexes計算 --
-        return calcGridContainerLayout(data.layout, data.fullDataFormatter.container, data.computedData.length)
+        return calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, data.computedData.length)
         // return data.computedData.map((seriesData, seriesIndex) => {
         //   const columnIndex = seriesIndex % data.fullDataFormatter.container.columnAmount
         //   const rowIndex = Math.floor(seriesIndex / data.fullDataFormatter.container.columnAmount)
@@ -251,7 +251,7 @@ export const gridContainerPositionObservable = ({ computedData$, fullDataFormatt
         // })
       } else {
         // -- 無拆分 --
-        const gridContainerPositionArr = calcGridContainerLayout(data.layout, data.fullDataFormatter.container, 1)
+        const gridContainerPositionArr = calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, 1)
         return data.computedData.map((d, i) => gridContainerPositionArr[0]) // 每個series相同位置
         // const columnIndex = 0
         // const rowIndex = 0

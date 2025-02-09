@@ -13,7 +13,7 @@ import type {
   DataMultiValue,
   DataMultiValueDatum,
   DataMultiValueValue,
-  ComputedLayoutDatumMultiValue,
+  ComputedXYDatumMultiValue,
   DataFormatterContainer,
   SeriesDirection,
   DataFormatterGridGrid,
@@ -192,17 +192,17 @@ export function getMinMaxMultiValue (data: DataMultiValue, valueIndex: number): 
 }
 
 export function getMinMaxMultiValueXY ({ data, minX, maxX, minY, maxY }: {
-  data: ComputedLayoutDatumMultiValue[][]
+  data: ComputedXYDatumMultiValue[][]
   minX: number
   maxX: number
   minY: number
   maxY: number
 }) {
-  let filteredData: ComputedLayoutDatumMultiValue[][] = []
-  let minXDatum: ComputedLayoutDatumMultiValue | null = null
-  let maxXDatum: ComputedLayoutDatumMultiValue | null = null
-  let minYDatum: ComputedLayoutDatumMultiValue | null = null
-  let maxYDatum: ComputedLayoutDatumMultiValue | null = null
+  let filteredData: ComputedXYDatumMultiValue[][] = []
+  let minXDatum: ComputedXYDatumMultiValue | null = null
+  let maxXDatum: ComputedXYDatumMultiValue | null = null
+  let minYDatum: ComputedXYDatumMultiValue | null = null
+  let maxYDatum: ComputedXYDatumMultiValue | null = null
   
   for (let categoryData of data) {
     for (let datum of categoryData) {
@@ -291,7 +291,7 @@ function calcGridDimensions (amount: number): { rowAmount: number; columnAmount:
   return { rowAmount, columnAmount }
 }
 
-export function calcSeriesContainerLayout (layout: Layout, container: DataFormatterContainer, amount: number): ContainerPosition[] {
+export function calcContainerPosition (layout: Layout, container: DataFormatterContainer, amount: number): ContainerPosition[] {
   const { gap } = container
   const { rowAmount, columnAmount } = (container.rowAmount * container.columnAmount) >= amount
     // 如果container設定的rowAmount和columnAmount的乘積大於或等於amount，則使用目前設定
@@ -324,7 +324,7 @@ export function calcSeriesContainerLayout (layout: Layout, container: DataFormat
   })
 }
 
-export function calcGridContainerLayout (layout: Layout, container: DataFormatterContainer, amount: number): ContainerPositionScaled[] {
+export function calcContainerPositionScaled (layout: Layout, container: DataFormatterContainer, amount: number): ContainerPositionScaled[] {
   const { gap } = container
   const { rowAmount, columnAmount } = (container.rowAmount * container.columnAmount) >= amount
     // 如果container設定的rowAmount和columnAmount的乘積大於或等於amount，則使用目前設定

@@ -22,11 +22,15 @@ export const contextObserverCallback: ContextObserverCallback<'series'> = ({ sub
 
   const separateSeries$ = separateSeriesObservable({
     fullDataFormatter$: observer.fullDataFormatter$
-  })
+  }).pipe(
+    shareReplay(1)
+  )
 
   const visibleComputedData$ = seriesVisibleComputedDataObservable({
     computedData$: observer.computedData$,
-  })
+  }).pipe(
+    shareReplay(1)
+  )
 
   const computedLayoutData$ = seriesComputedLayoutDataObservable({
     computedData$: observer.computedData$,
@@ -37,7 +41,9 @@ export const contextObserverCallback: ContextObserverCallback<'series'> = ({ sub
 
   const visibleComputedLayoutData$ = seriesVisibleComputedDataObservable({
     computedData$: computedLayoutData$,
-  })
+  }).pipe(
+    shareReplay(1)
+  )
 
   const datumList$ = observer.computedData$.pipe(
     map(d => d.flat())
@@ -55,8 +61,9 @@ export const contextObserverCallback: ContextObserverCallback<'series'> = ({ sub
 
   const seriesLabels$ = seriesLabelsObservable({
     computedData$: observer.computedData$,
-  })
-
+  }).pipe(
+    shareReplay(1)
+  )
 
   const SeriesDataMap$ = seriesDataMapObservable({
     datumList$

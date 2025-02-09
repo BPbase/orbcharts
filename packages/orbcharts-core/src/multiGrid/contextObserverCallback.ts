@@ -25,7 +25,9 @@ export const contextObserverCallback: ContextObserverCallback<'multiGrid'> = ({ 
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$,
     layout$: observer.layout$,
-  })
+  }).pipe(
+    shareReplay(1)
+  )
 
   return {
     fullParams$: observer.fullParams$,

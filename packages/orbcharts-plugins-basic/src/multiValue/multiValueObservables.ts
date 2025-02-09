@@ -22,6 +22,7 @@ import type {
   ComputedDatumMultiValue,
   ComputedXYDatumMultiValue,
   TransformData,
+  ContainerSize,
   ContainerPositionScaled,
   Layout,
 } from '../../lib/core-types'
@@ -371,100 +372,108 @@ export const visibleComputedRankingDataObservable = ({ valueIndex$, isCategorySe
     })
   )
 
-
-  // const labelAmountLimit$ = combineLatest({
-  //   layout: layout$,
-  //   textSizePx: textSizePx$,
-  //   sortedLabels: sortedLabels$
-  // }).pipe(
-  //   switchMap(async (d) => d),
-  //   map(data => {
-  //     const lineHeight = data.textSizePx * 2 // 2倍行高
-  //     const labelAmountLimit = Math.floor(data.layout.height / lineHeight)
-  //     return labelAmountLimit
-  //   }),
-  //   distinctUntilChanged()
-  // )
-
-  // return combineLatest({
-  //   sortedLabels: sortedLabels$,
-  //   labelAmountLimit: labelAmountLimit$
-  // }).pipe(
-  //   map(data => {
-  //     return data.sortedLabels.slice(0, data.labelAmountLimit)
-  //   })
-  // )
-
 }
 
-const layoutHeightObservable = ({ layout$, multiValueContainerPosition$ }: {
-  layout$: Observable<Layout>
-  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
-}) => {
-  const rowAmount$ = multiValueContainerPosition$.pipe(
-    map(multiValueContainerPosition => {
-      const maxRowIndex = multiValueContainerPosition.reduce((acc, current) => {
-        return current.rowIndex > acc ? current.rowIndex : acc
-      }, 0)
-      return maxRowIndex + 1
-    }),
-    distinctUntilChanged(),
-    shareReplay(1)
-  )
-
-  return combineLatest({
-    layout: layout$,
-    rowAmount: rowAmount$
-  }).pipe(
-    switchMap(async (d) => d),
-    map(data => {
-      return (data.layout.rootHeight / data.rowAmount) - (data.layout.top + data.layout.bottom)
-    }),
-    shareReplay(1)
-  )
-}
-
-const rankingAmountLimitObservable = ({ layout$, textSizePx$, multiValueContainerPosition$ }: {
-  layout$: Observable<Layout>
-  textSizePx$: Observable<number>
-  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
-}) => {
-
-  const layoutHeight$ = layoutHeightObservable({ layout$, multiValueContainerPosition$ })
-
-  return combineLatest({
-    textSizePx: textSizePx$,
-    layoutHeight: layoutHeight$
-  }).pipe(
-    switchMap(async (d) => d),
-    map(data => {
-      const lineHeight = data.textSizePx * 2 // 2倍行高
-      const labelAmountLimit = Math.floor(data.layoutHeight / lineHeight)
-      return labelAmountLimit
-    }),
-    distinctUntilChanged(),
-    shareReplay(1)
-  )
-}
-
-export const rankingScaleListObservable = ({ layout$, visibleComputedRankingData$, textSizePx$, multiValueContainerPosition$ }: {
-  layout$: Observable<Layout>
+export const rankingScaleListObservable = ({ multiValueContainerSize$, visibleComputedRankingData$, textSizePx$ }: {
+  // layout$: Observable<Layout>
+  multiValueContainerSize$: Observable<ContainerSize>
   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
   // rankingAmountLimit$: Observable<number>
   textSizePx$: Observable<number>
-  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+  // multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
 }) => {
+  // const layoutHeightObservable = ({ layout$, multiValueContainerPosition$ }: {
+  //   layout$: Observable<Layout>
+  //   multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+  // }) => {
+  //   const rowAmount$ = multiValueContainerPosition$.pipe(
+  //     map(multiValueContainerPosition => {
+  //       const maxRowIndex = multiValueContainerPosition.reduce((acc, current) => {
+  //         return current.rowIndex > acc ? current.rowIndex : acc
+  //       }, 0)
+  //       return maxRowIndex + 1
+  //     }),
+  //     distinctUntilChanged(),
+  //     shareReplay(1)
+  //   )
 
-  const layoutHeight$ = layoutHeightObservable({ layout$, multiValueContainerPosition$ })
+  //   return combineLatest({
+  //     layout: layout$,
+  //     rowAmount: rowAmount$
+  //   }).pipe(
+  //     switchMap(async (d) => d),
+  //     map(data => {
+  //       return (data.layout.rootHeight / data.rowAmount) - (data.layout.top + data.layout.bottom)
+  //     }),
+  //     shareReplay(1)
+  //   )
+  // }
+
+  const minLineHeightObservable = ({ textSizePx$ }: {
+    textSizePx$: Observable<number>
+  }) => {
+    return textSizePx$.pipe(
+      map(textSizePx => textSizePx * 2), // 2倍行高
+      shareReplay(1)
+    )
+  }
+
+  const containerHeightObservable = ({ minLineHeight$, multiValueContainerSize$ }: {
+    minLineHeight$: Observable<number>
+    multiValueContainerSize$: Observable<ContainerSize>
+  }) => {
+    return combineLatest({
+      minLineHeight: minLineHeight$,
+      multiValueContainerSize: multiValueContainerSize$
+    }).pipe(
+      switchMap(async (d) => d),
+      map(data => {
+        // 避免過小造成計算 scale 錯誤
+        return data.multiValueContainerSize.height > data.minLineHeight
+          ? data.multiValueContainerSize.height
+          : data.minLineHeight
+      }),
+      distinctUntilChanged(),
+      shareReplay(1)
+    )
+  }
+
+  const rankingAmountLimitObservable = ({ minLineHeight$, containerHeight$ }: {
+    containerHeight$: Observable<number>
+    minLineHeight$: Observable<number>
+  }) => {
+
+    return combineLatest({
+      minLineHeight: minLineHeight$,
+      containerHeight: containerHeight$
+    }).pipe(
+      switchMap(async (d) => d),
+      map(data => {
+        const labelAmountLimit = Math.floor(data.containerHeight / data.minLineHeight)
+        return labelAmountLimit
+      }),
+      distinctUntilChanged(),
+      shareReplay(1)
+    )
+  }
+
+  // const layoutHeight$ = layoutHeightObservable({ layout$, multiValueContainerPosition$ })
+
+  const minLineHeight$ = minLineHeightObservable({ textSizePx$ })
+
+  const containerHeight$ = containerHeightObservable({
+    minLineHeight$,
+    multiValueContainerSize$
+  })
 
   const rankingAmountLimit$ = rankingAmountLimitObservable({
-    layout$,
-    textSizePx$,
-    multiValueContainerPosition$
+    containerHeight$,
+    minLineHeight$
   })
 
   return combineLatest({
-    layoutHeight: layoutHeight$,
+    minLineHeight: minLineHeight$,
+    containerHeight: containerHeight$,
     rankingAmountLimit: rankingAmountLimit$,
     visibleComputedRankingData: visibleComputedRankingData$,
   }).pipe(
@@ -472,17 +481,14 @@ export const rankingScaleListObservable = ({ layout$, visibleComputedRankingData
     map(data => {
       // 依每個 category 計算 scale
       return data.visibleComputedRankingData.map((categoryData, i) => {
-        let labelAmount = 0
-        let lineHeight = 0
+        let labelAmount = categoryData.length
         let totalHeight = 0
         if (categoryData.length > data.rankingAmountLimit) {
-          labelAmount = data.rankingAmountLimit
-          lineHeight = data.layoutHeight / labelAmount
-          totalHeight = lineHeight * labelAmount // 用全部的數量來算而不是要顯示的數量（要超出圖軸高度）
+          // 用全部的數量來算而不是要顯示的數量（要超出圖軸高度）
+          let lineHeight = data.containerHeight / data.rankingAmountLimit
+          totalHeight = lineHeight * labelAmount
         } else {
-          labelAmount = categoryData.length
-          lineHeight = data.layoutHeight / labelAmount
-          totalHeight = data.layoutHeight
+          totalHeight = data.containerHeight
         }
 
         return createLabelToAxisScale({

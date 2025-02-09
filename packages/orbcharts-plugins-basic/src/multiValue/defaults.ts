@@ -112,7 +112,8 @@ export const DEFAULT_RANKING_BARS_PARAMS: RankingBarsParams = {
   axisLabel: {
     offset: [0, 0],
     colorType: 'primary'
-  }
+  },
+  rankingAmount: 'auto'
 }
 
 export const DEFAULT_SCATTER_PARAMS: ScatterParams = {

@@ -29,7 +29,7 @@ import type {
   TransformData } from '../../lib/core-types'
 import { getMinMax, getMinMaxMultiValue } from './orbchartsUtils'
 import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from './d3Scale'
-import { calcGridContainerLayout } from './orbchartsUtils'
+import { calcContainerPositionScaled } from './orbchartsUtils'
 
 export const xyMinMaxObservable = ({ computedData$, xyValueIndex$ }: {
   computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
@@ -321,7 +321,7 @@ export const multiValueVisibleComputedXYDataObservable = ({ computedXYData$ }: {
   )
 }
 
-// 所有container位置（對應series）
+// 所有container位置（對應category）
 export const multiValueContainerPositionObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiValue'>>
@@ -338,7 +338,7 @@ export const multiValueContainerPositionObservable = ({ computedData$, fullDataF
       
       if (data.fullDataFormatter.separateCategory) {
         // -- 依slotIndexes計算 --
-        return calcGridContainerLayout(data.layout, data.fullDataFormatter.container, data.computedData.length)
+        return calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, data.computedData.length)
         // return data.computedData.map((seriesData, seriesIndex) => {
         //   const columnIndex = seriesIndex % data.fullDataFormatter.container.columnAmount
         //   const rowIndex = Math.floor(seriesIndex / data.fullDataFormatter.container.columnAmount)
@@ -353,7 +353,7 @@ export const multiValueContainerPositionObservable = ({ computedData$, fullDataF
         // })
       } else {
         // -- 無拆分 --
-        const multiValueContainerPositionArr = calcGridContainerLayout(data.layout, data.fullDataFormatter.container, 1)
+        const multiValueContainerPositionArr = calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, 1)
         return data.computedData.map((d, i) => multiValueContainerPositionArr[0]) // 每個series相同位置
         // const columnIndex = 0
         // const rowIndex = 0
@@ -374,6 +374,48 @@ export const multiValueContainerPositionObservable = ({ computedData$, fullDataF
   return multiValueContainerPosition$
 }
 
+export const multiValueContainerSizeObservable = ({ layout$, multiValueContainerPosition$ }: {
+  layout$: Observable<Layout>
+  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+}) => {
+  const rowAmount$ = multiValueContainerPosition$.pipe(
+    map(multiValueContainerPosition => {
+      const maxRowIndex = multiValueContainerPosition.reduce((acc, current) => {
+        return current.rowIndex > acc ? current.rowIndex : acc
+      }, 0)
+      return maxRowIndex + 1
+    }),
+    distinctUntilChanged(),
+  )
+
+  const columnAmount$ = multiValueContainerPosition$.pipe(
+    map(multiValueContainerPosition => {
+      const maxColumnIndex = multiValueContainerPosition.reduce((acc, current) => {
+        return current.columnIndex > acc ? current.columnIndex : acc
+      }, 0)
+      return maxColumnIndex + 1
+    }),
+    distinctUntilChanged()
+  )
+
+  return combineLatest({
+    layout: layout$,
+    rowAmount: rowAmount$,
+    columnAmount: columnAmount$
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      const width = (data.layout.rootWidth / data.columnAmount) - (data.layout.left + data.layout.right)
+      const height = (data.layout.rootHeight / data.rowAmount) - (data.layout.top + data.layout.bottom)
+      return {
+        width,
+        height
+      }
+    }),
+    distinctUntilChanged((a, b) => a.width === b.width && a.height === b.height),
+    shareReplay(1)
+  )
+}
 
 export const filteredXYMinMaxDataObservable = ({ visibleComputedXYData$, xyMinMax$, xyValueIndex$, fullDataFormatter$ }: {
   visibleComputedXYData$: Observable<ComputedXYDataMultiValue>

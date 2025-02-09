@@ -16,7 +16,7 @@ import type {
   DataFormatterTypeMap,
   ContainerPosition,
   Layout } from '../../lib/core-types'
-import { calcSeriesContainerLayout } from './orbchartsUtils'
+import { calcContainerPosition } from './orbchartsUtils'
 
 export const separateSeriesObservable = ({ fullDataFormatter$ }: { fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>> }) => {
   return fullDataFormatter$.pipe(
@@ -109,7 +109,7 @@ export const seriesContainerPositionObservable = ({ computedData$, fullDataForma
       
       if (data.fullDataFormatter.separateSeries) {
         // -- 依slotIndexes計算 --
-        return calcSeriesContainerLayout(data.layout, data.fullDataFormatter.container, data.computedData.length)
+        return calcContainerPosition(data.layout, data.fullDataFormatter.container, data.computedData.length)
         // return data.computedData.map((seriesData, seriesIndex) => {
         //   const columnIndex = seriesIndex % data.fullDataFormatter.container.columnAmount
         //   const rowIndex = Math.floor(seriesIndex / data.fullDataFormatter.container.columnAmount)
@@ -128,7 +128,7 @@ export const seriesContainerPositionObservable = ({ computedData$, fullDataForma
         // })
       } else {
         // -- 無拆分 --
-        return calcSeriesContainerLayout(data.layout, data.fullDataFormatter.container, 1)
+        return calcContainerPosition(data.layout, data.fullDataFormatter.container, 1)
         // const columnIndex = 0
         // const rowIndex = 0
         // return data.computedData.map((seriesData, seriesIndex) => {

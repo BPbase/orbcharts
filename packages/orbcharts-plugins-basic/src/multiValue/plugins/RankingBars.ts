@@ -130,11 +130,9 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
   // })
 
   const rankingScaleList$ = rankingScaleListObservable({
-    layout$: observer.layout$,
+    multiValueContainerSize$: observer.multiValueContainerSize$,
     visibleComputedRankingData$,
-    // rankingAmountLimit$
     textSizePx$: observer.textSizePx$,
-    multiValueContainerPosition$: observer.multiValueContainerPosition$,
   })
 
   const unsubscribeBaseRankingAxis = createBaseRankingAxis(pluginName, {
@@ -147,8 +145,9 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,
     xyMinMax$: observer.xyMinMax$,
-    textSizePx$: observer.textSizePx$,
+    // textSizePx$: observer.textSizePx$,
     layout$: observer.layout$,
+    multiValueContainerSize$: observer.multiValueContainerSize$,
     multiValueContainerPosition$: observer.multiValueContainerPosition$,
     isCategorySeprate$: observer.isCategorySeprate$,
   })

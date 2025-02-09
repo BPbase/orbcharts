@@ -15,6 +15,7 @@ import type {
   ComputedDatumMultiValue,
   ComputedDataMultiValue,
   ComputedXYDatumMultiValue,
+  ContainerSize,
   ContainerPositionScaled,
   DataFormatterMultiValue,
   DefinePluginConfig,
@@ -25,6 +26,7 @@ import type { BaseRankingAxisParams } from '../../lib/plugins-basic-types'
 import type { BasePluginFn } from './types'
 import { getColor, getMinMaxValue, getClassName, getUniID } from '../utils/orbchartsUtils'
 import { createLabelToAxisScale, createValueToAxisScale } from '../../lib/core'
+import { multiValueSelectionsObservable } from '../multiValue/multiValueObservables'
 
 interface BaseRankingAxisContext {
   selection: d3.Selection<any, unknown, any, unknown>
@@ -41,23 +43,32 @@ interface BaseRankingAxisContext {
     minY: number;
     maxY: number;
   }>
-  textSizePx$: Observable<number>
+  // textSizePx$: Observable<number>
   layout$: Observable<Layout>
+  multiValueContainerSize$: Observable<ContainerSize>
   multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
   isCategorySeprate$: Observable<boolean>
 }
 
-const pluginName = 'RankingAxis'
+type ClipPathDatum = {
+  id: string;
+  // x: number;
+  // y: number;
+  width: number;
+  height: number;
+}
+
+// const pluginName = 'RankingAxis'
 
 const yTickTextAnchor = 'end'
 const yTickDominantBaseline = 'middle'
 const yAxisLabelAnchor = 'end'
 const yAxisLabelDominantBaseline = 'auto'
-const yLabelClassName = getClassName(pluginName, 'yLabel')
+// const textClassName = getClassName(pluginName, 'yLabel')
 
-function renderRankingAxisLabel ({ selection, yLabelClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
+function renderRankingAxisLabel ({ selection, textClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
-  yLabelClassName: string
+  textClassName: string
   fullParams: BaseRankingAxisParams
   // axisLabelAlign: TextAlign
   layout: { width: number, height: number }
@@ -71,10 +82,10 @@ function renderRankingAxisLabel ({ selection, yLabelClassName, fullParams, layou
   let labelY = - offsetY
 
   const axisLabelSelection = selection
-    .selectAll<SVGGElement, BaseRankingAxisParams>(`g.${yLabelClassName}`)
+    .selectAll<SVGGElement, BaseRankingAxisParams>(`g.${textClassName}`)
     .data([fullParams])
     .join('g')
-    .classed(yLabelClassName, true)
+    .classed(textClassName, true)
     .each((d, i, g) => {
       const text = d3.select(g[i])
         .selectAll<SVGTextElement, BaseRankingAxisParams>(`text`)
@@ -101,9 +112,9 @@ function renderRankingAxisLabel ({ selection, yLabelClassName, fullParams, layou
     // .attr('transform', d => `translate(0, ${layout.height})`)
 }
 
-function renderRankingAxis ({ selection, yAxisClassName, fullParams, fullChartParams, rankingScale, renderLabels, textReverseTransformWithRotate, xyMinMax }: {
+function renderRankingAxis ({ selection, fullParams, fullChartParams, rankingScale, renderLabels, textReverseTransformWithRotate, xyMinMax }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
-  yAxisClassName: string
+  // yAxisClassName: string
   fullParams: BaseRankingAxisParams
   // tickTextAlign: TextAlign
   fullChartParams: ChartParams
@@ -117,35 +128,58 @@ function renderRankingAxis ({ selection, yAxisClassName, fullParams, fullChartPa
     maxY: number;
   }
 }) {
-
   const yAxisSelection = selection
-    .selectAll<SVGGElement, BaseRankingAxisParams>(`g.${yAxisClassName}`)
+    .selectAll<SVGGElement, BaseRankingAxisParams>(`text`)
     .data(renderLabels)
-    .join('g')
-    .classed(yAxisClassName, true)
-    .each((d, i, g) => {
-      const text = d3.select(g[i])
-        .selectAll<SVGTextElement, string>(`text`)
-        .data([d])
-        .join(
-          enter => {
-            return enter
-              .append('text')
-              .style('font-weight', 'bold')
-          },
-          update => update,
-          exit => exit.remove()
-        )
-        .attr('text-anchor', yTickTextAnchor)
-        .attr('dominant-baseline', yTickDominantBaseline)
-        .attr('font-size', fullChartParams.styles.textSize)
-        .style('fill', getColor(fullParams.barLabel.colorType, fullChartParams))
-        .style('transform', textReverseTransformWithRotate)
-        // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
-        .attr('x', - fullParams.barLabel.padding)
-        .attr('y', d => rankingScale(d)!)
-        .text(d => d)
-    })
+    // .join('g')
+    // .classed(yAxisClassName, true)
+    .join(
+      enter => {
+        return enter
+          .append('text')
+          .style('font-weight', 'bold')
+          .attr('x', - fullParams.barLabel.padding)
+    .attr('y', d => rankingScale(d)!)
+      },
+      update => update,
+      exit => exit.remove()
+    )
+    .attr('text-anchor', yTickTextAnchor)
+    .attr('dominant-baseline', yTickDominantBaseline)
+    .attr('font-size', fullChartParams.styles.textSize)
+    .style('fill', getColor(fullParams.barLabel.colorType, fullChartParams))
+    .text(d => d)
+    .transition()
+    .style('transform', textReverseTransformWithRotate)
+    // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
+    .attr('x', - fullParams.barLabel.padding)
+    .attr('y', d => rankingScale(d)!)
+    
+
+    // .each((d, i, g) => {
+    //   const text = d3.select(g[i])
+    //     .selectAll<SVGTextElement, string>(`text`)
+    //     .data([d])
+    //     .join(
+    //       enter => {
+    //         return enter
+    //           .append('text')
+    //           .style('font-weight', 'bold')
+    //       },
+    //       update => update,
+    //       exit => exit.remove()
+    //     )
+    //     .attr('text-anchor', yTickTextAnchor)
+    //     .attr('dominant-baseline', yTickDominantBaseline)
+    //     .attr('font-size', fullChartParams.styles.textSize)
+    //     .style('fill', getColor(fullParams.barLabel.colorType, fullChartParams))
+    //     .transition()
+    //     .style('transform', textReverseTransformWithRotate)
+    //     // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
+    //     // .attr('x', - fullParams.barLabel.padding)
+    //     // .attr('y', d => rankingScale(d)!)
+    //     .text(d => d)
+    // })
 
   return yAxisSelection
 
@@ -209,6 +243,44 @@ function renderRankingAxis ({ selection, yAxisClassName, fullParams, fullChartPa
   // return yAxisSelection
 }
 
+
+function renderClipPath ({ defsSelection, clipPathData }: {
+  defsSelection: d3.Selection<SVGDefsElement, any, any, any>
+  clipPathData: ClipPathDatum[]
+  // textReverseTransform: string
+}) {
+  const clipPath = defsSelection
+    .selectAll<SVGClipPathElement, Layout>('clipPath')
+    .data(clipPathData)
+    .join(
+      enter => {
+        return enter
+          .append('clipPath')
+      },
+      update => update,
+      exit => exit.remove()
+    )
+    .attr('id', d => d.id)
+    // .attr('transform', textReverseTransform)
+    .each((d, i, g) => {
+      const rect = d3.select(g[i])
+        .selectAll<SVGRectElement, typeof d>('rect')
+        .data([d])
+        .join(
+          enter => {
+            return enter
+              .append('rect')
+          },
+          update => update,
+          exit => exit.remove()
+        )
+        .attr('x', _d => - _d.width)
+        .attr('y', 0)
+        .attr('width', _d => _d.width)
+        .attr('height', _d => _d.height)
+    })
+}
+
 export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (pluginName: string, {
   selection,
   computedData$,
@@ -219,8 +291,9 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
   fullDataFormatter$,
   fullChartParams$,
   xyMinMax$,
-  textSizePx$,
+  // textSizePx$,
   layout$,
+  multiValueContainerSize$,
   multiValueContainerPosition$,
   isCategorySeprate$
 }) => {
@@ -228,9 +301,9 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
   const destroy$ = new Subject()
   
   const containerClassName = getClassName(pluginName, 'container')
-  const yAxisGClassName = getClassName(pluginName, 'yAxisG')
   const yAxisClassName = getClassName(pluginName, 'yAxis')
   const textClassName = getClassName(pluginName, 'text')
+  const clipPathID = getUniID(pluginName, 'clipPath-box')
 
   const containerSelection$ = combineLatest({
     computedData: computedData$.pipe(
@@ -259,29 +332,18 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
     })
   )
 
-  const axisSelection$ = containerSelection$.pipe(
-    takeUntil(destroy$),
-    map((containerSelection, i) => {
-      return containerSelection
-        .selectAll<SVGGElement, ComputedDatumMultiValue[]>(`g.${yAxisGClassName}`)
-        .data([yAxisGClassName])
-        .join('g')
-        .classed(yAxisGClassName, true)
-    })
-  )
-
   combineLatest({
     containerSelection: containerSelection$,
-    gridContainerPosition: multiValueContainerPosition$
+    multiValueContainerPosition: multiValueContainerPosition$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
   ).subscribe(data => {
     data.containerSelection
       .attr('transform', (d, i) => {
-        const gridContainerPosition = data.gridContainerPosition[i] ?? data.gridContainerPosition[0]
-        const translate = gridContainerPosition.translate
-        const scale = gridContainerPosition.scale
+        const multiValueContainerPosition = data.multiValueContainerPosition[i] ?? data.multiValueContainerPosition[0]
+        const translate = multiValueContainerPosition.translate
+        const scale = multiValueContainerPosition.scale
         return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
       })
       // .attr('opacity', 0)
@@ -320,6 +382,7 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
       return data.map(categoryData => categoryData.map(d => d.label))
     })
   )
+
 
   // const sortedLabels$ = visibleComputedData$.pipe(
   //   takeUntil(destroy$),
@@ -384,18 +447,35 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
   //   })
   // })
 
+  // combineLatest({
+  //   layout: layout$,
+  //   textReverseTransform: textReverseTransform$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  // )
+  layout$.subscribe(data => {
+    const defsSelection = selection.selectAll<SVGDefsElement, any>('defs')
+      .data([clipPathID])
+      .join('defs')
+    const clipPathData = [{
+      id: clipPathID,
+      width: data.width,
+      height: data.height
+    }]
+    renderClipPath({
+      defsSelection: defsSelection,
+      clipPathData,
+      // textReverseTransform: data.textReverseTransform
+    })
+  })
+
   combineLatest({
-    axisSelection: axisSelection$,
+    containerSelection: containerSelection$,
     fullParams: fullParams$,
-    // tickTextAlign: tickTextAlign$,
-    // axisLabelAlign: axisLabelAlign$,
-    // computedData: computedData$,
-    visibleComputedRankingData: visibleComputedRankingData$,
     layout: layout$,
     fullDataFormatter: fullDataFormatter$,
     fullChartParams: fullChartParams$,
-    // renderLabels: renderLabels$,
-    // rankingScale: rankingScale$,
     rankingLabelList: rankingLabelList$,
     rankingScaleList: rankingScaleList$,
     textReverseTransform: textReverseTransform$,
@@ -406,13 +486,30 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
     switchMap(async (d) => d),
   ).subscribe(data => {
 
-    console.log(data.visibleComputedRankingData)
+    
 
-    data.rankingLabelList.forEach((rankingLabels, i) => {
+    data.containerSelection.each((d, i, g) => {
+      const _containerSelection = d3.select(g[i])
+      const rankingLabels = data.rankingLabelList[i]
       const rankingScale = data.rankingScaleList[i]
+      if (!rankingLabels || !rankingScale) {
+        return
+      }
+      
+      // const containerClipPathID = `${clipPathID}-${i}`
+      
+      const axisSelection = _containerSelection.selectAll<SVGGElement, any>('g')
+        .data([i])
+        .join('g')
+        .attr('class', yAxisClassName)
+        .attr('clip-path', `url(#${clipPathID})`)
+      const axisLabelSelection = axisSelection.selectAll<SVGGElement, any>('g')
+
+      
+      
       renderRankingAxis({
-        selection: data.axisSelection,
-        yAxisClassName,
+        selection: axisSelection,
+        // yAxisClassName,
         fullParams: data.fullParams,
         // tickTextAlign: data.tickTextAlign,
         fullChartParams: data.fullChartParams,
@@ -423,8 +520,8 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
       })
   
       renderRankingAxisLabel({
-        selection: data.axisSelection,
-        yLabelClassName,
+        selection: axisLabelSelection,
+        textClassName,
         fullParams: data.fullParams,
         // axisLabelAlign: data.axisLabelAlign,
         layout: data.layout,
