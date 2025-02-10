@@ -9,7 +9,7 @@ import type { Observable } from 'rxjs'
 import type {
   DefinePluginConfig,
 } from '../../../lib/core-types'
-import type { BaseRankingAxisParams } from '../../../lib/plugins-basic-types'
+import type { BaseRankingAxisParams, BaseRankingBarsParams } from '../../../lib/plugins-basic-types'
 import { defineMultiValuePlugin } from '../../../lib/core'
 import { createBaseRankingAxis } from '../../base/BaseRankingAxis'
 import { DEFAULT_RANKING_BARS_PARAMS } from '../defaults'
@@ -17,6 +17,7 @@ import { LAYER_INDEX_OF_AXIS } from '../../const'
 import {
   visibleComputedRankingDataObservable,
   // rankingAmountLimitObservable,
+  computedRankingAmountListObservable,
   rankingScaleListObservable
 } from '../multiValueObservables'
 
@@ -37,6 +38,12 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING
       axisLabel: {
         toBeTypes: ['object']
       },
+      rankingAmount: {
+        toBe: 'number | "auto"',
+        test: (value: any) => {
+          return typeof value === 'number' || value === 'auto'
+        }
+      }
     })
     if (params.bar) {
       const barResult = validateColumns(params.bar, {
@@ -46,12 +53,12 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING
         barPadding: {
           toBeTypes: ['number']
         },
-        barRadius: {
-          toBe: 'number | "sum"',
-          test: (value: any) => {
-            return typeof value === 'number' || value === 'sum'
-          }
-        },
+        // barRadius: {
+        //   toBe: 'number | "sum"',
+        //   test: (value: any) => {
+        //     return typeof value === 'number' || value === 'sum'
+        //   }
+        // },
       })
       if (barResult.status === 'error') {
         return barResult
@@ -95,12 +102,21 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
   
   const destroy$ = new Subject()
 
-  const rankingAxisParams$: Observable<BaseRankingAxisParams> = observer.fullParams$.pipe(
+  const baseRankingAxisParams$: Observable<BaseRankingAxisParams> = observer.fullParams$.pipe(
     takeUntil(destroy$),
     map(params => {
       return {
         ...params,
         valueIndex: 'sum'
+      }
+    })
+  )
+
+  const baseRankingBarsParams$: Observable<BaseRankingBarsParams> = observer.fullParams$.pipe(
+    takeUntil(destroy$),
+    map(params => {
+      return {
+        ...params
       }
     })
   )
@@ -118,7 +134,7 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
   )
 
   const visibleComputedRankingData$ = visibleComputedRankingDataObservable({
-    valueIndex$,
+    valueIndex$, // * 依據 valueIndex 來取得 visibleComputedData
     isCategorySeprate$,
     visibleComputedData$: observer.visibleComputedData$
   })
@@ -129,10 +145,24 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
   //   multiValueContainerPosition$: observer.multiValueContainerPosition$,
   // })
 
+  const rankingAmount$ = observer.fullParams$.pipe(
+    takeUntil(destroy$),
+    map(p => p.rankingAmount),
+    distinctUntilChanged(),
+  )
+
+  const computedRankingAmountList$ = computedRankingAmountListObservable({
+    multiValueContainerSize$: observer.multiValueContainerSize$,
+    visibleComputedRankingData$,
+    textSizePx$: observer.textSizePx$,
+    rankingAmount$
+  })
+
   const rankingScaleList$ = rankingScaleListObservable({
     multiValueContainerSize$: observer.multiValueContainerSize$,
     visibleComputedRankingData$,
     textSizePx$: observer.textSizePx$,
+    computedRankingAmountList$
   })
 
   const unsubscribeBaseRankingAxis = createBaseRankingAxis(pluginName, {
@@ -141,7 +171,7 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
     // visibleComputedData$: observer.visibleComputedData$,
     visibleComputedRankingData$,
     rankingScaleList$,
-    fullParams$: rankingAxisParams$,
+    fullParams$: baseRankingAxisParams$,
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,
     xyMinMax$: observer.xyMinMax$,

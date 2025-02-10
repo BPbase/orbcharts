@@ -64,7 +64,7 @@ export interface RankingBarsParams {
   bar: {
     barWidth: number
     barPadding: number
-    barRadius: number | boolean
+    // barRadius: number | boolean
   }
   barLabel: {
     // // axisLineVisible: boolean

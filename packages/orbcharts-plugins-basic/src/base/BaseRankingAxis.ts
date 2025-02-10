@@ -81,35 +81,27 @@ function renderRankingAxisLabel ({ selection, textClassName, fullParams, layout,
   let labelX = - offsetX
   let labelY = - offsetY
 
-  const axisLabelSelection = selection
-    .selectAll<SVGGElement, BaseRankingAxisParams>(`g.${textClassName}`)
+  selection
+    .selectAll<SVGTextElement, BaseRankingAxisParams>(`text`)
     .data([fullParams])
-    .join('g')
-    .classed(textClassName, true)
-    .each((d, i, g) => {
-      const text = d3.select(g[i])
-        .selectAll<SVGTextElement, BaseRankingAxisParams>(`text`)
-        .data([d])
-        .join(
-          enter => {
-            return enter
-              .append('text')
-              .style('font-weight', 'bold')
-          },
-          update => update,
-          exit => exit.remove()
-        )
-        .attr('text-anchor', yAxisLabelAnchor)
-        .attr('dominant-baseline', yAxisLabelDominantBaseline)
-        .attr('font-size', fullChartParams.styles.textSize)
-        .style('fill', getColor(fullParams.axisLabel.colorType, fullChartParams))
-        .style('transform', textReverseTransform)
-        // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
-        .attr('x', labelX)
-        .attr('y', labelY)
-        .text(d => fullDataFormatter.yAxis.label)
-    })
-    // .attr('transform', d => `translate(0, ${layout.height})`)
+    .join(
+      enter => {
+        return enter
+          .append('text')
+          .style('font-weight', 'bold')
+      },
+      update => update,
+      exit => exit.remove()
+    )
+    .attr('text-anchor', yAxisLabelAnchor)
+    .attr('dominant-baseline', yAxisLabelDominantBaseline)
+    .attr('font-size', fullChartParams.styles.textSize)
+    .style('fill', getColor(fullParams.axisLabel.colorType, fullChartParams))
+    .style('transform', textReverseTransform)
+    // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
+    .attr('x', labelX)
+    .attr('y', labelY)
+    .text(d => fullDataFormatter.yAxis.label)
 }
 
 function renderRankingAxis ({ selection, fullParams, fullChartParams, rankingScale, renderLabels, textReverseTransformWithRotate, xyMinMax }: {
@@ -486,8 +478,6 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
     switchMap(async (d) => d),
   ).subscribe(data => {
 
-    
-
     data.containerSelection.each((d, i, g) => {
       const _containerSelection = d3.select(g[i])
       const rankingLabels = data.rankingLabelList[i]
@@ -496,17 +486,19 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
         return
       }
       
-      // const containerClipPathID = `${clipPathID}-${i}`
-      
-      const axisSelection = _containerSelection.selectAll<SVGGElement, any>('g')
+      // const containerClipPathID = `${clipPathID}-${i}`  
+      const axisSelection = _containerSelection
+        .selectAll<SVGGElement, any>(`g.${yAxisClassName}`)
         .data([i])
         .join('g')
         .attr('class', yAxisClassName)
         .attr('clip-path', `url(#${clipPathID})`)
-      const axisLabelSelection = axisSelection.selectAll<SVGGElement, any>('g')
+      const axisLabelSelection = _containerSelection
+        .selectAll<SVGGElement, BaseRankingAxisParams>(`g.${textClassName}`)
+        .data([data.fullParams])
+        .join('g')
+        .classed(textClassName, true)
 
-      
-      
       renderRankingAxis({
         selection: axisSelection,
         // yAxisClassName,

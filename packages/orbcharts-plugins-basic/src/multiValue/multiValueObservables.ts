@@ -29,6 +29,7 @@ import type {
 import { createAxisToLabelIndexScale, createAxisToValueScale, createLabelToAxisScale } from '../../lib/core'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 import { d3EventObservable } from '../utils/observables'
+import { c } from 'vite/dist/node/types.d-aGj9QkWt'
 
 // 建立 multiValue 主要的 selection 
 export const multiValueSelectionsObservable = ({ selection, pluginName, clipPathID, categoryLabels$, multiValueContainerPosition$, multiValueGraphicTransform$ }: {
@@ -374,41 +375,12 @@ export const visibleComputedRankingDataObservable = ({ valueIndex$, isCategorySe
 
 }
 
-export const rankingScaleListObservable = ({ multiValueContainerSize$, visibleComputedRankingData$, textSizePx$ }: {
-  // layout$: Observable<Layout>
+export const computedRankingAmountListObservable = ({ multiValueContainerSize$, visibleComputedRankingData$, textSizePx$, rankingAmount$ }: {
   multiValueContainerSize$: Observable<ContainerSize>
   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
-  // rankingAmountLimit$: Observable<number>
   textSizePx$: Observable<number>
-  // multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+  rankingAmount$: Observable<'auto' | number>
 }) => {
-  // const layoutHeightObservable = ({ layout$, multiValueContainerPosition$ }: {
-  //   layout$: Observable<Layout>
-  //   multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
-  // }) => {
-  //   const rowAmount$ = multiValueContainerPosition$.pipe(
-  //     map(multiValueContainerPosition => {
-  //       const maxRowIndex = multiValueContainerPosition.reduce((acc, current) => {
-  //         return current.rowIndex > acc ? current.rowIndex : acc
-  //       }, 0)
-  //       return maxRowIndex + 1
-  //     }),
-  //     distinctUntilChanged(),
-  //     shareReplay(1)
-  //   )
-
-  //   return combineLatest({
-  //     layout: layout$,
-  //     rowAmount: rowAmount$
-  //   }).pipe(
-  //     switchMap(async (d) => d),
-  //     map(data => {
-  //       return (data.layout.rootHeight / data.rowAmount) - (data.layout.top + data.layout.bottom)
-  //     }),
-  //     shareReplay(1)
-  //   )
-  // }
-
   const minLineHeightObservable = ({ textSizePx$ }: {
     textSizePx$: Observable<number>
   }) => {
@@ -457,8 +429,6 @@ export const rankingScaleListObservable = ({ multiValueContainerSize$, visibleCo
     )
   }
 
-  // const layoutHeight$ = layoutHeightObservable({ layout$, multiValueContainerPosition$ })
-
   const minLineHeight$ = minLineHeightObservable({ textSizePx$ })
 
   const containerHeight$ = containerHeightObservable({
@@ -471,26 +441,166 @@ export const rankingScaleListObservable = ({ multiValueContainerSize$, visibleCo
     minLineHeight$
   })
 
+  // 計算每個 category 的顯示數量（要排名的數量）
+  const computedRankingAmountList$ = combineLatest({
+    rankingAmount: rankingAmount$,
+    visibleComputedRankingData: visibleComputedRankingData$
+  }).pipe(
+    switchMap(async d => d),
+    switchMap(data => {
+      return data.rankingAmount === 'auto'
+        // 'auto': 不超過限制
+        ? rankingAmountLimit$.pipe(
+            map(rankingAmountLimit => {
+              return data.visibleComputedRankingData.map(categoryData => {
+                return Math.min(rankingAmountLimit, categoryData.length)
+              })
+            })
+          )
+        // number: 指定數量
+        : of(data.visibleComputedRankingData.map(_ => data.rankingAmount as number))
+    }),
+  )
+
+  return computedRankingAmountList$
+}
+
+export const rankingItemHeightListObservable = ({ multiValueContainerSize$, visibleComputedRankingData$, textSizePx$, computedRankingAmountList$ }: {
+  multiValueContainerSize$: Observable<ContainerSize>
+  visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
+  textSizePx$: Observable<number>
+  // rankingAmount$: Observable<'auto' | number>
+  computedRankingAmountList$: Observable<number[]>
+}) => {
+  const minLineHeightObservable = ({ textSizePx$ }: {
+    textSizePx$: Observable<number>
+  }) => {
+    return textSizePx$.pipe(
+      map(textSizePx => textSizePx * 2), // 2倍行高
+      shareReplay(1)
+    )
+  }
+
+  const containerHeightObservable = ({ minLineHeight$, multiValueContainerSize$ }: {
+    minLineHeight$: Observable<number>
+    multiValueContainerSize$: Observable<ContainerSize>
+  }) => {
+    return combineLatest({
+      minLineHeight: minLineHeight$,
+      multiValueContainerSize: multiValueContainerSize$
+    }).pipe(
+      switchMap(async (d) => d),
+      map(data => {
+        // 避免過小造成計算 scale 錯誤
+        return data.multiValueContainerSize.height > data.minLineHeight
+          ? data.multiValueContainerSize.height
+          : data.minLineHeight
+      }),
+      distinctUntilChanged(),
+      shareReplay(1)
+    )
+  }
+
+  // const rankingAmountLimitObservable = ({ minLineHeight$, containerHeight$ }: {
+  //   containerHeight$: Observable<number>
+  //   minLineHeight$: Observable<number>
+  // }) => {
+
+  //   return combineLatest({
+  //     minLineHeight: minLineHeight$,
+  //     containerHeight: containerHeight$
+  //   }).pipe(
+  //     switchMap(async (d) => d),
+  //     map(data => {
+  //       const labelAmountLimit = Math.floor(data.containerHeight / data.minLineHeight)
+  //       return labelAmountLimit
+  //     }),
+  //     distinctUntilChanged(),
+  //     shareReplay(1)
+  //   )
+  // }
+
+  const minLineHeight$ = minLineHeightObservable({ textSizePx$ })
+
+  const containerHeight$ = containerHeightObservable({
+    minLineHeight$,
+    multiValueContainerSize$
+  })
+
+  // const rankingAmountLimit$ = rankingAmountLimitObservable({
+  //   containerHeight$,
+  //   minLineHeight$
+  // })
+
+  // // 計算每個 category 的顯示數量（要排名的數量）
+  // const computedRankingAmountList$ = combineLatest({
+  //   rankingAmount: rankingAmount$,
+  //   visibleComputedRankingData: visibleComputedRankingData$
+  // }).pipe(
+  //   switchMap(async d => d),
+  //   switchMap(data => {
+  //     return data.rankingAmount === 'auto'
+  //       // 'auto': 不超過限制
+  //       ? rankingAmountLimit$.pipe(
+  //           map(rankingAmountLimit => {
+  //             return data.visibleComputedRankingData.map(categoryData => {
+  //               return Math.min(rankingAmountLimit, categoryData.length)
+  //             })
+  //           })
+  //         )
+  //       // number: 指定數量
+  //       : of(data.visibleComputedRankingData.map(_ => data.rankingAmount as number))
+  //   }),
+  // )
+
   return combineLatest({
-    minLineHeight: minLineHeight$,
+    // minLineHeight: minLineHeight$,
     containerHeight: containerHeight$,
-    rankingAmountLimit: rankingAmountLimit$,
     visibleComputedRankingData: visibleComputedRankingData$,
+    computedRankingAmountList: computedRankingAmountList$
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
       // 依每個 category 計算 scale
       return data.visibleComputedRankingData.map((categoryData, i) => {
-        let labelAmount = categoryData.length
-        let totalHeight = 0
-        if (categoryData.length > data.rankingAmountLimit) {
-          // 用全部的數量來算而不是要顯示的數量（要超出圖軸高度）
-          let lineHeight = data.containerHeight / data.rankingAmountLimit
-          totalHeight = lineHeight * labelAmount
-        } else {
-          totalHeight = data.containerHeight
-        }
+        const rankingAmount = data.computedRankingAmountList[i]
+        const rankingItemHeight = data.containerHeight / rankingAmount
+        return rankingItemHeight
+      })
+    })
+  )
+}
 
+export const rankingScaleListObservable = ({ multiValueContainerSize$, visibleComputedRankingData$, textSizePx$, computedRankingAmountList$ }: {
+  multiValueContainerSize$: Observable<ContainerSize>
+  visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
+  textSizePx$: Observable<number>
+  computedRankingAmountList$: Observable<number[]>
+  // rankingAmount$: Observable<'auto' | number>
+}) => {
+
+  const rankingItemHeightList$ = rankingItemHeightListObservable({
+    multiValueContainerSize$,
+    visibleComputedRankingData$,
+    textSizePx$,
+    computedRankingAmountList$
+  })
+
+  return combineLatest({
+    // minLineHeight: minLineHeight$,
+    // containerHeight: containerHeight$,
+    visibleComputedRankingData: visibleComputedRankingData$,
+    // computedRankingAmountList: computedRankingAmountList$
+    rankingItemHeightList: rankingItemHeightList$,
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      // 依每個 category 計算 scale
+      return data.visibleComputedRankingData.map((categoryData, i) => {
+        const allLabelAmount = categoryData.length
+        const rankingItemHeight = data.rankingItemHeightList[i]
+        const totalHeight = rankingItemHeight * allLabelAmount // 有可能超出圖軸高度
+        
         return createLabelToAxisScale({
           axisLabels: categoryData.map(d => d.label),
           axisWidth: totalHeight,

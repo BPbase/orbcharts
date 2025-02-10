@@ -102,7 +102,7 @@ export const DEFAULT_RANKING_BARS_PARAMS: RankingBarsParams = {
   bar: {
     barWidth: 16,
     barPadding: 0,
-    barRadius: false,
+    // barRadius: false,
   },
   barLabel: {
     padding: 20,

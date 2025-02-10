@@ -114,6 +114,15 @@ export interface BaseRankingAxisParams {
   valueIndex: number | 'sum'
 }
 
+export interface BaseRankingBarsParams {
+  bar: {
+    barWidth: number
+    barPadding: number
+    // barRadius: number | boolean
+  }
+  rankingAmount: 'auto' | number
+}
+
 export interface BaseTooltipStyle {
   backgroundColor: string
   backgroundOpacity: number
