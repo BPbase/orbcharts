@@ -7,21 +7,27 @@ import {
   textSizePxObservable
 } from '../utils/observables'
 import {
-  multiValueComputedXYDataObservable,
+  computedXYDataObservable,
   // multiValueAxesTransformObservable,
   // multiValueAxesReverseTransformObservable,
-  multiValueGraphicTransformObservable,
-  multiValueGraphicReverseScaleObservable,
-  multiValueCategoryLabelsObservable,
-  multiValueVisibleComputedDataObservable,
-  multiValueVisibleComputedXYDataObservable,
-  multiValueContainerPositionObservable,
-  multiValueContainerSizeObservable,
+  graphicTransformObservable,
+  graphicReverseScaleObservable,
+  categoryLabelsObservable,
+  visibleComputedDataObservable,
+  visibleComputedSumDataObservable,
+  visibleComputedRankingByIndexDataObservable,
+  visibleComputedRankingBySumDataObservable,
+  visibleComputedXYDataObservable,
+  containerPositionObservable,
+  containerSizeObservable,
   xyMinMaxObservable,
   filteredXYMinMaxDataObservable,
   // visibleComputedRankingDataObservable,
   // rankingAmountLimitObservable,
   // rankingScaleObservable
+  xScaleObservable,
+  xSumScaleObservable,
+  yScaleObservable
 } from '../utils/multiValueObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({ subject, observer }) => {
@@ -36,7 +42,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
   
-  const multiValueContainerPosition$ = multiValueContainerPositionObservable({
+  const containerPosition$ = containerPositionObservable({
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$,
     layout$: observer.layout$,
@@ -44,9 +50,9 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
 
-  const multiValueContainerSize$ = multiValueContainerSizeObservable({
+  const containerSize$ = containerSizeObservable({
     layout$: observer.layout$,
-    multiValueContainerPosition$
+    containerPosition$
   }).pipe(
     shareReplay(1)
   )
@@ -71,7 +77,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
 
-  const multiValueHighlight$ = highlightObservable({
+  const highlight$ = highlightObservable({
     datumList$,
     fullChartParams$: observer.fullChartParams$,
     event$: subject.event$
@@ -79,7 +85,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
 
-  const categoryLabels$ = multiValueCategoryLabelsObservable({
+  const categoryLabels$ = categoryLabelsObservable({
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$,
   }).pipe(
@@ -99,8 +105,39 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
 
+  const visibleComputedData$ = visibleComputedDataObservable({
+    computedData$: observer.computedData$,
+  }).pipe(
+    shareReplay(1)
+  )
 
-  const computedXYData$ = multiValueComputedXYDataObservable({
+  const visibleComputedSumData$ = visibleComputedSumDataObservable({
+    visibleComputedData$
+  }).pipe(
+    shareReplay(1)
+  )
+
+  // const valueIndex$ = observer.fullDataFormatter$.pipe(
+  //   map(d => d.yAxis.valueIndex),
+  //   distinctUntilChanged()
+  // )
+
+  const visibleComputedRankingByIndexData$ = visibleComputedRankingByIndexDataObservable({
+    xyValueIndex$, // * 依據 valueIndex 來取得 visibleComputedData
+    isCategorySeprate$,
+    visibleComputedData$
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const visibleComputedRankingBySumData$ = visibleComputedRankingBySumDataObservable({
+    isCategorySeprate$,
+    visibleComputedSumData$
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const computedXYData$ = computedXYDataObservable({
     computedData$: observer.computedData$,
     xyMinMax$,
     xyValueIndex$,
@@ -110,13 +147,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
 
-  const visibleComputedData$ = multiValueVisibleComputedDataObservable({
-    computedData$: observer.computedData$,
-  }).pipe(
-    shareReplay(1)
-  )
-
-  const visibleComputedXYData$ = multiValueVisibleComputedXYDataObservable({
+  const visibleComputedXYData$ = visibleComputedXYDataObservable({
     computedXYData$: computedXYData$,
   }).pipe(
     shareReplay(1)
@@ -165,7 +196,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
   //   shareReplay(1)
   // )
   
-  const multiValueGraphicTransform$ = multiValueGraphicTransformObservable({
+  const graphicTransform$ = graphicTransformObservable({
     xyMinMax$,
     xyValueIndex$,
     filteredXYMinMaxData$,
@@ -175,14 +206,38 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
 
-  const multiValueGraphicReverseScale$ = multiValueGraphicReverseScaleObservable({
-    multiValueContainerPosition$: multiValueContainerPosition$,
+  const graphicReverseScale$ = graphicReverseScaleObservable({
+    containerPosition$: containerPosition$,
     // multiValueAxesTransform$: multiValueAxesTransform$,
-    multiValueGraphicTransform$: multiValueGraphicTransform$,
+    graphicTransform$: graphicTransform$,
   }).pipe(
     shareReplay(1)
   )
 
+  const xScale$ = xScaleObservable({
+    visibleComputedSumData$,
+    fullDataFormatter$: observer.fullDataFormatter$,
+    filteredXYMinMaxData$,
+    layout$: observer.layout$,
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const xSumScale$ = xSumScaleObservable({
+    fullDataFormatter$: observer.fullDataFormatter$,
+    filteredXYMinMaxData$,
+    layout$: observer.layout$,
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const yScale$ = yScaleObservable({
+    fullDataFormatter$: observer.fullDataFormatter$,
+    filteredXYMinMaxData$,
+    layout$: observer.layout$,
+  }).pipe(
+    shareReplay(1)
+  )
 
   return <ContextObserverTypeMap<'multiValue', any>>{
     fullParams$: observer.fullParams$,
@@ -192,23 +247,29 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     layout$: observer.layout$,
     textSizePx$,
     isCategorySeprate$,
-    multiValueContainerPosition$,
-    multiValueContainerSize$,
+    containerPosition$,
+    containerSize$,
     // multiValueAxesSize$,
-    multiValueHighlight$,
+    highlight$,
     categoryLabels$,
     CategoryDataMap$,
     xyMinMax$,
     xyValueIndex$,
-    computedXYData$,
+    // computedXYData$,
     visibleComputedData$,
+    visibleComputedSumData$,
+    visibleComputedRankingByIndexData$,
+    visibleComputedRankingBySumData$,
     visibleComputedXYData$,
     filteredXYMinMaxData$,
     // visibleComputedRankingData$,
     // rankingScale$,
     // multiValueAxesTransform$,
     // multiValueAxesReverseTransform$,
-    multiValueGraphicTransform$,
-    multiValueGraphicReverseScale$,
+    graphicTransform$,
+    graphicReverseScale$,
+    xScale$,
+    xSumScale$,
+    yScale$
   }
 }

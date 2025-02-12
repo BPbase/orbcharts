@@ -7,4 +7,6 @@ export interface ComputedDatumMultiValue extends ComputedDatumBase, ComputedDatu
   value: number[]
 }
 
-
+export interface ComputedDatumWithSumMultiValue extends ComputedDatumMultiValue {
+  sum: number
+}

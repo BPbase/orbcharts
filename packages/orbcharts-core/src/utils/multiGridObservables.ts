@@ -32,11 +32,11 @@ import {
   seriesDataMapObservable,
   groupDataMapObservable } from './observables'
 import {
-  gridComputedLayoutDataObservable,
+  gridComputedAxesDataObservable,
   gridAxesSizeObservable,
   gridSeriesLabelsObservable,
   gridVisibleComputedDataObservable,
-  gridVisibleComputedLayoutDataObservable,
+  gridVisibleComputedAxesDataObservable,
   // isSeriesSeprateObservable,
   gridContainerPositionObservable,
   computedStackedDataObservables,
@@ -200,7 +200,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           shareReplay(1)
         )
 
-        const computedLayoutData$ = gridComputedLayoutDataObservable({
+        const computedAxesData$ = gridComputedAxesDataObservable({
           computedData$: gridComputedData$,
           fullDataFormatter$: gridDataFormatter$,
           layout$: layout$,
@@ -209,8 +209,8 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           shareReplay(1)
         )
     
-        const visibleComputedLayoutData$ = gridVisibleComputedLayoutDataObservable({
-          computedLayoutData$: computedLayoutData$,
+        const visibleComputedAxesData$ = gridVisibleComputedAxesDataObservable({
+          computedAxesData$: computedAxesData$,
         }).pipe(
           takeUntil(destroy$),
           shareReplay(1)
@@ -282,9 +282,9 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           GroupDataMap$,
           dataFormatter$: gridDataFormatter$,
           computedData$: gridComputedData$,
-          computedLayoutData$,
+          computedAxesData$,
           visibleComputedData$,
-          visibleComputedLayoutData$,
+          visibleComputedAxesData$,
           computedStackedData$,
           groupScaleDomainValue$,
           filteredMinMaxValue$,

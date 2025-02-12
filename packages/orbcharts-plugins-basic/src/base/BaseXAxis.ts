@@ -43,21 +43,22 @@ interface BaseXAxisContext {
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   fullChartParams$: Observable<ChartParams>
   isCategorySeprate$: Observable<boolean>
-  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+  containerPosition$: Observable<ContainerPositionScaled[]>
   layout$: Observable<Layout>
-  filteredXYMinMaxData$: Observable<{
-    datumList: ComputedXYDatumMultiValue[];
-    minXDatum: ComputedXYDatumMultiValue | null;
-    maxXDatum: ComputedXYDatumMultiValue | null;
-    minYDatum: ComputedXYDatumMultiValue | null;
-    maxYDatum: ComputedXYDatumMultiValue | null;
-  }>
-  xyMinMax$: Observable<{
-    minX: number;
-    maxX: number;
-    minY: number;
-    maxY: number;
-  }>
+  xScale$: Observable<d3.ScaleLinear<number, number>>
+  // filteredXYMinMaxData$: Observable<{
+  //   datumList: ComputedXYDatumMultiValue[];
+  //   minXDatum: ComputedXYDatumMultiValue | null;
+  //   maxXDatum: ComputedXYDatumMultiValue | null;
+  //   minYDatum: ComputedXYDatumMultiValue | null;
+  //   maxYDatum: ComputedXYDatumMultiValue | null;
+  // }>
+  // xyMinMax$: Observable<{
+  //   minX: number;
+  //   maxX: number;
+  //   minY: number;
+  //   maxY: number;
+  // }>
 }
 
 // interface TextAlign {
@@ -118,22 +119,22 @@ function renderXAxisLabel ({ selection, xLabelClassName, fullParams, layout, ful
     .attr('transform', d => `translate(${layout.width}, ${layout.height})`)
 }
 
-function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullDataFormatter, fullChartParams, xScale, textReverseTransform, xyMinMax }: {
+function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullChartParams, xScale, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   xAxisClassName: string
   fullParams: BaseXAxisParams
   // tickTextAlign: TextAlign
   layout: { width: number, height: number }
-  fullDataFormatter: DataFormatterMultiValue,
+  // fullDataFormatter: DataFormatterMultiValue,
   fullChartParams: ChartParams
   xScale: d3.ScaleLinear<number, number>
   textReverseTransform: string,
-  xyMinMax: {
-    minX: number;
-    maxX: number;
-    minY: number;
-    maxY: number;
-  }
+  // xyMinMax: {
+  //   minX: number;
+  //   maxX: number;
+  //   minY: number;
+  //   maxY: number;
+  // }
 }) {
 
   const xAxisSelection = selection
@@ -204,10 +205,11 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
   fullDataFormatter$,
   fullChartParams$,
   isCategorySeprate$,
-  multiValueContainerPosition$,
+  containerPosition$,
   layout$,
-  filteredXYMinMaxData$,
-  xyMinMax$
+  xScale$
+  // filteredXYMinMaxData$,
+  // xyMinMax$
 }) => {
   
   const destroy$ = new Subject()
@@ -257,7 +259,7 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
 
   combineLatest({
     containerSelection: containerSelection$,
-    gridContainerPosition: multiValueContainerPosition$
+    gridContainerPosition: containerPosition$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
@@ -274,53 +276,53 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
       // .attr('opacity', 1)
   })
 
-  const textReverseTransform$ = multiValueContainerPosition$.pipe(
+  const textReverseTransform$ = containerPosition$.pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
-    map(multiValueContainerPosition => {
+    map(containerPosition => {
       // const axesRotateXYReverseValue = `rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
       // const axesRotateReverseValue = `rotate(${data.gridAxesReverseTransform.rotate}deg)`
-      const containerScaleReverseValue = `scale(${1 / multiValueContainerPosition[0].scale[0]}, ${1 / multiValueContainerPosition[0].scale[1]})`
+      const containerScaleReverseValue = `scale(${1 / containerPosition[0].scale[0]}, ${1 / containerPosition[0].scale[1]})`
       // 抵消最外層scale
       return `${containerScaleReverseValue}`
     }),
     distinctUntilChanged()
   )
 
-  const xScale$: Observable<d3.ScaleLinear<number, number>> = new Observable(subscriber => {
-    combineLatest({
-      fullDataFormatter: fullDataFormatter$,
-      layout: layout$,
-      // xyMinMax: xyMinMax$
-      filteredXYMinMaxData: filteredXYMinMaxData$
-    }).pipe(
-      takeUntil(destroy$),
-      switchMap(async (d) => d),
-    ).subscribe(data => {
-      const valueIndex = data.fullDataFormatter.xAxis.valueIndex
-      if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
-        || data.filteredXYMinMaxData.minXDatum.value[valueIndex] == null || data.filteredXYMinMaxData.maxXDatum.value[valueIndex] == null
-      ) {
-        return
-      }
-      let maxValue = data.filteredXYMinMaxData.maxXDatum.value[valueIndex]
-      let minValue = data.filteredXYMinMaxData.minXDatum.value[valueIndex]
-      if (maxValue === minValue && maxValue === 0) {
-        // 避免最大及最小值同等於 0 造成無法計算scale
-        maxValue = 1
-      }
+  // const xScale$: Observable<d3.ScaleLinear<number, number>> = new Observable(subscriber => {
+  //   combineLatest({
+  //     fullDataFormatter: fullDataFormatter$,
+  //     layout: layout$,
+  //     // xyMinMax: xyMinMax$
+  //     filteredXYMinMaxData: filteredXYMinMaxData$
+  //   }).pipe(
+  //     takeUntil(destroy$),
+  //     switchMap(async (d) => d),
+  //   ).subscribe(data => {
+  //     const valueIndex = data.fullDataFormatter.xAxis.valueIndex
+  //     if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
+  //       || data.filteredXYMinMaxData.minXDatum.value[valueIndex] == null || data.filteredXYMinMaxData.maxXDatum.value[valueIndex] == null
+  //     ) {
+  //       return
+  //     }
+  //     let maxValue = data.filteredXYMinMaxData.maxXDatum.value[valueIndex]
+  //     let minValue = data.filteredXYMinMaxData.minXDatum.value[valueIndex]
+  //     if (maxValue === minValue && maxValue === 0) {
+  //       // 避免最大及最小值同等於 0 造成無法計算scale
+  //       maxValue = 1
+  //     }
 
-      const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-        maxValue,
-        minValue,
-        axisWidth: data.layout.width,
-        scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
-        scaleRange: data.fullDataFormatter.xAxis.scaleRange,
-      })
+  //     const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
+  //       maxValue,
+  //       minValue,
+  //       axisWidth: data.layout.width,
+  //       scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
+  //       scaleRange: data.fullDataFormatter.xAxis.scaleRange,
+  //     })
 
-      subscriber.next(xScale)
-    })
-  })
+  //     subscriber.next(xScale)
+  //   })
+  // })
 
 
   combineLatest({
@@ -334,7 +336,7 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
     fullChartParams: fullChartParams$,
     xScale: xScale$,
     textReverseTransform: textReverseTransform$,
-    xyMinMax: xyMinMax$
+    // xyMinMax: xyMinMax$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -346,11 +348,11 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
       fullParams: data.fullParams,
       // tickTextAlign: data.tickTextAlign,
       layout: data.layout,
-      fullDataFormatter: data.fullDataFormatter,
+      // fullDataFormatter: data.fullDataFormatter,
       fullChartParams: data.fullChartParams,
       xScale: data.xScale,
       textReverseTransform: data.textReverseTransform,
-      xyMinMax: data.xyMinMax
+      // xyMinMax: data.xyMinMax
     })
 
     renderXAxisLabel({

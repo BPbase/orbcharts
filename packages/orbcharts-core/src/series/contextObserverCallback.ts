@@ -8,7 +8,7 @@ import { highlightObservable, textSizePxObservable } from '../utils/observables'
 import {
   separateSeriesObservable,
   seriesVisibleComputedDataObservable,
-  seriesComputedLayoutDataObservable,
+  seriesComputedSortedDataObservable,
   seriesLabelsObservable,
   seriesContainerPositionObservable,
   seriesContainerPositionMapObservable
@@ -32,15 +32,15 @@ export const contextObserverCallback: ContextObserverCallback<'series'> = ({ sub
     shareReplay(1)
   )
 
-  const computedLayoutData$ = seriesComputedLayoutDataObservable({
+  const computedSortedData$ = seriesComputedSortedDataObservable({
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$
   }).pipe(
     shareReplay(1)
   )
 
-  const visibleComputedLayoutData$ = seriesVisibleComputedDataObservable({
-    computedData$: computedLayoutData$,
+  const visibleComputedSortedData$ = seriesVisibleComputedDataObservable({
+    computedData$: computedSortedData$,
   }).pipe(
     shareReplay(1)
   )
@@ -95,9 +95,9 @@ export const contextObserverCallback: ContextObserverCallback<'series'> = ({ sub
     layout$: observer.layout$,
     textSizePx$,
     visibleComputedData$,
-    visibleComputedLayoutData$,
+    visibleComputedSortedData$,
     separateSeries$,
-    computedLayoutData$,
+    computedSortedData$,
     seriesHighlight$,
     seriesLabels$,
     SeriesDataMap$,

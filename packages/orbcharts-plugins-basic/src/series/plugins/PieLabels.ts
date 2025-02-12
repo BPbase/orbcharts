@@ -447,7 +447,7 @@ function highlight ({ textSelection, lineSelection, ids, fullChartParams }: {
 function createEachPieLabel (pluginName: string, context: {
   containerSelection: d3.Selection<SVGGElement, any, any, unknown>
   // computedData$: Observable<ComputedDatumSeries[][]>
-  containerVisibleComputedLayoutData$: Observable<ComputedDatumSeries[]>
+  containerVisibleComputedSortedData$: Observable<ComputedDatumSeries[]>
   // SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
   fullParams$: Observable<PieLabelsParams>
   fullChartParams$: Observable<ChartParams>
@@ -488,7 +488,7 @@ function createEachPieLabel (pluginName: string, context: {
 
   combineLatest({
     shorterSideWith: shorterSideWith$,
-    containerVisibleComputedLayoutData: context.containerVisibleComputedLayoutData$,
+    containerVisibleComputedSortedData: context.containerVisibleComputedSortedData$,
     fullParams: context.fullParams$,
     fullChartParams: context.fullChartParams$,
     textSizePx: context.textSizePx$,
@@ -516,7 +516,7 @@ function createEachPieLabel (pluginName: string, context: {
     })
 
     const pieData = makePieData({
-      data: data.containerVisibleComputedLayoutData,
+      data: data.containerVisibleComputedSortedData,
       startAngle: data.fullParams.startAngle,
       endAngle: data.fullParams.endAngle
     })
@@ -608,7 +608,7 @@ export const PieLabels = defineSeriesPlugin(pluginConfig)(({ selection, observer
         
         const containerSelection = d3.select(g[containerIndex])
 
-        const containerVisibleComputedLayoutData$ = observer.visibleComputedLayoutData$.pipe(
+        const containerVisibleComputedSortedData$ = observer.visibleComputedSortedData$.pipe(
           takeUntil(destroy$),
           map(data => data[containerIndex] ?? data[0])
         )
@@ -621,7 +621,7 @@ export const PieLabels = defineSeriesPlugin(pluginConfig)(({ selection, observer
         unsubscribeFnArr[containerIndex] = createEachPieLabel(pluginName, {
           containerSelection: containerSelection,
           // computedData$: observer.computedData$,
-          containerVisibleComputedLayoutData$: containerVisibleComputedLayoutData$,
+          containerVisibleComputedSortedData$: containerVisibleComputedSortedData$,
           // SeriesDataMap$: observer.SeriesDataMap$,
           fullParams$: observer.fullParams$,
           fullChartParams$: observer.fullChartParams$,

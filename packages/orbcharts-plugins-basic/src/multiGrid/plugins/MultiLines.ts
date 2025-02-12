@@ -73,9 +73,9 @@ export const MultiLines = defineMultiGridPlugin(pluginConfig)(({ selection, root
           unsubscribeFnArr[i] = createBaseLines(pluginName, {
             selection: gridSelection,
             computedData$: d.computedData$,
-            computedLayoutData$: d.computedLayoutData$,
+            computedAxesData$: d.computedAxesData$,
             visibleComputedData$: d.visibleComputedData$,
-            visibleComputedLayoutData$: d.visibleComputedLayoutData$,
+            visibleComputedAxesData$: d.visibleComputedAxesData$,
             seriesLabels$: d.seriesLabels$,
             SeriesDataMap$: d.SeriesDataMap$,
             GroupDataMap$: d.GroupDataMap$,

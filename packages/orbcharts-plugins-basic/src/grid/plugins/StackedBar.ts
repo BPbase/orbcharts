@@ -39,9 +39,9 @@ export const StackedBar = defineGridPlugin(pluginConfig)(({ selection, name, sub
   const unsubscribeBaseBars = createBaseStackedBar(pluginName, {
     selection,
     computedData$: observer.computedData$,
-    computedLayoutData$: observer.computedLayoutData$,
+    computedAxesData$: observer.computedAxesData$,
     visibleComputedData$: observer.visibleComputedData$,
-    visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
+    visibleComputedAxesData$: observer.visibleComputedAxesData$,
     seriesLabels$: observer.seriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,

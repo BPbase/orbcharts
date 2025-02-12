@@ -234,19 +234,19 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
     pluginName,
     clipPathID,
     categoryLabels$: observer.categoryLabels$,
-    multiValueContainerPosition$: observer.multiValueContainerPosition$,
-    multiValueGraphicTransform$: observer.multiValueGraphicTransform$
+    containerPosition$: observer.containerPosition$,
+    graphicTransform$: observer.graphicTransform$
   })
 
   const graphicReverseScale$: Observable<[number, number][]> = combineLatest({
     computedData: observer.computedData$,
-    multiValueGraphicReverseScale: observer.multiValueGraphicReverseScale$
+    graphicReverseScale: observer.graphicReverseScale$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async data => data),
     map(data => {
       return data.computedData.map((series, categoryIndex) => {
-        return data.multiValueGraphicReverseScale[categoryIndex]
+        return data.graphicReverseScale[categoryIndex]
       })
     })
   )
@@ -389,7 +389,7 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
 
   combineLatest({
     graphicSelection: graphicSelection$,
-    highlight: observer.multiValueHighlight$.pipe(
+    highlight: observer.highlight$.pipe(
       map(data => data.map(d => d.id))
     ),
     fullChartParams: observer.fullChartParams$

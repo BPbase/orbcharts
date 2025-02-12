@@ -98,7 +98,7 @@
 //     xyMinMax$: observer.xyMinMax$,
 //     textSizePx$: observer.textSizePx$,
 //     layout$: observer.layout$,
-//     multiValueContainerPosition$: observer.multiValueContainerPosition$,
+//     containerPosition$: observer.containerPosition$,
 //     isCategorySeprate$: observer.isCategorySeprate$,
 //   })
 

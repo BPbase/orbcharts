@@ -90,10 +90,11 @@ export const XAxis = defineMultiValuePlugin(pluginConfig)(({ selection, name, ob
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,
     isCategorySeprate$: observer.isCategorySeprate$,
-    multiValueContainerPosition$: observer.multiValueContainerPosition$,
+    containerPosition$: observer.containerPosition$,
     layout$: observer.layout$,
-    filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
-    xyMinMax$: observer.xyMinMax$,
+    xScale$: observer.xScale$,
+    // filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
+    // xyMinMax$: observer.xyMinMax$,
   })
 
   return () => {

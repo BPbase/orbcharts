@@ -111,7 +111,8 @@ export interface BaseRankingAxisParams {
     offset: [number, number]
     colorType: ColorType
   }
-  valueIndex: number | 'sum'
+  // valueIndex: number | 'sum'
+  sumValue: boolean
 }
 
 export interface BaseRankingBarsParams {

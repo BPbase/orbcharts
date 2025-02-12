@@ -42,14 +42,14 @@ interface BaseBarsContext {
   fullParams$: Observable<BaseRankingBarsParams>
   fullChartParams$: Observable<ChartParams>
   layout$: Observable<Layout>
-  multiValueGraphicTransform$: Observable<TransformData>
-  multiValueGraphicReverseScale$: Observable<[number, number][]>
-  multiValueHighlight$: Observable<ComputedDatumMultiValue[]>
+  graphicTransform$: Observable<TransformData>
+  graphicReverseScale$: Observable<[number, number][]>
+  highlight$: Observable<ComputedDatumMultiValue[]>
   computedRankingAmountList$: Observable<number[]>
   rankingScaleList$: Observable<d3.ScalePoint<string>[]>
   // rankingItemHeightList$: Observable<number[]>
-  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
-  multiValueContainerSize$: Observable<ContainerSize>
+  containerPosition$: Observable<ContainerPositionScaled[]>
+  containerSize$: Observable<ContainerSize>
   isCategorySeprate$: Observable<boolean>
   event$: Subject<EventMultiValue>
 }
@@ -147,7 +147,7 @@ function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedRank
         )
         .attr('transform', (d, i) => `translate(${(d ? d.axisX : 0) - barHalfWidth}, ${0})`)
         .attr('fill', d => d.color)
-        .attr('y', d => d. < zeroYArr[seriesIndex] ? d.axisY : zeroYArr[seriesIndex])
+        .attr('y', d => rankingScaleList[categoryIndex] && rankingScaleList[categoryIndex](d.label))
         .attr('x', d => isCategorySeprate ? 0 : barScale(d.seriesLabel)!)
         .attr('width', barWidth!)
         .attr('rx', transformedBarRadius[seriesIndex][0] ?? 1)
@@ -237,14 +237,14 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
   fullParams$,
   fullChartParams$,
   layout$,
-  multiValueGraphicTransform$,
-  multiValueGraphicReverseScale$,
-  multiValueHighlight$,
+  graphicTransform$,
+  graphicReverseScale$,
+  highlight$,
   computedRankingAmountList$,
   rankingScaleList$,
   // rankingItemHeightList$,
-  multiValueContainerPosition$,
-  multiValueContainerSize$,
+  containerPosition$,
+  containerSize$,
   isCategorySeprate$,
   event$
 }) => {
@@ -264,22 +264,22 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     pluginName,
     clipPathID,
     categoryLabels$: categoryLabels$,
-    multiValueContainerPosition$: multiValueContainerPosition$,
-    multiValueGraphicTransform$: multiValueGraphicTransform$
+    containerPosition$: containerPosition$,
+    graphicTransform$: graphicTransform$
   })
 
-  const graphicReverseScale$: Observable<[number, number][]> = combineLatest({
-    computedData: computedData$,
-    multiValueGraphicReverseScale: multiValueGraphicReverseScale$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async data => data),
-    map(data => {
-      return data.computedData.map((series, categoryIndex) => {
-        return data.multiValueGraphicReverseScale[categoryIndex]
-      })
-    })
-  )
+  // const graphicReverseScale$: Observable<[number, number][]> = combineLatest({
+  //   computedData: computedData$,
+  //   graphicReverseScale: graphicReverseScale$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async data => data),
+  //   map(data => {
+  //     return data.computedData.map((series, categoryIndex) => {
+  //       return data.graphicReverseScale[categoryIndex]
+  //     })
+  //   })
+  // )
 
   const clipPathSubscription = combineLatest({
     defsSelection: defsSelection$,
@@ -306,7 +306,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     params: fullParams$,
     // gridAxesSize: gridAxesSize$,
     computedRankingAmountList: computedRankingAmountList$,
-    multiValueContainerSize: multiValueContainerSize$,
+    containerSize: containerSize$,
     isCategorySeprate: isCategorySeprate$
   }).pipe(
     takeUntil(destroy$),
@@ -319,7 +319,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
       } else {
         return data.computedRankingAmountList.map(computedRankingAmount => {
           return calcBarWidth({
-            axisWidth: data.multiValueContainerSize.height,
+            axisWidth: data.containerSize.height,
             groupAmount: computedRankingAmount,
             barAmountOfGroup: 1,
             barPadding: 0,
@@ -491,7 +491,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
 
   combineLatest({
     graphicSelection: graphicSelection$,
-    highlight: multiValueHighlight$.pipe(
+    highlight: highlight$.pipe(
       map(data => data.map(d => d.id))
     ),
     fullChartParams: fullChartParams$

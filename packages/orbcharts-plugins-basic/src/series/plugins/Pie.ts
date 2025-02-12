@@ -205,7 +205,7 @@ function highlight ({ pathSelection, ids, fullChartParams, arc, arcHighlight }: 
 function createEachPie (pluginName: string, context: {
   containerSelection: d3.Selection<SVGGElement, any, any, unknown>
   computedData$: Observable<ComputedDatumSeries[][]>
-  containerVisibleComputedLayoutData$: Observable<ComputedDatumSeries[]>
+  containerVisibleComputedSortedData$: Observable<ComputedDatumSeries[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
   fullParams$: Observable<PieParams>
   fullChartParams$: Observable<ChartParams>
@@ -248,7 +248,7 @@ function createEachPie (pluginName: string, context: {
 
   const pieData$: Observable<PieDatum[]> = new Observable(subscriber => {
     combineLatest({
-      containerVisibleComputedLayoutData: context.containerVisibleComputedLayoutData$,
+      containerVisibleComputedSortedData: context.containerVisibleComputedSortedData$,
       fullParams: context.fullParams$,
     }).pipe(
       takeUntil(destroy$),
@@ -256,7 +256,7 @@ function createEachPie (pluginName: string, context: {
     ).subscribe(data => {
       // console.log('pieData', data)
       const pieData: PieDatum[] = makePieData({
-        data: data.containerVisibleComputedLayoutData,
+        data: data.containerVisibleComputedSortedData,
         startAngle: data.fullParams.startAngle,
         endAngle: data.fullParams.endAngle
       })
@@ -592,7 +592,7 @@ export const Pie = defineSeriesPlugin(pluginConfig)(({ selection, name, subject,
         // console.log('containerIndex', containerIndex)
         const containerSelection = d3.select(g[containerIndex])
 
-        const containerVisibleComputedLayoutData$ = observer.visibleComputedLayoutData$.pipe(
+        const containerVisibleComputedSortedData$ = observer.visibleComputedSortedData$.pipe(
           takeUntil(destroy$),
           map(data => data[containerIndex] ?? data[0])
         )
@@ -605,7 +605,7 @@ export const Pie = defineSeriesPlugin(pluginConfig)(({ selection, name, subject,
         unsubscribeFnArr[containerIndex] = createEachPie(pluginName, {
           containerSelection: containerSelection,
           computedData$: observer.computedData$,
-          containerVisibleComputedLayoutData$: containerVisibleComputedLayoutData$,
+          containerVisibleComputedSortedData$: containerVisibleComputedSortedData$,
           SeriesDataMap$: observer.SeriesDataMap$,
           fullParams$: observer.fullParams$,
           fullChartParams$: observer.fullChartParams$,

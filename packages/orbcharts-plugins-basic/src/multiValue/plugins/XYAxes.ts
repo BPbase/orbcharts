@@ -162,10 +162,11 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,
     isCategorySeprate$: observer.isCategorySeprate$,
-    multiValueContainerPosition$: observer.multiValueContainerPosition$,
+    containerPosition$: observer.containerPosition$,
     layout$: observer.layout$,
-    filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
-    xyMinMax$: observer.xyMinMax$,
+    xScale$: observer.xScale$,
+    // filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
+    // xyMinMax$: observer.xyMinMax$,
   })
 
   const unsubscribeBaseYAxis = createBaseYAxis(pluginName, {
@@ -175,10 +176,11 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,
     isCategorySeprate$: observer.isCategorySeprate$,
-    multiValueContainerPosition$: observer.multiValueContainerPosition$,
+    containerPosition$: observer.containerPosition$,
     layout$: observer.layout$,
-    filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
-    xyMinMax$: observer.xyMinMax$,
+    yScale$: observer.yScale$,
+    // filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
+    // xyMinMax$: observer.xyMinMax$,
   })
 
   return () => {

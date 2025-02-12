@@ -105,7 +105,7 @@ function createTextData ({ eventData, renderFn, textAttrs, textStyles }: {
 function createEachPieEventTexts (pluginName: string, context: {
   containerSelection: d3.Selection<SVGGElement, any, any, unknown>
   computedData$: Observable<ComputedDatumSeries[][]>
-  containerComputedLayoutData$: Observable<ComputedDatumSeries[]>
+  containerComputedSortedData$: Observable<ComputedDatumSeries[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
   fullParams$: Observable<PieEventTextsParams>
   fullChartParams$: Observable<ChartParams>
@@ -252,7 +252,7 @@ export const PieEventTexts = defineSeriesPlugin(pluginConfig)(({ selection, name
         
         const containerSelection = d3.select(g[containerIndex])
 
-        const containerComputedLayoutData$ = observer.computedLayoutData$.pipe(
+        const containerComputedSortedData$ = observer.computedSortedData$.pipe(
           takeUntil(destroy$),
           map(data => data[containerIndex] ?? data[0])
         )
@@ -265,7 +265,7 @@ export const PieEventTexts = defineSeriesPlugin(pluginConfig)(({ selection, name
         unsubscribeFnArr[containerIndex] = createEachPieEventTexts(pluginName, {
           containerSelection: containerSelection,
           computedData$: observer.computedData$,
-          containerComputedLayoutData$: containerComputedLayoutData$,
+          containerComputedSortedData$: containerComputedSortedData$,
           SeriesDataMap$: observer.SeriesDataMap$,
           fullParams$: observer.fullParams$,
           fullChartParams$: observer.fullChartParams$,

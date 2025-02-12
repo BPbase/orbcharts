@@ -13,7 +13,7 @@ import type {
   ComputedDatumGrid,
   ComputedDataGrid,
   ComputedLayoutDatumGrid,
-  ComputedLayoutDataGrid,
+  ComputedAxesDataGrid,
   DataFormatterGrid,
   EventGrid,
   ChartParams,
@@ -35,9 +35,9 @@ import { shareReplay } from 'rxjs/operators'
 interface BaseStackedBarContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
-  computedLayoutData$: Observable<ComputedLayoutDataGrid>
+  computedAxesData$: Observable<ComputedAxesDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
-  visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
+  visibleComputedAxesData$: Observable<ComputedAxesDataGrid>
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
@@ -295,9 +295,9 @@ function highlight ({ selection, ids, fullChartParams }: {
 export const createBaseStackedBar: BasePluginFn<BaseStackedBarContext> = (pluginName: string, {
   selection,
   computedData$,
-  computedLayoutData$,
+  computedAxesData$,
   visibleComputedData$,
-  visibleComputedLayoutData$,
+  visibleComputedAxesData$,
   seriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
@@ -335,7 +335,7 @@ export const createBaseStackedBar: BasePluginFn<BaseStackedBarContext> = (plugin
   })
 
 
-  const zeroY$ = visibleComputedLayoutData$.pipe(
+  const zeroY$ = visibleComputedAxesData$.pipe(
     takeUntil(destroy$),
     map(d => d[0] && d[0][0]
       ? d[0][0].axisY - d[0][0].axisYFromZero
@@ -502,7 +502,7 @@ export const createBaseStackedBar: BasePluginFn<BaseStackedBarContext> = (plugin
 
   // 堆疊後的高度對應圖軸的比例（最大值/最大值所在group的總和）
   const yRatio$ = combineLatest({
-    visibleComputedLayoutData: visibleComputedLayoutData$,
+    visibleComputedAxesData: visibleComputedAxesData$,
     groupScaleDomain: groupScaleDomain$
   }).pipe(
     takeUntil(destroy$),
@@ -511,7 +511,7 @@ export const createBaseStackedBar: BasePluginFn<BaseStackedBarContext> = (plugin
       const groupScaleDomainMin = data.groupScaleDomain[0]
       const groupScaleDomainMax = data.groupScaleDomain[1]
       // 只選取group篩選範圍內的資料
-      const filteredData = data.visibleComputedLayoutData
+      const filteredData = data.visibleComputedAxesData
         .map(d => {
           return d.filter((_d, i) => {
             return _d.groupIndex >= groupScaleDomainMin && _d.groupIndex <= groupScaleDomainMax
@@ -537,16 +537,16 @@ export const createBaseStackedBar: BasePluginFn<BaseStackedBarContext> = (plugin
   )
 
   const stackedData$ = combineLatest({
-    computedLayoutData: computedLayoutData$,
+    computedAxesData: computedAxesData$,
     yRatio: yRatio$,
     zeroY: zeroY$
   }).pipe(
     takeUntil(destroy$),
     map(data => {
-      let accYArr: number[] = data.computedLayoutData[0]
-        ? data.computedLayoutData[0].map(() => data.zeroY)
+      let accYArr: number[] = data.computedAxesData[0]
+        ? data.computedAxesData[0].map(() => data.zeroY)
         : []
-      return data.computedLayoutData.map((series, seriesIndex) => {
+      return data.computedAxesData.map((series, seriesIndex) => {
         return series.map((datum, groupIndex) => {
           const _barStartY = accYArr[groupIndex] // 前一次的累加高度
           let _barHeight = 0
@@ -578,13 +578,13 @@ export const createBaseStackedBar: BasePluginFn<BaseStackedBarContext> = (plugin
   )
 
   const noneStackedData$ = combineLatest({
-    computedLayoutData: computedLayoutData$,
+    computedAxesData: computedAxesData$,
     // yRatio: yRatio$,
     zeroY: zeroY$
   }).pipe(
     takeUntil(destroy$),
     map(data => {
-      return data.computedLayoutData.map((series, seriesIndex) => {
+      return data.computedAxesData.map((series, seriesIndex) => {
         return series.map((datum, groupIndex) => {
           return <GraphicDatum>{
             ...datum,

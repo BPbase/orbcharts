@@ -12,7 +12,7 @@ import type { BasePluginFn } from './types'
 import type {
   ComputedDatumGrid,
   ComputedDataGrid,
-  ComputedLayoutDataGrid,
+  ComputedAxesDataGrid,
   DataFormatterTypeMap,
   ContainerPositionScaled,
   EventGrid,
@@ -35,9 +35,9 @@ import { gridSelectionsObservable } from '../grid/gridObservables'
 interface BaseBarsContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
-  computedLayoutData$: Observable<ComputedLayoutDataGrid>
+  computedAxesData$: Observable<ComputedAxesDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
-  visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
+  visibleComputedAxesData$: Observable<ComputedAxesDataGrid>
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
@@ -59,7 +59,7 @@ interface BaseBarsContext {
 interface RenderBarParams {
   graphicGSelection: d3.Selection<SVGGElement, string, any, any>
   rectClassName: string
-  visibleComputedLayoutData: ComputedLayoutDataGrid
+  visibleComputedAxesData: ComputedAxesDataGrid
   zeroYArr: number[]
   groupLabels: string[]
   barScale: d3.ScalePoint<string>
@@ -124,7 +124,7 @@ function calctransitionItem (barGroupAmount: number, totalDuration: number) {
 }
 // let _data: ComputedDatumGrid[][] = []
 
-function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedLayoutData, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesSeprate }: RenderBarParams) {
+function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedAxesData, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, transformedBarRadius, delayGroup, transitionItem, isSeriesSeprate }: RenderBarParams) {
 
   const barHalfWidth = barWidth! / 2
 
@@ -132,7 +132,7 @@ function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedLayo
     .each((seriesData, seriesIndex, g) => {
       d3.select(g[seriesIndex])
         .selectAll<SVGGElement, ComputedDatumGrid>(`rect.${rectClassName}`)
-        .data(visibleComputedLayoutData[seriesIndex] ?? [], d => d.id)
+        .data(visibleComputedAxesData[seriesIndex] ?? [], d => d.id)
         .join(
           enter => {
             // console.log('enter')
@@ -274,9 +274,9 @@ function highlight ({ selection, ids, fullChartParams }: {
 export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string, {
   selection,
   computedData$,
-  computedLayoutData$,
+  computedAxesData$,
   visibleComputedData$,
-  visibleComputedLayoutData$,
+  visibleComputedAxesData$,
   seriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
@@ -413,7 +413,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
     gridGraphicTransform$
   })
 
-  const zeroYArr$ = visibleComputedLayoutData$.pipe(
+  const zeroYArr$ = visibleComputedAxesData$.pipe(
     takeUntil(destroy$),
     map(data => {
       return data.map(d => {
@@ -613,7 +613,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
 
   const barSelection$ = combineLatest({
     graphicGSelection: graphicGSelection$,
-    visibleComputedLayoutData: visibleComputedLayoutData$,
+    visibleComputedAxesData: visibleComputedAxesData$,
     // barData$: barData$,
     zeroYArr: zeroYArr$,
     groupLabels: groupLabels$,
@@ -633,7 +633,7 @@ export const createBaseBars: BasePluginFn<BaseBarsContext> = (pluginName: string
       return renderRectBars({
         graphicGSelection: data.graphicGSelection,
         rectClassName,
-        visibleComputedLayoutData: data.visibleComputedLayoutData,
+        visibleComputedAxesData: data.visibleComputedAxesData,
         zeroYArr: data.zeroYArr,
         groupLabels: data.groupLabels,
         barScale: data.barScale,

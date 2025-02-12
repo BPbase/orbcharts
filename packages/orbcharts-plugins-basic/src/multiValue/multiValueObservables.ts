@@ -26,21 +26,25 @@ import type {
   ContainerPositionScaled,
   Layout,
 } from '../../lib/core-types'
-import { createAxisToLabelIndexScale, createAxisToValueScale, createLabelToAxisScale } from '../../lib/core'
+import {
+  createAxisToLabelIndexScale,
+  createAxisToValueScale,
+  createLabelToAxisScale,
+  createValueToAxisScale
+} from '../../lib/core'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 import { d3EventObservable } from '../utils/observables'
-import { c } from 'vite/dist/node/types.d-aGj9QkWt'
 
 // 建立 multiValue 主要的 selection 
-export const multiValueSelectionsObservable = ({ selection, pluginName, clipPathID, categoryLabels$, multiValueContainerPosition$, multiValueGraphicTransform$ }: {
+export const multiValueSelectionsObservable = ({ selection, pluginName, clipPathID, categoryLabels$, containerPosition$, graphicTransform$ }: {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
   clipPathID: string
   // computedData$: Observable<ComputedDataMultiValue>
   categoryLabels$: Observable<string[]>
-  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+  containerPosition$: Observable<ContainerPositionScaled[]>
   // multiValueAxesTransform$: Observable<TransformData>
-  multiValueGraphicTransform$: Observable<TransformData>
+  graphicTransform$: Observable<TransformData>
 }) => {
   const categoryClassName = getClassName(pluginName, 'category')
   const axesClassName = getClassName(pluginName, 'axes')
@@ -98,16 +102,16 @@ export const multiValueSelectionsObservable = ({ selection, pluginName, clipPath
   // <g> category selection
   combineLatest({
     categorySelection: categorySelection$,
-    multiValueContainerPosition: multiValueContainerPosition$                                                                                                                                                                                       
+    containerPosition: containerPosition$                                                                                                                                                                                       
   }).pipe(
     switchMap(async d => d)
   ).subscribe(data => {
     data.categorySelection
       .transition()
       .attr('transform', (d, i) => {
-        const multiValueContainerPosition = data.multiValueContainerPosition[i] ?? data.multiValueContainerPosition[0]
-        const translate = multiValueContainerPosition.translate
-        const scale = multiValueContainerPosition.scale
+        const containerPosition = data.containerPosition[i] ?? data.containerPosition[0]
+        const translate = containerPosition.translate
+        const scale = containerPosition.scale
         return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
       })
   })
@@ -132,7 +136,7 @@ export const multiValueSelectionsObservable = ({ selection, pluginName, clipPath
   // <g> graphic selection
   const graphicGSelection$ = combineLatest({
     axesSelection: axesSelection$,
-    multiValueGraphicTransform: multiValueGraphicTransform$
+    graphicTransform: graphicTransform$
   }).pipe(
     switchMap(async d => d),
     map(data => {
@@ -141,7 +145,7 @@ export const multiValueSelectionsObservable = ({ selection, pluginName, clipPath
       graphicGSelection
         .transition()
         .duration(50)
-        .style('transform', data.multiValueGraphicTransform.value)
+        .style('transform', data.graphicTransform.value)
       return graphicGSelection
     }),
     shareReplay(1)
@@ -156,7 +160,7 @@ export const multiValueSelectionsObservable = ({ selection, pluginName, clipPath
 }
 
 
-export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatter$, filteredXYMinMaxData$, multiValueContainerPosition$, layout$ }: {
+export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatter$, filteredXYMinMaxData$, containerPosition$, layout$ }: {
   rootSelection: d3.Selection<any, unknown, any, unknown>
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   // computedData$: Observable<ComputedDataMultiValue>
@@ -167,16 +171,16 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
     minYDatum: ComputedXYDatumMultiValue
     maxYDatum: ComputedXYDatumMultiValue
   }>
-  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+  containerPosition$: Observable<ContainerPositionScaled[]>
   layout$: Observable<Layout>
 }) => {
   const rootMousemove$ = d3EventObservable(rootSelection, 'mousemove').pipe(
     debounceTime(2) // 避免過度頻繁觸發，實測時沒加電腦容易卡頓
   )
 
-  const columnAmount$ = multiValueContainerPosition$.pipe(
-    map(multiValueContainerPosition => {
-      const maxColumnIndex = multiValueContainerPosition.reduce((acc, current) => {
+  const columnAmount$ = containerPosition$.pipe(
+    map(containerPosition => {
+      const maxColumnIndex = containerPosition.reduce((acc, current) => {
         return current.columnIndex > acc ? current.columnIndex : acc
       }, 0)
       return maxColumnIndex + 1
@@ -185,9 +189,9 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
     shareReplay(1)
   )
 
-  const rowAmount$ = multiValueContainerPosition$.pipe(
-    map(multiValueContainerPosition => {
-      const maxRowIndex = multiValueContainerPosition.reduce((acc, current) => {
+  const rowAmount$ = containerPosition$.pipe(
+    map(containerPosition => {
+      const maxRowIndex = containerPosition.reduce((acc, current) => {
         return current.rowIndex > acc ? current.rowIndex : acc
       }, 0)
       return maxRowIndex + 1
@@ -271,16 +275,16 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
     columnAmount: columnAmount$,
     rowAmount: rowAmount$,
     layout: layout$,
-    multiValueContainerPosition: multiValueContainerPosition$
+    containerPosition: containerPosition$
   }).pipe(
     switchMap(async d => d),
     map(data => {
       // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
       return {
-        x: ((data.rootMousemove.offsetX - data.layout.left) / data.multiValueContainerPosition[0].scale[0])
-          % (data.layout.rootWidth / data.columnAmount / data.multiValueContainerPosition[0].scale[0]),
-        y: ((data.rootMousemove.offsetY - data.layout.top) / data.multiValueContainerPosition[0].scale[1])
-          % (data.layout.rootHeight / data.rowAmount / data.multiValueContainerPosition[0].scale[1])
+        x: ((data.rootMousemove.offsetX - data.layout.left) / data.containerPosition[0].scale[0])
+          % (data.layout.rootWidth / data.columnAmount / data.containerPosition[0].scale[0]),
+        y: ((data.rootMousemove.offsetY - data.layout.top) / data.containerPosition[0].scale[1])
+          % (data.layout.rootHeight / data.rowAmount / data.containerPosition[0].scale[1])
       }
     })
   )
@@ -301,82 +305,110 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
   )
 }
 
-export const visibleComputedRankingDataObservable = ({ valueIndex$, isCategorySeprate$, visibleComputedData$ }: {
-  valueIndex$: Observable<number | 'sum'>
-  isCategorySeprate$: Observable<boolean>
-  visibleComputedData$: Observable<ComputedDatumMultiValue[][]>
-}) => {
+// // Ranking資料 - 用 value[index] 排序
+// export const visibleComputedRankingByIndexDataObservable = ({ valueIndex$, isCategorySeprate$, visibleComputedData$ }: {
+//   valueIndex$: Observable<number>
+//   isCategorySeprate$: Observable<boolean>
+//   visibleComputedData$: Observable<ComputedDatumMultiValue[][]>
+// }) => {
 
-  return combineLatest({
-    isCategorySeprate: isCategorySeprate$,
-    valueIndex: valueIndex$,
-    visibleComputedData: visibleComputedData$
-  }).pipe(
-    switchMap(async d => d),
-    map(data => {
-      // -- category 分開 --
-      if (data.isCategorySeprate) {
-        // -- 用總計的值排序 --
-        if (data.valueIndex === 'sum') {
-          return data.visibleComputedData
-            .map(categoryData => {
-              return categoryData
-                .map(d => {
-                  // 新增總計資料欄位
-                  ;(d as any)._sum = d.value.reduce((acc, curr) => acc + curr, 0)
-                  return d
-                })
-                .sort((a: any, b: any) => b._sum - a._sum)
-            })
-        // -- 用 value[index] 排序 --
-        } else {
-          return data.visibleComputedData
-            .map(categoryData => {
-              return categoryData
-                .sort((a, b) => {
-                  const bValue = b.value[data.valueIndex as number] ?? - Infinity // - Infinity 為最小值
-                  const aValue = a.value[data.valueIndex as number] ?? - Infinity
-    
-                  return bValue - aValue
-                })
-            })
-        }
-      // -- 用 value[index] 排序 --
-      } else {
-        // -- 用總計的值排序 --
-        if (data.valueIndex === 'sum') {
-          return [
-            data.visibleComputedData
-              .flat()
-              .map(d => {
-                // 新增總計資料欄位
-                ;(d as any)._sum = d.value.reduce((acc, curr) => acc + curr, 0)
-                return d
-              })
-              .sort((a: any, b: any) => b._sum - a._sum)
-          ]
-        }
-        // -- 用 value[index] 排序 --
-        else {
-          return [
-            data.visibleComputedData
-              .flat()
-              .sort((a, b) => {
-                const bValue = b.value[data.valueIndex as number] ?? - Infinity // - Infinity 為最小值
-                const aValue = a.value[data.valueIndex as number] ?? - Infinity
-    
-                return bValue - aValue
-              })
-          ]
-        }
-      }
-    })
-  )
+//   return combineLatest({
+//     isCategorySeprate: isCategorySeprate$,
+//     valueIndex: valueIndex$,
+//     visibleComputedData: visibleComputedData$
+//   }).pipe(
+//     switchMap(async d => d),
+//     map(data => {
+//       // -- category 分開 --
+//       if (data.isCategorySeprate) {
+//         return data.visibleComputedData
+//           .map(categoryData => {
+//             return categoryData
+//               .sort((a, b) => {
+//                 const bValue = b.value[data.valueIndex as number] ?? - Infinity // - Infinity 為最小值
+//                 const aValue = a.value[data.valueIndex as number] ?? - Infinity
+  
+//                 return bValue - aValue
+//               })
+//           })
+//       // -- 用 value[index] 排序 --
+//       } else {
+//         return [
+//           data.visibleComputedData
+//             .flat()
+//             .sort((a, b) => {
+//               const bValue = b.value[data.valueIndex as number] ?? - Infinity // - Infinity 為最小值
+//               const aValue = a.value[data.valueIndex as number] ?? - Infinity
+  
+//               return bValue - aValue
+//             })
+//         ]
+//       }
+//     })
+//   )
+// }
 
-}
+// export const visibleComputedSumDataObservable = ({ visibleComputedData$ }: {
+//   visibleComputedData$: Observable<ComputedDataMultiValue>
+// }) => {
+//   return visibleComputedData$.pipe(
+//     map(data => {
+//       return data.map(categoryData => {
+//         return categoryData
+//           .map(d => {
+//             // 新增總計資料欄位
+//             ;(d as any)._sum = d.value.reduce((acc, curr) => acc + curr, 0)
+//             return d
+//           })
+//       })
+//     })
+//   )
+// }
 
-export const computedRankingAmountListObservable = ({ multiValueContainerSize$, visibleComputedRankingData$, textSizePx$, rankingAmount$ }: {
-  multiValueContainerSize$: Observable<ContainerSize>
+// // Ranking資料 - 用所有 valueIndex 加總資料排序
+// export const visibleComputedRankingBySumDataObservable = ({ isCategorySeprate$, visibleComputedData$ }: {
+//   isCategorySeprate$: Observable<boolean>
+//   visibleComputedData$: Observable<ComputedDatumMultiValue[][]>
+// }) => {
+
+//   return combineLatest({
+//     isCategorySeprate: isCategorySeprate$,
+//     visibleComputedData: visibleComputedData$
+//   }).pipe(
+//     switchMap(async d => d),
+//     map(data => {
+//       // -- category 分開 --
+//       if (data.isCategorySeprate) {
+//         return data.visibleComputedData
+//           .map(categoryData => {
+//             return categoryData
+//               .map(d => {
+//                 // 新增總計資料欄位
+//                 ;(d as any)._sum = d.value.reduce((acc, curr) => acc + curr, 0)
+//                 return d
+//               })
+//               .sort((a: any, b: any) => b._sum - a._sum)
+//           })
+//       // -- 用 value[index] 排序 --
+//       } else {
+//         return [
+//           data.visibleComputedData
+//             .flat()
+//             .map(d => {
+//               // 新增總計資料欄位
+//               ;(d as any)._sum = d.value.reduce((acc, curr) => acc + curr, 0)
+//               return d
+//             })
+//             .sort((a: any, b: any) => b._sum - a._sum)
+//         ]
+//       }
+//     })
+//   )
+// }
+
+// 排名數量
+export const computedRankingAmountListObservable = ({ containerSize$, visibleComputedRankingData$, textSizePx$, rankingAmount$ }: {
+  containerSize$: Observable<ContainerSize>
   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
   textSizePx$: Observable<number>
   rankingAmount$: Observable<'auto' | number>
@@ -390,19 +422,19 @@ export const computedRankingAmountListObservable = ({ multiValueContainerSize$, 
     )
   }
 
-  const containerHeightObservable = ({ minLineHeight$, multiValueContainerSize$ }: {
+  const containerHeightObservable = ({ minLineHeight$, containerSize$ }: {
     minLineHeight$: Observable<number>
-    multiValueContainerSize$: Observable<ContainerSize>
+    containerSize$: Observable<ContainerSize>
   }) => {
     return combineLatest({
       minLineHeight: minLineHeight$,
-      multiValueContainerSize: multiValueContainerSize$
+      containerSize: containerSize$
     }).pipe(
       switchMap(async (d) => d),
       map(data => {
         // 避免過小造成計算 scale 錯誤
-        return data.multiValueContainerSize.height > data.minLineHeight
-          ? data.multiValueContainerSize.height
+        return data.containerSize.height > data.minLineHeight
+          ? data.containerSize.height
           : data.minLineHeight
       }),
       distinctUntilChanged(),
@@ -433,7 +465,7 @@ export const computedRankingAmountListObservable = ({ multiValueContainerSize$, 
 
   const containerHeight$ = containerHeightObservable({
     minLineHeight$,
-    multiValueContainerSize$
+    containerSize$
   })
 
   const rankingAmountLimit$ = rankingAmountLimitObservable({
@@ -465,8 +497,8 @@ export const computedRankingAmountListObservable = ({ multiValueContainerSize$, 
   return computedRankingAmountList$
 }
 
-export const rankingItemHeightListObservable = ({ multiValueContainerSize$, visibleComputedRankingData$, textSizePx$, computedRankingAmountList$ }: {
-  multiValueContainerSize$: Observable<ContainerSize>
+export const rankingItemHeightListObservable = ({ containerSize$, visibleComputedRankingData$, textSizePx$, computedRankingAmountList$ }: {
+  containerSize$: Observable<ContainerSize>
   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
   textSizePx$: Observable<number>
   // rankingAmount$: Observable<'auto' | number>
@@ -481,19 +513,19 @@ export const rankingItemHeightListObservable = ({ multiValueContainerSize$, visi
     )
   }
 
-  const containerHeightObservable = ({ minLineHeight$, multiValueContainerSize$ }: {
+  const containerHeightObservable = ({ minLineHeight$, containerSize$ }: {
     minLineHeight$: Observable<number>
-    multiValueContainerSize$: Observable<ContainerSize>
+    containerSize$: Observable<ContainerSize>
   }) => {
     return combineLatest({
       minLineHeight: minLineHeight$,
-      multiValueContainerSize: multiValueContainerSize$
+      containerSize: containerSize$
     }).pipe(
       switchMap(async (d) => d),
       map(data => {
         // 避免過小造成計算 scale 錯誤
-        return data.multiValueContainerSize.height > data.minLineHeight
-          ? data.multiValueContainerSize.height
+        return data.containerSize.height > data.minLineHeight
+          ? data.containerSize.height
           : data.minLineHeight
       }),
       distinctUntilChanged(),
@@ -524,7 +556,7 @@ export const rankingItemHeightListObservable = ({ multiValueContainerSize$, visi
 
   const containerHeight$ = containerHeightObservable({
     minLineHeight$,
-    multiValueContainerSize$
+    containerSize$
   })
 
   // const rankingAmountLimit$ = rankingAmountLimitObservable({
@@ -571,8 +603,8 @@ export const rankingItemHeightListObservable = ({ multiValueContainerSize$, visi
   )
 }
 
-export const rankingScaleListObservable = ({ multiValueContainerSize$, visibleComputedRankingData$, textSizePx$, computedRankingAmountList$ }: {
-  multiValueContainerSize$: Observable<ContainerSize>
+export const rankingScaleListObservable = ({ containerSize$, visibleComputedRankingData$, textSizePx$, computedRankingAmountList$ }: {
+  containerSize$: Observable<ContainerSize>
   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
   textSizePx$: Observable<number>
   computedRankingAmountList$: Observable<number[]>
@@ -580,7 +612,7 @@ export const rankingScaleListObservable = ({ multiValueContainerSize$, visibleCo
 }) => {
 
   const rankingItemHeightList$ = rankingItemHeightListObservable({
-    multiValueContainerSize$,
+    containerSize$,
     visibleComputedRankingData$,
     textSizePx$,
     computedRankingAmountList$
@@ -610,3 +642,96 @@ export const rankingScaleListObservable = ({ multiValueContainerSize$, visibleCo
     })
   )
 }
+
+// // X 軸圖軸 - 用 value[index] 
+// export const xScaleObservable = ({ visibleComputedSumData$, fullDataFormatter$, filteredXYMinMaxData$, layout$ }: {
+//   visibleComputedSumData$: Observable<ComputedDatumMultiValue[][]>
+//   fullDataFormatter$: Observable<DataFormatterMultiValue>
+//   filteredXYMinMaxData$: Observable<{
+//     minXDatum: ComputedXYDatumMultiValue
+//     maxXDatum: ComputedXYDatumMultiValue
+//     minYDatum: ComputedXYDatumMultiValue
+//     maxYDatum: ComputedXYDatumMultiValue
+//   }>
+//   layout$: Observable<Layout>
+// }) => {
+//   return combineLatest({
+//     visibleComputedSumData: visibleComputedSumData$,
+//     fullDataFormatter: fullDataFormatter$,
+//     layout: layout$,
+//     // xyMinMax: xyMinMax$
+//     filteredXYMinMaxData: filteredXYMinMaxData$
+//   }).pipe(
+//     switchMap(async (d) => d),
+//     map(data => {
+//       const valueIndex = data.fullDataFormatter.xAxis.valueIndex
+//       if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
+//         || data.filteredXYMinMaxData.minXDatum.value[valueIndex] == null || data.filteredXYMinMaxData.maxXDatum.value[valueIndex] == null
+//       ) {
+//         return
+//       }
+//       let maxValue = data.filteredXYMinMaxData.maxXDatum.value[valueIndex]
+//       let minValue = data.filteredXYMinMaxData.minXDatum.value[valueIndex]
+//       if (maxValue === minValue && maxValue === 0) {
+//         // 避免最大及最小值同等於 0 造成無法計算scale
+//         maxValue = 1
+//       }
+
+//       const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
+//         maxValue,
+//         minValue,
+//         axisWidth: data.layout.width,
+//         scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
+//         scaleRange: data.fullDataFormatter.xAxis.scaleRange,
+//       })
+//       return xScale
+//     })
+//   )
+// }
+
+// // X 軸圖軸 - 用所有 valueIndex 加總資料
+// export const xSumScaleObservable = ({ valueIndex$, fullDataFormatter$, filteredXYMinMaxData$, layout$ }: {
+//   valueIndex$: Observable<number>
+//   fullDataFormatter$: Observable<DataFormatterMultiValue>
+//   filteredXYMinMaxData$: Observable<{
+//     minXDatum: ComputedXYDatumMultiValue
+//     maxXDatum: ComputedXYDatumMultiValue
+//     minYDatum: ComputedXYDatumMultiValue
+//     maxYDatum: ComputedXYDatumMultiValue
+//   }>
+//   layout$: Observable<Layout>
+// }) => {
+//   return combineLatest({
+//     valueIndex: valueIndex$,
+//     fullDataFormatter: fullDataFormatter$,
+//     layout: layout$,
+//     // xyMinMax: xyMinMax$
+//     filteredXYMinMaxData: filteredXYMinMaxData$
+//   }).pipe(
+//     switchMap(async (d) => d),
+//     map(data => {
+//       const valueIndex = data.fullDataFormatter.xAxis.valueIndex
+//       if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
+//         || data.filteredXYMinMaxData.minXDatum.value[valueIndex] == null || data.filteredXYMinMaxData.maxXDatum.value[valueIndex] == null
+//       ) {
+//         return
+//       }
+//       let maxValue = data.filteredXYMinMaxData.maxXDatum.value[valueIndex]
+//       let minValue = data.filteredXYMinMaxData.minXDatum.value[valueIndex]
+//       if (maxValue === minValue && maxValue === 0) {
+//         // 避免最大及最小值同等於 0 造成無法計算scale
+//         maxValue = 1
+//       }
+
+//       const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
+//         maxValue,
+//         minValue,
+//         axisWidth: data.layout.width,
+//         scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
+//         scaleRange: data.fullDataFormatter.xAxis.scaleRange,
+//       })
+//       return xScale
+//     })
+//   )
+// }
+

@@ -45,8 +45,8 @@ interface BaseRankingAxisContext {
   }>
   // textSizePx$: Observable<number>
   layout$: Observable<Layout>
-  multiValueContainerSize$: Observable<ContainerSize>
-  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+  // containerSize$: Observable<ContainerSize>
+  containerPosition$: Observable<ContainerPositionScaled[]>
   isCategorySeprate$: Observable<boolean>
 }
 
@@ -285,8 +285,8 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
   xyMinMax$,
   // textSizePx$,
   layout$,
-  multiValueContainerSize$,
-  multiValueContainerPosition$,
+  // containerSize$,
+  containerPosition$,
   isCategorySeprate$
 }) => {
 
@@ -326,16 +326,16 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
 
   combineLatest({
     containerSelection: containerSelection$,
-    multiValueContainerPosition: multiValueContainerPosition$
+    containerPosition: containerPosition$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
   ).subscribe(data => {
     data.containerSelection
       .attr('transform', (d, i) => {
-        const multiValueContainerPosition = data.multiValueContainerPosition[i] ?? data.multiValueContainerPosition[0]
-        const translate = multiValueContainerPosition.translate
-        const scale = multiValueContainerPosition.scale
+        const containerPosition = data.containerPosition[i] ?? data.containerPosition[0]
+        const translate = containerPosition.translate
+        const scale = containerPosition.scale
         return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
       })
       // .attr('opacity', 0)
@@ -343,13 +343,13 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
       // .attr('opacity', 1)
   })
 
-  const textReverseTransform$ = multiValueContainerPosition$.pipe(
+  const textReverseTransform$ = containerPosition$.pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
-    map(multiValueContainerPosition => {
+    map(containerPosition => {
       // const axesRotateXYReverseValue = `rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
       // const axesRotateReverseValue = `rotate(${data.gridAxesReverseTransform.rotate}deg)`
-      const containerScaleReverseValue = `scale(${1 / multiValueContainerPosition[0].scale[0]}, ${1 / multiValueContainerPosition[0].scale[1]})`
+      const containerScaleReverseValue = `scale(${1 / containerPosition[0].scale[0]}, ${1 / containerPosition[0].scale[1]})`
       // 抵消最外層scale
       return `${containerScaleReverseValue}`
     }),

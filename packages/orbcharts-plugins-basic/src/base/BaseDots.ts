@@ -11,7 +11,7 @@ import type { BasePluginFn } from './types'
 import type {
   ComputedDatumGrid,
   ComputedDataGrid,
-  ComputedLayoutDataGrid,
+  ComputedAxesDataGrid,
   EventGrid,
   ChartParams, 
   ContainerPositionScaled,
@@ -35,9 +35,9 @@ import { gridSelectionsObservable } from '../grid/gridObservables'
 interface BaseDotsContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
-  computedLayoutData$: Observable<ComputedLayoutDataGrid>
+  computedAxesData$: Observable<ComputedAxesDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
-  visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
+  visibleComputedAxesData$: Observable<ComputedAxesDataGrid>
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
@@ -68,11 +68,11 @@ type ClipPathDatum = {
 // const circleGClassName = getClassName(pluginName, 'circleG')
 // const circleClassName = getClassName(pluginName, 'circle')
 
-function renderDots ({ graphicGSelection, circleGClassName, circleClassName, visibleComputedLayoutData, fullParams, fullChartParams, graphicReverseScale }: {
+function renderDots ({ graphicGSelection, circleGClassName, circleClassName, visibleComputedAxesData, fullParams, fullChartParams, graphicReverseScale }: {
   graphicGSelection: d3.Selection<SVGGElement, any, any, any>
   circleGClassName: string
   circleClassName: string
-  visibleComputedLayoutData: ComputedLayoutDataGrid
+  visibleComputedAxesData: ComputedAxesDataGrid
   fullParams: BaseDotsParams
   fullChartParams: ChartParams
   graphicReverseScale: [number, number][]
@@ -89,7 +89,7 @@ function renderDots ({ graphicGSelection, circleGClassName, circleClassName, vis
     .each((seriesData, seriesIndex, g) => {
       d3.select(g[seriesIndex])
         .selectAll<SVGGElement, ComputedDatumGrid>('g')
-        .data(visibleComputedLayoutData[seriesIndex], d => d.id)
+        .data(visibleComputedAxesData[seriesIndex], d => d.id)
         .join(
           enter => {
             // enterDuration
@@ -222,9 +222,9 @@ function renderClipPath ({ defsSelection, clipPathData }: {
 export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string, {
   selection,
   computedData$,
-  computedLayoutData$,
+  computedAxesData$,
   visibleComputedData$,
-  visibleComputedLayoutData$,
+  visibleComputedAxesData$,
   seriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
@@ -310,7 +310,7 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
   
   const graphicSelection$ = combineLatest({
     graphicGSelection: graphicGSelection$,
-    visibleComputedLayoutData: visibleComputedLayoutData$,
+    visibleComputedAxesData: visibleComputedAxesData$,
     graphicReverseScale: graphicReverseScale$,
     fullChartParams: fullChartParams$,
     fullParams: fullParams$,
@@ -322,7 +322,7 @@ export const createBaseDots: BasePluginFn<BaseDotsContext> = (pluginName: string
         graphicGSelection: data.graphicGSelection,
         circleGClassName,
         circleClassName,
-        visibleComputedLayoutData: data.visibleComputedLayoutData,
+        visibleComputedAxesData: data.visibleComputedAxesData,
         fullParams: data.fullParams,
         fullChartParams: data.fullChartParams,
         graphicReverseScale: data.graphicReverseScale

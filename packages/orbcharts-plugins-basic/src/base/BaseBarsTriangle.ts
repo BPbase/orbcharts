@@ -13,7 +13,7 @@ import type {
   ComputedDatumGrid,
   ComputedDataGrid,
   ComputedLayoutDatumGrid,
-  ComputedLayoutDataGrid,
+  ComputedAxesDataGrid,
   DataFormatterTypeMap,
   EventGrid,
   ChartParams,
@@ -36,9 +36,9 @@ import { gridSelectionsObservable } from '../grid/gridObservables'
 interface BaseBarsContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
-  computedLayoutData$: Observable<ComputedLayoutDataGrid>
+  computedAxesData$: Observable<ComputedAxesDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
-  visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
+  visibleComputedAxesData$: Observable<ComputedAxesDataGrid>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
@@ -62,7 +62,7 @@ interface RenderBarParams {
   graphicGSelection: d3.Selection<SVGGElement, unknown, any, any>
   pathGClassName: string
   pathClassName: string
-  visibleComputedLayoutData: ComputedLayoutDataGrid
+  visibleComputedAxesData: ComputedAxesDataGrid
   linearGradientIds: string[]
   zeroYArr: number[]
   groupLabels: string[]
@@ -131,7 +131,7 @@ function calctransitionItem (barGroupAmount: number, totalDuration: number) {
   return totalDuration * (1 - groupDelayProportionOfDuration) // delay後剩餘的時間
 }
 
-function renderTriangleBars ({ graphicGSelection, pathGClassName, pathClassName, visibleComputedLayoutData, linearGradientIds, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, delayGroup, transitionItem, isSeriesSeprate }: RenderBarParams) {
+function renderTriangleBars ({ graphicGSelection, pathGClassName, pathClassName, visibleComputedAxesData, linearGradientIds, zeroYArr, groupLabels, barScale, params, chartParams, barWidth, delayGroup, transitionItem, isSeriesSeprate }: RenderBarParams) {
   
   const barHalfWidth = barWidth! / 2
 
@@ -140,7 +140,7 @@ function renderTriangleBars ({ graphicGSelection, pathGClassName, pathClassName,
       // g
       const gSelection = d3.select(g[seriesIndex])
         .selectAll<SVGGElement, ComputedDatumGrid>(`g.${pathGClassName}`)
-        .data(visibleComputedLayoutData[seriesIndex] ?? [])
+        .data(visibleComputedAxesData[seriesIndex] ?? [])
         .join(
           enter => {
             const enterSelection = enter
@@ -299,9 +299,9 @@ function highlight ({ selection, ids, fullChartParams }: {
 export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName: string, {
   selection,
   computedData$,
-  computedLayoutData$,
+  computedAxesData$,
   visibleComputedData$,
-  visibleComputedLayoutData$,
+  visibleComputedAxesData$,
   fullDataFormatter$,
   seriesLabels$,
   SeriesDataMap$,
@@ -346,7 +346,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
     })
   )
 
-  const zeroYArr$ = visibleComputedLayoutData$.pipe(
+  const zeroYArr$ = visibleComputedAxesData$.pipe(
     // map(d => d[0] && d[0][0]
     //   ? d[0][0].axisY - d[0][0].axisYFromZero
     //   : 0),
@@ -522,7 +522,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
     graphicGSelection: graphicGSelection$,
     defsSelection: defsSelection$,
     computedData: computedData$,
-    visibleComputedLayoutData: visibleComputedLayoutData$,
+    visibleComputedAxesData: visibleComputedAxesData$,
     linearGradientIds: linearGradientIds$,
     zeroYArr: zeroYArr$,
     groupLabels: groupLabels$,
@@ -548,7 +548,7 @@ export const createBaseBarsTriangle: BasePluginFn<BaseBarsContext> = (pluginName
         graphicGSelection: data.graphicGSelection,
         pathGClassName,
         pathClassName,
-        visibleComputedLayoutData: data.visibleComputedLayoutData,
+        visibleComputedAxesData: data.visibleComputedAxesData,
         linearGradientIds: data.linearGradientIds,
         zeroYArr: data.zeroYArr,
         groupLabels: data.groupLabels,

@@ -7,8 +7,8 @@ export interface ContextObserverSeries<PluginParams> extends ContextObserverBase
   textSizePx$: Observable<number>
   separateSeries$: Observable<boolean>
   visibleComputedData$: Observable<ComputedDatumSeries[][]>
-  computedLayoutData$: Observable<ComputedDatumSeries[][]>
-  visibleComputedLayoutData$: Observable<ComputedDatumSeries[][]>
+  computedSortedData$: Observable<ComputedDatumSeries[][]>
+  visibleComputedSortedData$: Observable<ComputedDatumSeries[][]>
   seriesHighlight$: Observable<ComputedDatumSeries[]>
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>

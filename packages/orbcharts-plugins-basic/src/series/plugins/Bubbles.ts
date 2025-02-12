@@ -149,8 +149,8 @@ function makeForce (bubblesSelection: d3.Selection<SVGGElement, BubblesDatum, an
 //   return maxR * modifier
 // }
 
-function createBubblesData ({ visibleComputedLayoutData, LastBubbleDataMap, graphicWidth, graphicHeight, SeriesContainerPositionMap, scaleType }: {
-  visibleComputedLayoutData: ComputedDataSeries
+function createBubblesData ({ visibleComputedSortedData, LastBubbleDataMap, graphicWidth, graphicHeight, SeriesContainerPositionMap, scaleType }: {
+  visibleComputedSortedData: ComputedDataSeries
   LastBubbleDataMap: Map<string, BubblesDatum>
   graphicWidth: number
   graphicHeight: number
@@ -161,7 +161,7 @@ function createBubblesData ({ visibleComputedLayoutData, LastBubbleDataMap, grap
   // 虛擬大圓（所有小圓聚合起來的大圓）的半徑
   const totalR = Math.min(...[graphicWidth, graphicHeight]) / 2
 
-  const data = visibleComputedLayoutData.flat()
+  const data = visibleComputedSortedData.flat()
 
   const totalValue = data.reduce((acc, current) => acc + current.value, 0)
 
@@ -415,15 +415,15 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
   const bubblesData$ = combineLatest({
     layout: observer.layout$,
     SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
-    visibleComputedLayoutData: observer.visibleComputedLayoutData$,
+    visibleComputedSortedData: observer.visibleComputedSortedData$,
     scaleType: scaleType$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      // console.log(data.visibleComputedLayoutData)
+      // console.log(data.visibleComputedSortedData)
       return createBubblesData({
-        visibleComputedLayoutData: data.visibleComputedLayoutData,
+        visibleComputedSortedData: data.visibleComputedSortedData,
         LastBubbleDataMap,
         graphicWidth: data.layout.width,
         graphicHeight: data.layout.height,

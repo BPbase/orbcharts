@@ -1,16 +1,16 @@
 import { Observable } from 'rxjs'
 import type { ContextObserverBase } from './ContextObserver'
-import type { ComputedDataMultiValue, ComputedDatumMultiValue } from './ComputedDataMultiValue'
+import type { ComputedDataMultiValue, ComputedDatumMultiValue, ComputedDatumWithSumMultiValue } from './ComputedDataMultiValue'
 import type { TransformData } from './TransformData'
 import type { ContainerPositionScaled, ContainerSize } from './ContextObserver'
 
 export interface ContextObserverMultiValue<PluginParams> extends ContextObserverBase<'multiValue', PluginParams> {
   textSizePx$: Observable<number>
   isCategorySeprate$: Observable<boolean>
-  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
-  multiValueContainerSize$: Observable<ContainerSize>
+  containerPosition$: Observable<ContainerPositionScaled[]>
+  containerSize$: Observable<ContainerSize>
   // multiValueAxesSize$: Observable<{ width: number; height: number; }>
-  multiValueHighlight$: Observable<ComputedDatumMultiValue[]>
+  highlight$: Observable<ComputedDatumMultiValue[]>
   categoryLabels$: Observable<string[]>
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
   xyMinMax$: Observable<{ // xy
@@ -28,14 +28,20 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
     maxYDatum: ComputedXYDatumMultiValue | null
   }>
   visibleComputedData$: Observable<ComputedDataMultiValue>
-  computedXYData$: Observable<ComputedXYDataMultiValue> // xy
+  visibleComputedSumData$: Observable<ComputedDatumWithSumMultiValue[][]>
+  visibleComputedRankingByIndexData$: Observable<ComputedDatumMultiValue[][]> // ranking
+  visibleComputedRankingBySumData$: Observable<ComputedDatumMultiValue[][]> // ranking
+  // computedXYData$: Observable<ComputedXYDataMultiValue> // xy
   visibleComputedXYData$: Observable<ComputedXYDataMultiValue> // xy
   // visibleComputedRankingData$: Observable<ComputedDatumMultiValue[]>// ranking
   // rankingScale$: Observable<d3.ScalePoint<string>> // ranking
   // multiValueAxesTransform$: Observable<TransformData>
   // multiValueAxesReverseTransform$: Observable<TransformData>
-  multiValueGraphicTransform$: Observable<TransformData>
-  multiValueGraphicReverseScale$: Observable<[number, number][]>
+  graphicTransform$: Observable<TransformData>
+  graphicReverseScale$: Observable<[number, number][]>
+  xScale$: Observable<d3.ScaleLinear<number, number>>
+  xSumScale$: Observable<d3.ScaleLinear<number, number>>
+  yScale$: Observable<d3.ScaleLinear<number, number>>
 }
 
 // export type MultiValueMinMaxData = {

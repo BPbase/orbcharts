@@ -6,11 +6,11 @@ import {
   groupDataMapObservable,
   textSizePxObservable } from '../utils/observables'
 import {
-  gridComputedLayoutDataObservable,
+  gridComputedAxesDataObservable,
   gridAxesSizeObservable,
   gridSeriesLabelsObservable,
   gridVisibleComputedDataObservable,
-  gridVisibleComputedLayoutDataObservable,
+  gridVisibleComputedAxesDataObservable,
   // isSeriesSeprateObservable,
   gridContainerPositionObservable,
   computedStackedDataObservables,
@@ -79,7 +79,7 @@ export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subje
     shareReplay(1)
   )
 
-  const computedLayoutData$ = gridComputedLayoutDataObservable({
+  const computedAxesData$ = gridComputedAxesDataObservable({
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$,
     layout$: observer.layout$,
@@ -93,8 +93,8 @@ export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subje
     shareReplay(1)
   )
 
-  const visibleComputedLayoutData$ = gridVisibleComputedLayoutDataObservable({
-    computedLayoutData$: computedLayoutData$,
+  const visibleComputedAxesData$ = gridVisibleComputedAxesDataObservable({
+    computedAxesData$: computedAxesData$,
   }).pipe(
     shareReplay(1)
   )
@@ -166,9 +166,9 @@ export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subje
     seriesLabels$,
     SeriesDataMap$,
     GroupDataMap$,
-    computedLayoutData$,
+    computedAxesData$,
     visibleComputedData$,
-    visibleComputedLayoutData$,
+    visibleComputedAxesData$,
     computedStackedData$,
     groupScaleDomainValue$,
     filteredMinMaxValue$,

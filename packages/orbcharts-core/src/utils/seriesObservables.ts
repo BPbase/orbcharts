@@ -50,7 +50,7 @@ export const seriesVisibleComputedDataObservable = ({ computedData$ }: { compute
   )
 }
 
-export const seriesComputedLayoutDataObservable = ({ computedData$, fullDataFormatter$ }: {
+export const seriesComputedSortedDataObservable = ({ computedData$, fullDataFormatter$ }: {
   computedData$: Observable<ComputedDataTypeMap<'series'>>,
   fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>>
 }) => {

@@ -479,7 +479,7 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
 
   combineLatest({
     containerSelection: containerSelection$,
-    gridContainerPosition: observer.multiValueContainerPosition$
+    gridContainerPosition: observer.containerPosition$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
@@ -496,13 +496,13 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
       // .attr('opacity', 1)
   })
 
-  const textReverseTransform$ = observer.multiValueContainerPosition$.pipe(
+  const textReverseTransform$ = observer.containerPosition$.pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
-    map(multiValueContainerPosition => {
+    map(containerPosition => {
       // const axesRotateXYReverseValue = `rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
       // const axesRotateReverseValue = `rotate(${data.gridAxesReverseTransform.rotate}deg)`
-      const containerScaleReverseValue = `scale(${1 / multiValueContainerPosition[0].scale[0]}, ${1 / multiValueContainerPosition[0].scale[1]})`
+      const containerScaleReverseValue = `scale(${1 / containerPosition[0].scale[0]}, ${1 / containerPosition[0].scale[1]})`
       // 抵消最外層scale
       return `${containerScaleReverseValue}`
     }),

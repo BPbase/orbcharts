@@ -25,7 +25,7 @@ import type {
   DataFormatterValueAxis,
   DataFormatterGroupAxis,
   ComputedLayoutDatumGrid,
-  ComputedLayoutDataGrid,
+  ComputedAxesDataGrid,
   ContainerPositionScaled,
   HighlightTarget,
   Layout,
@@ -35,7 +35,7 @@ import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexS
 import { calcContainerPositionScaled } from './orbchartsUtils'
 import { getMinMaxValue } from './orbchartsUtils'
 
-export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
+export const gridComputedAxesDataObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'grid'>>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
   layout$: Observable<Layout>
@@ -204,8 +204,8 @@ export const gridVisibleComputedDataObservable = ({ computedData$ }: { computedD
   )
 }
 
-export const gridVisibleComputedLayoutDataObservable = ({ computedLayoutData$ }: { computedLayoutData$: Observable<ComputedLayoutDataGrid> }) => {
-  return computedLayoutData$.pipe(
+export const gridVisibleComputedAxesDataObservable = ({ computedAxesData$ }: { computedAxesData$: Observable<ComputedAxesDataGrid> }) => {
+  return computedAxesData$.pipe(
     map(data => {
       const visibleComputedData = data
         .map(d => {

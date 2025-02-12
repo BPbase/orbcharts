@@ -15,7 +15,8 @@ import { createBaseRankingAxis } from '../../base/BaseRankingAxis'
 import { DEFAULT_RANKING_BARS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_AXIS } from '../../const'
 import {
-  visibleComputedRankingDataObservable,
+  // visibleComputedSumDataObservable,
+  // visibleComputedRankingByIndexDataObservable,
   // rankingAmountLimitObservable,
   computedRankingAmountListObservable,
   rankingScaleListObservable
@@ -107,7 +108,7 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
     map(params => {
       return {
         ...params,
-        valueIndex: 'sum'
+        sumValue: false
       }
     })
   )
@@ -121,28 +122,28 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
     })
   )
 
-  const valueIndex$ = observer.fullDataFormatter$.pipe(
-    takeUntil(destroy$),
-    map(d => d.yAxis.valueIndex),
-    distinctUntilChanged()
-  )
+  // const valueIndex$ = observer.fullDataFormatter$.pipe(
+  //   takeUntil(destroy$),
+  //   map(d => d.yAxis.valueIndex),
+  //   distinctUntilChanged()
+  // )
 
-  const isCategorySeprate$ = observer.fullDataFormatter$.pipe(
-    takeUntil(destroy$),
-    map(d => d.separateCategory),
-    distinctUntilChanged()
-  )
+  // const isCategorySeprate$ = observer.fullDataFormatter$.pipe(
+  //   takeUntil(destroy$),
+  //   map(d => d.separateCategory),
+  //   distinctUntilChanged()
+  // )
 
-  const visibleComputedRankingData$ = visibleComputedRankingDataObservable({
-    valueIndex$, // * 依據 valueIndex 來取得 visibleComputedData
-    isCategorySeprate$,
-    visibleComputedData$: observer.visibleComputedData$
-  })
+  // const visibleComputedRankingByIndexData$ = visibleComputedRankingByIndexDataObservable({
+  //   valueIndex$, // * 依據 valueIndex 來取得 visibleComputedData
+  //   isCategorySeprate$,
+  //   visibleComputedData$: observer.visibleComputedData$
+  // })
 
   // const rankingAmountLimit$ = rankingAmountLimitObservable({
   //   layout$: observer.layout$,
   //   textSizePx$: observer.textSizePx$,
-  //   multiValueContainerPosition$: observer.multiValueContainerPosition$,
+  //   containerPosition$: observer.containerPosition$,
   // })
 
   const rankingAmount$ = observer.fullParams$.pipe(
@@ -152,15 +153,15 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
   )
 
   const computedRankingAmountList$ = computedRankingAmountListObservable({
-    multiValueContainerSize$: observer.multiValueContainerSize$,
-    visibleComputedRankingData$,
+    containerSize$: observer.containerSize$,
+    visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
     textSizePx$: observer.textSizePx$,
     rankingAmount$
   })
 
   const rankingScaleList$ = rankingScaleListObservable({
-    multiValueContainerSize$: observer.multiValueContainerSize$,
-    visibleComputedRankingData$,
+    containerSize$: observer.containerSize$,
+    visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
     textSizePx$: observer.textSizePx$,
     computedRankingAmountList$
   })
@@ -169,7 +170,7 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
     selection,
     computedData$: observer.computedData$,
     // visibleComputedData$: observer.visibleComputedData$,
-    visibleComputedRankingData$,
+    visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
     rankingScaleList$,
     fullParams$: baseRankingAxisParams$,
     fullDataFormatter$: observer.fullDataFormatter$,
@@ -177,8 +178,8 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
     xyMinMax$: observer.xyMinMax$,
     // textSizePx$: observer.textSizePx$,
     layout$: observer.layout$,
-    multiValueContainerSize$: observer.multiValueContainerSize$,
-    multiValueContainerPosition$: observer.multiValueContainerPosition$,
+    // containerSize$: observer.containerSize$,
+    containerPosition$: observer.containerPosition$,
     isCategorySeprate$: observer.isCategorySeprate$,
   })
 
