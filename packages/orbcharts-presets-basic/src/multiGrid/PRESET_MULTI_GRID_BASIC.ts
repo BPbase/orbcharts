@@ -10,11 +10,27 @@ export const PRESET_MULTI_GRID_BASIC: PresetPartial<'multiGrid', Partial<PresetM
   name: 'PRESET_MULTI_GRID_BASIC',
   description: '基本MultiGrid參數',
   chartParams: {
+    colors: {
+      light: {
+        label:  [
+          "#4BABFF",
+          "#94D6CB",
+          "#F9B052",
+          "#8454D4",
+          "#D58C75",
+          "#42C724",
+          "#FF8B8B",
+          "#904026",
+          "#C50669",
+          "#4B25B3"
+        ],
+      }
+    },
     padding: {
       top: 60,
       right: 60,
-      bottom: 120,
-      left: 60
+      bottom: 100,
+      left: 80
     },
     highlightTarget: 'series'
   },
