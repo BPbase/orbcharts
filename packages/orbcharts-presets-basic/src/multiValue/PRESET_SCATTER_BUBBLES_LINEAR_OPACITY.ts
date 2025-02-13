@@ -5,12 +5,28 @@ import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '.
 export const PRESET_SCATTER_BUBBLES_LINEAR_OPACITY: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_SCATTER_BUBBLES_LINEAR_OPACITY',
-  description: 'ScatterBubbles漸變透明度',
+  description: '漸變透明度的散布泡泡圖',
   chartParams: {
+    colors: {
+      light: {
+        label: [
+          "#6CBAFF",
+          "#FF6C6C",
+          "#F9B052",
+          "#7DD3C4",
+          "#AA93D2",
+          "#0088FF",
+          "#FFBABA",
+          "#86DC72",
+          "#EF76FF",
+          "#C4C4C4"
+        ],
+      }
+    },
     padding: {
       top: 60,
       right: 60,
-      bottom: 120,
+      bottom: 100,
       left: 60
     },
   },

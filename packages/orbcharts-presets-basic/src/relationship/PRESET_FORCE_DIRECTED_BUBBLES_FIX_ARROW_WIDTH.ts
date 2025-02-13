@@ -6,14 +6,30 @@ export const PRESET_FORCE_DIRECTED_BUBBLES_FIX_ARROW_WIDTH: PresetPartial<'relat
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_FORCE_DIRECTED_BUBBLES_FIX_ARROW_WIDTH',
   description: 'Force Directed Bubbles固定箭頭寬度',
-  // chartParams: {
-  //   padding: {
-  //     top: 40,
-  //     right: 40,
-  //     bottom: 60,
-  //     left: 40
-  //   },
-  // },
+  chartParams: {
+    colors: {
+      light: {
+        label: [
+          "#6CBAFF",
+          "#FF6C6C",
+          "#F9B052",
+          "#7DD3C4",
+          "#AA93D2",
+          "#0088FF",
+          "#FFBABA",
+          "#86DC72",
+          "#EF76FF",
+          "#C4C4C4"
+        ],
+      }
+    }
+    // padding: {
+    //   top: 40,
+    //   right: 40,
+    //   bottom: 60,
+    //   left: 40
+    // },
+  },
   allPluginParams: {
     ForceDirectedBubbles: {
       arrow: {

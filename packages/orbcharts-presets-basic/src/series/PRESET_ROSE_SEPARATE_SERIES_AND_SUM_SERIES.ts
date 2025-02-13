@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetSeriesPluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
+// import { ALL_PLUGIN_PARAMS_SERIES, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_ROSE_SCALING_BY_RADIUS: PresetPartial<'series', Partial<PresetSeriesPluginParams>
+export const PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES: PresetPartial<'series', Partial<PresetSeriesPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
-  name: 'PRESET_ROSE_SCALING_BY_RADIUS',
-  description: '以半徑尺寸為比例的玫瑰圖',
+  name: 'PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES',
+  description: '分開顯示Series並合併Series資料',
   chartParams: {
     colors: {
       light: {
@@ -25,19 +25,13 @@ export const PRESET_ROSE_SCALING_BY_RADIUS: PresetPartial<'series', Partial<Pres
     }
   },
   dataFormatter: {
-    sort: (a, b) => b.value - a.value
+    sort: (a, b) => b.value - a.value,
+    separateSeries: true,
+    sumSeries: true,
   },
   allPluginParams: {
+    // ...ALL_PLUGIN_PARAMS_SERIES,
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
-    Rose: {
-      arcScaleType: 'radius'
-    },
-    RoseLabels: {
-      arcScaleType: 'radius',
-    },
-    SeriesLegend: {
-      listRectRadius: 7 // 圓型圖例列點
-    }
   }
 }
-PRESET_ROSE_SCALING_BY_RADIUS.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`
+PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`

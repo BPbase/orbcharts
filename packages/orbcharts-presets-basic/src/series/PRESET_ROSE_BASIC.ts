@@ -6,6 +6,24 @@ export const PRESET_ROSE_BASIC: PresetPartial<'series', Partial<PresetSeriesPlug
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_ROSE_BASIC',
   description: '基本Rose參數',
+  chartParams: {
+    colors: {
+      light: {
+        label:  [
+          "#8BC8FF",
+          "#4BABFF",
+          "#0088FF",
+          "#55D339",
+          "#29AB0C",
+          "#16B59B",
+          "#FCDCAD",
+          "#F9B052",
+          "#FF6C6C",
+          "#C4C4C4"
+        ]
+      }
+    }
+  },
   dataFormatter: {
     sort: (a, b) => b.value - a.value
   },
