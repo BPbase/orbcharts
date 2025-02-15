@@ -3,6 +3,7 @@ import {
   of,
   map,
   distinctUntilChanged,
+  shareReplay,
   Subject,
 } from 'rxjs'
 import type { Observable } from 'rxjs'
@@ -12,14 +13,16 @@ import type {
 import type { BaseRankingAxisParams, BaseRankingBarsParams } from '../../../lib/plugins-basic-types'
 import { defineMultiValuePlugin } from '../../../lib/core'
 import { createBaseRankingAxis } from '../../base/BaseRankingAxis'
+import { createBaseRankingBars } from '../../base/BaseRankingBars'
 import { DEFAULT_RANKING_BARS_PARAMS } from '../defaults'
-import { LAYER_INDEX_OF_AXIS } from '../../const'
+import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 import {
   // visibleComputedSumDataObservable,
   // visibleComputedRankingByIndexDataObservable,
   // rankingAmountLimitObservable,
   computedRankingAmountListObservable,
-  rankingScaleListObservable
+  rankingScaleListObservable,
+  computedRankingWithXYDataObservable
 } from '../multiValueObservables'
 
 const pluginName = 'RankingBars'
@@ -27,7 +30,7 @@ const pluginName = 'RankingBars'
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING_BARS_PARAMS> = {
   name: pluginName,
   defaultParams: DEFAULT_RANKING_BARS_PARAMS,
-  layerIndex: LAYER_INDEX_OF_AXIS,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {
       bar: {
@@ -101,6 +104,9 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING
 
 export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, name, observer, subject }) => {
   
+  const baseRankingAxisSelection = selection.append('g').attr('class', `${pluginName}-axis`)
+  const baseRankingBarsSelection = selection.append('g').attr('class', `${pluginName}-bars`)
+
   const destroy$ = new Subject()
 
   const baseRankingAxisParams$: Observable<BaseRankingAxisParams> = observer.fullParams$.pipe(
@@ -157,17 +163,32 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
     visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
     textSizePx$: observer.textSizePx$,
     rankingAmount$
-  })
+  }).pipe(
+    takeUntil(destroy$),
+    shareReplay(1)
+  )
 
   const rankingScaleList$ = rankingScaleListObservable({
     containerSize$: observer.containerSize$,
     visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
     textSizePx$: observer.textSizePx$,
     computedRankingAmountList$
-  })
+  }).pipe(
+    takeUntil(destroy$),
+    shareReplay(1)
+  )
 
-  const unsubscribeBaseRankingAxis = createBaseRankingAxis(pluginName, {
-    selection,
+  const computedRankingWithXYData$ = computedRankingWithXYDataObservable({
+    visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
+    computedRankingAmountList$,
+    xyValueIndex$: observer.xyValueIndex$,
+    layout$: observer.layout$,
+  }).pipe(
+    takeUntil(destroy$),
+  )
+
+  const unsubscribeBaseRankingAxis = createBaseRankingAxis(`${pluginName}-axis`, {
+    selection: baseRankingAxisSelection,
     computedData$: observer.computedData$,
     // visibleComputedData$: observer.visibleComputedData$,
     visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
@@ -183,8 +204,33 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
     isCategorySeprate$: observer.isCategorySeprate$,
   })
 
+  const unsubscribeBaseRankingBars = createBaseRankingBars(`${pluginName}-bars`, {
+    selection: baseRankingBarsSelection,
+    computedData$: observer.computedData$,
+    // visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
+    visibleComputedRankingData$: computedRankingWithXYData$,
+    xyValueIndex$: observer.xyValueIndex$,
+    // categoryLabels$: observer.categoryLabels$,
+    CategoryDataMap$: observer.CategoryDataMap$,
+    fullParams$: baseRankingBarsParams$,
+    fullChartParams$: observer.fullChartParams$,
+    // layout$: observer.layout$,
+    // graphicTransform$: observer.graphicTransform$,
+    // graphicReverseScale$: observer.graphicReverseScale$,
+    highlight$: observer.highlight$,
+    computedRankingAmountList$: computedRankingAmountList$,
+    rankingScaleList$,
+    xScale$: observer.xScale$,
+    // rankingItemHeightList$,
+    containerPosition$: observer.containerPosition$,
+    containerSize$: observer.containerSize$,
+    isCategorySeprate$: observer.isCategorySeprate$,
+    event$: subject.event$,
+  })
+
   return () => {
     destroy$.next(undefined)
     unsubscribeBaseRankingAxis()
+    unsubscribeBaseRankingBars()
   }
 })

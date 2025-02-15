@@ -66,12 +66,12 @@ const yAxisLabelAnchor = 'end'
 const yAxisLabelDominantBaseline = 'auto'
 // const textClassName = getClassName(pluginName, 'yLabel')
 
-function renderRankingAxisLabel ({ selection, textClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
+function renderRankingAxisLabel ({ selection, textClassName, fullParams, fullDataFormatter, fullChartParams, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   textClassName: string
   fullParams: BaseRankingAxisParams
   // axisLabelAlign: TextAlign
-  layout: { width: number, height: number }
+  // layout: { width: number, height: number }
   fullDataFormatter: DataFormatterMultiValue,
   fullChartParams: ChartParams
   textReverseTransform: string,
@@ -104,7 +104,7 @@ function renderRankingAxisLabel ({ selection, textClassName, fullParams, layout,
     .text(d => fullDataFormatter.yAxis.label)
 }
 
-function renderRankingAxis ({ selection, fullParams, fullChartParams, rankingScale, renderLabels, textReverseTransformWithRotate, xyMinMax }: {
+function renderRankingAxis ({ selection, fullParams, fullChartParams, rankingScale, renderLabels, textReverseTransformWithRotate }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   // yAxisClassName: string
   fullParams: BaseRankingAxisParams
@@ -113,16 +113,16 @@ function renderRankingAxis ({ selection, fullParams, fullChartParams, rankingSca
   rankingScale: d3.ScalePoint<string>
   renderLabels: string[]
   textReverseTransformWithRotate: string,
-  xyMinMax: {
-    minX: number;
-    maxX: number;
-    minY: number;
-    maxY: number;
-  }
+  // xyMinMax: {
+  //   minX: number;
+  //   maxX: number;
+  //   minY: number;
+  //   maxY: number;
+  // }
 }) {
   const yAxisSelection = selection
-    .selectAll<SVGGElement, BaseRankingAxisParams>(`text`)
-    .data(renderLabels)
+    .selectAll<SVGGElement, string>(`text`)
+    .data(renderLabels, d => d)
     // .join('g')
     // .classed(yAxisClassName, true)
     .join(
@@ -131,21 +131,25 @@ function renderRankingAxis ({ selection, fullParams, fullChartParams, rankingSca
           .append('text')
           .style('font-weight', 'bold')
           .attr('x', - fullParams.barLabel.padding)
-    .attr('y', d => rankingScale(d)!)
+          .attr('y', d => rankingScale(d)!)
       },
-      update => update,
+      update => {
+        return update
+          .transition()
+          .duration(fullChartParams.transitionDuration)
+          // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
+          .attr('x', - fullParams.barLabel.padding)
+          .attr('y', d => rankingScale(d)!)
+      },
       exit => exit.remove()
     )
     .attr('text-anchor', yTickTextAnchor)
     .attr('dominant-baseline', yTickDominantBaseline)
     .attr('font-size', fullChartParams.styles.textSize)
     .style('fill', getColor(fullParams.barLabel.colorType, fullChartParams))
-    .text(d => d)
-    .transition()
     .style('transform', textReverseTransformWithRotate)
-    // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
-    .attr('x', - fullParams.barLabel.padding)
-    .attr('y', d => rankingScale(d)!)
+    .text(d => d)
+    
     
 
     // .each((d, i, g) => {
@@ -465,7 +469,7 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
   combineLatest({
     containerSelection: containerSelection$,
     fullParams: fullParams$,
-    layout: layout$,
+    // layout: layout$,
     fullDataFormatter: fullDataFormatter$,
     fullChartParams: fullChartParams$,
     rankingLabelList: rankingLabelList$,
@@ -508,7 +512,7 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
         rankingScale: rankingScale,
         renderLabels: rankingLabels,
         textReverseTransformWithRotate: data.textReverseTransformWithRotate,
-        xyMinMax: data.xyMinMax
+        // xyMinMax: data.xyMinMax
       })
   
       renderRankingAxisLabel({
@@ -516,7 +520,7 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
         textClassName,
         fullParams: data.fullParams,
         // axisLabelAlign: data.axisLabelAlign,
-        layout: data.layout,
+        // layout: data.layout,
         fullDataFormatter: data.fullDataFormatter,
         fullChartParams: data.fullChartParams,
         textReverseTransform: data.textReverseTransform,
