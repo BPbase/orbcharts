@@ -5,6 +5,7 @@ import {
   takeUntil,
   map,
   distinctUntilChanged,
+  of,
   switchMap,
   shareReplay
 } from 'rxjs'
@@ -157,6 +158,7 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
 
   const unsubscribeBaseXAxis = createBaseXAxis(pluginName, {
     selection,
+    position$: of('bottom'),
     computedData$: observer.computedData$,
     fullParams$: xAxisFullParams$,
     fullDataFormatter$: observer.fullDataFormatter$,

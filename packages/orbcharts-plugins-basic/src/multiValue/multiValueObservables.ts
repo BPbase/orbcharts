@@ -408,9 +408,9 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
 // }
 
 // 排名數量
-export const computedRankingAmountListObservable = ({ containerSize$, visibleComputedRankingData$, textSizePx$, rankingAmount$ }: {
+export const computedRankingAmountListObservable = ({ containerSize$, visibleComputedData$, textSizePx$, rankingAmount$ }: {
   containerSize$: Observable<ContainerSize>
-  visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
+  visibleComputedData$: Observable<ComputedDatumMultiValue[][]>
   textSizePx$: Observable<number>
   rankingAmount$: Observable<'auto' | number>
 }) => {
@@ -477,7 +477,7 @@ export const computedRankingAmountListObservable = ({ containerSize$, visibleCom
   // 計算每個 category 的顯示數量（要排名的數量）
   const computedRankingAmountList$ = combineLatest({
     rankingAmount: rankingAmount$,
-    visibleComputedRankingData: visibleComputedRankingData$
+    visibleComputedData: visibleComputedData$
   }).pipe(
     switchMap(async d => d),
     switchMap(data => {
@@ -485,13 +485,13 @@ export const computedRankingAmountListObservable = ({ containerSize$, visibleCom
         // 'auto': 不超過限制
         ? rankingAmountLimit$.pipe(
             map(rankingAmountLimit => {
-              return data.visibleComputedRankingData.map(categoryData => {
+              return data.visibleComputedData.map(categoryData => {
                 return Math.min(rankingAmountLimit, categoryData.length)
               })
             })
           )
         // number: 指定數量
-        : of(data.visibleComputedRankingData.map(_ => data.rankingAmount as number))
+        : of(data.visibleComputedData.map(_ => data.rankingAmount as number))
     }),
   )
 
@@ -803,7 +803,7 @@ export const computedRankingWithXYDataObservable = ({ visibleComputedRankingData
       //   maxX
       // }
       // const xScale = createOriginXScale(xMinMax, data.layout)
-      console.log('data.visibleComputedRankingData', data.visibleComputedRankingData)
+      // console.log('data.visibleComputedRankingData', data.visibleComputedRankingData)
       return data.visibleComputedRankingData
         .map((categoryData, categoryIndex) => {
           const yMinMax = {

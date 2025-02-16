@@ -67,7 +67,7 @@ interface RenderBarParams {
   rankingScaleList: d3.ScalePoint<string>[]
   xScale: d3.ScaleLinear<number, number, never>
   // rankingItemHeightList: number[]
-  // params: BaseRankingBarsParams
+  fullParams: BaseRankingBarsParams
   // chartParams: ChartParams
   barWidthList: number[]
   // transformedBarRadius: [number, number][]
@@ -98,7 +98,7 @@ function calcBarWidth ({ axisWidth, groupAmount, barAmountOfGroup, barPadding = 
   barGroupPadding: number
 }) {
   const eachGroupWidth = groupAmount > 1 // 等於 1 時會算出 Infinity
-    ? axisWidth / (groupAmount - 1) // -1是因為要扣掉兩側的padding
+    ? axisWidth / groupAmount
     : axisWidth
   const width = (eachGroupWidth - barGroupPadding) / barAmountOfGroup - barPadding
   return width > 1 ? width : 1
@@ -129,14 +129,19 @@ function calcBarWidth ({ axisWidth, groupAmount, barAmountOfGroup, barPadding = 
 // }
 // let _data: ComputedDatumMultiValue[][] = []
 
-function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedRankingData, xyValueIndex, rankingScaleList, xScale, barWidthList, transitionDuration }: RenderBarParams) {
+function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedRankingData, xyValueIndex, rankingScaleList, xScale, fullParams, barWidthList, transitionDuration }: RenderBarParams) {
 
   // const barHalfWidth = barWidth! / 2
+  
 
   graphicGSelection
     .each((_, categoryIndex, g) => {
       const barWidth = barWidthList[categoryIndex]
       const barHalfWidth = barWidth / 2
+      const radius = fullParams.bar.barRadius === true ? barHalfWidth
+        : fullParams.bar.barRadius === false ? 0
+        : typeof fullParams.bar.barRadius == 'number' ? fullParams.bar.barRadius
+        : 0
 
       d3.select(g[categoryIndex])
         .selectAll<SVGGElement, ComputedDatumMultiValue>(`rect.${rectClassName}`)
@@ -167,6 +172,8 @@ function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedRank
         // .attr('transform', (d, i) => `translate(${(d ? d.axisX : 0) - barHalfWidth}, ${0})`)
         .attr('transform', `translate(0, ${-barHalfWidth})`)
         .attr('fill', d => d.color)
+        .attr('rx', radius)
+        .attr('ry', radius)
         // .attr('y', d => rankingScaleList[categoryIndex] && rankingScaleList[categoryIndex](d.label))
         // .attr('x', d => isCategorySeprate ? 0 : barScale(d.seriesLabel)!)
         // .attr('width', d => xScale(d.value[xyValueIndex[0]]) ?? 1)
@@ -378,13 +385,13 @@ export const createBaseRankingBars: BasePluginFn<BaseBarsContext> = (pluginName:
 
 
   const barWidthList$ = combineLatest({
-    computedData: computedData$,
-    visibleComputedRankingData: visibleComputedRankingData$,
+    // computedData: computedData$,
+    // visibleComputedRankingData: visibleComputedRankingData$,
     params: fullParams$,
     // gridAxesSize: gridAxesSize$,
     computedRankingAmountList: computedRankingAmountList$,
     containerSize: containerSize$,
-    isCategorySeprate: isCategorySeprate$
+    // isCategorySeprate: isCategorySeprate$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
@@ -438,9 +445,9 @@ export const createBaseRankingBars: BasePluginFn<BaseBarsContext> = (pluginName:
     xScale: xScale$,
     barWidthList: barWidthList$,
     fullChartParams: fullChartParams$,
-    transitionDuration: transitionDuration$
+    transitionDuration: transitionDuration$,
     // fullDataFormatter: fullDataFormatter$,
-    // fullParams: fullParams$,
+    fullParams: fullParams$,
     // transitionItem: transitionItem$,
     // isCategorySeprate: isCategorySeprate$
   }).pipe(
@@ -467,7 +474,7 @@ export const createBaseRankingBars: BasePluginFn<BaseBarsContext> = (pluginName:
         rankingScaleList: data.rankingScaleList,
         xScale: data.xScale,
         // rankingItemHeightList: data.rankingItemHeightList,
-        // params: data.fullParams,
+        fullParams: data.fullParams,
         // chartParams: data.fullChartParams,
         barWidthList: data.barWidthList,
         // transformedBarRadius,

@@ -37,6 +37,7 @@ import { parseTickFormatValue } from '../utils/d3Utils'
 
 interface BaseXAxisContext {
   selection: d3.Selection<any, unknown, any, unknown>
+  position$: Observable<'top' | 'bottom'>
   computedData$: Observable<ComputedDataMultiValue>
   // filteredMinMaxValue$: Observable<[number, number]>
   fullParams$: Observable<BaseXAxisParams>
@@ -73,8 +74,9 @@ const xTickDominantBaseline = 'hanging'
 const xAxisLabelAnchor = 'start'
 const xAxisLabelDominantBaseline = 'hanging'
 
-function renderXAxisLabel ({ selection, xLabelClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
+function renderXAxisLabel ({ selection, position, xLabelClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
+  position: 'top' | 'bottom'
   xLabelClassName: string
   fullParams: BaseXAxisParams
   // axisLabelAlign: TextAlign
@@ -84,8 +86,20 @@ function renderXAxisLabel ({ selection, xLabelClassName, fullParams, layout, ful
   textReverseTransform: string,
 }) {
   const offsetX = fullParams.tickPadding + fullParams.labelOffset[0]
-  const offsetY = fullParams.tickPadding + fullParams.labelOffset[1]
+  // const offsetY = fullParams.tickPadding + fullParams.labelOffset[1]
   let labelX = offsetX
+  
+
+  let y: number // = position === 'top' ? 0 : layout.height
+  let offsetY
+  if (position === 'top') {
+    y = 0
+    offsetY = -fullParams.tickPadding - fullParams.labelOffset[1]
+  } else {
+    y = layout.height
+    offsetY = fullParams.tickPadding + fullParams.labelOffset[1]
+  }
+
   let labelY = offsetY
 
   const axisLabelSelection = selection
@@ -116,11 +130,12 @@ function renderXAxisLabel ({ selection, xLabelClassName, fullParams, layout, ful
         .attr('y', labelY)
         .text(d => fullDataFormatter.xAxis.label)
     })
-    .attr('transform', d => `translate(${layout.width}, ${layout.height})`)
+    .attr('transform', d => `translate(${layout.width}, ${y})`)
 }
 
-function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullChartParams, xScale, textReverseTransform }: {
+function renderXAxis ({ selection, position, xAxisClassName, fullParams, layout, fullChartParams, xScale, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
+  position: 'top' | 'bottom'
   xAxisClassName: string
   fullParams: BaseXAxisParams
   // tickTextAlign: TextAlign
@@ -137,12 +152,22 @@ function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullChart
   // }
 }) {
 
+  let y: number
+  let d3Axis: d3.Axis<d3.NumberValue>
+  if (position === 'top') {
+    y = 0
+    d3Axis = d3.axisTop(xScale)
+  } else {
+    y = layout.height
+    d3Axis = d3.axisBottom(xScale)
+  }
+
   const xAxisSelection = selection
     .selectAll<SVGGElement, BaseXAxisParams>(`g.${xAxisClassName}`)
     .data([fullParams])
     .join('g')
     .classed(xAxisClassName, true)
-    .attr('transform', `translate(0, ${layout.height})`)
+    .attr('transform', `translate(0, ${y})`)
 
   // const _xScale = d3.scaleLinear()
   //   .domain([0, 150])
@@ -152,7 +177,7 @@ function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullChart
   let tickPadding = fullParams.tickPadding
 
   // 設定Y軸刻度
-  const xAxis = d3.axisBottom(xScale)
+  const xAxis = d3Axis
     .scale(xScale)
     .ticks(fullParams.ticks) // 刻度分段數量
     .tickFormat(d => parseTickFormatValue(d, fullParams.tickFormat))
@@ -186,8 +211,8 @@ function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullChart
     .style('color', getColor(fullParams.tickTextColorType, fullChartParams))
     .attr('text-anchor', xTickTextAnchor)
     .attr('dominant-baseline', xTickDominantBaseline)
-    .attr('dy', 0)
-    .attr('y', tickPadding)
+    // .attr('dy', tickPadding)
+    // .attr('y', tickPadding)
     xText.style('transform', textReverseTransform)
   
   // // 抵消掉預設的偏移
@@ -200,6 +225,7 @@ function renderXAxis ({ selection, xAxisClassName, fullParams, layout, fullChart
 
 export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: string, {
   selection,
+  position$,
   computedData$,
   fullParams$,
   fullDataFormatter$,
@@ -327,6 +353,7 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
 
   combineLatest({
     axisSelection: axisSelection$,
+    position: position$,
     fullParams: fullParams$,
     // tickTextAlign: tickTextAlign$,
     // axisLabelAlign: axisLabelAlign$,
@@ -344,6 +371,7 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
 
     renderXAxis({
       selection: data.axisSelection,
+      position: data.position,
       xAxisClassName,
       fullParams: data.fullParams,
       // tickTextAlign: data.tickTextAlign,
@@ -357,6 +385,7 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
 
     renderXAxisLabel({
       selection: data.axisSelection,
+      position: data.position,
       xLabelClassName,
       fullParams: data.fullParams,
       // axisLabelAlign: data.axisLabelAlign,

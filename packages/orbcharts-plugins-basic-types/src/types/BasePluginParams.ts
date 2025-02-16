@@ -119,7 +119,7 @@ export interface BaseRankingBarsParams {
   bar: {
     barWidth: number
     barPadding: number
-    // barRadius: number | boolean
+    barRadius: number | boolean
   }
   rankingAmount: 'auto' | number
 }

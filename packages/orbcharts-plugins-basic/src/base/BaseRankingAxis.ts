@@ -66,22 +66,23 @@ const yAxisLabelAnchor = 'end'
 const yAxisLabelDominantBaseline = 'auto'
 // const textClassName = getClassName(pluginName, 'yLabel')
 
-function renderRankingAxisLabel ({ selection, textClassName, fullParams, fullDataFormatter, fullChartParams, textReverseTransform }: {
+function renderRankingAxisLabel ({ selection, textClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   textClassName: string
   fullParams: BaseRankingAxisParams
   // axisLabelAlign: TextAlign
-  // layout: { width: number, height: number }
+  layout: { width: number, height: number }
   fullDataFormatter: DataFormatterMultiValue,
   fullChartParams: ChartParams
   textReverseTransform: string,
 }) {
   const offsetX = fullParams.barLabel.padding - fullParams.axisLabel.offset[0]
-  const offsetY = fullParams.barLabel.padding + fullParams.axisLabel.offset[1]
+  const offsetY = - fullParams.barLabel.padding - fullParams.axisLabel.offset[1]
   let labelX = - offsetX
   let labelY = - offsetY
 
   selection
+    .attr('transform', d => `translate(0, ${layout.height})`)
     .selectAll<SVGTextElement, BaseRankingAxisParams>(`text`)
     .data([fullParams])
     .join(
@@ -469,7 +470,7 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
   combineLatest({
     containerSelection: containerSelection$,
     fullParams: fullParams$,
-    // layout: layout$,
+    layout: layout$,
     fullDataFormatter: fullDataFormatter$,
     fullChartParams: fullChartParams$,
     rankingLabelList: rankingLabelList$,
@@ -520,7 +521,7 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
         textClassName,
         fullParams: data.fullParams,
         // axisLabelAlign: data.axisLabelAlign,
-        // layout: data.layout,
+        layout: data.layout,
         fullDataFormatter: data.fullDataFormatter,
         fullChartParams: data.fullChartParams,
         textReverseTransform: data.textReverseTransform,

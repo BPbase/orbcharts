@@ -57,12 +57,9 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING
         barPadding: {
           toBeTypes: ['number']
         },
-        // barRadius: {
-        //   toBe: 'number | "sum"',
-        //   test: (value: any) => {
-        //     return typeof value === 'number' || value === 'sum'
-        //   }
-        // },
+        barRadius: {
+          toBeTypes: ['number', 'boolean']
+        },
       })
       if (barResult.status === 'error') {
         return barResult
@@ -160,7 +157,7 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
 
   const computedRankingAmountList$ = computedRankingAmountListObservable({
     containerSize$: observer.containerSize$,
-    visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
+    visibleComputedData$: observer.visibleComputedData$,
     textSizePx$: observer.textSizePx$,
     rankingAmount$
   }).pipe(

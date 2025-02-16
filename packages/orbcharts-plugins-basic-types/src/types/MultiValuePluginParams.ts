@@ -64,7 +64,7 @@ export interface RankingBarsParams {
   bar: {
     barWidth: number
     barPadding: number
-    // barRadius: number | boolean
+    barRadius: number | boolean
   }
   barLabel: {
     // // axisLineVisible: boolean
@@ -87,6 +87,10 @@ export interface RankingBarsParams {
     colorType: ColorType
   }
   rankingAmount: 'auto' | number
+  timer: {
+    active: boolean
+    period: number
+  }
 }
 
 export interface RankingBubblesParams {

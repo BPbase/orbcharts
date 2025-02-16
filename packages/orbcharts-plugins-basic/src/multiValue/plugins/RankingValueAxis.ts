@@ -15,16 +15,16 @@ import type {
 import {
   defineMultiValuePlugin,
 } from '../../../lib/core'
-import { DEFAULT_X_AXIS_PARAMS } from '../defaults'
+import { DEFAULT_RANKING_VALUE_AXIS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_AXIS } from '../../const'
 import { createBaseXAxis } from '../../base/BaseXAxis'
 
-const pluginName = 'XAxis'
+const pluginName = 'RankingValueAxis'
 
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_X_AXIS_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING_VALUE_AXIS_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_X_AXIS_PARAMS,
+  defaultParams: DEFAULT_RANKING_VALUE_AXIS_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {
@@ -80,13 +80,13 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_X_AXIS_
 
 
 
-export const XAxis = defineMultiValuePlugin(pluginConfig)(({ selection, name, observer, subject }) => {
+export const RankingValueAxis = defineMultiValuePlugin(pluginConfig)(({ selection, name, observer, subject }) => {
   
   const destroy$ = new Subject()
 
   const unsubscribeBaseXAxis = createBaseXAxis(pluginName, {
     selection,
-    position$: of('bottom'),
+    position$: of('top'),
     computedData$: observer.computedData$,
     fullParams$: observer.fullParams$,
     fullDataFormatter$: observer.fullDataFormatter$,

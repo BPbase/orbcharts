@@ -100,9 +100,9 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
 
 export const DEFAULT_RANKING_BARS_PARAMS: RankingBarsParams = {
   bar: {
-    barWidth: 16,
-    barPadding: 0,
-    // barRadius: false,
+    barWidth: 0,
+    barPadding: 8,
+    barRadius: false,
   },
   barLabel: {
     padding: 20,
@@ -113,7 +113,28 @@ export const DEFAULT_RANKING_BARS_PARAMS: RankingBarsParams = {
     offset: [0, 0],
     colorType: 'primary'
   },
-  rankingAmount: 'auto'
+  // rankingAmount: 'auto'
+  rankingAmount: 10,
+  timer: {
+    active: false,
+    period: 500
+  }
+}
+
+export const DEFAULT_RANKING_VALUE_AXIS_PARAMS: XAxisParams = {
+  labelOffset: [0, 0],
+  labelColorType: 'primary',
+  axisLineVisible: false,
+  axisLineColorType: 'secondary',
+  ticks: null,
+  // tickFormat: ',.0f',
+  tickFormat: v => v,
+  tickLineVisible: true,
+  tickPadding: 20,
+  tickFullLine: true,
+  tickFullLineDasharray: 'none',
+  tickColorType: 'secondary',
+  tickTextColorType: 'primary'
 }
 
 export const DEFAULT_SCATTER_PARAMS: ScatterParams = {
