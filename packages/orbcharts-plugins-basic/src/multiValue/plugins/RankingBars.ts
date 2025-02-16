@@ -1,18 +1,23 @@
 import {
   takeUntil,
+  combineLatest,
   of,
+  iif,
+  interval,
   map,
   distinctUntilChanged,
   shareReplay,
+  switchMap,
+  EMPTY,
   Subject,
 } from 'rxjs'
 import type { Observable } from 'rxjs'
 import type {
   DefinePluginConfig,
 } from '../../../lib/core-types'
-import type { BaseRankingAxisParams, BaseRankingBarsParams } from '../../../lib/plugins-basic-types'
+import type { BaseRankingLabelsParams, BaseRankingBarsParams } from '../../../lib/plugins-basic-types'
 import { defineMultiValuePlugin } from '../../../lib/core'
-import { createBaseRankingAxis } from '../../base/BaseRankingAxis'
+import { createBaseRankingLabels } from '../../base/BaseRankingLabels'
 import { createBaseRankingBars } from '../../base/BaseRankingBars'
 import { DEFAULT_RANKING_BARS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
@@ -22,7 +27,7 @@ import {
   // rankingAmountLimitObservable,
   computedRankingAmountListObservable,
   rankingScaleListObservable,
-  computedRankingWithXYDataObservable
+  // computedRankingWithXYDataObservable
 } from '../multiValueObservables'
 
 const pluginName = 'RankingBars'
@@ -47,7 +52,10 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING
         test: (value: any) => {
           return typeof value === 'number' || value === 'auto'
         }
-      }
+      },
+      timer: {
+        toBeTypes: ['object']
+      },
     })
     if (params.bar) {
       const barResult = validateColumns(params.bar, {
@@ -95,6 +103,19 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING
         return axisLabelResult
       }
     }
+    if (params.timer) {
+      const timerResult = validateColumns(params.timer, {
+        active: {
+          toBeTypes: ['boolean']
+        },
+        period: {
+          toBeTypes: ['number']
+        },
+      })
+      if (timerResult.status === 'error') {
+        return timerResult
+      }
+    }
     return result
   }
 }
@@ -106,7 +127,7 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
 
   const destroy$ = new Subject()
 
-  const baseRankingAxisParams$: Observable<BaseRankingAxisParams> = observer.fullParams$.pipe(
+  const baseRankingAxisParams$: Observable<BaseRankingLabelsParams> = observer.fullParams$.pipe(
     takeUntil(destroy$),
     map(params => {
       return {
@@ -124,7 +145,7 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
       }
     })
   )
-
+observer.categoryLabels$
   // const valueIndex$ = observer.fullDataFormatter$.pipe(
   //   takeUntil(destroy$),
   //   map(d => d.yAxis.valueIndex),
@@ -175,16 +196,14 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
     shareReplay(1)
   )
 
-  const computedRankingWithXYData$ = computedRankingWithXYDataObservable({
-    visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
-    computedRankingAmountList$,
-    xyValueIndex$: observer.xyValueIndex$,
-    layout$: observer.layout$,
-  }).pipe(
-    takeUntil(destroy$),
-  )
+  // const computedRankingWithXYData$ = computedRankingWithXYDataObservable({
+  //   visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
+  //   rankingScaleList$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  // )
 
-  const unsubscribeBaseRankingAxis = createBaseRankingAxis(`${pluginName}-axis`, {
+  const unsubscribeBaseRankingLabels = createBaseRankingLabels(`${pluginName}-labels`, {
     selection: baseRankingAxisSelection,
     computedData$: observer.computedData$,
     // visibleComputedData$: observer.visibleComputedData$,
@@ -204,10 +223,10 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
   const unsubscribeBaseRankingBars = createBaseRankingBars(`${pluginName}-bars`, {
     selection: baseRankingBarsSelection,
     computedData$: observer.computedData$,
-    // visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
-    visibleComputedRankingData$: computedRankingWithXYData$,
+    // visibleComputedData$: observer.visibleComputedData$,
+    visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
     xyValueIndex$: observer.xyValueIndex$,
-    // categoryLabels$: observer.categoryLabels$,
+    categoryLabels$: observer.categoryLabels$,
     CategoryDataMap$: observer.CategoryDataMap$,
     fullParams$: baseRankingBarsParams$,
     fullChartParams$: observer.fullChartParams$,
@@ -225,9 +244,76 @@ export const RankingBars = defineMultiValuePlugin(pluginConfig)(({ selection, na
     event$: subject.event$,
   })
 
+  const valueAmount$ = observer.visibleComputedRankingByIndexData$.pipe(
+    takeUntil(destroy$),
+    map(d => (d[0] && d[0][0] && d[0][0].value.length) ?? 0),
+    distinctUntilChanged()
+  )
+
+  const timerActive$ = observer.fullParams$.pipe(
+    takeUntil(destroy$),
+    map(p => p.timer.active),
+    distinctUntilChanged()
+  )
+
+  const timerPeriod$ = observer.fullParams$.pipe(
+    takeUntil(destroy$),
+    map(p => p.timer.period),
+    distinctUntilChanged()
+  )
+
+  let toggle = true
+
+  combineLatest({
+    timerActive: timerActive$,
+    valueAmount: valueAmount$,
+    timerPeriod: timerPeriod$,
+    xyValueIndex: observer.xyValueIndex$,
+    fullDataFormatter: observer.fullDataFormatter$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d)
+  ).subscribe(({ timerActive, valueAmount, timerPeriod, xyValueIndex, fullDataFormatter }) => {
+    if (toggle == false) {
+      return
+    }
+    if (timerActive) {
+      const nextIndex = xyValueIndex[0] + 1
+      if (nextIndex < valueAmount) {
+        toggle = false // timer 執行期間不可再次執行
+
+        setTimeout(() => {
+          subject.dataFormatter$.next({
+            ...fullDataFormatter,
+            xAxis: {
+              ...fullDataFormatter.xAxis,
+              valueIndex: nextIndex
+            }
+          })
+
+          toggle = true
+        }, timerPeriod)
+      }
+    }
+  })
+
+  // const nextIndex$ = timerActive$.pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(active => iif(() => active, timerPeriod$, EMPTY)),
+  //   switchMap(period => interval(period)),
+  //   switchMap(_ => observer.xyValueIndex$),
+  //   map(xyValueIndex => xyValueIndex[0] ++), // 
+  //   // switchMap(index => valueAmount$.pipe(map(amount => ({ index, amount })))),
+  // )
+  // .subscribe(({ index, amount }) => {
+  //   if (index < amount - 1) {
+  //     subject.dataFormatter$.next
+  //   }
+  // })
+
   return () => {
     destroy$.next(undefined)
-    unsubscribeBaseRankingAxis()
+    unsubscribeBaseRankingLabels()
     unsubscribeBaseRankingBars()
   }
 })

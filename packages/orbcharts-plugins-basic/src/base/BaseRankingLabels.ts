@@ -22,7 +22,7 @@ import type {
   TransformData,
   Layout
 } from '../../lib/core-types'
-import type { BaseRankingAxisParams } from '../../lib/plugins-basic-types'
+import type { BaseRankingLabelsParams } from '../../lib/plugins-basic-types'
 import type { BasePluginFn } from './types'
 import { getColor, getMinMaxValue, getClassName, getUniID } from '../utils/orbchartsUtils'
 import { createLabelToAxisScale, createValueToAxisScale } from '../../lib/core'
@@ -34,7 +34,7 @@ interface BaseRankingAxisContext {
   // visibleComputedData$: Observable<ComputedDataMultiValue>
   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
   rankingScaleList$: Observable<Array<d3.ScalePoint<string>>>
-  fullParams$: Observable<BaseRankingAxisParams>
+  fullParams$: Observable<BaseRankingLabelsParams>
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   fullChartParams$: Observable<ChartParams>
   xyMinMax$: Observable<{
@@ -69,7 +69,7 @@ const yAxisLabelDominantBaseline = 'auto'
 function renderRankingAxisLabel ({ selection, textClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   textClassName: string
-  fullParams: BaseRankingAxisParams
+  fullParams: BaseRankingLabelsParams
   // axisLabelAlign: TextAlign
   layout: { width: number, height: number }
   fullDataFormatter: DataFormatterMultiValue,
@@ -83,7 +83,7 @@ function renderRankingAxisLabel ({ selection, textClassName, fullParams, layout,
 
   selection
     .attr('transform', d => `translate(0, ${layout.height})`)
-    .selectAll<SVGTextElement, BaseRankingAxisParams>(`text`)
+    .selectAll<SVGTextElement, BaseRankingLabelsParams>(`text`)
     .data([fullParams])
     .join(
       enter => {
@@ -108,7 +108,7 @@ function renderRankingAxisLabel ({ selection, textClassName, fullParams, layout,
 function renderRankingAxis ({ selection, fullParams, fullChartParams, rankingScale, renderLabels, textReverseTransformWithRotate }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   // yAxisClassName: string
-  fullParams: BaseRankingAxisParams
+  fullParams: BaseRankingLabelsParams
   // tickTextAlign: TextAlign
   fullChartParams: ChartParams
   rankingScale: d3.ScalePoint<string>
@@ -181,7 +181,7 @@ function renderRankingAxis ({ selection, fullParams, fullChartParams, rankingSca
   return yAxisSelection
 
   // const yAxisSelection = selection
-  //   .selectAll<SVGGElement, BaseRankingAxisParams>(`g.${yAxisClassName}`)
+  //   .selectAll<SVGGElement, BaseRankingLabelsParams>(`g.${yAxisClassName}`)
   //   .data([fullParams])
   //   .join('g')
   //   .classed(yAxisClassName, true)
@@ -278,7 +278,7 @@ function renderClipPath ({ defsSelection, clipPathData }: {
     })
 }
 
-export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (pluginName: string, {
+export const createBaseRankingLabels: BasePluginFn<BaseRankingAxisContext> = (pluginName: string, {
   selection,
   computedData$,
   // visibleComputedData$,
@@ -499,7 +499,7 @@ export const createBaseRankingAxis: BasePluginFn<BaseRankingAxisContext> = (plug
         .attr('class', yAxisClassName)
         .attr('clip-path', `url(#${clipPathID})`)
       const axisLabelSelection = _containerSelection
-        .selectAll<SVGGElement, BaseRankingAxisParams>(`g.${textClassName}`)
+        .selectAll<SVGGElement, BaseRankingLabelsParams>(`g.${textClassName}`)
         .data([data.fullParams])
         .join('g')
         .classed(textClassName, true)

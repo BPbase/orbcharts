@@ -21,7 +21,7 @@ export interface DatumValue {
 }
 
 export interface DatumMultiValue {
-  value: number[]
+  value: (number | null)[]
 }
 
 // 透過類型選擇Data

@@ -45,7 +45,7 @@ export interface ComputedDatumBaseValue {
 }
 
 export interface ComputedDatumBaseMultiValue {
-  value: number[]
+  value: (number | null)[]
 }
 
 // datum - 序列資料

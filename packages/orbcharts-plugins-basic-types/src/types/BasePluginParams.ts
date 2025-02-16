@@ -88,7 +88,7 @@ export interface BaseLinesParams {
   // labelPadding: number
 }
 
-export interface BaseRankingAxisParams {
+export interface BaseRankingLabelsParams {
   // labelOffset: [number, number]
   // labelColorType: ColorType
   // axisLineVisible: boolean

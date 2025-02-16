@@ -6,7 +6,8 @@
 import { MultiValueChart } from '../../../packages/orbcharts-core/src'
 import { RankingBars, RankingValueAxis, MultiValueLegend, MultiValueTooltip } from '../../../packages/orbcharts-plugins-basic/src'
 // import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
-import multiValue1 from '../../../packages/orbcharts-demo/src/data/multiValue1'
+// import multiValue1 from '../../../packages/orbcharts-demo/src/data/multiValue1'
+import multiValueData_brand from '../../../packages/orbcharts-demo/src/data/multiValueData_brand'
 
 onMounted(() => {
 
@@ -221,6 +222,8 @@ onMounted(() => {
     yAxis: {
       label: 'yyyyyyy'
     },
+    valueLabels,
+    categoryLabels
     // separateCategory: true,
     // container: {
     //   columnAmount: 1,
@@ -228,39 +231,39 @@ onMounted(() => {
     // }
   })
 
-  setTimeout(() => {
-    chart!.dataFormatter$.next({
-      xAxis: {
-        label: 'xxxxxxx',
-        valueIndex: 1
-      },
-      yAxis: {
-        label: 'yyyyyyy'
-      },
-      // separateCategory: true,
-      // container: {
-      //   columnAmount: 1,
-      //   rowAmount: 3
-      // }
-    })
+  // setTimeout(() => {
+  //   chart!.dataFormatter$.next({
+  //     xAxis: {
+  //       label: 'xxxxxxx',
+  //       valueIndex: 1
+  //     },
+  //     yAxis: {
+  //       label: 'yyyyyyy'
+  //     },
+  //     // separateCategory: true,
+  //     // container: {
+  //     //   columnAmount: 1,
+  //     //   rowAmount: 3
+  //     // }
+  //   })
 
-    setTimeout(() => {
-      chart!.dataFormatter$.next({
-        xAxis: {
-          label: 'xxxxxxx',
-          valueIndex: 2
-        },
-        yAxis: {
-          label: 'yyyyyyy'
-        },
-        // separateCategory: true,
-        // container: {
-        //   columnAmount: 1,
-        //   rowAmount: 3
-        // }
-      })
-    }, 500)
-  }, 500)
+  //   setTimeout(() => {
+  //     chart!.dataFormatter$.next({
+  //       xAxis: {
+  //         label: 'xxxxxxx',
+  //         valueIndex: 2
+  //       },
+  //       yAxis: {
+  //         label: 'yyyyyyy'
+  //       },
+  //       // separateCategory: true,
+  //       // container: {
+  //       //   columnAmount: 1,
+  //       //   rowAmount: 3
+  //       // }
+  //     })
+  //   }, 500)
+  // }, 500)
 
   // setTimeout(() => {
   //   chart!.dataFormatter$.next({
@@ -285,13 +288,18 @@ onMounted(() => {
 
   chart!.plugins$.next([ rankingBars, rankingValueAxis, multiValueLegend, multiValueTooltip ])
 
-
+  rankingBars.params$.next({
+    timer: {
+      active: true,
+      period: 250
+    }
+  })
 
   chart.chartParams$.next({
     // highlightTarget: 'category'
   })
 
-  chart!.data$.next(multiValue1)
+  chart!.data$.next(multiValueData_brand)
 
 
 })

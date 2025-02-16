@@ -927,12 +927,12 @@ export const xScaleObservable = ({ visibleComputedSumData$, fullDataFormatter$, 
     map(data => {
       const valueIndex = data.fullDataFormatter.xAxis.valueIndex
       if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
-        || data.filteredXYMinMaxData.minXDatum.value[valueIndex] == null || data.filteredXYMinMaxData.maxXDatum.value[valueIndex] == null
+        // || data.filteredXYMinMaxData.minXDatum.value[valueIndex] == null || data.filteredXYMinMaxData.maxXDatum.value[valueIndex] == null
       ) {
         return
       }
-      let maxValue = data.filteredXYMinMaxData.maxXDatum.value[valueIndex]
-      let minValue = data.filteredXYMinMaxData.minXDatum.value[valueIndex]
+      let maxValue: number | null = data.filteredXYMinMaxData.maxXDatum.value[valueIndex]
+      let minValue: number | null = data.filteredXYMinMaxData.minXDatum.value[valueIndex]
       if (maxValue === minValue && maxValue === 0) {
         // 避免最大及最小值同等於 0 造成無法計算scale
         maxValue = 1
@@ -973,12 +973,12 @@ export const xSumScaleObservable = ({ fullDataFormatter$, filteredXYMinMaxData$,
     map(data => {
       const valueIndex = data.fullDataFormatter.xAxis.valueIndex
       if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
-        || data.filteredXYMinMaxData.minXDatum.value[valueIndex] == null || data.filteredXYMinMaxData.maxXDatum.value[valueIndex] == null
+        // || data.filteredXYMinMaxData.minXDatum.value[valueIndex] == null || data.filteredXYMinMaxData.maxXDatum.value[valueIndex] == null
       ) {
         return
       }
-      let maxValue = data.filteredXYMinMaxData.maxXDatum.value[valueIndex]
-      let minValue = data.filteredXYMinMaxData.minXDatum.value[valueIndex]
+      let maxValue: number | null = data.filteredXYMinMaxData.maxXDatum.value[valueIndex]
+      let minValue: number | null = data.filteredXYMinMaxData.minXDatum.value[valueIndex]
       if (maxValue === minValue && maxValue === 0) {
         // 避免最大及最小值同等於 0 造成無法計算scale
         maxValue = 1

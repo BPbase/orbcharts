@@ -37,7 +37,7 @@ interface BaseBarsContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataMultiValue>
   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
-  // categoryLabels$: Observable<string[]>
+  categoryLabels$: Observable<string[]>
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
   fullParams$: Observable<BaseRankingBarsParams>
   fullChartParams$: Observable<ChartParams>
@@ -56,24 +56,22 @@ interface BaseBarsContext {
   event$: Subject<EventMultiValue>
 }
 
-interface RenderBarParams {
-  graphicGSelection: d3.Selection<SVGGElement, ComputedDatumMultiValue[], any, any>
-  rectClassName: string
+interface RenderGraphicGParams {
+  containerSelection: d3.Selection<SVGGElement, ComputedDatumMultiValue[], any, any>
   visibleComputedRankingData: ComputedDatumMultiValue[][]
-  xyValueIndex: [number, number]
-  // zeroYArr: number[]
-  // groupLabels: string[]
-  // barScale: d3.ScalePoint<string>
   rankingScaleList: d3.ScalePoint<string>[]
+  transitionDuration: number
+}
+
+interface RenderBarParams {
+  graphicGSelection: d3.Selection<SVGGElement, ComputedDatumMultiValue, any, any>
+  rectClassName: string
+  // visibleComputedRankingData: ComputedDatumMultiValue[][]
+  xyValueIndex: [number, number]
+  // rankingScaleList: d3.ScalePoint<string>[]
   xScale: d3.ScaleLinear<number, number, never>
-  // rankingItemHeightList: number[]
   fullParams: BaseRankingBarsParams
-  // chartParams: ChartParams
   barWidthList: number[]
-  // transformedBarRadius: [number, number][]
-  // delayGroup: number
-  // transitionItem: number
-  // isCategorySeprate: boolean
   transitionDuration: number
 }
 
@@ -129,62 +127,76 @@ function calcBarWidth ({ axisWidth, groupAmount, barAmountOfGroup, barPadding = 
 // }
 // let _data: ComputedDatumMultiValue[][] = []
 
-function renderRectBars ({ graphicGSelection, rectClassName, visibleComputedRankingData, xyValueIndex, rankingScaleList, xScale, fullParams, barWidthList, transitionDuration }: RenderBarParams) {
+function renderGraphicG ({ containerSelection, visibleComputedRankingData, rankingScaleList, transitionDuration }: RenderGraphicGParams) {
+  containerSelection
+    .each((_, categoryIndex, g) => {
+      const container = d3.select(g[categoryIndex])
+      const graphicG = container.selectAll<SVGGElement, ComputedDatumMultiValue>(`g`)
+        .data(visibleComputedRankingData[categoryIndex] ?? [], d => d.id)
+        .join(
+          enter => {
+            return enter
+              .append('g')
+              .attr('cursor', 'pointer')
+              .attr('transform', d => {
+                return `translate(0, ${rankingScaleList[categoryIndex] && rankingScaleList[categoryIndex](d.label)})`
+              })
+          },
+          update => {
+            return update
+              .transition()
+              .duration(transitionDuration)
+              .ease(d3.easeLinear)
+              .attr('transform', d => {
+                return `translate(0, ${rankingScaleList[categoryIndex] && rankingScaleList[categoryIndex](d.label)})`
+              })
+          },
+          exit => exit.remove()
+        )
+    })
 
-  // const barHalfWidth = barWidth! / 2
-  
+  const graphicBarSelection: d3.Selection<SVGRectElement, ComputedDatumMultiValue, SVGGElement, unknown> = containerSelection.selectAll(`g`)
+
+  return graphicBarSelection
+}
+
+function renderRectBars ({ graphicGSelection, rectClassName, xyValueIndex, xScale, fullParams, barWidthList, transitionDuration }: RenderBarParams) {
 
   graphicGSelection
-    .each((_, categoryIndex, g) => {
-      const barWidth = barWidthList[categoryIndex]
+    .each((datum, i, g) => {
+      const barWidth = barWidthList[datum.categoryIndex]
       const barHalfWidth = barWidth / 2
       const radius = fullParams.bar.barRadius === true ? barHalfWidth
         : fullParams.bar.barRadius === false ? 0
         : typeof fullParams.bar.barRadius == 'number' ? fullParams.bar.barRadius
         : 0
-
-      d3.select(g[categoryIndex])
-        .selectAll<SVGGElement, ComputedDatumMultiValue>(`rect.${rectClassName}`)
-        .data(visibleComputedRankingData[categoryIndex] ?? [], d => d.id)
+      
+      const gSelection = d3.select(g[i])
+      gSelection.selectAll<SVGRectElement, ComputedDatumMultiValue>(`rect.${rectClassName}`)
+        .data([datum], d => d.id)
         .join(
           enter => {
-            // console.log('enter')
             return enter
               .append('rect')
               .classed(rectClassName, true)
               .attr('cursor', 'pointer')
               .attr('width', d => 1)
               .attr('height', barWidth)
-              .attr('y', d => rankingScaleList[categoryIndex] && rankingScaleList[categoryIndex](d.label))
-              // .attr('y', d => d.axisY)
           },
           update => {
             return update
               .transition()
               .duration(transitionDuration)
+              .ease(d3.easeLinear)
               .attr('width', d => xScale(d.value[xyValueIndex[0]]) ?? 1)
               .attr('height', barWidth)
-              .attr('y', d => rankingScaleList[categoryIndex] && rankingScaleList[categoryIndex](d.label))
-              // .attr('y', d => d.axisY)
           },
           exit => exit.remove()
         )
-        // .attr('transform', (d, i) => `translate(${(d ? d.axisX : 0) - barHalfWidth}, ${0})`)
         .attr('transform', `translate(0, ${-barHalfWidth})`)
         .attr('fill', d => d.color)
         .attr('rx', radius)
         .attr('ry', radius)
-        // .attr('y', d => rankingScaleList[categoryIndex] && rankingScaleList[categoryIndex](d.label))
-        // .attr('x', d => isCategorySeprate ? 0 : barScale(d.seriesLabel)!)
-        // .attr('width', d => xScale(d.value[xyValueIndex[0]]) ?? 1)
-        // .attr('height', barWidth)
-        // .attr('rx', transformedBarRadius[seriesIndex][0] ?? 1)
-        // .attr('ry', transformedBarRadius[seriesIndex][1] ?? 1)
-        // .transition()
-        // .duration(transitionItem)
-        // .ease(getD3TransitionEase(chartParams.transitionEase))
-        // .delay((d, i) => d.groupIndex * delayGroup)
-        // .attr('height', d => Math.abs(d.axisYFromZero) || 1) // 無值還是給一個 1 的高度
     })
 
   const graphicBarSelection: d3.Selection<SVGRectElement, ComputedDatumMultiValue, SVGGElement, unknown> = graphicGSelection.selectAll(`rect.${rectClassName}`)
@@ -261,7 +273,7 @@ export const createBaseRankingBars: BasePluginFn<BaseBarsContext> = (pluginName:
   computedData$,
   visibleComputedRankingData$,
   xyValueIndex$,
-  // categoryLabels$,
+  categoryLabels$,
   CategoryDataMap$,
   fullParams$,
   fullChartParams$,
@@ -436,9 +448,28 @@ export const createBaseRankingBars: BasePluginFn<BaseBarsContext> = (pluginName:
   //   distinctUntilChanged()
   // )
 
-  const graphicSelection$ = combineLatest({
-    // graphicGSelection: graphicGSelection$,
+  const graphicGSelection$ = combineLatest({
     containerSelection: containerSelection$,
+    visibleComputedRankingData: visibleComputedRankingData$,
+    rankingScaleList: rankingScaleList$,
+    transitionDuration: transitionDuration$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      
+      return renderGraphicG({
+        containerSelection: data.containerSelection,
+        visibleComputedRankingData: data.visibleComputedRankingData,
+        rankingScaleList: data.rankingScaleList,
+        transitionDuration: data.transitionDuration
+      })
+    })
+  )
+
+  const graphicSelection$ = combineLatest({
+    graphicGSelection: graphicGSelection$,
+    // containerSelection: containerSelection$,
     visibleComputedRankingData: visibleComputedRankingData$,
     xyValueIndex: xyValueIndex$,
     rankingScaleList: rankingScaleList$,
@@ -446,41 +477,19 @@ export const createBaseRankingBars: BasePluginFn<BaseBarsContext> = (pluginName:
     barWidthList: barWidthList$,
     fullChartParams: fullChartParams$,
     transitionDuration: transitionDuration$,
-    // fullDataFormatter: fullDataFormatter$,
     fullParams: fullParams$,
-    // transitionItem: transitionItem$,
-    // isCategorySeprate: isCategorySeprate$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      // return renderDots({
-      //   graphicGSelection: data.graphicGSelection,
-      //   circleGClassName,
-      //   circleClassName,
-      //   visibleComputedRankingData: data.visibleComputedRankingData,
-      //   fullParams: data.fullParams,
-      //   fullChartParams: data.fullChartParams,
-      //   graphicReverseScale: data.graphicReverseScale
-      // })
+      
       return renderRectBars({
-        graphicGSelection: data.containerSelection,
+        graphicGSelection: data.graphicGSelection,
         rectClassName,
-        visibleComputedRankingData: data.visibleComputedRankingData,
         xyValueIndex: data.xyValueIndex,
-        // zeroYArr,
-        // groupLabels,
-        // barScale,
-        rankingScaleList: data.rankingScaleList,
         xScale: data.xScale,
-        // rankingItemHeightList: data.rankingItemHeightList,
         fullParams: data.fullParams,
-        // chartParams: data.fullChartParams,
         barWidthList: data.barWidthList,
-        // transformedBarRadius,
-        // delayGroup,
-        // transitionItem: data.transitionItem,
-        // isCategorySeprate: data.isCategorySeprate
         transitionDuration: data.transitionDuration
       })
     })

@@ -736,92 +736,120 @@ export const rankingScaleListObservable = ({ containerSize$, visibleComputedRank
 //   )
 // }
 
-// Ranking資料 - 有 XY 資料 @Q@ 若沒用到要棄用
-export const computedRankingWithXYDataObservable = ({ visibleComputedRankingData$, computedRankingAmountList$, xyValueIndex$, layout$ }: {
-  visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
-  computedRankingAmountList$: Observable<number[]>
-  xyValueIndex$: Observable<[number, number]>
-  layout$: Observable<Layout>
-}): Observable<ComputedXYDataMultiValue> => {
+// // Ranking資料 - 有 XY 資料 @Q@ 若沒用到要棄用
+// export const computedRankingWithXYDataObservable = ({ visibleComputedRankingData$, computedRankingAmountList$, xyValueIndex$, layout$ }: {
+//   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
+//   computedRankingAmountList$: Observable<number[]>
+//   xyValueIndex$: Observable<[number, number]>
+//   layout$: Observable<Layout>
+// }): Observable<ComputedXYDataMultiValue> => {
 
-  // // 未篩選範圍前的 scale
-  // function createOriginXScale (xMinMax: { minX: number, maxX: number }, layout: Layout) {
-  //   let maxValue = xMinMax.maxX
-  //   let minValue = xMinMax.minX
-  //   if (minValue === maxValue && maxValue === 0) {
-  //     // 避免最大及最小值相同造成無法計算scale
-  //     maxValue = 1
-  //   }
-  //   const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-  //     maxValue,
-  //     minValue,
-  //     axisWidth: layout.width,
-  //     scaleDomain: ['auto', 'auto'], // 不使用dataFormatter設定 --> 以0為基準到最大或最小值為範圍（ * 如果是使用[minValue, maxValue]的話，在兩者很接近的情況下有可能造成scale倍率過高而svg變型時失真的情況）
-  //     scaleRange: [0, 1] // 不使用dataFormatter設定
-  //   })
+//   // // 未篩選範圍前的 scale
+//   // function createOriginXScale (xMinMax: { minX: number, maxX: number }, layout: Layout) {
+//   //   let maxValue = xMinMax.maxX
+//   //   let minValue = xMinMax.minX
+//   //   if (minValue === maxValue && maxValue === 0) {
+//   //     // 避免最大及最小值相同造成無法計算scale
+//   //     maxValue = 1
+//   //   }
+//   //   const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
+//   //     maxValue,
+//   //     minValue,
+//   //     axisWidth: layout.width,
+//   //     scaleDomain: ['auto', 'auto'], // 不使用dataFormatter設定 --> 以0為基準到最大或最小值為範圍（ * 如果是使用[minValue, maxValue]的話，在兩者很接近的情況下有可能造成scale倍率過高而svg變型時失真的情況）
+//   //     scaleRange: [0, 1] // 不使用dataFormatter設定
+//   //   })
     
-  //   return valueScale
-  // }
+//   //   return valueScale
+//   // }
 
-  // 未篩選範圍及visible前的 scale
-  function createOriginYScale (yMinMax: { minY: number, maxY: number }, layout: Layout) {
-    let maxValue = yMinMax.maxY
-    let minValue = yMinMax.minY
-    if (minValue === maxValue && maxValue === 0) {
-      // 避免最大及最小值相同造成無法計算scale
-      maxValue = 1
-    }
-    const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-      maxValue,
-      minValue,
-      axisWidth: layout.height,
-      scaleDomain: ['auto', 'auto'], // 不使用dataFormatter設定 --> 以0為基準到最大或最小值為範圍（ * 如果是使用[minValue, maxValue]的話，在兩者很接近的情況下有可能造成scale倍率過高而svg變型時失真的情況）
-      scaleRange: [0, 1], // 不使用dataFormatter設定
-      // reverse: true
-    })
+//   // 未篩選範圍及visible前的 scale
+//   function createOriginYScale (yMinMax: { minY: number, maxY: number }, layout: Layout) {
+//     let maxValue = yMinMax.maxY
+//     let minValue = yMinMax.minY
+//     if (minValue === maxValue && maxValue === 0) {
+//       // 避免最大及最小值相同造成無法計算scale
+//       maxValue = 1
+//     }
+//     const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
+//       maxValue,
+//       minValue,
+//       axisWidth: layout.height,
+//       scaleDomain: ['auto', 'auto'], // 不使用dataFormatter設定 --> 以0為基準到最大或最小值為範圍（ * 如果是使用[minValue, maxValue]的話，在兩者很接近的情況下有可能造成scale倍率過高而svg變型時失真的情況）
+//       scaleRange: [0, 1], // 不使用dataFormatter設定
+//       // reverse: true
+//     })
     
-    return valueScale
-  }
+//     return valueScale
+//   }
 
-  return combineLatest({
-    visibleComputedRankingData: visibleComputedRankingData$,
-    computedRankingAmountList: computedRankingAmountList$,
-    xyValueIndex: xyValueIndex$,
-    layout: layout$
-  }).pipe(
-    switchMap(async d => d),
-    map(data => {
+//   return combineLatest({
+//     visibleComputedRankingData: visibleComputedRankingData$,
+//     computedRankingAmountList: computedRankingAmountList$,
+//     xyValueIndex: xyValueIndex$,
+//     layout: layout$
+//   }).pipe(
+//     switchMap(async d => d),
+//     map(data => {
       
-      // const maxX = data.visibleComputedRankingData
-      //   .flat()
-      //   .reduce((acc, current) => {
-      //     const maxXIndex = current.value.length - 1
-      //     return maxXIndex > acc ? maxXIndex : acc
-      //   }, 0)
-      // const xMinMax = {
-      //   minX: 0,
-      //   maxX
-      // }
-      // const xScale = createOriginXScale(xMinMax, data.layout)
-      // console.log('data.visibleComputedRankingData', data.visibleComputedRankingData)
-      return data.visibleComputedRankingData
-        .map((categoryData, categoryIndex) => {
-          const yMinMax = {
-            minY: 0,
-            maxY: data.computedRankingAmountList[categoryIndex]
-          }
-          const yScale = createOriginYScale(yMinMax, data.layout)
+//       // const maxX = data.visibleComputedRankingData
+//       //   .flat()
+//       //   .reduce((acc, current) => {
+//       //     const maxXIndex = current.value.length - 1
+//       //     return maxXIndex > acc ? maxXIndex : acc
+//       //   }, 0)
+//       // const xMinMax = {
+//       //   minX: 0,
+//       //   maxX
+//       // }
+//       // const xScale = createOriginXScale(xMinMax, data.layout)
+//       // console.log('data.visibleComputedRankingData', data.visibleComputedRankingData)
+//       return data.visibleComputedRankingData
+//         .map((categoryData, categoryIndex) => {
+//           const yMinMax = {
+//             minY: 0,
+//             maxY: data.computedRankingAmountList[categoryIndex]
+//           }
+//           const yScale = createOriginYScale(yMinMax, data.layout)
 
-          return categoryData.map((datum, datumIndex) => {
-            return {
-              ...datum,
-              // axisX: xScale(datum.value[data.xyValueIndex[0]] ?? 0),
-              axisX: 0,
-              // axisY: yScale(datum.value[data.xyValueIndex[1]] ?? 0), // y軸的繪圖座標是從上到下，所以反轉
-              axisY: yScale(datumIndex),
-            }
-          })
-        })
-    })
-  )
-}
+//           return categoryData.map((datum, datumIndex) => {
+//             return {
+//               ...datum,
+//               // axisX: xScale(datum.value[data.xyValueIndex[0]] ?? 0),
+//               axisX: 0,
+//               // axisY: yScale(datum.value[data.xyValueIndex[1]] ?? 0), // y軸的繪圖座標是從上到下，所以反轉
+//               axisY: yScale(datumIndex),
+//             }
+//           })
+//         })
+//     })
+//   )
+// }
+
+// // Ranking資料 - 有 XY 資料 @Q@ 若沒用到要棄用
+// export const computedRankingWithXYDataObservable = ({ visibleComputedRankingData$, rankingScaleList$ }: {
+//   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
+//   rankingScaleList$: Observable<d3.ScalePoint<string>[]>
+// }): Observable<ComputedXYDataMultiValue> => {
+
+//   return combineLatest({
+//     visibleComputedRankingData: visibleComputedRankingData$,
+//     rankingScaleList: rankingScaleList$
+//   }).pipe(
+//     switchMap(async d => d),
+//     map(data => {
+//       return data.visibleComputedRankingData
+//         .map((categoryData, categoryIndex) => {
+//           const yScale = data.rankingScaleList[categoryIndex]
+
+//           return categoryData.map((datum, datumIndex) => {
+//             return {
+//               ...datum,
+//               axisX: 0,
+//               axisY: yScale(datum.label),
+//             }
+//           })
+//         })
+//     })
+//   )
+// }

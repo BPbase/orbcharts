@@ -4,7 +4,7 @@ export type ComputedDataMultiValue = ComputedDatumMultiValue[][]
 
 export interface ComputedDatumMultiValue extends ComputedDatumBase, ComputedDatumBaseCategory, ComputedDatumBaseMultiValue {
   datumIndex: number
-  value: number[]
+  value: (number | null)[]
 }
 
 export interface ComputedDatumWithSumMultiValue extends ComputedDatumMultiValue {
