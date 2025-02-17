@@ -19,7 +19,7 @@ import { DEFAULT_RANKING_VALUE_AXIS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_AXIS } from '../../const'
 import { createBaseXAxis } from '../../base/BaseXAxis'
 
-const pluginName = 'RankingValueAxis'
+const pluginName = 'RacingValueAxis'
 
 
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING_VALUE_AXIS_PARAMS> = {
@@ -80,13 +80,21 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING
 
 
 
-export const RankingValueAxis = defineMultiValuePlugin(pluginConfig)(({ selection, name, observer, subject }) => {
+export const RacingValueAxis = defineMultiValuePlugin(pluginConfig)(({ selection, name, observer, subject }) => {
   
   const destroy$ = new Subject()
+
+  // 過渡速度和圖形一致
+  const transitionDuration$ = observer.fullChartParams$.pipe(
+    takeUntil(destroy$),
+    map(d => d.transitionDuration),
+    distinctUntilChanged()
+  )
 
   const unsubscribeBaseXAxis = createBaseXAxis(pluginName, {
     selection,
     position$: of('top'),
+    transitionDuration$,
     computedData$: observer.computedData$,
     fullParams$: observer.fullParams$,
     fullDataFormatter$: observer.fullDataFormatter$,

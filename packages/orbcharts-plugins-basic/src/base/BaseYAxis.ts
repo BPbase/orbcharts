@@ -161,6 +161,7 @@ function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataF
   const yAxisEl = yAxisSelection
     .transition()
     .duration(100)
+    .ease(d3.easeLinear) // 線性的 - 當托曳或快速變動的時候比較滑順
     .call(yAxis)
   
   yAxisEl.selectAll('line')

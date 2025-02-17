@@ -159,6 +159,7 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
   const unsubscribeBaseXAxis = createBaseXAxis(pluginName, {
     selection,
     position$: of('bottom'),
+    transitionDuration$: of(100),
     computedData$: observer.computedData$,
     fullParams$: xAxisFullParams$,
     fullDataFormatter$: observer.fullDataFormatter$,

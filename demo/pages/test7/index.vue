@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { MultiValueChart } from '../../../packages/orbcharts-core/src'
-import { RankingBars, RankingValueAxis, MultiValueLegend, MultiValueTooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { RacingBars, XAxis, RacingValueAxis, MultiValueLegend, MultiValueTooltip } from '../../../packages/orbcharts-plugins-basic/src'
 // import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 // import multiValue1 from '../../../packages/orbcharts-demo/src/data/multiValue1'
 import multiValueData_brand from '../../../packages/orbcharts-demo/src/data/multiValueData_brand'
@@ -215,6 +215,15 @@ onMounted(() => {
     "2018/01"
   ]
 
+  chart.chartParams$.next({
+    transitionDuration: 500,
+    // colors: {
+    //   light: {
+    //     label: ['#000000']
+    //   }
+    // }
+  })
+
   chart!.dataFormatter$.next({
     xAxis: {
       label: 'xxxxxxx'
@@ -223,7 +232,7 @@ onMounted(() => {
       label: 'yyyyyyy'
     },
     valueLabels,
-    categoryLabels
+    categoryLabels,
     // separateCategory: true,
     // container: {
     //   columnAmount: 1,
@@ -262,8 +271,8 @@ onMounted(() => {
   //       //   rowAmount: 3
   //       // }
   //     })
-  //   }, 500)
-  // }, 500)
+  //   }, 250)
+  // }, 250)
 
   // setTimeout(() => {
   //   chart!.dataFormatter$.next({
@@ -281,23 +290,30 @@ onMounted(() => {
   //   })
   // }, 2000)
 
-  const rankingBars = new RankingBars()
-  const rankingValueAxis = new RankingValueAxis()
+  const racingBars = new RacingBars()
+  const racingValueAxis = new RacingValueAxis()
+  const xAxis = new XAxis()
   const multiValueLegend = new MultiValueLegend()
   const multiValueTooltip = new MultiValueTooltip()
 
-  chart!.plugins$.next([ rankingBars, rankingValueAxis, multiValueLegend, multiValueTooltip ])
+  chart!.plugins$.next([ racingBars, racingValueAxis, multiValueLegend, multiValueTooltip ])
 
-  rankingBars.params$.next({
-    timer: {
-      active: true,
-      period: 250
-    }
+  racingBars.params$.next({
+    // timer: {
+    //   active: true,
+    //   period: 250
+    // }
+    // rankingAmount: 'auto',
+    autorun: true
   })
 
-  chart.chartParams$.next({
-    // highlightTarget: 'category'
-  })
+  // racingValueAxis.params$.next({
+  //   ticks: 2
+  // })
+
+  // chart.chartParams$.next({
+  //   // highlightTarget: 'category'
+  // })
 
   chart!.data$.next(multiValueData_brand)
 

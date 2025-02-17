@@ -306,109 +306,8 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
   )
 }
 
-// // Ranking資料 - 用 value[index] 排序
-// export const visibleComputedRankingByIndexDataObservable = ({ valueIndex$, isCategorySeprate$, visibleComputedData$ }: {
-//   valueIndex$: Observable<number>
-//   isCategorySeprate$: Observable<boolean>
-//   visibleComputedData$: Observable<ComputedDatumMultiValue[][]>
-// }) => {
-
-//   return combineLatest({
-//     isCategorySeprate: isCategorySeprate$,
-//     valueIndex: valueIndex$,
-//     visibleComputedData: visibleComputedData$
-//   }).pipe(
-//     switchMap(async d => d),
-//     map(data => {
-//       // -- category 分開 --
-//       if (data.isCategorySeprate) {
-//         return data.visibleComputedData
-//           .map(categoryData => {
-//             return categoryData
-//               .sort((a, b) => {
-//                 const bValue = b.value[data.valueIndex as number] ?? - Infinity // - Infinity 為最小值
-//                 const aValue = a.value[data.valueIndex as number] ?? - Infinity
-  
-//                 return bValue - aValue
-//               })
-//           })
-//       // -- 用 value[index] 排序 --
-//       } else {
-//         return [
-//           data.visibleComputedData
-//             .flat()
-//             .sort((a, b) => {
-//               const bValue = b.value[data.valueIndex as number] ?? - Infinity // - Infinity 為最小值
-//               const aValue = a.value[data.valueIndex as number] ?? - Infinity
-  
-//               return bValue - aValue
-//             })
-//         ]
-//       }
-//     })
-//   )
-// }
-
-// export const visibleComputedSumDataObservable = ({ visibleComputedData$ }: {
-//   visibleComputedData$: Observable<ComputedDataMultiValue>
-// }) => {
-//   return visibleComputedData$.pipe(
-//     map(data => {
-//       return data.map(categoryData => {
-//         return categoryData
-//           .map(d => {
-//             // 新增總計資料欄位
-//             ;(d as any)._sum = d.value.reduce((acc, curr) => acc + curr, 0)
-//             return d
-//           })
-//       })
-//     })
-//   )
-// }
-
-// // Ranking資料 - 用所有 valueIndex 加總資料排序
-// export const visibleComputedRankingBySumDataObservable = ({ isCategorySeprate$, visibleComputedData$ }: {
-//   isCategorySeprate$: Observable<boolean>
-//   visibleComputedData$: Observable<ComputedDatumMultiValue[][]>
-// }) => {
-
-//   return combineLatest({
-//     isCategorySeprate: isCategorySeprate$,
-//     visibleComputedData: visibleComputedData$
-//   }).pipe(
-//     switchMap(async d => d),
-//     map(data => {
-//       // -- category 分開 --
-//       if (data.isCategorySeprate) {
-//         return data.visibleComputedData
-//           .map(categoryData => {
-//             return categoryData
-//               .map(d => {
-//                 // 新增總計資料欄位
-//                 ;(d as any)._sum = d.value.reduce((acc, curr) => acc + curr, 0)
-//                 return d
-//               })
-//               .sort((a: any, b: any) => b._sum - a._sum)
-//           })
-//       // -- 用 value[index] 排序 --
-//       } else {
-//         return [
-//           data.visibleComputedData
-//             .flat()
-//             .map(d => {
-//               // 新增總計資料欄位
-//               ;(d as any)._sum = d.value.reduce((acc, curr) => acc + curr, 0)
-//               return d
-//             })
-//             .sort((a: any, b: any) => b._sum - a._sum)
-//         ]
-//       }
-//     })
-//   )
-// }
-
 // 排名數量
-export const computedRankingAmountListObservable = ({ containerSize$, visibleComputedData$, textSizePx$, rankingAmount$ }: {
+export const computedRankingAmountObservable = ({ containerSize$, visibleComputedData$, textSizePx$, rankingAmount$ }: {
   containerSize$: Observable<ContainerSize>
   visibleComputedData$: Observable<ComputedDatumMultiValue[][]>
   textSizePx$: Observable<number>
@@ -474,36 +373,37 @@ export const computedRankingAmountListObservable = ({ containerSize$, visibleCom
     minLineHeight$
   })
 
-  // 計算每個 category 的顯示數量（要排名的數量）
-  const computedRankingAmountList$ = combineLatest({
-    rankingAmount: rankingAmount$,
-    visibleComputedData: visibleComputedData$
-  }).pipe(
-    switchMap(async d => d),
-    switchMap(data => {
-      return data.rankingAmount === 'auto'
+  // 計算要排名的數量
+  return rankingAmount$.pipe(
+    switchMap(rankingAmount => {
+      return iif(
+        () => rankingAmount === 'auto',
         // 'auto': 不超過限制
-        ? rankingAmountLimit$.pipe(
-            map(rankingAmountLimit => {
-              return data.visibleComputedData.map(categoryData => {
-                return Math.min(rankingAmountLimit, categoryData.length)
-              })
+        combineLatest({
+          visibleComputedData: visibleComputedData$,
+          rankingAmountLimit: rankingAmountLimit$,
+        }).pipe(
+          switchMap(async d => d),
+          map(data => {
+            const rankingAmountArr = data.visibleComputedData.map(categoryData => {
+              return Math.min(data.rankingAmountLimit, categoryData.length)
             })
-          )
+            return Math.max(...rankingAmountArr) // 取所有 container 計算出來的最大值
+          })
+        ),
         // number: 指定數量
-        : of(data.visibleComputedData.map(_ => data.rankingAmount as number))
-    }),
+        rankingAmount$ as Observable<number>,
+      )
+    })
   )
-
-  return computedRankingAmountList$
 }
 
-const rankingItemHeightListObservable = ({ containerSize$, visibleComputedRankingData$, textSizePx$, computedRankingAmountList$ }: {
+export const rankingItemHeightObservable = ({ containerSize$, textSizePx$, computedRankingAmount$ }: {
   containerSize$: Observable<ContainerSize>
-  visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
+  // visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
   textSizePx$: Observable<number>
   // rankingAmount$: Observable<'auto' | number>
-  computedRankingAmountList$: Observable<number[]>
+  computedRankingAmount$: Observable<number>
 }) => {
   const minLineHeightObservable = ({ textSizePx$ }: {
     textSizePx$: Observable<number>
@@ -534,25 +434,6 @@ const rankingItemHeightListObservable = ({ containerSize$, visibleComputedRankin
     )
   }
 
-  // const rankingAmountLimitObservable = ({ minLineHeight$, containerHeight$ }: {
-  //   containerHeight$: Observable<number>
-  //   minLineHeight$: Observable<number>
-  // }) => {
-
-  //   return combineLatest({
-  //     minLineHeight: minLineHeight$,
-  //     containerHeight: containerHeight$
-  //   }).pipe(
-  //     switchMap(async (d) => d),
-  //     map(data => {
-  //       const labelAmountLimit = Math.floor(data.containerHeight / data.minLineHeight)
-  //       return labelAmountLimit
-  //     }),
-  //     distinctUntilChanged(),
-  //     shareReplay(1)
-  //   )
-  // }
-
   const minLineHeight$ = minLineHeightObservable({ textSizePx$ })
 
   const containerHeight$ = containerHeightObservable({
@@ -560,79 +441,40 @@ const rankingItemHeightListObservable = ({ containerSize$, visibleComputedRankin
     containerSize$
   })
 
-  // const rankingAmountLimit$ = rankingAmountLimitObservable({
-  //   containerHeight$,
-  //   minLineHeight$
-  // })
-
-  // // 計算每個 category 的顯示數量（要排名的數量）
-  // const computedRankingAmountList$ = combineLatest({
-  //   rankingAmount: rankingAmount$,
-  //   visibleComputedRankingData: visibleComputedRankingData$
-  // }).pipe(
-  //   switchMap(async d => d),
-  //   switchMap(data => {
-  //     return data.rankingAmount === 'auto'
-  //       // 'auto': 不超過限制
-  //       ? rankingAmountLimit$.pipe(
-  //           map(rankingAmountLimit => {
-  //             return data.visibleComputedRankingData.map(categoryData => {
-  //               return Math.min(rankingAmountLimit, categoryData.length)
-  //             })
-  //           })
-  //         )
-  //       // number: 指定數量
-  //       : of(data.visibleComputedRankingData.map(_ => data.rankingAmount as number))
-  //   }),
-  // )
-
   return combineLatest({
-    // minLineHeight: minLineHeight$,
     containerHeight: containerHeight$,
-    visibleComputedRankingData: visibleComputedRankingData$,
-    computedRankingAmountList: computedRankingAmountList$
+    computedRankingAmount: computedRankingAmount$
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-      // 依每個 category 計算 scale
-      return data.visibleComputedRankingData.map((categoryData, i) => {
-        const rankingAmount = data.computedRankingAmountList[i]
-        const rankingItemHeight = data.containerHeight / rankingAmount
-        return rankingItemHeight
-      })
+      // // 依每個 category 計算 scale
+      // return data.visibleComputedRankingData.map((categoryData, i) => {
+      //   const rankingAmount = data.computedRankingAmountList[i]
+      //   const rankingItemHeight = data.containerHeight / rankingAmount
+      //   return rankingItemHeight
+      // })
+      const rankingItemHeight = data.containerHeight / data.computedRankingAmount
+      return rankingItemHeight
     })
   )
 }
 
-export const rankingScaleListObservable = ({ containerSize$, visibleComputedRankingData$, textSizePx$, computedRankingAmountList$ }: {
-  containerSize$: Observable<ContainerSize>
+export const rankingScaleListObservable = ({ visibleComputedRankingData$, rankingItemHeight$ }: {
   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
-  textSizePx$: Observable<number>
-  computedRankingAmountList$: Observable<number[]>
-  // rankingAmount$: Observable<'auto' | number>
+  rankingItemHeight$: Observable<number>
 }) => {
 
-  const rankingItemHeightList$ = rankingItemHeightListObservable({
-    containerSize$,
-    visibleComputedRankingData$,
-    textSizePx$,
-    computedRankingAmountList$
-  })
-
   return combineLatest({
-    // minLineHeight: minLineHeight$,
-    // containerHeight: containerHeight$,
     visibleComputedRankingData: visibleComputedRankingData$,
-    // computedRankingAmountList: computedRankingAmountList$
-    rankingItemHeightList: rankingItemHeightList$,
+    rankingItemHeight: rankingItemHeight$,
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
       // 依每個 category 計算 scale
       return data.visibleComputedRankingData.map((categoryData, i) => {
         const allLabelAmount = categoryData.length
-        const rankingItemHeight = data.rankingItemHeightList[i]
-        const totalHeight = rankingItemHeight * allLabelAmount // 有可能超出圖軸高度
+        // const rankingItemHeight = data.rankingItemHeightList[i]
+        const totalHeight = data.rankingItemHeight * allLabelAmount // 有可能超出圖軸高度
         
         return createLabelToAxisScale({
           axisLabels: categoryData.map(d => d.label),
@@ -644,97 +486,6 @@ export const rankingScaleListObservable = ({ containerSize$, visibleComputedRank
   )
 }
 
-// // X 軸圖軸 - 用 value[index] 
-// export const xScaleObservable = ({ visibleComputedSumData$, fullDataFormatter$, filteredXYMinMaxData$, layout$ }: {
-//   visibleComputedSumData$: Observable<ComputedDatumMultiValue[][]>
-//   fullDataFormatter$: Observable<DataFormatterMultiValue>
-//   filteredXYMinMaxData$: Observable<{
-//     minXDatum: ComputedXYDatumMultiValue
-//     maxXDatum: ComputedXYDatumMultiValue
-//     minYDatum: ComputedXYDatumMultiValue
-//     maxYDatum: ComputedXYDatumMultiValue
-//   }>
-//   layout$: Observable<Layout>
-// }) => {
-//   return combineLatest({
-//     visibleComputedSumData: visibleComputedSumData$,
-//     fullDataFormatter: fullDataFormatter$,
-//     layout: layout$,
-//     // xyMinMax: xyMinMax$
-//     filteredXYMinMaxData: filteredXYMinMaxData$
-//   }).pipe(
-//     switchMap(async (d) => d),
-//     map(data => {
-//       const valueIndex = data.fullDataFormatter.xAxis.valueIndex
-//       if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
-//         || data.filteredXYMinMaxData.minXDatum.value[valueIndex] == null || data.filteredXYMinMaxData.maxXDatum.value[valueIndex] == null
-//       ) {
-//         return
-//       }
-//       let maxValue = data.filteredXYMinMaxData.maxXDatum.value[valueIndex]
-//       let minValue = data.filteredXYMinMaxData.minXDatum.value[valueIndex]
-//       if (maxValue === minValue && maxValue === 0) {
-//         // 避免最大及最小值同等於 0 造成無法計算scale
-//         maxValue = 1
-//       }
-
-//       const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-//         maxValue,
-//         minValue,
-//         axisWidth: data.layout.width,
-//         scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
-//         scaleRange: data.fullDataFormatter.xAxis.scaleRange,
-//       })
-//       return xScale
-//     })
-//   )
-// }
-
-// // X 軸圖軸 - 用所有 valueIndex 加總資料
-// export const xSumScaleObservable = ({ valueIndex$, fullDataFormatter$, filteredXYMinMaxData$, layout$ }: {
-//   valueIndex$: Observable<number>
-//   fullDataFormatter$: Observable<DataFormatterMultiValue>
-//   filteredXYMinMaxData$: Observable<{
-//     minXDatum: ComputedXYDatumMultiValue
-//     maxXDatum: ComputedXYDatumMultiValue
-//     minYDatum: ComputedXYDatumMultiValue
-//     maxYDatum: ComputedXYDatumMultiValue
-//   }>
-//   layout$: Observable<Layout>
-// }) => {
-//   return combineLatest({
-//     valueIndex: valueIndex$,
-//     fullDataFormatter: fullDataFormatter$,
-//     layout: layout$,
-//     // xyMinMax: xyMinMax$
-//     filteredXYMinMaxData: filteredXYMinMaxData$
-//   }).pipe(
-//     switchMap(async (d) => d),
-//     map(data => {
-//       const valueIndex = data.fullDataFormatter.xAxis.valueIndex
-//       if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
-//         || data.filteredXYMinMaxData.minXDatum.value[valueIndex] == null || data.filteredXYMinMaxData.maxXDatum.value[valueIndex] == null
-//       ) {
-//         return
-//       }
-//       let maxValue = data.filteredXYMinMaxData.maxXDatum.value[valueIndex]
-//       let minValue = data.filteredXYMinMaxData.minXDatum.value[valueIndex]
-//       if (maxValue === minValue && maxValue === 0) {
-//         // 避免最大及最小值同等於 0 造成無法計算scale
-//         maxValue = 1
-//       }
-
-//       const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-//         maxValue,
-//         minValue,
-//         axisWidth: data.layout.width,
-//         scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
-//         scaleRange: data.fullDataFormatter.xAxis.scaleRange,
-//       })
-//       return xScale
-//     })
-//   )
-// }
 
 // // Ranking資料 - 有 XY 資料 @Q@ 若沒用到要棄用
 // export const computedRankingWithXYDataObservable = ({ visibleComputedRankingData$, computedRankingAmountList$, xyValueIndex$, layout$ }: {

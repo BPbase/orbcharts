@@ -20,7 +20,7 @@ import type {
   ChartParams, 
   Layout,
   TransformData } from '../../lib/core-types'
-import type { BaseRankingBarsParams } from '../../lib/plugins-basic-types'
+import type { BaseRacingBarsParams } from '../../lib/plugins-basic-types'
 import { getD3TransitionEase } from '../utils/d3Utils'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
 import { multiValueSelectionsObservable } from '../multiValue/multiValueObservables'
@@ -33,25 +33,20 @@ import { multiValueSelectionsObservable } from '../multiValue/multiValueObservab
 //   barRadius: number | boolean
 // }
 
-interface BaseBarsContext {
+interface BaseRacingBarsContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataMultiValue>
   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
-  categoryLabels$: Observable<string[]>
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
-  fullParams$: Observable<BaseRankingBarsParams>
+  fullParams$: Observable<BaseRacingBarsParams>
   fullChartParams$: Observable<ChartParams>
   xyValueIndex$: Observable<[number, number]>
-  // layout$: Observable<Layout>
-  // graphicTransform$: Observable<TransformData>
-  // graphicReverseScale$: Observable<[number, number][]>
   highlight$: Observable<ComputedDatumMultiValue[]>
-  computedRankingAmountList$: Observable<number[]>
+  rankingItemHeight$: Observable<number>
   rankingScaleList$: Observable<d3.ScalePoint<string>[]>
-  xScale$: Observable<d3.ScaleLinear<number, number, never>>
-  // rankingItemHeightList$: Observable<number[]>
   containerPosition$: Observable<ContainerPositionScaled[]>
   containerSize$: Observable<ContainerSize>
+  barScale$: Observable<(n: number) => number>
   isCategorySeprate$: Observable<boolean>
   event$: Subject<EventMultiValue>
 }
@@ -66,12 +61,10 @@ interface RenderGraphicGParams {
 interface RenderBarParams {
   graphicGSelection: d3.Selection<SVGGElement, ComputedDatumMultiValue, any, any>
   rectClassName: string
-  // visibleComputedRankingData: ComputedDatumMultiValue[][]
   xyValueIndex: [number, number]
-  // rankingScaleList: d3.ScalePoint<string>[]
-  xScale: d3.ScaleLinear<number, number, never>
-  fullParams: BaseRankingBarsParams
-  barWidthList: number[]
+  barScale: (n: number) => number
+  fullParams: BaseRacingBarsParams
+  barWidth: number
   transitionDuration: number
 }
 
@@ -83,49 +76,6 @@ type ClipPathDatum = {
   height: number;
 }
 
-// const pluginName = 'Bars'
-// const rectClassName = getClassName(pluginName, 'rect')
-// group的delay在動畫中的佔比（剩餘部份的時間為圖形本身的動畫時間，因為delay時間和最後一個group的動畫時間加總為1）
-const groupDelayProportionOfDuration = 0.3
-
-function calcBarWidth ({ axisWidth, groupAmount, barAmountOfGroup, barPadding = 0, barGroupPadding = 0 }: {
-  axisWidth: number
-  groupAmount: number
-  barAmountOfGroup: number
-  barPadding: number
-  barGroupPadding: number
-}) {
-  const eachGroupWidth = groupAmount > 1 // 等於 1 時會算出 Infinity
-    ? axisWidth / groupAmount
-    : axisWidth
-  const width = (eachGroupWidth - barGroupPadding) / barAmountOfGroup - barPadding
-  return width > 1 ? width : 1
-}
-
-// function makeBarScale (barWidth: number, categoryLabels: string[], params: BaseRankingBarsParams) {
-//   const barHalfWidth = barWidth! / 2
-//   const barGroupWidth = barWidth * categoryLabels.length + params.bar.barPadding! * categoryLabels.length
-//   return d3.scalePoint()
-//     .domain(categoryLabels)
-//     .range([-barGroupWidth / 2 + barHalfWidth, barGroupWidth / 2 - barHalfWidth])
-// }
-
-// function calcDelayGroup (barGroupAmount: number, totalDuration: number) {
-//   if (barGroupAmount <= 1) {
-//     // 一筆內計算會出錯所以不算
-//     return 0
-//   }
-//   return totalDuration / (barGroupAmount - 1) * groupDelayProportionOfDuration // 依group數量計算
-// }
-
-// function calctransitionItem (barGroupAmount: number, totalDuration: number) {
-//   if (barGroupAmount <= 1) {
-//     // 一筆內不會有delay
-//     return totalDuration
-//   }
-//   return totalDuration * (1 - groupDelayProportionOfDuration) // delay後剩餘的時間
-// }
-// let _data: ComputedDatumMultiValue[][] = []
 
 function renderGraphicG ({ containerSelection, visibleComputedRankingData, rankingScaleList, transitionDuration }: RenderGraphicGParams) {
   containerSelection
@@ -160,11 +110,12 @@ function renderGraphicG ({ containerSelection, visibleComputedRankingData, ranki
   return graphicBarSelection
 }
 
-function renderRectBars ({ graphicGSelection, rectClassName, xyValueIndex, xScale, fullParams, barWidthList, transitionDuration }: RenderBarParams) {
+function renderRectBars ({ graphicGSelection, rectClassName, xyValueIndex, barScale, fullParams, barWidth, transitionDuration }: RenderBarParams) {
 
   graphicGSelection
     .each((datum, i, g) => {
-      const barWidth = barWidthList[datum.categoryIndex]
+      // const containerIndex = isCategorySeprate ? datum.categoryIndex : 0
+      // const barWidth = barWidthList[containerIndex]
       const barHalfWidth = barWidth / 2
       const radius = fullParams.bar.barRadius === true ? barHalfWidth
         : fullParams.bar.barRadius === false ? 0
@@ -180,7 +131,8 @@ function renderRectBars ({ graphicGSelection, rectClassName, xyValueIndex, xScal
               .append('rect')
               .classed(rectClassName, true)
               .attr('cursor', 'pointer')
-              .attr('width', d => 1)
+              // .attr('width', d => 1)
+              .attr('width', d => barScale(d.value[xyValueIndex[0]]) ?? 1)
               .attr('height', barWidth)
           },
           update => {
@@ -188,7 +140,7 @@ function renderRectBars ({ graphicGSelection, rectClassName, xyValueIndex, xScal
               .transition()
               .duration(transitionDuration)
               .ease(d3.easeLinear)
-              .attr('width', d => xScale(d.value[xyValueIndex[0]]) ?? 1)
+              .attr('width', d => barScale(d.value[xyValueIndex[0]]) ?? 1)
               .attr('height', barWidth)
           },
           exit => exit.remove()
@@ -268,12 +220,12 @@ function highlight ({ selection, ids, fullChartParams }: {
 }
 
 
-export const createBaseRankingBars: BasePluginFn<BaseBarsContext> = (pluginName: string, {
+export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (pluginName: string, {
   selection,
   computedData$,
   visibleComputedRankingData$,
   xyValueIndex$,
-  categoryLabels$,
+  // categoryLabels$,
   CategoryDataMap$,
   fullParams$,
   fullChartParams$,
@@ -281,12 +233,14 @@ export const createBaseRankingBars: BasePluginFn<BaseBarsContext> = (pluginName:
   // graphicTransform$,
   // graphicReverseScale$,
   highlight$,
-  computedRankingAmountList$,
+  // computedRankingAmountList$,
+  rankingItemHeight$,
   rankingScaleList$,
-  xScale$,
-  // rankingItemHeightList$,
+  // xScale$,
   containerPosition$,
   containerSize$,
+  // layout$,
+  barScale$,
   isCategorySeprate$,
   event$
 }) => {
@@ -394,34 +348,17 @@ export const createBaseRankingBars: BasePluginFn<BaseBarsContext> = (pluginName:
       // .attr('opacity', 1)
   })
 
-
-
-  const barWidthList$ = combineLatest({
-    // computedData: computedData$,
-    // visibleComputedRankingData: visibleComputedRankingData$,
-    params: fullParams$,
-    // gridAxesSize: gridAxesSize$,
-    computedRankingAmountList: computedRankingAmountList$,
-    containerSize: containerSize$,
-    // isCategorySeprate: isCategorySeprate$
+  const barWidth$ = combineLatest({
+    fullParams: fullParams$,
+    rankingItemHeight: rankingItemHeight$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
     map(data => {
-      if (data.params.bar.barWidth) {
-        return data.computedRankingAmountList.map(_ => {
-          return data.params.bar.barWidth
-        })
+      if (data.fullParams.bar.barWidth) {
+        return data.fullParams.bar.barWidth
       } else {
-        return data.computedRankingAmountList.map(computedRankingAmount => {
-          return calcBarWidth({
-            axisWidth: data.containerSize.height,
-            groupAmount: computedRankingAmount,
-            barAmountOfGroup: 1,
-            barPadding: 0,
-            barGroupPadding: data.params.bar.barPadding
-          })
-        })
+        return data.rankingItemHeight - data.fullParams.bar.barPadding
       }
     }),
     distinctUntilChanged()
@@ -432,21 +369,6 @@ export const createBaseRankingBars: BasePluginFn<BaseBarsContext> = (pluginName:
     map(d => d.transitionDuration),
     distinctUntilChanged()
   )
-
-  // const transitionItem$ = new Observable<number>(subscriber => {
-  //   combineLatest({
-  //     categoryLabels: categoryLabels$,
-  //     transitionDuration: transitionDuration$
-  //   }).pipe(
-  //     switchMap(async d => d)
-  //   ).subscribe(data => {
-  //     const transition = calctransitionItem(data.categoryLabels.length, data.transitionDuration)
-  //     subscriber.next(transition)
-  //   })
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   distinctUntilChanged()
-  // )
 
   const graphicGSelection$ = combineLatest({
     containerSelection: containerSelection$,
@@ -469,13 +391,9 @@ export const createBaseRankingBars: BasePluginFn<BaseBarsContext> = (pluginName:
 
   const graphicSelection$ = combineLatest({
     graphicGSelection: graphicGSelection$,
-    // containerSelection: containerSelection$,
-    visibleComputedRankingData: visibleComputedRankingData$,
     xyValueIndex: xyValueIndex$,
-    rankingScaleList: rankingScaleList$,
-    xScale: xScale$,
-    barWidthList: barWidthList$,
-    fullChartParams: fullChartParams$,
+    barScale: barScale$,
+    barWidth: barWidth$,
     transitionDuration: transitionDuration$,
     fullParams: fullParams$,
   }).pipe(
@@ -487,10 +405,10 @@ export const createBaseRankingBars: BasePluginFn<BaseBarsContext> = (pluginName:
         graphicGSelection: data.graphicGSelection,
         rectClassName,
         xyValueIndex: data.xyValueIndex,
-        xScale: data.xScale,
+        barScale: data.barScale,
         fullParams: data.fullParams,
-        barWidthList: data.barWidthList,
-        transitionDuration: data.transitionDuration
+        barWidth: data.barWidth,
+        transitionDuration: data.transitionDuration,
       })
     })
   )

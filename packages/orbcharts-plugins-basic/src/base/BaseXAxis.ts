@@ -38,6 +38,7 @@ import { parseTickFormatValue } from '../utils/d3Utils'
 interface BaseXAxisContext {
   selection: d3.Selection<any, unknown, any, unknown>
   position$: Observable<'top' | 'bottom'>
+  transitionDuration$: Observable<number>
   computedData$: Observable<ComputedDataMultiValue>
   // filteredMinMaxValue$: Observable<[number, number]>
   fullParams$: Observable<BaseXAxisParams>
@@ -133,7 +134,7 @@ function renderXAxisLabel ({ selection, position, xLabelClassName, fullParams, l
     .attr('transform', d => `translate(${layout.width}, ${y})`)
 }
 
-function renderXAxis ({ selection, position, xAxisClassName, fullParams, layout, fullChartParams, xScale, textReverseTransform }: {
+function renderXAxis ({ selection, position, xAxisClassName, fullParams, layout, fullChartParams, xScale, textReverseTransform, transitionDuration }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   position: 'top' | 'bottom'
   xAxisClassName: string
@@ -150,6 +151,7 @@ function renderXAxis ({ selection, position, xAxisClassName, fullParams, layout,
   //   minY: number;
   //   maxY: number;
   // }
+  transitionDuration: number
 }) {
 
   let y: number
@@ -189,7 +191,8 @@ function renderXAxis ({ selection, position, xAxisClassName, fullParams, layout,
   
   const xAxisEl = xAxisSelection
     .transition()
-    .duration(100)
+    .duration(transitionDuration)
+    .ease(d3.easeLinear) // 線性的 - 當托曳或快速變動的時候比較滑順
     .call(xAxis)
   
   xAxisEl.selectAll('line')
@@ -233,9 +236,10 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
   isCategorySeprate$,
   containerPosition$,
   layout$,
-  xScale$
+  xScale$,
   // filteredXYMinMaxData$,
   // xyMinMax$
+  transitionDuration$
 }) => {
   
   const destroy$ = new Subject()
@@ -364,6 +368,7 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
     xScale: xScale$,
     textReverseTransform: textReverseTransform$,
     // xyMinMax: xyMinMax$
+    transitionDuration: transitionDuration$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -381,6 +386,7 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
       xScale: data.xScale,
       textReverseTransform: data.textReverseTransform,
       // xyMinMax: data.xyMinMax
+      transitionDuration: data.transitionDuration
     })
 
     renderXAxisLabel({

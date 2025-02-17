@@ -1,7 +1,7 @@
 import type {
   MultiValueLegendParams,
   MultiValueTooltipParams,
-  RankingBarsParams,
+  RacingBarsParams,
   ScatterParams,
   ScatterBubblesParams,
   XAxisParams,
@@ -82,7 +82,7 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
   </g>\`
 }`
 
-// export const DEFAULT_RANKING_AXIS_PARAMS: RankingAxisParams = {
+// export const DEFAULT_RANKING_AXIS_PARAMS: RacingAxisParams = {
 //   labelOffset: [0, 0],
 //   labelColorType: 'primary',
 //   axisLineVisible: false,
@@ -98,16 +98,17 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
 //   tickTextColorType: 'primary'
 // }
 
-export const DEFAULT_RANKING_BARS_PARAMS: RankingBarsParams = {
+export const DEFAULT_RANKING_BARS_PARAMS: RacingBarsParams = {
   bar: {
     barWidth: 0,
     barPadding: 8,
     barRadius: false,
   },
   barLabel: {
+    position: 'inside',
     padding: 20,
     rotate: 0,
-    colorType: 'primary'
+    colorType: 'labelContrast'
   },
   axisLabel: {
     offset: [0, 0],
@@ -115,10 +116,11 @@ export const DEFAULT_RANKING_BARS_PARAMS: RankingBarsParams = {
   },
   // rankingAmount: 'auto'
   rankingAmount: 10,
-  timer: {
-    active: false,
-    period: 500
-  }
+  // timer: {
+  //   active: false,
+  //   period: 500
+  // }
+  autorun: false
 }
 
 export const DEFAULT_RANKING_VALUE_AXIS_PARAMS: XAxisParams = {

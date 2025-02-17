@@ -88,7 +88,7 @@ export interface BaseLinesParams {
   // labelPadding: number
 }
 
-export interface BaseRankingLabelsParams {
+export interface BaseRacingLabelsParams {
   // labelOffset: [number, number]
   // labelColorType: ColorType
   // axisLineVisible: boolean
@@ -103,6 +103,7 @@ export interface BaseRankingLabelsParams {
   // tickTextRotate: number
   // tickTextColorType: ColorType
   barLabel: {
+    position: 'inside' | 'outside' | 'none'
     padding: number
     rotate: number
     colorType: ColorType
@@ -112,10 +113,10 @@ export interface BaseRankingLabelsParams {
     colorType: ColorType
   }
   // valueIndex: number | 'sum'
-  sumValue: boolean
+  // sumValue: boolean
 }
 
-export interface BaseRankingBarsParams {
+export interface BaseRacingBarsParams {
   bar: {
     barWidth: number
     barPadding: number

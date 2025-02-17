@@ -22,11 +22,11 @@
 //   Layout
 // } from '../../../lib/core-types'
 // import { defineMultiValuePlugin } from '../../../lib/core'
-// import { createBaseRankingAxis } from '../../base/BaseRankingAxis'
+// import { createBaseRacingAxis } from '../../base/BaseRacingAxis'
 // import { DEFAULT_RANKING_AXIS_PARAMS } from '../defaults'
 // import { LAYER_INDEX_OF_AXIS } from '../../const'
 
-// const pluginName = 'RankingAxis'
+// const pluginName = 'RacingAxis'
 
 // const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING_AXIS_PARAMS> = {
 //   name: pluginName,
@@ -84,11 +84,11 @@
 //   }
 // }
 
-// export const RankingAxis = defineMultiValuePlugin(pluginConfig)(({ selection, name, observer, subject }) => {
+// export const RacingAxis = defineMultiValuePlugin(pluginConfig)(({ selection, name, observer, subject }) => {
   
 //   const destroy$ = new Subject()
 
-//   const unsubscribeBaseRankingAxis = createBaseRankingAxis(pluginName, {
+//   const unsubscribeBaseRacingAxis = createBaseRacingAxis(pluginName, {
 //     selection,
 //     computedData$: observer.computedData$,
 //     visibleComputedData$: observer.visibleComputedData$,
@@ -104,6 +104,6 @@
 
 //   return () => {
 //     destroy$.next(undefined)
-//     unsubscribeBaseRankingAxis()
+//     unsubscribeBaseRacingAxis()
 //   }
 // })

@@ -6,11 +6,12 @@ import {
   takeUntil,
   map,
   distinctUntilChanged,
+  of,
+  iif,
   switchMap,
   shareReplay
 } from 'rxjs'
 import type {
-  ColorType,
   ChartParams,
   ComputedDatumMultiValue,
   ComputedDataMultiValue,
@@ -18,36 +19,25 @@ import type {
   ContainerSize,
   ContainerPositionScaled,
   DataFormatterMultiValue,
-  DefinePluginConfig,
-  TransformData,
   Layout
 } from '../../lib/core-types'
-import type { BaseRankingLabelsParams } from '../../lib/plugins-basic-types'
+import type { BaseRacingLabelsParams } from '../../lib/plugins-basic-types'
 import type { BasePluginFn } from './types'
-import { getColor, getMinMaxValue, getClassName, getUniID } from '../utils/orbchartsUtils'
-import { createLabelToAxisScale, createValueToAxisScale } from '../../lib/core'
-import { multiValueSelectionsObservable } from '../multiValue/multiValueObservables'
+import { getColor, getClassName, getUniID } from '../utils/orbchartsUtils'
 
-interface BaseRankingAxisContext {
+interface BaseRacingAxisContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataMultiValue>
-  // visibleComputedData$: Observable<ComputedDataMultiValue>
   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
   rankingScaleList$: Observable<Array<d3.ScalePoint<string>>>
-  fullParams$: Observable<BaseRankingLabelsParams>
+  barScale$: Observable<(n: number) => number>
+  fullParams$: Observable<BaseRacingLabelsParams>
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   fullChartParams$: Observable<ChartParams>
-  xyMinMax$: Observable<{
-    minX: number;
-    maxX: number;
-    minY: number;
-    maxY: number;
-  }>
-  // textSizePx$: Observable<number>
   layout$: Observable<Layout>
-  // containerSize$: Observable<ContainerSize>
   containerPosition$: Observable<ContainerPositionScaled[]>
   isCategorySeprate$: Observable<boolean>
+  xyValueIndex$: Observable<[number, number]>
 }
 
 type ClipPathDatum = {
@@ -58,7 +48,7 @@ type ClipPathDatum = {
   height: number;
 }
 
-// const pluginName = 'RankingAxis'
+// const pluginName = 'RacingAxis'
 
 const yTickTextAnchor = 'end'
 const yTickDominantBaseline = 'middle'
@@ -66,10 +56,10 @@ const yAxisLabelAnchor = 'end'
 const yAxisLabelDominantBaseline = 'auto'
 // const textClassName = getClassName(pluginName, 'yLabel')
 
-function renderRankingAxisLabel ({ selection, textClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
+function renderRacingAxisLabel ({ selection, textClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   textClassName: string
-  fullParams: BaseRankingLabelsParams
+  fullParams: BaseRacingLabelsParams
   // axisLabelAlign: TextAlign
   layout: { width: number, height: number }
   fullDataFormatter: DataFormatterMultiValue,
@@ -83,7 +73,7 @@ function renderRankingAxisLabel ({ selection, textClassName, fullParams, layout,
 
   selection
     .attr('transform', d => `translate(0, ${layout.height})`)
-    .selectAll<SVGTextElement, BaseRankingLabelsParams>(`text`)
+    .selectAll<SVGTextElement, BaseRacingLabelsParams>(`text`)
     .data([fullParams])
     .join(
       enter => {
@@ -105,25 +95,21 @@ function renderRankingAxisLabel ({ selection, textClassName, fullParams, layout,
     .text(d => fullDataFormatter.yAxis.label)
 }
 
-function renderRankingAxis ({ selection, fullParams, fullChartParams, rankingScale, renderLabels, textReverseTransformWithRotate }: {
+function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingScale, valueScale, categoryData, textReverseTransformWithRotate, xyValueIndex }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
-  // yAxisClassName: string
-  fullParams: BaseRankingLabelsParams
-  // tickTextAlign: TextAlign
+  fullParams: BaseRacingLabelsParams
   fullChartParams: ChartParams
   rankingScale: d3.ScalePoint<string>
-  renderLabels: string[]
+  valueScale: ((n: number) => number)
+  categoryData: ComputedDatumMultiValue[]
   textReverseTransformWithRotate: string,
-  // xyMinMax: {
-  //   minX: number;
-  //   maxX: number;
-  //   minY: number;
-  //   maxY: number;
-  // }
+  xyValueIndex: [number, number]
 }) {
-  const yAxisSelection = selection
+  const labelData = fullParams.barLabel.position === 'none' ? [] : categoryData
+
+  const labelSelection = selection
     .selectAll<SVGGElement, string>(`text`)
-    .data(renderLabels, d => d)
+    .data(labelData, (d: ComputedDatumMultiValue) => d.id)
     // .join('g')
     // .classed(yAxisClassName, true)
     .join(
@@ -131,16 +117,17 @@ function renderRankingAxis ({ selection, fullParams, fullChartParams, rankingSca
         return enter
           .append('text')
           .style('font-weight', 'bold')
-          .attr('x', - fullParams.barLabel.padding)
-          .attr('y', d => rankingScale(d)!)
+          .attr('x', d => valueScale(d.value[xyValueIndex[0]]) - fullParams.barLabel.padding)
+          .attr('y', d => rankingScale(d.label)!)
       },
       update => {
         return update
           .transition()
           .duration(fullChartParams.transitionDuration)
+          .ease(d3.easeLinear)
           // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
-          .attr('x', - fullParams.barLabel.padding)
-          .attr('y', d => rankingScale(d)!)
+          .attr('x', d => valueScale(d.value[xyValueIndex[0]]) - fullParams.barLabel.padding)
+          .attr('y', d => rankingScale(d.label)!)
       },
       exit => exit.remove()
     )
@@ -149,95 +136,9 @@ function renderRankingAxis ({ selection, fullParams, fullChartParams, rankingSca
     .attr('font-size', fullChartParams.styles.textSize)
     .style('fill', getColor(fullParams.barLabel.colorType, fullChartParams))
     .style('transform', textReverseTransformWithRotate)
-    .text(d => d)
-    
-    
+    .text(d => d.label)
 
-    // .each((d, i, g) => {
-    //   const text = d3.select(g[i])
-    //     .selectAll<SVGTextElement, string>(`text`)
-    //     .data([d])
-    //     .join(
-    //       enter => {
-    //         return enter
-    //           .append('text')
-    //           .style('font-weight', 'bold')
-    //       },
-    //       update => update,
-    //       exit => exit.remove()
-    //     )
-    //     .attr('text-anchor', yTickTextAnchor)
-    //     .attr('dominant-baseline', yTickDominantBaseline)
-    //     .attr('font-size', fullChartParams.styles.textSize)
-    //     .style('fill', getColor(fullParams.barLabel.colorType, fullChartParams))
-    //     .transition()
-    //     .style('transform', textReverseTransformWithRotate)
-    //     // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
-    //     // .attr('x', - fullParams.barLabel.padding)
-    //     // .attr('y', d => rankingScale(d)!)
-    //     .text(d => d)
-    // })
-
-  return yAxisSelection
-
-  // const yAxisSelection = selection
-  //   .selectAll<SVGGElement, BaseRankingLabelsParams>(`g.${yAxisClassName}`)
-  //   .data([fullParams])
-  //   .join('g')
-  //   .classed(yAxisClassName, true)
-
-  // // const _yScale = d3.scaleLinear()
-  // //   .domain([0, 150])
-  // //   .range([416.5, 791.349])
-
-  // // 刻度文字偏移
-  // let tickPadding = fullParams.tickPadding
-
-  // // 設定Y軸刻度
-  // const yAxis = d3.axisLeft(yScale)
-  //   .scale(yScale)
-  //   .ticks(fullParams.ticks) // 刻度分段數量
-  //   .tickFormat(d => parseTickFormatValue(d, fullParams.tickFormat))
-  //   .tickSize(fullParams.tickFullLine == true
-  //     ? -layout.width
-  //     : defaultTickSize)
-  //   .tickPadding(tickPadding)
-  
-  // const yAxisEl = yAxisSelection
-  //   .transition()
-  //   .duration(100)
-  //   .call(yAxis)
-  
-  // yAxisEl.selectAll('line')
-  //   .style('fill', 'none')
-  //   .style('stroke', fullParams.tickLineVisible == true ? getColor(fullParams.tickColorType, fullChartParams) : 'none')
-  //   .style('stroke-dasharray', fullParams.tickFullLineDasharray)
-  //   .attr('pointer-events', 'none')
-  
-  // yAxisEl.selectAll('path')
-  //   .style('fill', 'none')
-  //   // .style('stroke', this.fullParams.axisLineColor!)
-  //   .style('stroke', fullParams.axisLineVisible == true ? getColor(fullParams.axisLineColorType, fullChartParams) : 'none')
-  //   .style('shape-rendering', 'crispEdges')
-  
-  // // const yText = yAxisEl.selectAll('text')
-  // const yText = yAxisSelection.selectAll('text')
-  //   // .style('font-family', 'sans-serif')
-  //   .attr('font-size', fullChartParams.styles.textSize)
-  //   .style('color', getColor(fullParams.tickTextColorType, fullChartParams))
-  //   .attr('text-anchor', yTickTextAnchor)
-  //   .attr('dominant-baseline', yTickDominantBaseline)
-  //   // .attr('dy', 0)
-  //   .attr('x', - tickPadding)
-  //   .attr('dy', 0)
-  // yText.style('transform', textReverseTransform)
-  
-  // // // 抵消掉預設的偏移
-  // // if (fullDataFormatter.grid.valueAxis.position === 'bottom' || fullDataFormatter.grid.valueAxis.position === 'top') {
-  // //   yText.attr('dy', 0)
-  // // }
-
-  // return yAxisSelection
+  return labelSelection
 }
 
 
@@ -273,26 +174,24 @@ function renderClipPath ({ defsSelection, clipPathData }: {
         )
         .attr('x', _d => - _d.width)
         .attr('y', 0)
-        .attr('width', _d => _d.width)
+        .attr('width', _d => _d.width * 2)
         .attr('height', _d => _d.height)
     })
 }
 
-export const createBaseRankingLabels: BasePluginFn<BaseRankingAxisContext> = (pluginName: string, {
+export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (pluginName: string, {
   selection,
   computedData$,
-  // visibleComputedData$,
   visibleComputedRankingData$,
   rankingScaleList$,
+  barScale$,
   fullParams$,
   fullDataFormatter$,
   fullChartParams$,
-  xyMinMax$,
-  // textSizePx$,
   layout$,
-  // containerSize$,
   containerPosition$,
-  isCategorySeprate$
+  isCategorySeprate$,
+  xyValueIndex$
 }) => {
 
   const destroy$ = new Subject()
@@ -373,84 +272,25 @@ export const createBaseRankingLabels: BasePluginFn<BaseRankingAxisContext> = (pl
     })
   )
 
-  const rankingLabelList$ = visibleComputedRankingData$.pipe(
-    takeUntil(destroy$),
-    map(data => {
-      return data.map(categoryData => categoryData.map(d => d.label))
+  // const rankingLabelList$ = visibleComputedRankingData$.pipe(
+  //   takeUntil(destroy$),
+  //   map(data => {
+  //     return data.map(categoryData => categoryData.map(d => d.label))
+  //   })
+  // )
+
+  const valueScale$: Observable<((n: number) => number)> = fullParams$.pipe(
+    map(fullParams => fullParams.barLabel.position),
+    distinctUntilChanged(),
+    switchMap(position => {
+      return iif(
+        () => position === 'inside',
+        barScale$,
+        of(() => 0)
+      )
     })
   )
 
-
-  // const sortedLabels$ = visibleComputedData$.pipe(
-  //   takeUntil(destroy$),
-  //   map(visibleComputedData => visibleComputedData
-  //     .flat()
-  //     .map(d => {
-  //       // 新增總計資料欄位
-  //       ;(d as any)._sum = d.value.reduce((acc, curr) => acc + curr, 0)
-  //       return d
-  //     })
-  //     .sort((a: any, b: any) => b._sum - a._sum)
-  //     .map(d => d.label)
-  //   )
-  // )
-  
-  // const labelAmountLimit$ = combineLatest({
-  //   layout: layout$,
-  //   textSizePx: textSizePx$,
-  //   sortedLabels: sortedLabels$
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async (d) => d),
-  //   map(data => {
-  //     const lineHeight = data.textSizePx * 2 // 2倍行高
-  //     const labelAmountLimit = Math.floor(data.layout.height / lineHeight)
-  //     return labelAmountLimit
-  //   }),
-  //   distinctUntilChanged()
-  // )
-
-  // // 要顯示的labels
-  // const renderLabels$ = combineLatest({
-  //   sortedLabels: sortedLabels$,
-  //   labelAmountLimit: labelAmountLimit$
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async (d) => d),
-  //   map(data => {
-  //     // 篩選顯示上限
-  //     return data.sortedLabels.slice(0, data.labelAmountLimit)
-  //   }),
-  //   distinctUntilChanged()
-  // )
-
-  // const rankingScale$: Observable<d3.ScalePoint<string>> = new Observable(subscriber => {
-  //   combineLatest({
-  //     layout: layout$,
-  //     renderLabels: renderLabels$,
-  //     labelAmountLimit: labelAmountLimit$
-  //   }).pipe(
-  //     takeUntil(destroy$),
-  //     switchMap(async (d) => d),
-  //   ).subscribe(data => {
-      
-  //     const rankingScale = createLabelToAxisScale({
-  //       axisLabels: data.renderLabels,
-  //       axisWidth: data.layout.height,
-  //       padding: 0.5
-  //     })
-
-  //     subscriber.next(rankingScale)
-  //   })
-  // })
-
-  // combineLatest({
-  //   layout: layout$,
-  //   textReverseTransform: textReverseTransform$
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async (d) => d),
-  // )
   layout$.subscribe(data => {
     const defsSelection = selection.selectAll<SVGDefsElement, any>('defs')
       .data([clipPathID])
@@ -473,11 +313,13 @@ export const createBaseRankingLabels: BasePluginFn<BaseRankingAxisContext> = (pl
     layout: layout$,
     fullDataFormatter: fullDataFormatter$,
     fullChartParams: fullChartParams$,
-    rankingLabelList: rankingLabelList$,
+    visibleComputedRankingData: visibleComputedRankingData$,
+    // rankingLabelList: rankingLabelList$,
     rankingScaleList: rankingScaleList$,
+    valueScale: valueScale$,
     textReverseTransform: textReverseTransform$,
     textReverseTransformWithRotate: textReverseTransformWithRotate$,
-    xyMinMax: xyMinMax$
+    xyValueIndex: xyValueIndex$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -485,9 +327,9 @@ export const createBaseRankingLabels: BasePluginFn<BaseRankingAxisContext> = (pl
 
     data.containerSelection.each((d, i, g) => {
       const _containerSelection = d3.select(g[i])
-      const rankingLabels = data.rankingLabelList[i]
+      // const rankingLabels = data.rankingLabelList[i]
       const rankingScale = data.rankingScaleList[i]
-      if (!rankingLabels || !rankingScale) {
+      if (!rankingScale) {
         return
       }
       
@@ -499,28 +341,26 @@ export const createBaseRankingLabels: BasePluginFn<BaseRankingAxisContext> = (pl
         .attr('class', yAxisClassName)
         .attr('clip-path', `url(#${clipPathID})`)
       const axisLabelSelection = _containerSelection
-        .selectAll<SVGGElement, BaseRankingLabelsParams>(`g.${textClassName}`)
+        .selectAll<SVGGElement, BaseRacingLabelsParams>(`g.${textClassName}`)
         .data([data.fullParams])
         .join('g')
         .classed(textClassName, true)
 
-      renderRankingAxis({
+      renderRacingLabels({
         selection: axisSelection,
-        // yAxisClassName,
         fullParams: data.fullParams,
-        // tickTextAlign: data.tickTextAlign,
         fullChartParams: data.fullChartParams,
         rankingScale: rankingScale,
-        renderLabels: rankingLabels,
+        categoryData: data.visibleComputedRankingData[i],
         textReverseTransformWithRotate: data.textReverseTransformWithRotate,
-        // xyMinMax: data.xyMinMax
+        valueScale: data.valueScale,
+        xyValueIndex: data.xyValueIndex,
       })
   
-      renderRankingAxisLabel({
+      renderRacingAxisLabel({
         selection: axisLabelSelection,
         textClassName,
         fullParams: data.fullParams,
-        // axisLabelAlign: data.axisLabelAlign,
         layout: data.layout,
         fullDataFormatter: data.fullDataFormatter,
         fullChartParams: data.fullChartParams,

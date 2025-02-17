@@ -44,7 +44,7 @@ export interface OrdinalZoomParams {
 
 }
 
-// export interface RankingAxisParams {
+// export interface RacingAxisParams {
 //   labelOffset: [number, number]
 //   labelColorType: ColorType
 //   axisLineVisible: boolean
@@ -60,7 +60,7 @@ export interface OrdinalZoomParams {
 //   tickTextColorType: ColorType
 // }
 
-export interface RankingBarsParams {
+export interface RacingBarsParams {
   bar: {
     barWidth: number
     barPadding: number
@@ -78,6 +78,7 @@ export interface RankingBarsParams {
     // // tickColorType: ColorType
     // tickTextRotate: number
     // tickTextColorType: ColorType
+    position: 'inside' | 'outside' | 'none'
     padding: number
     rotate: number
     colorType: ColorType
@@ -87,10 +88,11 @@ export interface RankingBarsParams {
     colorType: ColorType
   }
   rankingAmount: 'auto' | number
-  timer: {
-    active: boolean
-    period: number
-  }
+  autorun: boolean
+  // timer: {
+  //   active: boolean
+  //   loop: boolean
+  // }
 }
 
 export interface RankingBubblesParams {

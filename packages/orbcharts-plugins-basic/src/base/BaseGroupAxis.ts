@@ -234,6 +234,7 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
   const xAxisEl = xAxisSelection
     .transition()
     .duration(100)
+    .ease(d3.easeLinear) // 線性的 - 當托曳或快速變動的時候比較滑順
     .call(xAxis)
     .on('end', (self, t) => {
       // 先等transition結束再處理文字，否則會被原本的文字覆蓋
