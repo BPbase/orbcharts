@@ -110,6 +110,18 @@ export const DEFAULT_RANKING_BARS_PARAMS: RacingBarsParams = {
     rotate: 0,
     colorType: 'labelContrast'
   },
+  valueLabel: {
+    padding: 20,
+    colorType: 'primary',
+    format: num => {
+      if (num === null || Number.isNaN(num) == true) {
+        return num || 0
+      }
+      var parts = num.toString().split('.')
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      return parts.join('.')
+    }
+  },
   axisLabel: {
     offset: [0, 0],
     colorType: 'primary'
@@ -122,6 +134,15 @@ export const DEFAULT_RANKING_BARS_PARAMS: RacingBarsParams = {
   // }
   autorun: false
 }
+DEFAULT_RANKING_BARS_PARAMS.valueLabel.format.toString = () => `num => {
+    if (num === null || Number.isNaN(num) == true) {
+      return num || 0
+    }
+    var parts = num.toString().split('.')
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return parts.join('.')
+  }
+}`
 
 export const DEFAULT_RANKING_VALUE_AXIS_PARAMS: XAxisParams = {
   labelOffset: [0, 0],
@@ -138,6 +159,7 @@ export const DEFAULT_RANKING_VALUE_AXIS_PARAMS: XAxisParams = {
   tickColorType: 'secondary',
   tickTextColorType: 'primary'
 }
+DEFAULT_RANKING_VALUE_AXIS_PARAMS.tickFormat.toString = () => `v => v`
 
 export const DEFAULT_SCATTER_PARAMS: ScatterParams = {
   radius: 5,
@@ -171,6 +193,7 @@ export const DEFAULT_X_AXIS_PARAMS: XAxisParams = {
   tickColorType: 'secondary',
   tickTextColorType: 'primary'
 }
+DEFAULT_X_AXIS_PARAMS.tickFormat.toString = () => `v => v`
 
 export const DEFAULT_X_Y_AUX_PARAMS: XYAuxParams = {
   xAxis: {

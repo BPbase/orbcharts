@@ -88,6 +88,15 @@ export interface BaseLinesParams {
   // labelPadding: number
 }
 
+export interface BaseRacingBarsParams {
+  bar: {
+    barWidth: number
+    barPadding: number
+    barRadius: number | boolean
+  }
+  rankingAmount: 'auto' | number
+}
+
 export interface BaseRacingLabelsParams {
   // labelOffset: [number, number]
   // labelColorType: ColorType
@@ -112,18 +121,14 @@ export interface BaseRacingLabelsParams {
     offset: [number, number]
     colorType: ColorType
   }
-  // valueIndex: number | 'sum'
-  // sumValue: boolean
 }
 
-export interface BaseRacingBarsParams {
-  bar: {
-    barWidth: number
-    barPadding: number
-    barRadius: number | boolean
-  }
-  rankingAmount: 'auto' | number
+export interface BaseRacingValueLabelsParams {
+  padding: number
+  colorType: ColorType
+  format: string | ((text: d3.NumberValue) => string | d3.NumberValue)
 }
+
 
 export interface BaseTooltipStyle {
   backgroundColor: string

@@ -216,7 +216,7 @@ onMounted(() => {
   ]
 
   chart.chartParams$.next({
-    transitionDuration: 500,
+    transitionDuration: 250,
     // colors: {
     //   light: {
     //     label: ['#000000']

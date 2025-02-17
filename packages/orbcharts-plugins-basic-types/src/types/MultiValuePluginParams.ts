@@ -83,6 +83,11 @@ export interface RacingBarsParams {
     rotate: number
     colorType: ColorType
   }
+  valueLabel: {
+    padding: number
+    colorType: ColorType
+    format: string | ((text: d3.NumberValue | null) => string | d3.NumberValue)
+  }
   axisLabel: {
     offset: [number, number]
     colorType: ColorType

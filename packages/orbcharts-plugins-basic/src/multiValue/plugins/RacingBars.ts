@@ -18,6 +18,7 @@ import type {
 import type { BaseRacingLabelsParams, BaseRacingBarsParams } from '../../../lib/plugins-basic-types'
 import { defineMultiValuePlugin } from '../../../lib/core'
 import { createBaseRacingLabels } from '../../base/BaseRacingLabels'
+import { createBaseRacingValueLabels } from '../../base/BaseRacingValueLabels'
 import { createBaseRacingBars } from '../../base/BaseRacingBars'
 import { DEFAULT_RANKING_BARS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
@@ -43,6 +44,9 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING
         toBeTypes: ['object']
       },
       barLabel: {
+        toBeTypes: ['object']
+      },
+      valueLabel: {
         toBeTypes: ['object']
       },
       axisLabel: {
@@ -96,6 +100,22 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING
         return barLabelResult
       }
     }
+    if (params.valueLabel) {
+      const valueLabelResult = validateColumns(params.valueLabel, {
+        padding: {
+          toBeTypes: ['number']
+        },
+        colorType: {
+          toBeOption: 'ColorType',
+        },
+        format: {
+          toBeTypes: ['Function']
+        },
+      })
+      if (valueLabelResult.status === 'error') {
+        return valueLabelResult
+      }
+    }
     if (params.axisLabel) {
       const axisLabelResult = validateColumns(params.axisLabel, {
         offset: {
@@ -131,6 +151,7 @@ export const RacingBars = defineMultiValuePlugin(pluginConfig)(({ selection, nam
   
   const baseRacingBarsSelection = selection.append('g').attr('class', `${pluginName}-bars`)
   const baseRacingLabelsSelection = selection.append('g').attr('class', `${pluginName}-labels`)
+  const baseRacingValueLabelsSelection = selection.append('g').attr('class', `${pluginName}-valueLabels`)
 
   const destroy$ = new Subject()
 
@@ -152,6 +173,13 @@ export const RacingBars = defineMultiValuePlugin(pluginConfig)(({ selection, nam
   //     }
   //   })
   // )
+
+  const baseRacingValueLabelsParams$ = observer.fullParams$.pipe(
+    takeUntil(destroy$),
+    map(params => {
+      return params.valueLabel
+    })
+  )
 
   const rankingAmount$ = observer.fullParams$.pipe(
     takeUntil(destroy$),
@@ -228,6 +256,25 @@ export const RacingBars = defineMultiValuePlugin(pluginConfig)(({ selection, nam
     fullChartParams$: observer.fullChartParams$,
     layout$: observer.layout$,
     containerPosition$: observer.containerPosition$,
+    containerSize$: observer.containerSize$,
+    isCategorySeprate$: observer.isCategorySeprate$,
+    xyValueIndex$: observer.xyValueIndex$,
+  })
+
+  const unsubscribeBaseRacingValueLabels = createBaseRacingValueLabels(`${pluginName}-valueLabels`, {
+    selection: baseRacingValueLabelsSelection,
+    computedData$: observer.computedData$,
+    visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
+    rankingScaleList$,
+    // xScale$: observer.xScale$,
+    barScale$,
+    computedRankingAmount$,
+    fullParams$: baseRacingValueLabelsParams$,
+    fullDataFormatter$: observer.fullDataFormatter$,
+    fullChartParams$: observer.fullChartParams$,
+    layout$: observer.layout$,
+    containerPosition$: observer.containerPosition$,
+    containerSize$: observer.containerSize$,
     isCategorySeprate$: observer.isCategorySeprate$,
     xyValueIndex$: observer.xyValueIndex$,
   })
@@ -309,6 +356,7 @@ export const RacingBars = defineMultiValuePlugin(pluginConfig)(({ selection, nam
   return () => {
     destroy$.next(undefined)
     unsubscribeBaseRacingLabels()
+    unsubscribeBaseRacingValueLabels()
     unsubscribeBaseRacingBars()
   }
 })

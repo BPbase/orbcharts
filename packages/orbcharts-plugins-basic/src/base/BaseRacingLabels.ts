@@ -36,6 +36,7 @@ interface BaseRacingAxisContext {
   fullChartParams$: Observable<ChartParams>
   layout$: Observable<Layout>
   containerPosition$: Observable<ContainerPositionScaled[]>
+  containerSize$: Observable<ContainerSize>
   isCategorySeprate$: Observable<boolean>
   xyValueIndex$: Observable<[number, number]>
 }
@@ -95,14 +96,14 @@ function renderRacingAxisLabel ({ selection, textClassName, fullParams, layout, 
     .text(d => fullDataFormatter.yAxis.label)
 }
 
-function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingScale, valueScale, categoryData, textReverseTransformWithRotate, xyValueIndex }: {
+function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingScale, valueScale, categoryData, xyValueIndex }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   fullParams: BaseRacingLabelsParams
   fullChartParams: ChartParams
   rankingScale: d3.ScalePoint<string>
   valueScale: ((n: number) => number)
   categoryData: ComputedDatumMultiValue[]
-  textReverseTransformWithRotate: string,
+  // textReverseTransformWithRotate: string,
   xyValueIndex: [number, number]
 }) {
   const labelData = fullParams.barLabel.position === 'none' ? [] : categoryData
@@ -111,7 +112,7 @@ function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingSc
     .selectAll<SVGGElement, string>(`text`)
     .data(labelData, (d: ComputedDatumMultiValue) => d.id)
     // .join('g')
-    // .classed(yAxisClassName, true)
+    // .classed(boxClassName, true)
     .join(
       enter => {
         return enter
@@ -135,7 +136,7 @@ function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingSc
     .attr('dominant-baseline', yTickDominantBaseline)
     .attr('font-size', fullChartParams.styles.textSize)
     .style('fill', getColor(fullParams.barLabel.colorType, fullChartParams))
-    .style('transform', textReverseTransformWithRotate)
+    // .style('transform', textReverseTransformWithRotate)
     .text(d => d.label)
 
   return labelSelection
@@ -190,6 +191,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
   fullChartParams$,
   layout$,
   containerPosition$,
+  containerSize$,
   isCategorySeprate$,
   xyValueIndex$
 }) => {
@@ -197,7 +199,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
   const destroy$ = new Subject()
   
   const containerClassName = getClassName(pluginName, 'container')
-  const yAxisClassName = getClassName(pluginName, 'yAxis')
+  const boxClassName = getClassName(pluginName, 'box')
   const textClassName = getClassName(pluginName, 'text')
   const clipPathID = getUniID(pluginName, 'clipPath-box')
 
@@ -240,7 +242,8 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
         const containerPosition = data.containerPosition[i] ?? data.containerPosition[0]
         const translate = containerPosition.translate
         const scale = containerPosition.scale
-        return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+        // return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+        return `translate(${translate[0]}, ${translate[1]})`
       })
       // .attr('opacity', 0)
       // .transition()
@@ -260,17 +263,17 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
     distinctUntilChanged()
   )
 
-  const textReverseTransformWithRotate$ = combineLatest({
-    textReverseTransform: textReverseTransform$,
-    fullParams: fullParams$,
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async (d) => d),
-    map(data => {
-      // 必須按照順序（先抵消外層rotate，再抵消最外層scale，最後再做本身的rotate）
-      return `${data.textReverseTransform} rotate(${data.fullParams.barLabel.rotate}deg)`
-    })
-  )
+  // const textReverseTransformWithRotate$ = combineLatest({
+  //   textReverseTransform: textReverseTransform$,
+  //   fullParams: fullParams$,
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(data => {
+  //     // 必須按照順序（先抵消外層rotate，再抵消最外層scale，最後再做本身的rotate）
+  //     return `${data.textReverseTransform} rotate(${data.fullParams.barLabel.rotate}deg)`
+  //   })
+  // )
 
   // const rankingLabelList$ = visibleComputedRankingData$.pipe(
   //   takeUntil(destroy$),
@@ -291,7 +294,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
     })
   )
 
-  layout$.subscribe(data => {
+  containerSize$.subscribe(data => {
     const defsSelection = selection.selectAll<SVGDefsElement, any>('defs')
       .data([clipPathID])
       .join('defs')
@@ -318,7 +321,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
     rankingScaleList: rankingScaleList$,
     valueScale: valueScale$,
     textReverseTransform: textReverseTransform$,
-    textReverseTransformWithRotate: textReverseTransformWithRotate$,
+    // textReverseTransformWithRotate: textReverseTransformWithRotate$,
     xyValueIndex: xyValueIndex$
   }).pipe(
     takeUntil(destroy$),
@@ -335,10 +338,10 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
       
       // const containerClipPathID = `${clipPathID}-${i}`  
       const axisSelection = _containerSelection
-        .selectAll<SVGGElement, any>(`g.${yAxisClassName}`)
+        .selectAll<SVGGElement, any>(`g.${boxClassName}`)
         .data([i])
         .join('g')
-        .attr('class', yAxisClassName)
+        .attr('class', boxClassName)
         .attr('clip-path', `url(#${clipPathID})`)
       const axisLabelSelection = _containerSelection
         .selectAll<SVGGElement, BaseRacingLabelsParams>(`g.${textClassName}`)
@@ -352,7 +355,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
         fullChartParams: data.fullChartParams,
         rankingScale: rankingScale,
         categoryData: data.visibleComputedRankingData[i],
-        textReverseTransformWithRotate: data.textReverseTransformWithRotate,
+        // textReverseTransformWithRotate: data.textReverseTransformWithRotate,
         valueScale: data.valueScale,
         xyValueIndex: data.xyValueIndex,
       })
