@@ -1,4 +1,4 @@
-import type { ColorType, EventMultiValue } from '../../lib/core-types'
+import type { ColorType, EventMultiValue, ComputedDataMultiValue } from '../../lib/core-types'
 import type { BaseTooltipStyle, BaseTooltipUtils } from './BasePluginParams'
 import type { ArcScaleType, Placement } from './Common'
 
@@ -98,6 +98,14 @@ export interface RacingBarsParams {
   //   active: boolean
   //   loop: boolean
   // }
+}
+
+export interface RacingCounterTextsParams {
+  renderFn: (valueLabel: string, valueIndex: number, data: ComputedDataMultiValue) => string[] | string
+  textAttrs: Array<{ [key:string]: string | number }>
+  textStyles: Array<{ [key:string]: string | number }>
+  paddingRight: number
+  paddingBottom: number
 }
 
 export interface RankingBubblesParams {

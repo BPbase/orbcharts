@@ -20,7 +20,7 @@ import { defineMultiValuePlugin } from '../../../lib/core'
 import { createBaseRacingLabels } from '../../base/BaseRacingLabels'
 import { createBaseRacingValueLabels } from '../../base/BaseRacingValueLabels'
 import { createBaseRacingBars } from '../../base/BaseRacingBars'
-import { DEFAULT_RANKING_BARS_PARAMS } from '../defaults'
+import { DEFAULT_RACING_BARS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 import {
   // visibleComputedSumDataObservable,
@@ -34,9 +34,9 @@ import {
 
 const pluginName = 'RacingBars'
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING_BARS_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RACING_BARS_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_RANKING_BARS_PARAMS,
+  defaultParams: DEFAULT_RACING_BARS_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {

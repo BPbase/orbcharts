@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { MultiValueChart } from '../../../packages/orbcharts-core/src'
-import { RacingBars, XAxis, RacingValueAxis, MultiValueLegend, MultiValueTooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { RacingBars, RacingCounterTexts, RacingValueAxis, MultiValueLegend, MultiValueTooltip } from '../../../packages/orbcharts-plugins-basic/src'
 // import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 // import multiValue1 from '../../../packages/orbcharts-demo/src/data/multiValue1'
 import multiValueData_brand from '../../../packages/orbcharts-demo/src/data/multiValueData_brand'
@@ -291,12 +291,13 @@ onMounted(() => {
   // }, 2000)
 
   const racingBars = new RacingBars()
+  const racingCounterTexts = new RacingCounterTexts()
   const racingValueAxis = new RacingValueAxis()
-  const xAxis = new XAxis()
+  // const xAxis = new XAxis()
   const multiValueLegend = new MultiValueLegend()
   const multiValueTooltip = new MultiValueTooltip()
 
-  chart!.plugins$.next([ racingBars, racingValueAxis, multiValueLegend, multiValueTooltip ])
+  chart!.plugins$.next([ racingBars, racingCounterTexts, racingValueAxis, multiValueLegend, multiValueTooltip ])
 
   racingBars.params$.next({
     // timer: {

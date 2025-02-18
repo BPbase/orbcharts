@@ -15,16 +15,16 @@ import type {
 import {
   defineMultiValuePlugin,
 } from '../../../lib/core'
-import { DEFAULT_RANKING_VALUE_AXIS_PARAMS } from '../defaults'
+import { DEFAULT_RACING_VALUE_AXIS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_AXIS } from '../../const'
 import { createBaseXAxis } from '../../base/BaseXAxis'
 
 const pluginName = 'RacingValueAxis'
 
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RANKING_VALUE_AXIS_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RACING_VALUE_AXIS_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_RANKING_VALUE_AXIS_PARAMS,
+  defaultParams: DEFAULT_RACING_VALUE_AXIS_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {

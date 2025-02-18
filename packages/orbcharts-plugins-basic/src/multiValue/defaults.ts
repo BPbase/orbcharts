@@ -1,7 +1,9 @@
+import type { ComputedDataTypeMap } from '../../lib/core-types'
 import type {
   MultiValueLegendParams,
   MultiValueTooltipParams,
   RacingBarsParams,
+  RacingCounterTextsParams,
   ScatterParams,
   ScatterBubblesParams,
   XAxisParams,
@@ -98,7 +100,7 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
 //   tickTextColorType: 'primary'
 // }
 
-export const DEFAULT_RANKING_BARS_PARAMS: RacingBarsParams = {
+export const DEFAULT_RACING_BARS_PARAMS: RacingBarsParams = {
   bar: {
     barWidth: 0,
     barPadding: 8,
@@ -134,7 +136,7 @@ export const DEFAULT_RANKING_BARS_PARAMS: RacingBarsParams = {
   // }
   autorun: false
 }
-DEFAULT_RANKING_BARS_PARAMS.valueLabel.format.toString = () => `num => {
+DEFAULT_RACING_BARS_PARAMS.valueLabel.format.toString = () => `num => {
     if (num === null || Number.isNaN(num) == true) {
       return num || 0
     }
@@ -144,7 +146,37 @@ DEFAULT_RANKING_BARS_PARAMS.valueLabel.format.toString = () => `num => {
   }
 }`
 
-export const DEFAULT_RANKING_VALUE_AXIS_PARAMS: XAxisParams = {
+export const DEFAULT_RACING_COUNTER_TEXTS_PARAMS: RacingCounterTextsParams = {
+  renderFn: (valueLabel: string, valueIndex: number, data: ComputedDataTypeMap<'multiValue'>) => {
+    return valueLabel
+  },
+  textAttrs: [
+    {
+      "transform": "translate(0, 0)"
+    }
+  ],
+  textStyles: [
+    {
+      "font-weight": "bold",
+      "text-anchor": "end",
+      "pointer-events": "none",
+      "dominant-baseline": "auto",
+      "font-size": 64,
+      "fill": "#bebebe"
+    },
+    {
+      "text-anchor": "end",
+      "pointer-events": "none",
+      "dominant-baseline": "auto",
+      "font-size": 24,
+      "fill": "#bebebe"
+    },
+  ],
+  paddingRight: 0,
+  paddingBottom: 0
+}
+
+export const DEFAULT_RACING_VALUE_AXIS_PARAMS: XAxisParams = {
   labelOffset: [0, 0],
   labelColorType: 'primary',
   axisLineVisible: false,
@@ -159,7 +191,7 @@ export const DEFAULT_RANKING_VALUE_AXIS_PARAMS: XAxisParams = {
   tickColorType: 'secondary',
   tickTextColorType: 'primary'
 }
-DEFAULT_RANKING_VALUE_AXIS_PARAMS.tickFormat.toString = () => `v => v`
+DEFAULT_RACING_VALUE_AXIS_PARAMS.tickFormat.toString = () => `v => v`
 
 export const DEFAULT_SCATTER_PARAMS: ScatterParams = {
   radius: 5,
