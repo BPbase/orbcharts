@@ -10,11 +10,27 @@ export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', Partial<Pre
   name: 'PRESET_MULTI_GRID_DIVERGING',
   description: '雙向折線圖',
   chartParams: {
+    colors: {
+      light: {
+        label:  [
+          "#4BABFF",
+          "#94D6CB",
+          "#F9B052",
+          "#8454D4",
+          "#D58C75",
+          "#42C724",
+          "#FF8B8B",
+          "#904026",
+          "#C50669",
+          "#4B25B3"
+        ],
+      }
+    },
     padding: {
       top: 60,
       right: 60,
-      bottom: 120,
-      left: 60
+      bottom: 100,
+      left: 80
     },
   },
   dataFormatter: {
@@ -40,7 +56,7 @@ export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', Partial<Pre
     ],
     // 設定排版方式
     container: {
-      gap: 200,
+      gap: 160,
       rowAmount: 1,
       columnAmount: 2
     },
@@ -49,7 +65,7 @@ export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', Partial<Pre
   allPluginParams: {
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     MultiGroupAxis: {
-      tickPadding: 60, // 加長間距
+      // tickPadding: 60, // 加長間距
       gridIndexes: [0] // 只顯示一個
     },
     MultiValueAxis: {

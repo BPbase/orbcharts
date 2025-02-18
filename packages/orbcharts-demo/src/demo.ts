@@ -13,8 +13,8 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
         mainPluginNames: ['Bubbles'],
         list: [
           {
-            title: 'PRESET_SERIES_BASIC',
-            presetName: 'PRESET_SERIES_BASIC',
+            title: 'PRESET_BUBBLES_BASIC',
+            presetName: 'PRESET_BUBBLES_BASIC',
             allPluginNames: ['Bubbles', 'SeriesLegend', 'SeriesTooltip'],
             getData: () => import('./data/seriesData3')
           },
@@ -31,8 +31,8 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             getData: () => import('./data/seriesData3')
           },
           {
-            title: 'PRESET_SERIES_SUM_SERIES',
-            presetName: 'PRESET_SERIES_SUM_SERIES',
+            title: 'PRESET_BUBBLES_SUM_SERIES',
+            presetName: 'PRESET_BUBBLES_SUM_SERIES',
             allPluginNames: ['Bubbles', 'SeriesLegend', 'SeriesTooltip'],
             getData: () => import('./data/seriesData3')
           },
@@ -75,14 +75,14 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           //   getData: () => import('./data/seriesData2')
           // },
           {
-            title: 'PRESET_SERIES_SEPARATE_SERIES',
-            presetName: 'PRESET_SERIES_SEPARATE_SERIES',
+            title: 'PRESET_PIE_SEPARATE_SERIES',
+            presetName: 'PRESET_PIE_SEPARATE_SERIES',
             allPluginNames: ['Pie', 'PieLabels', 'SeriesLegend', 'SeriesTooltip'],
             getData: () => import('./data/seriesData2')
           },
           {
-            title: 'PRESET_SERIES_SUM_SERIES',
-            presetName: 'PRESET_SERIES_SUM_SERIES',
+            title: 'PRESET_PIE_SUM_SERIES',
+            presetName: 'PRESET_PIE_SUM_SERIES',
             allPluginNames: ['Pie', 'PieLabels', 'SeriesLegend', 'SeriesTooltip'],
             getData: () => import('./data/seriesData2')
           },
@@ -113,20 +113,20 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           //   getData: () => import('./data/seriesData2')
           // },
           {
-            title: 'PRESET_SERIES_SEPARATE_SERIES',
-            presetName: 'PRESET_SERIES_SEPARATE_SERIES',
+            title: 'PRESET_ROSE_SEPARATE_SERIES',
+            presetName: 'PRESET_ROSE_SEPARATE_SERIES',
             allPluginNames: ['Rose', 'RoseLabels', 'SeriesLegend', 'SeriesTooltip'],
             getData: () => import('./data/seriesData2')
           },
           {
-            title: 'PRESET_SERIES_SUM_SERIES',
-            presetName: 'PRESET_SERIES_SUM_SERIES',
+            title: 'PRESET_ROSE_SUM_SERIES',
+            presetName: 'PRESET_ROSE_SUM_SERIES',
             allPluginNames: ['Rose', 'RoseLabels', 'SeriesLegend', 'SeriesTooltip'],
             getData: () => import('./data/seriesData2')
           },
           {
-            title: 'PRESET_SERIES_SEPARATE_SERIES_AND_SUM_SERIES',
-            presetName: 'PRESET_SERIES_SEPARATE_SERIES_AND_SUM_SERIES',
+            title: 'PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES',
+            presetName: 'PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES',
             allPluginNames: ['Rose', 'RoseLabels', 'SeriesLegend', 'SeriesTooltip'],
             getData: () => import('./data/seriesData2')
           },
@@ -675,14 +675,14 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
         mainPluginNames: ['Scatter'],
         list: [
           {
-            title: 'PRESET_MULTI_VALUE_BASIC',
-            presetName: 'PRESET_MULTI_VALUE_BASIC',
+            title: 'PRESET_SCATTER_BASIC',
+            presetName: 'PRESET_SCATTER_BASIC',
             allPluginNames: ['Scatter', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XZoom'],
             getData: () => import('./data/multiValue1')
           },
           {
-            title: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
-            presetName: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
+            title: 'PRESET_SCATTER_SEPARATE_CATEGORY',
+            presetName: 'PRESET_SCATTER_SEPARATE_CATEGORY',
             allPluginNames: ['Scatter', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XZoom'],
             getData: () => import('./data/multiValue1')
           },
@@ -695,8 +695,8 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
         mainPluginNames: ['ScatterBubbles'],
         list: [
           {
-            title: 'PRESET_MULTI_VALUE_BASIC',
-            presetName: 'PRESET_MULTI_VALUE_BASIC',
+            title: 'PRESET_SCATTER_BUBBLES_BASIC',
+            presetName: 'PRESET_SCATTER_BUBBLES_BASIC',
             allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XZoom'],
             getData: () => import('./data/multiValue1')
           },
@@ -713,8 +713,8 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             getData: () => import('./data/multiValue1')
           },
           {
-            title: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
-            presetName: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
+            title: 'PRESET_SCATTER_BUBBLES_SEPARATE_CATEGORY',
+            presetName: 'PRESET_SCATTER_BUBBLES_SEPARATE_CATEGORY',
             allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XZoom'],
             getData: () => import('./data/multiValue1')
           },

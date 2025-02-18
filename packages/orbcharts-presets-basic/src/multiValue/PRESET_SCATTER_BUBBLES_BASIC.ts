@@ -2,14 +2,14 @@ import type { PresetPartial } from '../../lib/core-types'
 import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '../types'
 // import { ALL_PLUGIN_PARAMS_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_SCATTER_BUBBLES_SCALING_BY_RADIUS: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
+export const PRESET_SCATTER_BUBBLES_BASIC: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
-  name: 'PRESET_SCATTER_BUBBLES_SCALING_BY_RADIUS',
-  description: '以半徑尺寸為比例的散布泡泡圖',
+  name: 'PRESET_SCATTER_BUBBLES_BASIC',
+  description: '基本的散布泡泡圖',
   chartParams: {
     colors: {
       light: {
-        label: [
+        label:  [
           "#6CBAFF",
           "#FF6C6C",
           "#F9B052",
@@ -34,9 +34,6 @@ export const PRESET_SCATTER_BUBBLES_SCALING_BY_RADIUS: PresetPartial<'multiValue
     MultiValueLegend: {
       placement: 'bottom',
       padding: 14,
-    },
-    ScatterBubbles: {
-      arcScaleType: 'radius'
     }
   }
 }

@@ -7,10 +7,26 @@ export const PRESET_TREE_MAP_BASIC: PresetPartial<'tree', Partial<PresetTreePlug
   name: 'PRESET_TREE_MAP_BASIC',
   description: '基本Tree Map參數',
   chartParams: {
+    colors: {
+      light: {
+        label:  [
+          "#4BABFF",
+          "#94D6CB",
+          "#F9B052",
+          "#8454D4",
+          "#D58C75",
+          "#42C724",
+          "#FF8B8B",
+          "#904026",
+          "#C50669",
+          "#4B25B3"
+        ],
+      }
+    },
     padding: {
       top: 40,
       right: 40,
-      bottom: 60,
+      bottom: 70,
       left: 40
     },
   },

@@ -6,14 +6,30 @@ export const PRESET_FORCE_DIRECTED_BUBBLES_NONE_ARROW: PresetPartial<'relationsh
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_FORCE_DIRECTED_BUBBLES_NONE_ARROW',
   description: 'Force Directed Bubbles沒有箭頭',
-  // chartParams: {
-  //   padding: {
-  //     top: 40,
-  //     right: 40,
-  //     bottom: 60,
-  //     left: 40
-  //   },
-  // },
+  chartParams: {
+    colors: {
+      light: {
+        label: [
+          "#6CBAFF",
+          "#FF6C6C",
+          "#F9B052",
+          "#7DD3C4",
+          "#AA93D2",
+          "#0088FF",
+          "#FFBABA",
+          "#86DC72",
+          "#EF76FF",
+          "#C4C4C4"
+        ],
+      }
+    }
+    // padding: {
+    //   top: 40,
+    //   right: 40,
+    //   bottom: 60,
+    //   left: 40
+    // },
+  },
   allPluginParams: {
     ForceDirectedBubbles: {
       arrow: {

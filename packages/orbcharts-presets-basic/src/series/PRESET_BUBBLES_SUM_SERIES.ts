@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetSeriesPluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
+// import { ALL_PLUGIN_PARAMS_SERIES, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
-export const PRESET_BUBBLES_SEPARATE_SERIES: PresetPartial<'series', Partial<PresetSeriesPluginParams>
+export const PRESET_BUBBLES_SUM_SERIES: PresetPartial<'series', Partial<PresetSeriesPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
-  name: 'PRESET_BUBBLES_SEPARATE_SERIES',
-  description: '分開顯示Series的泡泡圖',
+  name: 'PRESET_BUBBLES_SUM_SERIES',
+  description: '合併Series資料的泡泡圖',
   chartParams: {
     colors: {
       light: {
@@ -22,24 +22,15 @@ export const PRESET_BUBBLES_SEPARATE_SERIES: PresetPartial<'series', Partial<Pre
           "#C4C4C4"
         ],
       }
-    },
-    // 加長留空
-    padding: {
-      top: 160,
-      right: 160,
-      bottom: 160,
-      left: 160
-    },
+    }
   },
   dataFormatter: {
-    separateSeries: true,
+    sort: (a, b) => b.value - a.value,
+    sumSeries: true
   },
   allPluginParams: {
+    // ...ALL_PLUGIN_PARAMS_SERIES,
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
-    Bubbles: {},
-    SeriesLegend: {
-      listRectRadius: 7 // 圓型圖例列點
-    },
-    SeriesTooltip: {}
   }
 }
+PRESET_BUBBLES_SUM_SERIES.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`
