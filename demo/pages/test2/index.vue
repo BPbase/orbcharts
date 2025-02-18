@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { GridChart } from '../../../packages/orbcharts-core/src'
-import { Bars, StackedBar, BarsTriangle, Lines, LineAreas, Dots, GroupAux, GroupAxis, ValueAxis, StackedValueAxis, GridZoom, GridTooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { Bars, StackedBars, BarsTriangle, Lines, LineAreas, Dots, GroupAux, GroupAxis, ValueAxis, StackedValueAxis, GroupZoom, GridTooltip } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
 // import gridData1 from '../../../packages/orbcharts-demo/src/data/gridData1'
 import gridData5 from '../../../packages/orbcharts-demo/src/data/gridData5'
@@ -37,7 +37,7 @@ onMounted(() => {
 
   const bars = new Bars()
 
-  const stackedBar = new StackedBar()
+  const stackedBar = new StackedBars()
 
   const barsTriangle = new BarsTriangle()
 
@@ -106,7 +106,7 @@ onMounted(() => {
     highlightTarget: 'group'
   })
   
-  chart.plugins$.next([groupAxis, valueAxis, new GroupAux(), lines, lineAreas, dots, new GridZoom(), new GridTooltip()])
+  chart.plugins$.next([groupAxis, valueAxis, new GroupAux(), lines, lineAreas, dots, new GroupZoom(), new GridTooltip()])
   
   chart.data$.next(gridData5)
   

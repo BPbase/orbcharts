@@ -22,7 +22,7 @@ export const ALL_PLUGIN_PARAMS_SERIES: PresetSeriesPluginParams = {
 export const ALL_PLUGIN_PARAMS_GRID: PresetGridPluginParams = {
   Bars: {},
   BarsPN: {},
-  StackedBar: {},
+  StackedBars: {},
   BarsTriangle: {},
   Dots: {},
   GridLegend: {},
@@ -31,14 +31,14 @@ export const ALL_PLUGIN_PARAMS_GRID: PresetGridPluginParams = {
   GroupAxis: {},
   LineAreas: {},
   Lines: {},
-  GridZoom: {},
+  GroupZoom: {},
   ValueAxis: {},
   StackedValueAxis: {},
 }
 
 export const ALL_PLUGIN_PARAMS_MULTI_GRID: PresetMultiGridPluginParams = {
   MultiBars: {},
-  MultiStackedBar: {},
+  MultiStackedBars: {},
   MultiBarsTriangle: {},
   MultiDots: {},
   MultiGridLegend: {},

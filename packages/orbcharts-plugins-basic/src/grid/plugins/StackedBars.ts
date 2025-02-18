@@ -9,9 +9,9 @@ import type { DefinePluginConfig } from '../../../lib/core-types'
 import { defineGridPlugin } from '../../../lib/core'
 import { DEFAULT_STACKED_BAR_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
-import { createBaseStackedBar } from '../../base/BaseStackedBar'
+import { createBaseStackedBars } from '../../base/BaseStackedBars'
 
-const pluginName = 'StackedBar'
+const pluginName = 'StackedBars'
 
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_STACKED_BAR_PARAMS> = {
   name: pluginName,
@@ -33,10 +33,10 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_STACKED
   }
 }
 
-export const StackedBar = defineGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
+export const StackedBars = defineGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
-  const unsubscribeBaseBars = createBaseStackedBar(pluginName, {
+  const unsubscribeBaseBars = createBaseStackedBars(pluginName, {
     selection,
     computedData$: observer.computedData$,
     computedAxesData$: observer.computedAxesData$,

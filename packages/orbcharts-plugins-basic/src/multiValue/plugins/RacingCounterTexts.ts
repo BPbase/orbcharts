@@ -18,14 +18,12 @@ import type {
   ComputedDataMultiValue,
   ChartParams,
   ContainerPositionScaled,
-  ContainerSize,
-  EventName,
-  EventMultiValue } from '../../../lib/core-types'
+  ContainerSize
+} from '../../../lib/core-types'
 import type { RacingCounterTextsParams } from '../../../lib/plugins-basic-types'
 import { DEFAULT_RACING_COUNTER_TEXTS_PARAMS } from '../defaults'
 // import { getD3TransitionEase } from '../../utils/d3Utils'
 import { getClassName } from '../../utils/orbchartsUtils'
-// import { seriesCenterSelectionObservable } from '../seriesObservables'
 import { LAYER_INDEX_OF_LABEL } from '../../const'
 
 type TextDatum = {
@@ -100,29 +98,6 @@ function renderText ({ selection, data, fullParams, containerSize }: {
             })
         })
     })
-
-  // const textUpdate = selection
-  //   .selectAll<SVGTextElement, TextDatum>(`text.${textClassName}`)
-  //   .data(data)
-  // const textEnter = textUpdate.enter()
-  //   .append('text')
-  //   .classed(textClassName, true)
-  // const text = textUpdate.merge(textEnter)
-  // text
-  //   .each((d, i, g) => {
-  //     const t = d3.select(g[i])
-  //       .text(d.text)
-  //     Object.keys(d.attr)
-  //       .forEach(key => {
-  //         t.attr(key, d.attr[key])
-  //       })
-  //     Object.keys(d.style)
-  //       .forEach(key => {
-  //         t.style(key, d.style[key])
-  //       })
-  //   })
-    
-  // textUpdate.exit().remove()
   
   return gSelection.selectAll<SVGTextElement, TextDatum>(`text.${textClassName}`)
 }
@@ -165,34 +140,7 @@ function createEachPieEventTexts (pluginName: string, context: {
 }) {
   const destroy$ = new Subject()
 
-  // const graphicSelection: d3.Selection<SVGGElement, any, any, any> = selection.append('g')
   let textSelection: d3.Selection<SVGTextElement, TextDatum, SVGGElement, unknown> | undefined
-  let storeEventSubscription: Subscription | undefined
-
-  // context.layout$
-  //   .pipe(
-  //     first()
-  //   )
-  //   .subscribe(size => {
-  //     selection
-  //       .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-  //     context.layout$
-  //       .pipe(
-  //         takeUntil(destroy$)
-  //       )
-  //       .subscribe(size => {
-  //         selection
-  //           .transition()
-  //           .attr('transform', `translate(${size.width / 2}, ${size.height / 2})`)
-  //       })
-  //   })
-
-  // const highlightTarget$ = context.fullChartParams$.pipe(
-  //   takeUntil(destroy$),
-  //   map(d => d.highlightTarget),
-  //   distinctUntilChanged()
-  // )
-
 
   combineLatest({
     textData: context.textData$,
@@ -209,90 +157,6 @@ function createEachPieEventTexts (pluginName: string, context: {
     })
   })
 
-
-  // combineLatest({
-  //   xyValueIndex: context.xyValueIndex$,
-  //   valueLabel: context.valueLabel$,
-  //   computedData: context.computedData$,
-  //   fullParams: context.fullParams$,
-  //   fullChartParams: context.fullChartParams$,
-  //   // highlightTarget: highlightTarget$,
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async (d) => d),
-  // ).subscribe(data => {
-
-    
-
-  //   context.containerSelection
-  //     .transition('move')
-  //     .duration(data.fullChartParams.transitionDuration!)
-  //     // .ease(getD3TransitionEase(data.fullChartParams.transitionEase!))
-  //     .tween('move', (event, datum) => {
-  //       return (t) => {
-  //         const renderData = createTextData({
-  //           eventData: {
-  //             type: 'series',
-  //             pluginName,
-  //             eventName: 'transitionMove',
-  //             event,
-  //             tween: t,
-  //             highlightTarget: data.highlightTarget,
-  //             data: data.computedData,
-  //             series: [],
-  //             seriesIndex: -1,
-  //             seriesLabel: '',
-  //             datum: null
-  //           },
-  //           // eventName: 'transitionMove',
-  //           // t,
-  //           renderFn: data.fullParams.renderFn!,
-  //           textAttrs: data.fullParams.textAttrs!,
-  //           textStyles: data.fullParams.textStyles!
-  //         })
-  //         textSelection = renderText(context.containerSelection, renderData)
-  //       }
-  //     })
-  //     .on('end', (event, datum) => {
-  //       const renderData = createTextData({
-  //         eventData: {
-  //           type: 'series',
-  //           pluginName,
-  //           eventName: 'transitionEnd',
-  //           event,
-  //           tween: 1,
-  //           highlightTarget: data.highlightTarget,
-  //           data: data.computedData,
-  //           series: [],
-  //           seriesIndex: -1,
-  //           seriesLabel: '',
-  //           datum: null
-  //         },
-  //         // eventName: 'transitionMove',
-  //         // t: 1,
-  //         renderFn: data.fullParams.renderFn!,
-  //         textAttrs: data.fullParams.textAttrs!,
-  //         textStyles: data.fullParams.textStyles!
-  //       })
-  //       textSelection = renderText(context.containerSelection, renderData)
-
-  //       if (storeEventSubscription) {
-  //         storeEventSubscription.unsubscribe()
-  //       }
-  //       storeEventSubscription = context.event$
-  //         .subscribe(eventData => {
-  //           const renderData = createTextData({
-  //             eventData,
-  //             // t: 1,
-  //             renderFn: data.fullParams.renderFn!,
-  //             textAttrs: data.fullParams.textAttrs!,
-  //             textStyles: data.fullParams.textStyles!
-  //           })
-  //           textSelection = renderText(context.containerSelection, renderData)
-  //         })
-  //     })
-  // })
-
   return () => {
     destroy$.next(undefined)
   }
@@ -301,15 +165,6 @@ function createEachPieEventTexts (pluginName: string, context: {
 export const RacingCounterTexts = defineMultiValuePlugin(pluginConfig)(({ selection, name, observer, subject }) => {
   const destroy$ = new Subject()
 
-  
-
-  // const { seriesCenterSelection$ } = seriesCenterSelectionObservable({
-  //   selection: selection,
-  //   pluginName,
-  //   separateSeries$: observer.separateSeries$,
-  //   seriesLabels$: observer.seriesLabels$,
-  //   multiValueContainerPosition$: observer.multiValueContainerPosition$
-  // })
   const containerSelection$ = combineLatest({
     computedData: observer.computedData$.pipe(
       distinctUntilChanged((a, b) => {
@@ -428,16 +283,9 @@ export const RacingCounterTexts = defineMultiValuePlugin(pluginConfig)(({ select
         unsubscribeFnArr[containerIndex] = createEachPieEventTexts(pluginName, {
           containerSelection: containerSelection,
           textData$: textData$,
-          // computedData$: observer.computedData$,
-          // containerComputedSortedData$: containerComputedData$,
-          // CategoryDataMap$: observer.CategoryDataMap$,
           fullParams$: observer.fullParams$,
-          // fullChartParams$: observer.fullChartParams$,
           valueLabel$: valueLabel$,
           xyValueIndex$: observer.xyValueIndex$,
-          // multiValueHighlight$: observer.multiValueHighlight$,
-          // multiValueContainerPosition$: containerPosition$,
-          // event$: subject.event$,
           containerSize$: observer.containerSize$
         })
 

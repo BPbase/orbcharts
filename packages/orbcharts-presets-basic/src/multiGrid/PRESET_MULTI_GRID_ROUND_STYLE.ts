@@ -44,7 +44,7 @@ export const PRESET_MULTI_GRID_ROUND_STYLE: PresetPartial<'multiGrid', Partial<P
       barGroupPadding: 10,
       barRadius: true,
     },
-    MultiStackedBar: {},
+    MultiStackedBars: {},
     MultiDots: {},
     MultiGridLegend: {
       // position: 'bottom',

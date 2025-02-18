@@ -147,43 +147,43 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_GRID_BASIC',
             presetName: 'PRESET_GRID_BASIC',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_GRID_ROTATE_AXIS_LABEL',
             presetName: 'PRESET_GRID_ROTATE_AXIS_LABEL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_GRID_HORIZONTAL',
             presetName: 'PRESET_GRID_HORIZONTAL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_BARS_ROUND',
             presetName: 'PRESET_BARS_ROUND',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_BARS_HORIZONTAL_AND_ROUND',
             presetName: 'PRESET_BARS_HORIZONTAL_AND_ROUND',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_BARS_THIN',
             presetName: 'PRESET_BARS_THIN',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_BARS_HORIZONTAL_AND_THIN',
             presetName: 'PRESET_BARS_HORIZONTAL_AND_THIN',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           // {
@@ -204,7 +204,7 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_GRID_SEPARATE_SERIES',
             presetName: 'PRESET_GRID_SEPARATE_SERIES',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
         ]
@@ -218,54 +218,54 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_GRID_PN_SCALE',
             presetName: 'PRESET_GRID_PN_SCALE',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsPN', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsPN', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData4')
           },
         ]
       },
       {
-        title: 'StackedBar',
+        title: 'StackedBars',
         description: 'Stacked Bar Chart',
         descriptionZh: '堆疊長條圖',
-        mainPluginNames: ['StackedBar'],
+        mainPluginNames: ['StackedBars'],
         list: [
           {
             title: 'PRESET_GRID_BASIC',
             presetName: 'PRESET_GRID_BASIC',
-            allPluginNames: ['GroupAxis', 'StackedValueAxis', 'StackedBar', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'StackedValueAxis', 'StackedBars', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_GRID_ROTATE_AXIS_LABEL',
             presetName: 'PRESET_GRID_ROTATE_AXIS_LABEL',
-            allPluginNames: ['GroupAxis', 'StackedValueAxis', 'StackedBar', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'StackedValueAxis', 'StackedBars', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_GRID_HORIZONTAL',
             presetName: 'PRESET_GRID_HORIZONTAL',
-            allPluginNames: ['GroupAxis', 'StackedValueAxis', 'StackedBar', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'StackedValueAxis', 'StackedBars', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           // {
           //   chartType: 'grid',
-          //   pluginName: 'StackedBar',
+          //   pluginName: 'StackedBars',
           //   presetName: 'PRESET_GRID_2_SERIES_SLOT'
           // },
           // {
           //   chartType: 'grid',
-          //   pluginName: 'StackedBar',
+          //   pluginName: 'StackedBars',
           //   presetName: 'PRESET_GRID_3_SERIES_SLOT'
           // },
           // {
           //   chartType: 'grid',
-          //   pluginName: 'StackedBar',
+          //   pluginName: 'StackedBars',
           //   presetName: 'PRESET_GRID_4_SERIES_SLOT'
           // },
           {
             title: 'PRESET_GRID_SEPARATE_SERIES',
             presetName: 'PRESET_GRID_SEPARATE_SERIES',
-            allPluginNames: ['GroupAxis', 'StackedValueAxis', 'StackedBar', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'StackedValueAxis', 'StackedBars', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
         ]
@@ -279,19 +279,19 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_GRID_BASIC',
             presetName: 'PRESET_GRID_BASIC',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_GRID_ROTATE_AXIS_LABEL',
             presetName: 'PRESET_GRID_ROTATE_AXIS_LABEL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_GRID_HORIZONTAL',
             presetName: 'PRESET_GRID_HORIZONTAL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           // {
@@ -312,7 +312,7 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_GRID_SEPARATE_SERIES',
             presetName: 'PRESET_GRID_SEPARATE_SERIES',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
         ]
@@ -326,13 +326,13 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_LINES_BASIC',
             presetName: 'PRESET_LINES_BASIC',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_LINES_ROTATE_AXIS_LABEL',
             presetName: 'PRESET_LINES_ROTATE_AXIS_LABEL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData5')
           },
           // {
@@ -343,25 +343,25 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_LINES_LOOSE_TICKS',
             presetName: 'PRESET_LINES_LOOSE_TICKS',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData5')
           },
           {
             title: 'PRESET_LINES_HORIZONTAL',
             presetName: 'PRESET_LINES_HORIZONTAL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_LINES_CURVE',
             presetName: 'PRESET_LINES_CURVE',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           // {
           //   title: 'PRESET_LINES_HIGHLIGHT_GROUP_DOTS',
           //   presetName: 'PRESET_LINES_HIGHLIGHT_GROUP_DOTS',
-          //   allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+          //   allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
           //   getData: () => import('./data/gridData1')
           // },
           // {
@@ -382,7 +382,7 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_GRID_SEPARATE_SERIES',
             presetName: 'PRESET_GRID_SEPARATE_SERIES',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
         ]
@@ -396,13 +396,13 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_LINE_AREAS_BASIC',
             presetName: 'PRESET_LINE_AREAS_BASIC',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_LINE_AREAS_ROTATE_AXIS_LABEL',
             presetName: 'PRESET_LINE_AREAS_ROTATE_AXIS_LABEL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData5')
           },
           // {
@@ -413,25 +413,25 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_LINE_AREAS_LOOSE_TICKS',
             presetName: 'PRESET_LINE_AREAS_LOOSE_TICKS',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData5')
           },
           {
             title: 'PRESET_LINE_AREAS_HORIZONTAL',
             presetName: 'PRESET_LINE_AREAS_HORIZONTAL',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
             title: 'PRESET_LINE_AREAS_CURVE',
             presetName: 'PRESET_LINE_AREAS_CURVE',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           // {
           //   title: 'PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS',
           //   presetName: 'PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS',
-          //   allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+          //   allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
           //   getData: () => import('./data/gridData1')
           // },
           // {
@@ -452,7 +452,7 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
           {
             title: 'PRESET_LINE_AREAS_SEPARATE_SERIES',
             presetName: 'PRESET_LINE_AREAS_SEPARATE_SERIES',
-            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GridZoom', 'GridLegend', 'GridTooltip'],
+            allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
         ]
@@ -499,30 +499,30 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
         ]
       },
       {
-        title: 'MultiStackedBar',
+        title: 'MultiStackedBars',
         description: 'Multi Stacked Bar Chart',
         descriptionZh: '多組堆疊長條圖',
-        mainPluginNames: ['MultiStackedBar'],
+        mainPluginNames: ['MultiStackedBars'],
         list: [
           {
             title: 'PRESET_MULTI_GRID_SEPARATE_GRID',
             presetName: 'PRESET_MULTI_GRID_SEPARATE_GRID',
-            allPluginNames: ['MultiGroupAxis', 'MultiStackedValueAxis', 'MultiStackedBar', 'MultiGridLegend', 'MultiGridTooltip'],
+            allPluginNames: ['MultiGroupAxis', 'MultiStackedValueAxis', 'MultiStackedBars', 'MultiGridLegend', 'MultiGridTooltip'],
             getData: () => import('./data/multiGridData3')
           },
           // {
           //   chartType: 'multiGrid',
-          //   pluginName: 'MultiStackedBar',
+          //   pluginName: 'MultiStackedBars',
           //   presetName: 'PRESET_MULTI_GRID_2_GRID_SLOT'
           // },
           // {
           //   chartType: 'multiGrid',
-          //   pluginName: 'MultiStackedBar',
+          //   pluginName: 'MultiStackedBars',
           //   presetName: 'PRESET_MULTI_GRID_3_GRID_SLOT'
           // },
           // {
           //   chartType: 'multiGrid',
-          //   pluginName: 'MultiStackedBar',
+          //   pluginName: 'MultiStackedBars',
           //   presetName: 'PRESET_MULTI_GRID_4_GRID_SLOT'
           // },
         ]
@@ -635,15 +635,15 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
         ]
       },
       {
-        title: 'MultiStackedBar, MultiLines',
+        title: 'MultiStackedBars, MultiLines',
         description: 'Dual-Axis Stacked Bar and Line Chart',
         descriptionZh: '雙圖軸堆疊長條及折線圖',
-        mainPluginNames: ['MultiStackedBar', 'MultiLines'],
+        mainPluginNames: ['MultiStackedBars', 'MultiLines'],
         list: [
           {
             title: 'PRESET_MULTI_GRID_BASIC',
             presetName: 'PRESET_MULTI_GRID_BASIC',
-            allPluginNames: ['MultiGroupAxis', 'OverlappingStackedValueAxes', 'MultiStackedBar', 'MultiLines', 'MultiDots', 'MultiGridLegend', 'MultiGridTooltip'],
+            allPluginNames: ['MultiGroupAxis', 'OverlappingStackedValueAxes', 'MultiStackedBars', 'MultiLines', 'MultiDots', 'MultiGridLegend', 'MultiGridTooltip'],
             getData: () => import('./data/multiGridData1')
           },
         ]
@@ -717,6 +717,56 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             presetName: 'PRESET_SCATTER_BUBBLES_SEPARATE_CATEGORY',
             allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XZoom'],
             getData: () => import('./data/multiValue1')
+          },
+        ]
+      },
+      {
+        title: 'RacingBars',
+        description: 'Racing Bars Chart',
+        descriptionZh: '賽跑長條圖',
+        mainPluginNames: ['RacingBars'],
+        list: [
+          {
+            title: 'PRESET_RACING_BARS_BASIC',
+            presetName: 'PRESET_RACING_BARS_BASIC',
+            allPluginNames: ['RacingBars', 'MultiValueLegend', 'MultiValueTooltip', 'RacingValueAxis', 'RacingCounterTexts'],
+            getData: () => import('./data/multiValueData_brand')
+          },
+          {
+            title: 'PRESET_RACING_BARS_FAST',
+            presetName: 'PRESET_RACING_BARS_FAST',
+            allPluginNames: ['RacingBars', 'MultiValueLegend', 'MultiValueTooltip', 'RacingValueAxis', 'RacingCounterTexts'],
+            getData: () => import('./data/multiValueData_brand')
+          },
+          {
+            title: 'PRESET_RACING_BARS_FASTER',
+            presetName: 'PRESET_RACING_BARS_FASTER',
+            allPluginNames: ['RacingBars', 'MultiValueLegend', 'MultiValueTooltip', 'RacingValueAxis', 'RacingCounterTexts'],
+            getData: () => import('./data/multiValueData_brand')
+          },
+          {
+            title: 'PRESET_RACING_BARS_STOP',
+            presetName: 'PRESET_RACING_BARS_STOP',
+            allPluginNames: ['RacingBars', 'MultiValueLegend', 'MultiValueTooltip', 'RacingValueAxis', 'RacingCounterTexts'],
+            getData: () => import('./data/multiValueData_brand')
+          },
+          {
+            title: 'PRESET_RACING_BARS_OUTSIDE_LABELS',
+            presetName: 'PRESET_RACING_BARS_OUTSIDE_LABELS',
+            allPluginNames: ['RacingBars', 'MultiValueLegend', 'MultiValueTooltip', 'RacingValueAxis', 'RacingCounterTexts'],
+            getData: () => import('./data/multiValueData_brand')
+          },
+          {
+            title: 'PRESET_RACING_BARS_ALL_ITEMS',
+            presetName: 'PRESET_RACING_BARS_ALL_ITEMS',
+            allPluginNames: ['RacingBars', 'MultiValueLegend', 'MultiValueTooltip', 'RacingValueAxis', 'RacingCounterTexts'],
+            getData: () => import('./data/multiValueData_brand')
+          },
+          {
+            title: 'PRESET_RACING_BARS_SEPARATE_CATEGORY',
+            presetName: 'PRESET_RACING_BARS_SEPARATE_CATEGORY',
+            allPluginNames: ['RacingBars', 'MultiValueLegend', 'MultiValueTooltip', 'RacingValueAxis', 'RacingCounterTexts'],
+            getData: () => import('./data/multiValueData_brand')
           },
         ]
       }

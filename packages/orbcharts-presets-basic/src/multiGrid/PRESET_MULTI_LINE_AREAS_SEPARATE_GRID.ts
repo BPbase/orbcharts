@@ -69,7 +69,7 @@ export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID: PresetPartial<'multiGrid', P
     MultiBars: {
       gridIndexes: 'all'
     },
-    MultiStackedBar: {
+    MultiStackedBars: {
       gridIndexes: 'all'
     },
     MultiBarsTriangle: {

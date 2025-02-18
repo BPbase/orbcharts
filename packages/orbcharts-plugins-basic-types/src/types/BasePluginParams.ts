@@ -10,7 +10,7 @@ export interface BaseBarsParams {
   barRadius: number | boolean
 }
 
-export interface BaseStackedBarParams {
+export interface BaseStackedBarsParams {
   barWidth: number
   barGroupPadding: number
   barRadius: number | boolean

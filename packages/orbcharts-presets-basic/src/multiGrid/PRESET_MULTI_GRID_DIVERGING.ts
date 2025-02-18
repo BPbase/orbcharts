@@ -77,7 +77,7 @@ export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', Partial<Pre
     MultiBars: {
       gridIndexes: [0, 1]
     },
-    MultiStackedBar: {
+    MultiStackedBars: {
       gridIndexes: [0, 1]
     },
     MultiBarsTriangle: {

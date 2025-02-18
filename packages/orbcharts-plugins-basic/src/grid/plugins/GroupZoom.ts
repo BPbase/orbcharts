@@ -17,7 +17,7 @@ import { DEFAULT_GRID_ZOOM_PARAMS } from '../defaults'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { LAYER_INDEX_OF_ROOT } from '../../const'
 
-const pluginName = 'GridZoom'
+const pluginName = 'GroupZoom'
 const rectClassName = getClassName(pluginName, 'rect')
 
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_GRID_ZOOM_PARAMS> = {
@@ -33,7 +33,7 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_GRID_ZO
   }
 }
 
-export const GridZoom = defineGridPlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
+export const GroupZoom = defineGridPlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
 
   const destroy$ = new Subject()
 

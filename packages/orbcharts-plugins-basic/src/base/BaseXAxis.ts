@@ -220,7 +220,7 @@ function renderXAxis ({ selection, position, xAxisClassName, fullParams, layout,
   
   // // 抵消掉預設的偏移
   // if (fullDataFormatter.grid.valueAxis.position === 'bottom' || fullDataFormatter.grid.valueAxis.position === 'top') {
-  //   xText.attr('dy', 0)
+    xText.attr('dy', 0)
   // }
 
   return xAxisSelection

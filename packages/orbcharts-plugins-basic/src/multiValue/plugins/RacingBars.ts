@@ -49,9 +49,9 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RACING_
       valueLabel: {
         toBeTypes: ['object']
       },
-      axisLabel: {
-        toBeTypes: ['object']
-      },
+      // axisLabel: {
+      //   toBeTypes: ['object']
+      // },
       rankingAmount: {
         toBe: 'number | "auto"',
         test: (value: any) => {
@@ -116,20 +116,20 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RACING_
         return valueLabelResult
       }
     }
-    if (params.axisLabel) {
-      const axisLabelResult = validateColumns(params.axisLabel, {
-        offset: {
-          toBe: '[number, number]',
-          test: (value) => Array.isArray(value) && value.length === 2 && typeof value[0] === 'number' && typeof value[1] === 'number'
-        },
-        colorType: {
-          toBeOption: 'ColorType',
-        },
-      })
-      if (axisLabelResult.status === 'error') {
-        return axisLabelResult
-      }
-    }
+    // if (params.axisLabel) {
+    //   const axisLabelResult = validateColumns(params.axisLabel, {
+    //     offset: {
+    //       toBe: '[number, number]',
+    //       test: (value) => Array.isArray(value) && value.length === 2 && typeof value[0] === 'number' && typeof value[1] === 'number'
+    //     },
+    //     colorType: {
+    //       toBeOption: 'ColorType',
+    //     },
+    //   })
+    //   if (axisLabelResult.status === 'error') {
+    //     return axisLabelResult
+    //   }
+    // }
     // if (params.timer) {
     //   const timerResult = validateColumns(params.timer, {
     //     active: {
@@ -160,7 +160,10 @@ export const RacingBars = defineMultiValuePlugin(pluginConfig)(({ selection, nam
   //   map(params => {
   //     return {
   //       ...params,
-  //       sumValue: false
+  //       axisLabel: {
+  //         offset: [0, 0],
+  //         colorType: 'primary'
+  //       }
   //     }
   //   })
   // )

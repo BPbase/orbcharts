@@ -108,11 +108,7 @@ export interface RacingCounterTextsParams {
   paddingBottom: number
 }
 
-export interface RankingBubblesParams {
-
-}
-
-export interface RankingTextParams {
+export interface RacingValueAxisParams extends XAxisParams {
 
 }
 

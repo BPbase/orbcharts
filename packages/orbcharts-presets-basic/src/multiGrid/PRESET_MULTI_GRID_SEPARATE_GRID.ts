@@ -51,7 +51,7 @@ export const PRESET_MULTI_GRID_SEPARATE_GRID: PresetPartial<'multiGrid', Partial
     MultiBars: {
       gridIndexes: 'all'
     },
-    MultiStackedBar: {
+    MultiStackedBars: {
       gridIndexes: 'all'
     },
     MultiBarsTriangle: {

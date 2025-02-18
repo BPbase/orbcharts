@@ -4,6 +4,7 @@ import type {
   MultiValueTooltipParams,
   RacingBarsParams,
   RacingCounterTextsParams,
+  RacingValueAxisParams,
   ScatterParams,
   ScatterBubblesParams,
   XAxisParams,
@@ -115,14 +116,15 @@ export const DEFAULT_RACING_BARS_PARAMS: RacingBarsParams = {
   valueLabel: {
     padding: 20,
     colorType: 'primary',
-    format: num => {
-      if (num === null || Number.isNaN(num) == true) {
-        return num || 0
-      }
-      var parts = num.toString().split('.')
-      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-      return parts.join('.')
-    }
+    // format: num => {
+    //   if (num === null || Number.isNaN(num) == true) {
+    //     return num || 0
+    //   }
+    //   var parts = num.toString().split('.')
+    //   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    //   return parts.join('.')
+    // }
+    format: v => v
   },
   axisLabel: {
     offset: [0, 0],
@@ -136,15 +138,16 @@ export const DEFAULT_RACING_BARS_PARAMS: RacingBarsParams = {
   // }
   autorun: false
 }
-DEFAULT_RACING_BARS_PARAMS.valueLabel.format.toString = () => `num => {
-    if (num === null || Number.isNaN(num) == true) {
-      return num || 0
-    }
-    var parts = num.toString().split('.')
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-    return parts.join('.')
-  }
-}`
+// DEFAULT_RACING_BARS_PARAMS.valueLabel.format.toString = () => `num => {
+//     if (num === null || Number.isNaN(num) == true) {
+//       return num || 0
+//     }
+//     var parts = num.toString().split('.')
+//     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+//     return parts.join('.')
+//   }
+// }`
+DEFAULT_RACING_BARS_PARAMS.valueLabel.format.toString = () => `v => v`
 
 export const DEFAULT_RACING_COUNTER_TEXTS_PARAMS: RacingCounterTextsParams = {
   renderFn: (valueLabel: string, valueIndex: number, data: ComputedDataTypeMap<'multiValue'>) => {
@@ -176,7 +179,7 @@ export const DEFAULT_RACING_COUNTER_TEXTS_PARAMS: RacingCounterTextsParams = {
   paddingBottom: 0
 }
 
-export const DEFAULT_RACING_VALUE_AXIS_PARAMS: XAxisParams = {
+export const DEFAULT_RACING_VALUE_AXIS_PARAMS: RacingValueAxisParams = {
   labelOffset: [0, 0],
   labelColorType: 'primary',
   axisLineVisible: false,
