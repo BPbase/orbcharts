@@ -24,13 +24,14 @@ import type {
 import type { BaseRacingLabelsParams } from '../../lib/plugins-basic-types'
 import type { BasePluginFn } from './types'
 import { getColor, getClassName, getUniID } from '../utils/orbchartsUtils'
+import { multiValueContainerSelectionsObservable } from '../multiValue/multiValueObservables'
 
 interface BaseRacingAxisContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataMultiValue>
   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
   rankingScaleList$: Observable<Array<d3.ScalePoint<string>>>
-  barScale$: Observable<(n: number) => number>
+  xScale$: Observable<(n: number) => number>
   fullParams$: Observable<BaseRacingLabelsParams>
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   fullChartParams$: Observable<ChartParams>
@@ -57,12 +58,12 @@ const yAxisLabelAnchor = 'end'
 const yAxisLabelDominantBaseline = 'auto'
 // const textClassName = getClassName(pluginName, 'yLabel')
 
-function renderRacingAxisLabel ({ selection, textClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
+function renderRacingAxisLabel ({ selection, textClassName, fullParams, containerSize, fullDataFormatter, fullChartParams, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   textClassName: string
   fullParams: BaseRacingLabelsParams
   // axisLabelAlign: TextAlign
-  layout: { width: number, height: number }
+  containerSize: ContainerSize
   fullDataFormatter: DataFormatterMultiValue,
   fullChartParams: ChartParams
   textReverseTransform: string,
@@ -73,7 +74,7 @@ function renderRacingAxisLabel ({ selection, textClassName, fullParams, layout, 
   let labelY = - offsetY
 
   selection
-    .attr('transform', d => `translate(0, ${layout.height})`)
+    .attr('transform', d => `translate(0, ${containerSize.height})`)
     .selectAll<SVGTextElement, BaseRacingLabelsParams>(`text`)
     .data([fullParams])
     .join(
@@ -89,7 +90,7 @@ function renderRacingAxisLabel ({ selection, textClassName, fullParams, layout, 
     .attr('dominant-baseline', yAxisLabelDominantBaseline)
     .attr('font-size', fullChartParams.styles.textSize)
     .style('fill', getColor(fullParams.axisLabel.colorType, fullChartParams))
-    .style('transform', textReverseTransform)
+    // .style('transform', textReverseTransform)
     // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
     .attr('x', labelX)
     .attr('y', labelY)
@@ -185,7 +186,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
   computedData$,
   visibleComputedRankingData$,
   rankingScaleList$,
-  barScale$,
+  xScale$,
   fullParams$,
   fullDataFormatter$,
   fullChartParams$,
@@ -198,57 +199,68 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
 
   const destroy$ = new Subject()
   
-  const containerClassName = getClassName(pluginName, 'container')
+  // const containerClassName = getClassName(pluginName, 'container')
   const boxClassName = getClassName(pluginName, 'box')
   const textClassName = getClassName(pluginName, 'text')
   const clipPathID = getUniID(pluginName, 'clipPath-box')
 
-  const containerSelection$ = combineLatest({
-    computedData: computedData$.pipe(
-      distinctUntilChanged((a, b) => {
-        // 只有當series的數量改變時，才重新計算
-        return a.length === b.length
-      }),
-    ),
-    isCategorySeprate: isCategorySeprate$
+  const containerSelection$ = multiValueContainerSelectionsObservable({
+    selection,
+    pluginName,
+    clipPathID: null,
+    computedData$,
+    containerPosition$,
+    isCategorySeprate$,
   }).pipe(
     takeUntil(destroy$),
-    switchMap(async (d) => d),
-    map(data => {
-      return data.isCategorySeprate
-        // category分開的時候顯示各別axis
-        ? data.computedData
-        // category合併的時候只顯示第一個axis
-        : [data.computedData[0]]
-    }),
-    map((computedData, i) => {
-      return selection
-        .selectAll<SVGGElement, ComputedDatumMultiValue[]>(`g.${containerClassName}`)
-        .data(computedData, d => d[0] ? d[0].categoryIndex : i)
-        .join('g')
-        .classed(containerClassName, true)
-    })
   )
 
-  combineLatest({
-    containerSelection: containerSelection$,
-    containerPosition: containerPosition$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async d => d)
-  ).subscribe(data => {
-    data.containerSelection
-      .attr('transform', (d, i) => {
-        const containerPosition = data.containerPosition[i] ?? data.containerPosition[0]
-        const translate = containerPosition.translate
-        const scale = containerPosition.scale
-        // return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
-        return `translate(${translate[0]}, ${translate[1]})`
-      })
-      // .attr('opacity', 0)
-      // .transition()
-      // .attr('opacity', 1)
-  })
+  // const containerSelection$ = combineLatest({
+  //   computedData: computedData$.pipe(
+  //     distinctUntilChanged((a, b) => {
+  //       // 只有當series的數量改變時，才重新計算
+  //       return a.length === b.length
+  //     }),
+  //   ),
+  //   isCategorySeprate: isCategorySeprate$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(data => {
+  //     return data.isCategorySeprate
+  //       // category分開的時候顯示各別axis
+  //       ? data.computedData
+  //       // category合併的時候只顯示第一個axis
+  //       : [data.computedData[0]]
+  //   }),
+  //   map((computedData, i) => {
+  //     return selection
+  //       .selectAll<SVGGElement, ComputedDatumMultiValue[]>(`g.${containerClassName}`)
+  //       .data(computedData, d => d[0] ? d[0].categoryIndex : i)
+  //       .join('g')
+  //       .classed(containerClassName, true)
+  //   })
+  // )
+
+  // combineLatest({
+  //   containerSelection: containerSelection$,
+  //   containerPosition: containerPosition$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async d => d)
+  // ).subscribe(data => {
+  //   data.containerSelection
+  //     .attr('transform', (d, i) => {
+  //       const containerPosition = data.containerPosition[i] ?? data.containerPosition[0]
+  //       const translate = containerPosition.translate
+  //       const scale = containerPosition.scale
+  //       // return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+  //       return `translate(${translate[0]}, ${translate[1]})`
+  //     })
+  //     // .attr('opacity', 0)
+  //     // .transition()
+  //     // .attr('opacity', 1)
+  // })
 
   const textReverseTransform$ = containerPosition$.pipe(
     takeUntil(destroy$),
@@ -288,7 +300,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
     switchMap(position => {
       return iif(
         () => position === 'inside',
-        barScale$,
+        xScale$,
         of(() => 0)
       )
     })
@@ -313,7 +325,8 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
   combineLatest({
     containerSelection: containerSelection$,
     fullParams: fullParams$,
-    layout: layout$,
+    // layout: layout$,
+    containerSize: containerSize$,
     fullDataFormatter: fullDataFormatter$,
     fullChartParams: fullChartParams$,
     visibleComputedRankingData: visibleComputedRankingData$,
@@ -364,7 +377,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
         selection: axisLabelSelection,
         textClassName,
         fullParams: data.fullParams,
-        layout: data.layout,
+        containerSize: data.containerSize,
         fullDataFormatter: data.fullDataFormatter,
         fullChartParams: data.fullChartParams,
         textReverseTransform: data.textReverseTransform,

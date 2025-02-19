@@ -156,7 +156,7 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
   )
 
-  const unsubscribeBaseXAxis = createBaseXAxis(pluginName, {
+  const unsubscribeBaseXAxis = createBaseXAxis(`${pluginName}-x`, {
     selection,
     position$: of('bottom'),
     transitionDuration$: of(100),
@@ -166,13 +166,14 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
     fullChartParams$: observer.fullChartParams$,
     isCategorySeprate$: observer.isCategorySeprate$,
     containerPosition$: observer.containerPosition$,
-    layout$: observer.layout$,
+    // layout$: observer.layout$,
+    containerSize$: observer.containerSize$,
     xScale$: observer.xScale$,
     // filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
     // xyMinMax$: observer.xyMinMax$,
   })
 
-  const unsubscribeBaseYAxis = createBaseYAxis(pluginName, {
+  const unsubscribeBaseYAxis = createBaseYAxis(`${pluginName}-y`, {
     selection,
     computedData$: observer.computedData$,
     fullParams$: yAxisFullParams$,
@@ -180,7 +181,7 @@ export const XYAxes = defineMultiValuePlugin(pluginConfig)(({ selection, name, o
     fullChartParams$: observer.fullChartParams$,
     isCategorySeprate$: observer.isCategorySeprate$,
     containerPosition$: observer.containerPosition$,
-    layout$: observer.layout$,
+    containerSize$: observer.containerSize$,
     yScale$: observer.yScale$,
     // filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
     // xyMinMax$: observer.xyMinMax$,

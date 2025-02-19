@@ -34,6 +34,7 @@ export const PRESET_SCATTER_BUBBLES_LINEAR_OPACITY: PresetPartial<'multiValue', 
     MultiValueLegend: {
       placement: 'bottom',
       padding: 14,
+      listRectRadius: 7 // 圓型圖例列點
     },
     ScatterBubbles: {
       valueLinearOpacity: [0.6, 0.95]

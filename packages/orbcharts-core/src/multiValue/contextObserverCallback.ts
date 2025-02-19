@@ -4,7 +4,8 @@ import type { ContextObserverCallback, ContextObserverTypeMap } from '../../lib/
 import {
   highlightObservable,
   categoryDataMapObservable,
-  textSizePxObservable
+  textSizePxObservable,
+  containerSizeObservable
 } from '../utils/observables'
 import {
   computedXYDataObservable,
@@ -19,7 +20,7 @@ import {
   visibleComputedRankingBySumDataObservable,
   visibleComputedXYDataObservable,
   containerPositionObservable,
-  containerSizeObservable,
+  // containerSizeObservable,
   xyMinMaxObservable,
   filteredXYMinMaxDataObservable,
   // visibleComputedRankingDataObservable,
@@ -218,7 +219,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     visibleComputedSumData$,
     fullDataFormatter$: observer.fullDataFormatter$,
     filteredXYMinMaxData$,
-    layout$: observer.layout$,
+    containerSize$: containerSize$,
   }).pipe(
     shareReplay(1)
   )
@@ -226,7 +227,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
   const xSumScale$ = xSumScaleObservable({
     fullDataFormatter$: observer.fullDataFormatter$,
     filteredXYMinMaxData$,
-    layout$: observer.layout$,
+    containerSize$: containerSize$,
   }).pipe(
     shareReplay(1)
   )
@@ -234,7 +235,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
   const yScale$ = yScaleObservable({
     fullDataFormatter$: observer.fullDataFormatter$,
     filteredXYMinMaxData$,
-    layout$: observer.layout$,
+    containerSize$: containerSize$,
   }).pipe(
     shareReplay(1)
   )

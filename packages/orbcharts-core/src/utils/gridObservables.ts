@@ -17,6 +17,7 @@ import type {
   ComputedDataTypeMap,
   ComputedDatumTypeMap,
   ComputedDataGrid,
+  ContainerSize,
   DataTypeMap,
   DataGridDatum,
   ComputedDatumGrid,
@@ -138,9 +139,20 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
     }
   }
 
+  const groupAxisPosition$ = fullDataFormatter$.pipe(
+    map(d => d.groupAxis.position),
+    distinctUntilChanged()
+  )
+
+  const valueAxisPosition$ = fullDataFormatter$.pipe(
+    map(d => d.valueAxis.position),
+    distinctUntilChanged()
+  )
+
   return new Observable(subscriber => {
     combineLatest({
-      fullDataFormatter: fullDataFormatter$,
+      groupAxisPosition: groupAxisPosition$,
+      valueAxisPosition: valueAxisPosition$,
       layout: layout$
     }).pipe(
       takeUntil(destroy$),
@@ -148,8 +160,8 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
     ).subscribe(data => {
       
       const axisSize = calcAxesSize({
-        xAxisPosition: data.fullDataFormatter.groupAxis.position,
-        yAxisPosition: data.fullDataFormatter.valueAxis.position,
+        xAxisPosition: data.groupAxisPosition,
+        yAxisPosition: data.valueAxisPosition,
         width: data.layout.width,
         height: data.layout.height,
       })
@@ -160,6 +172,16 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
         destroy$.next(undefined)
       }
     })
+  })
+}
+
+export const gridAxesContainerSizeObservable = ({ fullDataFormatter$, containerSize$ }: {
+  containerSize$: Observable<ContainerSize>
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
+}): Observable<ContainerSize> => {
+  return gridAxesSizeObservable({
+    fullDataFormatter$,
+    layout$: containerSize$ as Observable<Layout>
   })
 }
 

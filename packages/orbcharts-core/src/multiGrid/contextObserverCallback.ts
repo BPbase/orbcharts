@@ -3,7 +3,7 @@ import {
   shareReplay } from 'rxjs'
 import type { ContextObserverCallback } from '../../lib/core-types'
 import { multiGridEachDetailObservable, multiGridContainerObservable } from '../utils/multiGridObservables'
-import { textSizePxObservable } from '../utils/observables'
+import { textSizePxObservable, containerSizeObservable } from '../utils/observables'
 
 export const contextObserverCallback: ContextObserverCallback<'multiGrid'> = ({ subject, observer }) => {
 
@@ -29,12 +29,25 @@ export const contextObserverCallback: ContextObserverCallback<'multiGrid'> = ({ 
     shareReplay(1)
   )
 
+  const containerSize$ = containerSizeObservable({
+    layout$: observer.layout$,
+    containerPosition$: multiGridContainerPosition$.pipe(
+      map(d => d.flat())
+    )
+  }).pipe(
+    shareReplay(1)
+  )
+  // multiGridContainerPosition$.subscribe(d => {
+  //   console.log('multiGridContainerPosition$', d)
+  // })
+
   return {
     fullParams$: observer.fullParams$,
     fullChartParams$: observer.fullChartParams$,
     fullDataFormatter$: observer.fullDataFormatter$,
     computedData$: observer.computedData$,
     layout$: observer.layout$,
+    containerSize$,
     textSizePx$,
     multiGridContainerPosition$,
     multiGridEachDetail$,

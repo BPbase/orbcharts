@@ -4,6 +4,7 @@ import type { ChartType } from './Chart'
 import type { ContextSubject } from './ContextSubject'
 import type { ContextObserverTypeMap } from './ContextObserver'
 import type { ValidatorResult, ValidatorUtils, ValidatorRule, } from './Validator'
+import type { DeepPartial } from './Common'
 
 // // 透過類型選擇Plugin
 // export type PluginParamsMap<T extends ChartType, PluginParams> = T extends 'series' ? Plugin<DataSeries, DataFormatterSeries, ComputedDataSeries, PluginParams>
@@ -42,7 +43,7 @@ export interface PluginConstructor<T extends ChartType, PluginName, PluginParams
 }
 
 export interface PluginEntity<T extends ChartType, PluginName, PluginParams> {
-  params$: Subject<Partial<PluginParams>>
+  params$: Subject<DeepPartial<PluginParams>>
   chartType: T
   name: PluginName
   defaultParams: PluginParams

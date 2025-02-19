@@ -225,35 +225,34 @@ export const RacingBars = defineMultiValuePlugin(pluginConfig)(({ selection, nam
   //   takeUntil(destroy$),
   // )
 
-  const barScale$ = combineLatest({
-    xScale: observer.xScale$,
-    layout: observer.layout$,
-    containerSize: observer.containerSize$,
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async d => d),
-    map(data => {
-      // 原本的 xScale 是根據 layout 計算的，現在要根據 containerSize 重新計算
-      const containerWidthScale = data.containerSize.width / data.layout.width
+  // const xScale$ = combineLatest({
+  //   xScale: observer.xScale$,
+  //   layout: observer.layout$,
+  //   containerSize: observer.containerSize$,
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async d => d),
+  //   map(data => {
+  //     // 原本的 xScale 是根據 layout 計算的，現在要根據 containerSize 重新計算
+  //     const containerWidthScale = data.containerSize.width / data.layout.width
 
-      return (n: number) => {
-        const originWidth = data.xScale(n)
-        if (originWidth == null) {
-          return 0
-        }
-        return data.xScale(n) * containerWidthScale
-      }
-    }),
-    shareReplay(1)
-  )
+  //     return (n: number) => {
+  //       const originWidth = data.xScale(n)
+  //       if (originWidth == null) {
+  //         return 0
+  //       }
+  //       return data.xScale(n) * containerWidthScale
+  //     }
+  //   }),
+  //   shareReplay(1)
+  // )
 
   const unsubscribeBaseRacingLabels = createBaseRacingLabels(`${pluginName}-labels`, {
     selection: baseRacingLabelsSelection,
     computedData$: observer.computedData$,
     visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
     rankingScaleList$,
-    // xScale$: observer.xScale$,
-    barScale$,
+    xScale$: observer.xScale$,
     fullParams$: observer.fullParams$,
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,
@@ -269,8 +268,7 @@ export const RacingBars = defineMultiValuePlugin(pluginConfig)(({ selection, nam
     computedData$: observer.computedData$,
     visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
     rankingScaleList$,
-    // xScale$: observer.xScale$,
-    barScale$,
+    xScale$: observer.xScale$,
     computedRankingAmount$,
     fullParams$: baseRacingValueLabelsParams$,
     fullDataFormatter$: observer.fullDataFormatter$,
@@ -293,8 +291,7 @@ export const RacingBars = defineMultiValuePlugin(pluginConfig)(({ selection, nam
     highlight$: observer.highlight$,
     rankingItemHeight$,
     rankingScaleList$,
-    // xScale$: observer.xScale$,
-    barScale$,
+    xScale$: observer.xScale$,
     containerPosition$: observer.containerPosition$,
     containerSize$: observer.containerSize$,
     // layout$: observer.layout$,

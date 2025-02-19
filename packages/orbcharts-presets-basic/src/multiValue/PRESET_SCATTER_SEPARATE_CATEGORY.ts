@@ -34,9 +34,18 @@ export const PRESET_SCATTER_SEPARATE_CATEGORY: PresetPartial<'multiValue', Parti
     separateCategory: true
   },
   allPluginParams: {
+    XYAxes: {
+      xAxis: {
+        ticks: 3,
+      },
+      yAxis: {
+        ticks: 3,
+      }
+    },
     MultiValueLegend: {
       placement: 'bottom',
       padding: 14,
+      listRectRadius: 7 // 圓型圖例列點
     }
   }
 }

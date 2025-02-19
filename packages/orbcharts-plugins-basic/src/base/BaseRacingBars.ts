@@ -23,7 +23,7 @@ import type {
 import type { BaseRacingBarsParams } from '../../lib/plugins-basic-types'
 import { getD3TransitionEase } from '../utils/d3Utils'
 import { getClassName, getUniID } from '../utils/orbchartsUtils'
-import { multiValueSelectionsObservable } from '../multiValue/multiValueObservables'
+import { multiValueContainerSelectionsObservable } from '../multiValue/multiValueObservables'
 
 // export interface BaseBarsParams {
 //   // barType: BarType
@@ -46,7 +46,7 @@ interface BaseRacingBarsContext {
   rankingScaleList$: Observable<d3.ScalePoint<string>[]>
   containerPosition$: Observable<ContainerPositionScaled[]>
   containerSize$: Observable<ContainerSize>
-  barScale$: Observable<(n: number) => number>
+  xScale$: Observable<(n: number) => number>
   isCategorySeprate$: Observable<boolean>
   event$: Subject<EventMultiValue>
 }
@@ -62,7 +62,7 @@ interface RenderBarParams {
   graphicGSelection: d3.Selection<SVGGElement, ComputedDatumMultiValue, any, any>
   rectClassName: string
   xyValueIndex: [number, number]
-  barScale: (n: number) => number
+  xScale: (n: number) => number
   fullParams: BaseRacingBarsParams
   barWidth: number
   transitionDuration: number
@@ -110,7 +110,7 @@ function renderGraphicG ({ containerSelection, visibleComputedRankingData, ranki
   return graphicBarSelection
 }
 
-function renderRectBars ({ graphicGSelection, rectClassName, xyValueIndex, barScale, fullParams, barWidth, transitionDuration }: RenderBarParams) {
+function renderRectBars ({ graphicGSelection, rectClassName, xyValueIndex, xScale, fullParams, barWidth, transitionDuration }: RenderBarParams) {
 
   graphicGSelection
     .each((datum, i, g) => {
@@ -132,7 +132,7 @@ function renderRectBars ({ graphicGSelection, rectClassName, xyValueIndex, barSc
               .classed(rectClassName, true)
               .attr('cursor', 'pointer')
               // .attr('width', d => 1)
-              .attr('width', d => barScale(d.value[xyValueIndex[0]]) ?? 1)
+              .attr('width', d => xScale(d.value[xyValueIndex[0]]) ?? 1)
               .attr('height', barWidth)
           },
           update => {
@@ -140,7 +140,7 @@ function renderRectBars ({ graphicGSelection, rectClassName, xyValueIndex, barSc
               .transition()
               .duration(transitionDuration)
               .ease(d3.easeLinear)
-              .attr('width', d => barScale(d.value[xyValueIndex[0]]) ?? 1)
+              .attr('width', d => xScale(d.value[xyValueIndex[0]]) ?? 1)
               .attr('height', barWidth)
           },
           exit => exit.remove()
@@ -236,11 +236,10 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
   // computedRankingAmountList$,
   rankingItemHeight$,
   rankingScaleList$,
-  // xScale$,
   containerPosition$,
   containerSize$,
   // layout$,
-  barScale$,
+  xScale$,
   isCategorySeprate$,
   event$
 }) => {
@@ -249,7 +248,7 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
 
   const clipPathID = getUniID(pluginName, 'clipPath-box')
   const rectClassName = getClassName(pluginName, 'rect')
-  const containerClassName = getClassName(pluginName, 'container')
+  // const containerClassName = getClassName(pluginName, 'container')
   
   // const {
   //   categorySelection$,
@@ -284,33 +283,44 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
   //   })
   // })
 
-  const containerSelection$ = combineLatest({
-    computedData: computedData$.pipe(
-      distinctUntilChanged((a, b) => {
-        // 只有當series的數量改變時，才重新計算
-        return a.length === b.length
-      }),
-    ),
-    isCategorySeprate: isCategorySeprate$
+  const containerSelection$ = multiValueContainerSelectionsObservable({
+    selection,
+    pluginName,
+    clipPathID,
+    computedData$,
+    containerPosition$,
+    isCategorySeprate$,
   }).pipe(
     takeUntil(destroy$),
-    switchMap(async (d) => d),
-    map(data => {
-      return data.isCategorySeprate
-        // category分開的時候顯示各別axis
-        ? data.computedData
-        // category合併的時候只顯示第一個axis
-        : [data.computedData[0]]
-    }),
-    map((computedData, i) => {
-      return selection
-        .selectAll<SVGGElement, ComputedDatumMultiValue[]>(`g.${containerClassName}`)
-        .data(computedData, d => d[0] ? d[0].categoryIndex : i)
-        .join('g')
-        .classed(containerClassName, true)
-        .attr('clip-path', `url(#${clipPathID})`)
-    })
   )
+
+  // const containerSelection$ = combineLatest({
+  //   computedData: computedData$.pipe(
+  //     distinctUntilChanged((a, b) => {
+  //       // 只有當series的數量改變時，才重新計算
+  //       return a.length === b.length
+  //     }),
+  //   ),
+  //   isCategorySeprate: isCategorySeprate$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(data => {
+  //     return data.isCategorySeprate
+  //       // category分開的時候顯示各別axis
+  //       ? data.computedData
+  //       // category合併的時候只顯示第一個axis
+  //       : [data.computedData[0]]
+  //   }),
+  //   map((computedData, i) => {
+  //     return selection
+  //       .selectAll<SVGGElement, ComputedDatumMultiValue[]>(`g.${containerClassName}`)
+  //       .data(computedData, d => d[0] ? d[0].categoryIndex : i)
+  //       .join('g')
+  //       .classed(containerClassName, true)
+  //       .attr('clip-path', `url(#${clipPathID})`)
+  //   })
+  // )
 
   containerSize$.subscribe(data => {
     const defsSelection = selection.selectAll<SVGDefsElement, any>('defs')
@@ -328,25 +338,25 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
     })
   })
 
-  combineLatest({
-    containerSelection: containerSelection$,
-    containerPosition: containerPosition$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async d => d)
-  ).subscribe(data => {
-    data.containerSelection
-      .attr('transform', (d, i) => {
-        const containerPosition = data.containerPosition[i] ?? data.containerPosition[0]
-        const translate = containerPosition.translate
-        const scale = containerPosition.scale
-        // return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
-        return `translate(${translate[0]}, ${translate[1]})`
-      })
-      // .attr('opacity', 0)
-      // .transition()
-      // .attr('opacity', 1)
-  })
+  // combineLatest({
+  //   containerSelection: containerSelection$,
+  //   containerPosition: containerPosition$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async d => d)
+  // ).subscribe(data => {
+  //   data.containerSelection
+  //     .attr('transform', (d, i) => {
+  //       const containerPosition = data.containerPosition[i] ?? data.containerPosition[0]
+  //       const translate = containerPosition.translate
+  //       const scale = containerPosition.scale
+  //       // return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+  //       return `translate(${translate[0]}, ${translate[1]})`
+  //     })
+  //     // .attr('opacity', 0)
+  //     // .transition()
+  //     // .attr('opacity', 1)
+  // })
 
   const barWidth$ = combineLatest({
     fullParams: fullParams$,
@@ -392,7 +402,7 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
   const graphicSelection$ = combineLatest({
     graphicGSelection: graphicGSelection$,
     xyValueIndex: xyValueIndex$,
-    barScale: barScale$,
+    xScale: xScale$,
     barWidth: barWidth$,
     transitionDuration: transitionDuration$,
     fullParams: fullParams$,
@@ -405,7 +415,7 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
         graphicGSelection: data.graphicGSelection,
         rectClassName,
         xyValueIndex: data.xyValueIndex,
-        barScale: data.barScale,
+        xScale: data.xScale,
         fullParams: data.fullParams,
         barWidth: data.barWidth,
         transitionDuration: data.transitionDuration,

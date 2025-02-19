@@ -16,6 +16,7 @@ import type {
   ChartParams,
   ComputedDatumGrid,
   ContainerPositionScaled,
+  ContainerSize,
   TransformData,
   EventGrid,
   ColorType

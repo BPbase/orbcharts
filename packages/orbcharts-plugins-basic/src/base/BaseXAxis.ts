@@ -12,6 +12,7 @@ import {
 import type {
   ColorType,
   ChartParams,
+  ContainerSize,
   ComputedDatumMultiValue,
   ComputedDataMultiValue,
   ComputedXYDatumMultiValue,
@@ -30,10 +31,10 @@ import type { BaseXAxisParams
 } from '../../lib/plugins-basic-types'
 import type { BasePluginFn } from './types'
 // import { DEFAULT_X_Y_AXES_PARAMS } from '../defaults'
-import { LAYER_INDEX_OF_AXIS } from '../const'
+// import { LAYER_INDEX_OF_AXIS } from '../const'
 import { getColor, getDatumColor, getClassName, getUniID } from '../utils/orbchartsUtils'
 import { parseTickFormatValue } from '../utils/d3Utils'
-
+import { multiValueContainerSelectionsObservable } from '../multiValue/multiValueObservables'
 
 interface BaseXAxisContext {
   selection: d3.Selection<any, unknown, any, unknown>
@@ -46,7 +47,8 @@ interface BaseXAxisContext {
   fullChartParams$: Observable<ChartParams>
   isCategorySeprate$: Observable<boolean>
   containerPosition$: Observable<ContainerPositionScaled[]>
-  layout$: Observable<Layout>
+  // layout$: Observable<Layout>
+  containerSize$: Observable<ContainerSize>
   xScale$: Observable<d3.ScaleLinear<number, number>>
   // filteredXYMinMaxData$: Observable<{
   //   datumList: ComputedXYDatumMultiValue[];
@@ -75,16 +77,16 @@ const xTickDominantBaseline = 'hanging'
 const xAxisLabelAnchor = 'start'
 const xAxisLabelDominantBaseline = 'hanging'
 
-function renderXAxisLabel ({ selection, position, xLabelClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
+function renderXAxisLabel ({ selection, position, xLabelClassName, fullParams, containerSize, fullDataFormatter, fullChartParams }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   position: 'top' | 'bottom'
   xLabelClassName: string
   fullParams: BaseXAxisParams
   // axisLabelAlign: TextAlign
-  layout: { width: number, height: number }
+  containerSize: ContainerSize
   fullDataFormatter: DataFormatterMultiValue,
   fullChartParams: ChartParams
-  textReverseTransform: string,
+  // textReverseTransform: string,
 }) {
   const offsetX = fullParams.tickPadding + fullParams.labelOffset[0]
   // const offsetY = fullParams.tickPadding + fullParams.labelOffset[1]
@@ -97,7 +99,7 @@ function renderXAxisLabel ({ selection, position, xLabelClassName, fullParams, l
     y = 0
     offsetY = -fullParams.tickPadding - fullParams.labelOffset[1]
   } else {
-    y = layout.height
+    y = containerSize.height
     offsetY = fullParams.tickPadding + fullParams.labelOffset[1]
   }
 
@@ -125,26 +127,26 @@ function renderXAxisLabel ({ selection, position, xLabelClassName, fullParams, l
         .attr('dominant-baseline', xAxisLabelDominantBaseline)
         .attr('font-size', fullChartParams.styles.textSize)
         .style('fill', getColor(fullParams.labelColorType, fullChartParams))
-        .style('transform', textReverseTransform)
+        // .style('transform', textReverseTransform)
         // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
         .attr('x', labelX)
         .attr('y', labelY)
         .text(d => fullDataFormatter.xAxis.label)
     })
-    .attr('transform', d => `translate(${layout.width}, ${y})`)
+    .attr('transform', d => `translate(${containerSize.width}, ${y})`)
 }
 
-function renderXAxis ({ selection, position, xAxisClassName, fullParams, layout, fullChartParams, xScale, textReverseTransform, transitionDuration }: {
+function renderXAxis ({ selection, position, xAxisClassName, fullParams, containerSize, fullChartParams, xScale, transitionDuration }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   position: 'top' | 'bottom'
   xAxisClassName: string
   fullParams: BaseXAxisParams
   // tickTextAlign: TextAlign
-  layout: { width: number, height: number }
+  containerSize: ContainerSize
   // fullDataFormatter: DataFormatterMultiValue,
   fullChartParams: ChartParams
   xScale: d3.ScaleLinear<number, number>
-  textReverseTransform: string,
+  // textReverseTransform: string,
   // xyMinMax: {
   //   minX: number;
   //   maxX: number;
@@ -160,7 +162,7 @@ function renderXAxis ({ selection, position, xAxisClassName, fullParams, layout,
     y = 0
     d3Axis = d3.axisTop(xScale)
   } else {
-    y = layout.height
+    y = containerSize.height
     d3Axis = d3.axisBottom(xScale)
   }
 
@@ -184,9 +186,9 @@ function renderXAxis ({ selection, position, xAxisClassName, fullParams, layout,
     .ticks(fullParams.ticks) // 刻度分段數量
     .tickFormat(d => parseTickFormatValue(d, fullParams.tickFormat))
     .tickSize(fullParams.tickFullLine == true
-      ? -layout.height
+      ? -containerSize.height
       : defaultTickSize)
-    .tickSizeOuter(-layout.height)
+    .tickSizeOuter(-containerSize.height)
     .tickPadding(tickPadding)
   
   const xAxisEl = xAxisSelection
@@ -216,7 +218,7 @@ function renderXAxis ({ selection, position, xAxisClassName, fullParams, layout,
     .attr('dominant-baseline', xTickDominantBaseline)
     // .attr('dy', tickPadding)
     // .attr('y', tickPadding)
-    xText.style('transform', textReverseTransform)
+    // xText.style('transform', textReverseTransform)
   
   // // 抵消掉預設的偏移
   // if (fullDataFormatter.grid.valueAxis.position === 'bottom' || fullDataFormatter.grid.valueAxis.position === 'top') {
@@ -235,7 +237,8 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
   fullChartParams$,
   isCategorySeprate$,
   containerPosition$,
-  layout$,
+  // layout$,
+  containerSize$,
   xScale$,
   // filteredXYMinMaxData$,
   // xyMinMax$
@@ -244,37 +247,48 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
   
   const destroy$ = new Subject()
 
-  const containerClassName = getClassName(pluginName, 'container')
+  // const containerClassName = getClassName(pluginName, 'container')
   const xAxisGClassName = getClassName(pluginName, 'xAxisG')
   const xAxisClassName = getClassName(pluginName, 'xAxis')
   const xLabelClassName = getClassName(pluginName, 'xLabel')
 
-  const containerSelection$ = combineLatest({
-    computedData: computedData$.pipe(
-      distinctUntilChanged((a, b) => {
-        // 只有當series的數量改變時，才重新計算
-        return a.length === b.length
-      }),
-    ),
-    isCategorySeprate: isCategorySeprate$
+  const containerSelection$ = multiValueContainerSelectionsObservable({
+    selection,
+    pluginName,
+    clipPathID: null,
+    computedData$,
+    containerPosition$,
+    isCategorySeprate$,
   }).pipe(
     takeUntil(destroy$),
-    switchMap(async (d) => d),
-    map(data => {
-      return data.isCategorySeprate
-        // category分開的時候顯示各別axis
-        ? data.computedData
-        // category合併的時候只顯示第一個axis
-        : [data.computedData[0]]
-    }),
-    map((computedData, i) => {
-      return selection
-        .selectAll<SVGGElement, ComputedDatumMultiValue[]>(`g.${containerClassName}`)
-        .data(computedData, d => d[0] ? d[0].categoryIndex : i)
-        .join('g')
-        .classed(containerClassName, true)
-    })
   )
+
+  // const containerSelection$ = combineLatest({
+  //   computedData: computedData$.pipe(
+  //     distinctUntilChanged((a, b) => {
+  //       // 只有當series的數量改變時，才重新計算
+  //       return a.length === b.length
+  //     }),
+  //   ),
+  //   isCategorySeprate: isCategorySeprate$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(data => {
+  //     return data.isCategorySeprate
+  //       // category分開的時候顯示各別axis
+  //       ? data.computedData
+  //       // category合併的時候只顯示第一個axis
+  //       : [data.computedData[0]]
+  //   }),
+  //   map((computedData, i) => {
+  //     return selection
+  //       .selectAll<SVGGElement, ComputedDatumMultiValue[]>(`g.${containerClassName}`)
+  //       .data(computedData, d => d[0] ? d[0].categoryIndex : i)
+  //       .join('g')
+  //       .classed(containerClassName, true)
+  //   })
+  // )
 
   const axisSelection$ = containerSelection$.pipe(
     takeUntil(destroy$),
@@ -287,37 +301,38 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
     })
   )
 
-  combineLatest({
-    containerSelection: containerSelection$,
-    gridContainerPosition: containerPosition$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async d => d)
-  ).subscribe(data => {
-    data.containerSelection
-      .attr('transform', (d, i) => {
-        const gridContainerPosition = data.gridContainerPosition[i] ?? data.gridContainerPosition[0]
-        const translate = gridContainerPosition.translate
-        const scale = gridContainerPosition.scale
-        return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
-      })
-      // .attr('opacity', 0)
-      // .transition()
-      // .attr('opacity', 1)
-  })
+  // combineLatest({
+  //   containerSelection: containerSelection$,
+  //   gridContainerPosition: containerPosition$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async d => d)
+  // ).subscribe(data => {
+  //   data.containerSelection
+  //     .attr('transform', (d, i) => {
+  //       const gridContainerPosition = data.gridContainerPosition[i] ?? data.gridContainerPosition[0]
+  //       const translate = gridContainerPosition.translate
+  //       const scale = gridContainerPosition.scale
+  //       // return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+  //       return `translate(${translate[0]}, ${translate[1]})`
+  //     })
+  //     // .attr('opacity', 0)
+  //     // .transition()
+  //     // .attr('opacity', 1)
+  // })
 
-  const textReverseTransform$ = containerPosition$.pipe(
-    takeUntil(destroy$),
-    switchMap(async (d) => d),
-    map(containerPosition => {
-      // const axesRotateXYReverseValue = `rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
-      // const axesRotateReverseValue = `rotate(${data.gridAxesReverseTransform.rotate}deg)`
-      const containerScaleReverseValue = `scale(${1 / containerPosition[0].scale[0]}, ${1 / containerPosition[0].scale[1]})`
-      // 抵消最外層scale
-      return `${containerScaleReverseValue}`
-    }),
-    distinctUntilChanged()
-  )
+  // const textReverseTransform$ = containerPosition$.pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(containerPosition => {
+  //     // const axesRotateXYReverseValue = `rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
+  //     // const axesRotateReverseValue = `rotate(${data.gridAxesReverseTransform.rotate}deg)`
+  //     const containerScaleReverseValue = `scale(${1 / containerPosition[0].scale[0]}, ${1 / containerPosition[0].scale[1]})`
+  //     // 抵消最外層scale
+  //     return `${containerScaleReverseValue}`
+  //   }),
+  //   distinctUntilChanged()
+  // )
 
   // const xScale$: Observable<d3.ScaleLinear<number, number>> = new Observable(subscriber => {
   //   combineLatest({
@@ -354,7 +369,6 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
   //   })
   // })
 
-
   combineLatest({
     axisSelection: axisSelection$,
     position: position$,
@@ -362,17 +376,20 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
     // tickTextAlign: tickTextAlign$,
     // axisLabelAlign: axisLabelAlign$,
     computedData: computedData$,
-    layout: layout$,
+    // layout: layout$,
+    containerSize: containerSize$,
     fullDataFormatter: fullDataFormatter$,
     fullChartParams: fullChartParams$,
     xScale: xScale$,
-    textReverseTransform: textReverseTransform$,
+    // textReverseTransform: textReverseTransform$,
     // xyMinMax: xyMinMax$
     transitionDuration: transitionDuration$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
   ).subscribe(data => {
+    // console.log('data.layout', data.layout)
+    // console.log('data.containerSize', data.containerSize)
 
     renderXAxis({
       selection: data.axisSelection,
@@ -380,11 +397,11 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
       xAxisClassName,
       fullParams: data.fullParams,
       // tickTextAlign: data.tickTextAlign,
-      layout: data.layout,
+      containerSize: data.containerSize,
       // fullDataFormatter: data.fullDataFormatter,
       fullChartParams: data.fullChartParams,
       xScale: data.xScale,
-      textReverseTransform: data.textReverseTransform,
+      // textReverseTransform: data.textReverseTransform,
       // xyMinMax: data.xyMinMax
       transitionDuration: data.transitionDuration
     })
@@ -395,10 +412,10 @@ export const createBaseXAxis: BasePluginFn<BaseXAxisContext> = (pluginName: stri
       xLabelClassName,
       fullParams: data.fullParams,
       // axisLabelAlign: data.axisLabelAlign,
-      layout: data.layout,
+      containerSize: data.containerSize,
       fullDataFormatter: data.fullDataFormatter,
       fullChartParams: data.fullChartParams,
-      textReverseTransform: data.textReverseTransform,
+      // textReverseTransform: data.textReverseTransform,
     })
 
   })

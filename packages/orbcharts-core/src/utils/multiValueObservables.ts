@@ -19,6 +19,7 @@ import type {
   ComputedDataMultiValue,
   ComputedDatumMultiValue,
   ComputedDatumWithSumMultiValue,
+  ContainerSize,
   DataFormatterTypeMap,
   DataFormatterMultiValue,
   DataFormatterXYAxis,
@@ -467,48 +468,48 @@ export const containerPositionObservable = ({ computedData$, fullDataFormatter$,
   return containerPosition$
 }
 
-export const containerSizeObservable = ({ layout$, containerPosition$ }: {
-  layout$: Observable<Layout>
-  containerPosition$: Observable<ContainerPositionScaled[]>
-}) => {
-  const rowAmount$ = containerPosition$.pipe(
-    map(containerPosition => {
-      const maxRowIndex = containerPosition.reduce((acc, current) => {
-        return current.rowIndex > acc ? current.rowIndex : acc
-      }, 0)
-      return maxRowIndex + 1
-    }),
-    distinctUntilChanged(),
-  )
+// export const containerSizeObservable = ({ layout$, containerPosition$ }: {
+//   layout$: Observable<Layout>
+//   containerPosition$: Observable<ContainerPositionScaled[]>
+// }) => {
+//   const rowAmount$ = containerPosition$.pipe(
+//     map(containerPosition => {
+//       const maxRowIndex = containerPosition.reduce((acc, current) => {
+//         return current.rowIndex > acc ? current.rowIndex : acc
+//       }, 0)
+//       return maxRowIndex + 1
+//     }),
+//     distinctUntilChanged(),
+//   )
 
-  const columnAmount$ = containerPosition$.pipe(
-    map(containerPosition => {
-      const maxColumnIndex = containerPosition.reduce((acc, current) => {
-        return current.columnIndex > acc ? current.columnIndex : acc
-      }, 0)
-      return maxColumnIndex + 1
-    }),
-    distinctUntilChanged()
-  )
+//   const columnAmount$ = containerPosition$.pipe(
+//     map(containerPosition => {
+//       const maxColumnIndex = containerPosition.reduce((acc, current) => {
+//         return current.columnIndex > acc ? current.columnIndex : acc
+//       }, 0)
+//       return maxColumnIndex + 1
+//     }),
+//     distinctUntilChanged()
+//   )
 
-  return combineLatest({
-    layout: layout$,
-    rowAmount: rowAmount$,
-    columnAmount: columnAmount$
-  }).pipe(
-    switchMap(async (d) => d),
-    map(data => {
-      const width = (data.layout.rootWidth / data.columnAmount) - (data.layout.left + data.layout.right)
-      const height = (data.layout.rootHeight / data.rowAmount) - (data.layout.top + data.layout.bottom)
-      return {
-        width,
-        height
-      }
-    }),
-    distinctUntilChanged((a, b) => a.width === b.width && a.height === b.height),
-    shareReplay(1)
-  )
-}
+//   return combineLatest({
+//     layout: layout$,
+//     rowAmount: rowAmount$,
+//     columnAmount: columnAmount$
+//   }).pipe(
+//     switchMap(async (d) => d),
+//     map(data => {
+//       const width = (data.layout.rootWidth / data.columnAmount) - (data.layout.left + data.layout.right)
+//       const height = (data.layout.rootHeight / data.rowAmount) - (data.layout.top + data.layout.bottom)
+//       return {
+//         width,
+//         height
+//       }
+//     }),
+//     distinctUntilChanged((a, b) => a.width === b.width && a.height === b.height),
+//     shareReplay(1)
+//   )
+// }
 
 export const filteredXYMinMaxDataObservable = ({ visibleComputedXYData$, xyMinMax$, xyValueIndex$, fullDataFormatter$ }: {
   visibleComputedXYData$: Observable<ComputedXYDataMultiValue>
@@ -905,7 +906,7 @@ export const graphicReverseScaleObservable = ({ containerPosition$, graphicTrans
 }
 
 // X 軸圖軸 - 用 value[index] 
-export const xScaleObservable = ({ visibleComputedSumData$, fullDataFormatter$, filteredXYMinMaxData$, layout$ }: {
+export const xScaleObservable = ({ visibleComputedSumData$, fullDataFormatter$, filteredXYMinMaxData$, containerSize$ }: {
   visibleComputedSumData$: Observable<ComputedDatumMultiValue[][]>
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   filteredXYMinMaxData$: Observable<{
@@ -914,12 +915,13 @@ export const xScaleObservable = ({ visibleComputedSumData$, fullDataFormatter$, 
     minYDatum: ComputedXYDatumMultiValue
     maxYDatum: ComputedXYDatumMultiValue
   }>
-  layout$: Observable<Layout>
+  // layout$: Observable<Layout>
+  containerSize$: Observable<ContainerSize>
 }) => {
   return combineLatest({
     visibleComputedSumData: visibleComputedSumData$,
     fullDataFormatter: fullDataFormatter$,
-    layout: layout$,
+    containerSize: containerSize$,
     // xyMinMax: xyMinMax$
     filteredXYMinMaxData: filteredXYMinMaxData$
   }).pipe(
@@ -941,7 +943,7 @@ export const xScaleObservable = ({ visibleComputedSumData$, fullDataFormatter$, 
       const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
         maxValue,
         minValue,
-        axisWidth: data.layout.width,
+        axisWidth: data.containerSize.width,
         scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.xAxis.scaleRange,
       })
@@ -951,7 +953,7 @@ export const xScaleObservable = ({ visibleComputedSumData$, fullDataFormatter$, 
 }
 
 // X 軸圖軸 - 用所有 valueIndex 加總資料
-export const xSumScaleObservable = ({ fullDataFormatter$, filteredXYMinMaxData$, layout$ }: {
+export const xSumScaleObservable = ({ fullDataFormatter$, filteredXYMinMaxData$, containerSize$ }: {
   // valueIndex$: Observable<number>
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   filteredXYMinMaxData$: Observable<{
@@ -960,12 +962,13 @@ export const xSumScaleObservable = ({ fullDataFormatter$, filteredXYMinMaxData$,
     minYDatum: ComputedXYDatumMultiValue
     maxYDatum: ComputedXYDatumMultiValue
   }>
-  layout$: Observable<Layout>
+  // layout$: Observable<Layout>
+  containerSize$: Observable<ContainerSize>
 }) => {
   return combineLatest({
     // valueIndex: valueIndex$,
     fullDataFormatter: fullDataFormatter$,
-    layout: layout$,
+    containerSize: containerSize$,
     // xyMinMax: xyMinMax$
     filteredXYMinMaxData: filteredXYMinMaxData$
   }).pipe(
@@ -987,7 +990,7 @@ export const xSumScaleObservable = ({ fullDataFormatter$, filteredXYMinMaxData$,
       const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
         maxValue,
         minValue,
-        axisWidth: data.layout.width,
+        axisWidth: data.containerSize.width,
         scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.xAxis.scaleRange,
       })
@@ -996,7 +999,7 @@ export const xSumScaleObservable = ({ fullDataFormatter$, filteredXYMinMaxData$,
   )
 }
 
-export const yScaleObservable = ({ fullDataFormatter$, filteredXYMinMaxData$, layout$ }: {
+export const yScaleObservable = ({ fullDataFormatter$, filteredXYMinMaxData$, containerSize$ }: {
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   filteredXYMinMaxData$: Observable<{
     minXDatum: ComputedXYDatumMultiValue
@@ -1004,11 +1007,11 @@ export const yScaleObservable = ({ fullDataFormatter$, filteredXYMinMaxData$, la
     minYDatum: ComputedXYDatumMultiValue
     maxYDatum: ComputedXYDatumMultiValue
   }>
-  layout$: Observable<Layout>
+  containerSize$: Observable<ContainerSize>
 }) => {
   return combineLatest({
     fullDataFormatter: fullDataFormatter$,
-    layout: layout$,
+    containerSize: containerSize$,
     // xyMinMax: observer.xyMinMax$
     filteredXYMinMaxData: filteredXYMinMaxData$
   }).pipe(
@@ -1030,7 +1033,7 @@ export const yScaleObservable = ({ fullDataFormatter$, filteredXYMinMaxData$, la
       const yScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
         maxValue,
         minValue,
-        axisWidth: data.layout.height,
+        axisWidth: data.containerSize.height,
         scaleDomain: data.fullDataFormatter.yAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.yAxis.scaleRange,
         reverse: true

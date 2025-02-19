@@ -34,6 +34,14 @@ export const PRESET_MULTI_VALUE_SEPARATE_CATEGORY: PresetPartial<'multiValue', P
     separateCategory: true
   },
   allPluginParams: {
+    XYAxes: {
+      xAxis: {
+        ticks: 3,
+      },
+      yAxis: {
+        ticks: 3,
+      }
+    },
     MultiValueLegend: {
       placement: 'bottom',
       padding: 14,

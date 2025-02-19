@@ -34,6 +34,7 @@ export const PRESET_SCATTER_BUBBLES_BASIC: PresetPartial<'multiValue', Partial<P
     MultiValueLegend: {
       placement: 'bottom',
       padding: 14,
+      listRectRadius: 7 // 圓型圖例列點
     }
   }
 }

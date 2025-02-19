@@ -305,7 +305,10 @@ onMounted(() => {
     //   period: 250
     // }
     // rankingAmount: 'auto',
-    autorun: true
+    autorun: true,
+    axisLabel: {
+      
+    }
   })
 
   // racingValueAxis.params$.next({

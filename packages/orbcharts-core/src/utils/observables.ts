@@ -15,6 +15,7 @@ import type {
   ComputedDatumBase,
   ComputedDataTypeMap,
   ComputedDatumTypeMap,
+  ContainerPositionScaled,
   DataFormatterTypeMap,
   EventTypeMap,
   HighlightTarget,
@@ -234,5 +235,48 @@ export const textSizePxObservable = (chartParams$: Observable<ChartParams>) => {
       }
       return value ? value : 14 // default
     })
+  )
+}
+
+export const containerSizeObservable = ({ layout$, containerPosition$ }: {
+  layout$: Observable<Layout>
+  containerPosition$: Observable<ContainerPositionScaled[]>
+}) => {
+  const rowAmount$ = containerPosition$.pipe(
+    map(containerPosition => {
+      const maxRowIndex = containerPosition.reduce((acc, current) => {
+        return current.rowIndex > acc ? current.rowIndex : acc
+      }, 0)
+      return maxRowIndex + 1
+    }),
+    distinctUntilChanged(),
+  )
+
+  const columnAmount$ = containerPosition$.pipe(
+    map(containerPosition => {
+      const maxColumnIndex = containerPosition.reduce((acc, current) => {
+        return current.columnIndex > acc ? current.columnIndex : acc
+      }, 0)
+      return maxColumnIndex + 1
+    }),
+    distinctUntilChanged()
+  )
+
+  return combineLatest({
+    layout: layout$,
+    rowAmount: rowAmount$,
+    columnAmount: columnAmount$
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      const width = (data.layout.rootWidth / data.columnAmount) - (data.layout.left + data.layout.right)
+      const height = (data.layout.rootHeight / data.rowAmount) - (data.layout.top + data.layout.bottom)
+      return {
+        width,
+        height
+      }
+    }),
+    distinctUntilChanged((a, b) => a.width === b.width && a.height === b.height),
+    // shareReplay(1)
   )
 }

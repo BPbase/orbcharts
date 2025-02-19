@@ -31,12 +31,7 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
   visibleComputedSumData$: Observable<ComputedDatumWithSumMultiValue[][]>
   visibleComputedRankingByIndexData$: Observable<ComputedDatumMultiValue[][]> // ranking
   visibleComputedRankingBySumData$: Observable<ComputedDatumMultiValue[][]> // ranking
-  // computedXYData$: Observable<ComputedXYDataMultiValue> // xy
   visibleComputedXYData$: Observable<ComputedXYDataMultiValue> // xy
-  // visibleComputedRankingData$: Observable<ComputedDatumMultiValue[]>// ranking
-  // rankingScale$: Observable<d3.ScalePoint<string>> // ranking
-  // multiValueAxesTransform$: Observable<TransformData>
-  // multiValueAxesReverseTransform$: Observable<TransformData>
   graphicTransform$: Observable<TransformData>
   graphicReverseScale$: Observable<[number, number][]>
   xScale$: Observable<d3.ScaleLinear<number, number>>

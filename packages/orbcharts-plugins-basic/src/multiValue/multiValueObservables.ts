@@ -160,6 +160,67 @@ export const multiValueSelectionsObservable = ({ selection, pluginName, clipPath
   }
 }
 
+// 建立 multiValue 主要的 selection - 只取無scale的container selection
+export const multiValueContainerSelectionsObservable = ({ selection, pluginName, clipPathID, computedData$, containerPosition$, isCategorySeprate$ }: {
+  selection: d3.Selection<any, unknown, any, unknown>
+  pluginName: string
+  clipPathID: string | null
+  computedData$: Observable<ComputedDataMultiValue>
+  containerPosition$: Observable<ContainerPositionScaled[]>
+  isCategorySeprate$: Observable<boolean>
+}) => {
+  const containerClassName = getClassName(pluginName, 'container')
+
+  const containerSelection$ = combineLatest({
+    computedData: computedData$.pipe(
+      distinctUntilChanged((a, b) => {
+        // 只有當series的數量改變時，才重新計算
+        return a.length === b.length
+      }),
+    ),
+    isCategorySeprate: isCategorySeprate$
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      return data.isCategorySeprate
+        // category分開的時候顯示各別axis
+        ? data.computedData
+        // category合併的時候只顯示第一個axis
+        : [data.computedData[0]]
+    }),
+    map((computedData, i) => {
+      return selection
+        .selectAll<SVGGElement, ComputedDatumMultiValue[]>(`g.${containerClassName}`)
+        .data(computedData, d => d[0] ? d[0].categoryIndex : i)
+        .join('g')
+        .classed(containerClassName, true)
+        .attr('clip-path', _ => clipPathID ? `url(#${clipPathID})` : 'none')
+    }),
+    shareReplay(1)
+  )
+
+  combineLatest({
+    containerSelection: containerSelection$,
+    gridContainerPosition: containerPosition$
+  }).pipe(
+    switchMap(async d => d)
+  ).subscribe(data => {
+    data.containerSelection
+      .attr('transform', (d, i) => {
+        const gridContainerPosition = data.gridContainerPosition[i] ?? data.gridContainerPosition[0]
+        const translate = gridContainerPosition.translate
+        const scale = gridContainerPosition.scale
+        // return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+        return `translate(${translate[0]}, ${translate[1]})`
+      })
+      // .attr('opacity', 0)
+      // .transition()
+      // .attr('opacity', 1)
+  })
+
+  return containerSelection$
+}
+
 
 export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatter$, filteredXYMinMaxData$, containerPosition$, layout$ }: {
   rootSelection: d3.Selection<any, unknown, any, unknown>

@@ -766,7 +766,7 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             title: 'PRESET_RACING_BARS_SEPARATE_CATEGORY',
             presetName: 'PRESET_RACING_BARS_SEPARATE_CATEGORY',
             allPluginNames: ['RacingBars', 'MultiValueLegend', 'MultiValueTooltip', 'RacingValueAxis', 'RacingCounterTexts'],
-            getData: () => import('./data/multiValueData_brand')
+            getData: () => import('./data/multiValue1')
           },
         ]
       }

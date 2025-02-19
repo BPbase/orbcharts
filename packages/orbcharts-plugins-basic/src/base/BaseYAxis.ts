@@ -16,6 +16,7 @@ import type {
   ComputedDataMultiValue,
   ComputedXYDatumMultiValue,
   ContainerPositionScaled,
+  ContainerSize,
   DataFormatterMultiValue,
   DefinePluginConfig,
   TransformData,
@@ -31,7 +32,7 @@ import type { BasePluginFn } from './types'
 // import { LAYER_INDEX_OF_AXIS } from '../const'
 import { getColor, getDatumColor, getClassName, getUniID } from '../utils/orbchartsUtils'
 import { parseTickFormatValue } from '../utils/d3Utils'
-
+import { multiValueContainerSelectionsObservable } from '../multiValue/multiValueObservables'
 
 interface BaseYAxisContext {
   selection: d3.Selection<any, unknown, any, unknown>
@@ -42,7 +43,8 @@ interface BaseYAxisContext {
   fullChartParams$: Observable<ChartParams>
   isCategorySeprate$: Observable<boolean>
   containerPosition$: Observable<ContainerPositionScaled[]>
-  layout$: Observable<Layout>
+  containerSize$: Observable<ContainerSize>
+  // layout$: Observable<Layout>
   // filteredXYMinMaxData$: Observable<{
   //   datumList: ComputedXYDatumMultiValue[];
   //   minXDatum: ComputedXYDatumMultiValue | null;
@@ -71,15 +73,15 @@ const yTickDominantBaseline = 'middle'
 const yAxisLabelAnchor = 'end'
 const yAxisLabelDominantBaseline = 'auto'
 
-function renderYAxisLabel ({ selection, yLabelClassName, fullParams, layout, fullDataFormatter, fullChartParams, textReverseTransform }: {
+function renderYAxisLabel ({ selection, yLabelClassName, fullParams, containerSize, fullDataFormatter, fullChartParams }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   yLabelClassName: string
   fullParams: BaseYAxisParams
   // axisLabelAlign: TextAlign
-  layout: { width: number, height: number }
+  containerSize: { width: number, height: number }
   fullDataFormatter: DataFormatterMultiValue,
   fullChartParams: ChartParams
-  textReverseTransform: string,
+  // textReverseTransform: string,
 }) {
   const offsetX = fullParams.tickPadding - fullParams.labelOffset[0]
   const offsetY = fullParams.tickPadding + fullParams.labelOffset[1]
@@ -108,7 +110,7 @@ function renderYAxisLabel ({ selection, yLabelClassName, fullParams, layout, ful
         .attr('dominant-baseline', yAxisLabelDominantBaseline)
         .attr('font-size', fullChartParams.styles.textSize)
         .style('fill', getColor(fullParams.labelColorType, fullChartParams))
-        .style('transform', textReverseTransform)
+        // .style('transform', textReverseTransform)
         // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
         .attr('x', labelX)
         .attr('y', labelY)
@@ -117,16 +119,16 @@ function renderYAxisLabel ({ selection, yLabelClassName, fullParams, layout, ful
     // .attr('transform', d => `translate(0, ${layout.height})`)
 }
 
-function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataFormatter, fullChartParams, yScale, textReverseTransform }: {
+function renderYAxis ({ selection, yAxisClassName, fullParams, containerSize, fullDataFormatter, fullChartParams, yScale }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   yAxisClassName: string
   fullParams: BaseYAxisParams
   // tickTextAlign: TextAlign
-  layout: { width: number, height: number }
+  containerSize: ContainerSize
   fullDataFormatter: DataFormatterMultiValue,
   fullChartParams: ChartParams
   yScale: d3.ScaleLinear<number, number>
-  textReverseTransform: string,
+  // textReverseTransform: string,
   // xyMinMax: {
   //   minX: number;
   //   maxX: number;
@@ -154,7 +156,7 @@ function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataF
     .ticks(fullParams.ticks) // 刻度分段數量
     .tickFormat(d => parseTickFormatValue(d, fullParams.tickFormat))
     .tickSize(fullParams.tickFullLine == true
-      ? -layout.width
+      ? -containerSize.width
       : defaultTickSize)
     .tickPadding(tickPadding)
   
@@ -186,7 +188,7 @@ function renderYAxis ({ selection, yAxisClassName, fullParams, layout, fullDataF
     // .attr('dy', 0)
     .attr('x', - tickPadding)
     .attr('dy', 0)
-  yText.style('transform', textReverseTransform)
+  // yText.style('transform', textReverseTransform)
   
   // // 抵消掉預設的偏移
   // if (fullDataFormatter.grid.valueAxis.position === 'bottom' || fullDataFormatter.grid.valueAxis.position === 'top') {
@@ -204,7 +206,8 @@ export const createBaseYAxis: BasePluginFn<BaseYAxisContext> = (pluginName: stri
   fullChartParams$,
   isCategorySeprate$,
   containerPosition$,
-  layout$,
+  containerSize$,
+  // layout$,
   // filteredXYMinMaxData$,
   yScale$,
   // xyMinMax$
@@ -212,37 +215,48 @@ export const createBaseYAxis: BasePluginFn<BaseYAxisContext> = (pluginName: stri
   
   const destroy$ = new Subject()
 
-  const containerClassName = getClassName(pluginName, 'container')
+  // const containerClassName = getClassName(pluginName, 'container')
   const yAxisGClassName = getClassName(pluginName, 'yAxisG')
   const yAxisClassName = getClassName(pluginName, 'yAxis')
   const yLabelClassName = getClassName(pluginName, 'yLabel')
 
-  const containerSelection$ = combineLatest({
-    computedData: computedData$.pipe(
-      distinctUntilChanged((a, b) => {
-        // 只有當series的數量改變時，才重新計算
-        return a.length === b.length
-      }),
-    ),
-    isCategorySeprate: isCategorySeprate$
+  const containerSelection$ = multiValueContainerSelectionsObservable({
+    selection,
+    pluginName,
+    clipPathID: null,
+    computedData$,
+    containerPosition$,
+    isCategorySeprate$,
   }).pipe(
     takeUntil(destroy$),
-    switchMap(async (d) => d),
-    map(data => {
-      return data.isCategorySeprate
-        // category分開的時候顯示各別axis
-        ? data.computedData
-        // category合併的時候只顯示第一個axis
-        : [data.computedData[0]]
-    }),
-    map((computedData, i) => {
-      return selection
-        .selectAll<SVGGElement, ComputedDatumMultiValue[]>(`g.${containerClassName}`)
-        .data(computedData, d => d[0] ? d[0].categoryIndex : i)
-        .join('g')
-        .classed(containerClassName, true)
-    })
   )
+
+  // const containerSelection$ = combineLatest({
+  //   computedData: computedData$.pipe(
+  //     distinctUntilChanged((a, b) => {
+  //       // 只有當series的數量改變時，才重新計算
+  //       return a.length === b.length
+  //     }),
+  //   ),
+  //   isCategorySeprate: isCategorySeprate$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(data => {
+  //     return data.isCategorySeprate
+  //       // category分開的時候顯示各別axis
+  //       ? data.computedData
+  //       // category合併的時候只顯示第一個axis
+  //       : [data.computedData[0]]
+  //   }),
+  //   map((computedData, i) => {
+  //     return selection
+  //       .selectAll<SVGGElement, ComputedDatumMultiValue[]>(`g.${containerClassName}`)
+  //       .data(computedData, d => d[0] ? d[0].categoryIndex : i)
+  //       .join('g')
+  //       .classed(containerClassName, true)
+  //   })
+  // )
 
   const axisSelection$ = containerSelection$.pipe(
     takeUntil(destroy$),
@@ -255,37 +269,38 @@ export const createBaseYAxis: BasePluginFn<BaseYAxisContext> = (pluginName: stri
     })
   )
 
-  combineLatest({
-    containerSelection: containerSelection$,
-    gridContainerPosition: containerPosition$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async d => d)
-  ).subscribe(data => {
-    data.containerSelection
-      .attr('transform', (d, i) => {
-        const gridContainerPosition = data.gridContainerPosition[i] ?? data.gridContainerPosition[0]
-        const translate = gridContainerPosition.translate
-        const scale = gridContainerPosition.scale
-        return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
-      })
-      // .attr('opacity', 0)
-      // .transition()
-      // .attr('opacity', 1)
-  })
+  // combineLatest({
+  //   containerSelection: containerSelection$,
+  //   gridContainerPosition: containerPosition$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async d => d)
+  // ).subscribe(data => {
+  //   data.containerSelection
+  //     .attr('transform', (d, i) => {
+  //       const gridContainerPosition = data.gridContainerPosition[i] ?? data.gridContainerPosition[0]
+  //       const translate = gridContainerPosition.translate
+  //       const scale = gridContainerPosition.scale
+  //       // return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+  //       return `translate(${translate[0]}, ${translate[1]})`
+  //     })
+  //     // .attr('opacity', 0)
+  //     // .transition()
+  //     // .attr('opacity', 1)
+  // })
 
-  const textReverseTransform$ = containerPosition$.pipe(
-    takeUntil(destroy$),
-    switchMap(async (d) => d),
-    map(containerPosition => {
-      // const axesRotateXYReverseValue = `rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
-      // const axesRotateReverseValue = `rotate(${data.gridAxesReverseTransform.rotate}deg)`
-      const containerScaleReverseValue = `scale(${1 / containerPosition[0].scale[0]}, ${1 / containerPosition[0].scale[1]})`
-      // 抵消最外層scale
-      return `${containerScaleReverseValue}`
-    }),
-    distinctUntilChanged()
-  )
+  // const textReverseTransform$ = containerPosition$.pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(containerPosition => {
+  //     // const axesRotateXYReverseValue = `rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
+  //     // const axesRotateReverseValue = `rotate(${data.gridAxesReverseTransform.rotate}deg)`
+  //     const containerScaleReverseValue = `scale(${1 / containerPosition[0].scale[0]}, ${1 / containerPosition[0].scale[1]})`
+  //     // 抵消最外層scale
+  //     return `${containerScaleReverseValue}`
+  //   }),
+  //   distinctUntilChanged()
+  // )
 
   // const yScale$: Observable<d3.ScaleLinear<number, number>> = new Observable(subscriber => {
   //   combineLatest({
@@ -330,11 +345,11 @@ export const createBaseYAxis: BasePluginFn<BaseYAxisContext> = (pluginName: stri
     // tickTextAlign: tickTextAlign$,
     // axisLabelAlign: axisLabelAlign$,
     computedData: computedData$,
-    layout: layout$,
+    containerSize: containerSize$,
     fullDataFormatter: fullDataFormatter$,
     fullChartParams: fullChartParams$,
     yScale: yScale$,
-    textReverseTransform: textReverseTransform$,
+    // textReverseTransform: textReverseTransform$,
     // xyMinMax: xyMinMax$
   }).pipe(
     takeUntil(destroy$),
@@ -346,11 +361,11 @@ export const createBaseYAxis: BasePluginFn<BaseYAxisContext> = (pluginName: stri
       yAxisClassName,
       fullParams: data.fullParams,
       // tickTextAlign: data.tickTextAlign,
-      layout: data.layout,
+      containerSize: data.containerSize,
       fullDataFormatter: data.fullDataFormatter,
       fullChartParams: data.fullChartParams,
       yScale: data.yScale,
-      textReverseTransform: data.textReverseTransform,
+      // textReverseTransform: data.textReverseTransform,
       // xyMinMax: data.xyMinMax
     })
 
@@ -359,10 +374,10 @@ export const createBaseYAxis: BasePluginFn<BaseYAxisContext> = (pluginName: stri
       yLabelClassName,
       fullParams: data.fullParams,
       // axisLabelAlign: data.axisLabelAlign,
-      layout: data.layout,
+      containerSize: data.containerSize,
       fullDataFormatter: data.fullDataFormatter,
       fullChartParams: data.fullChartParams,
-      textReverseTransform: data.textReverseTransform,
+      // textReverseTransform: data.textReverseTransform,
     })
 
   })

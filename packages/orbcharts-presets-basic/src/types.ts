@@ -66,8 +66,9 @@ import type {
   // -- noneData --
   // TooltipParams
 } from '../lib/plugins-basic-types'
+import type { DeepPartial } from '../lib/core-types'
 
-type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>
+// type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>
 
 // -- series --
 // series的全部plugin參數
@@ -312,7 +313,7 @@ export interface PresetXYAuxParams {
 }
 
 export interface PresetXYAxesParams {
-  XYAxes: Partial<XYAxesParams>
+  XYAxes: DeepPartial<XYAxesParams>
 }
 
 export interface PresetXZoomParams {

@@ -34,6 +34,7 @@ export const PRESET_SCATTER_BUBBLES_SCALING_BY_RADIUS: PresetPartial<'multiValue
     MultiValueLegend: {
       placement: 'bottom',
       padding: 14,
+      listRectRadius: 7 // 圓型圖例列點
     },
     ScatterBubbles: {
       arcScaleType: 'radius'

@@ -25,9 +25,9 @@ export const PRESET_RACING_BARS_SEPARATE_CATEGORY: PresetPartial<'multiValue', P
     },
     padding: {
       top: 60,
-      right: 60,
+      right: 20,
       bottom: 100,
-      left: 60
+      left: 80
     },
     transitionDuration: 500
   },
@@ -36,7 +36,18 @@ export const PRESET_RACING_BARS_SEPARATE_CATEGORY: PresetPartial<'multiValue', P
   },
   allPluginParams: {
     RacingBars: {
+      barLabel: {
+        position: 'outside',
+        colorType: 'primary',
+        padding: 10
+      },
+      valueLabel: {
+        padding: 10
+      },
       autorun: true,
+    },
+    RacingValueAxis: {
+      ticks: 3,
     },
     MultiValueLegend: {
       placement: 'bottom',
