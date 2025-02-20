@@ -96,10 +96,10 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BUBBLES
   }
 }
 
-let force: d3.Simulation<d3.SimulationNodeDatum, undefined> | undefined
+
 // let isRunning = false
 
-function makeForce (bubblesSelection: d3.Selection<SVGGElement, BubblesDatum, any, any>, fullParams: BubblesParams) {
+function createSimulation (bubblesSelection: d3.Selection<SVGGElement, BubblesDatum, any, any>, fullParams: BubblesParams) {
   return d3.forceSimulation()
     .velocityDecay(fullParams.force!.velocityDecay!)
     // .alphaDecay(0.2)
@@ -318,18 +318,18 @@ function setHighlightData ({ data, highlightRIncrease, highlightIds }: {
   })
 }
 
-function drag (): d3.DragBehavior<Element, unknown, unknown> {
+function drag (_simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>): d3.DragBehavior<Element, unknown, unknown> {
   return d3.drag()
     .on("start", (event, d: any) => {
       if (!event.active) {
-        force!.alpha(1).restart()
+        _simulation!.alpha(1).restart()
       }
       d.fx = d.x
       d.fy = d.y
     })
     .on("drag", (event, d: any) => {
       if (!event.active) {
-        force!.alphaTarget(0)
+        _simulation!.alphaTarget(0)
       }
       d.fx = event.x
       d.fy = event.y
@@ -337,7 +337,7 @@ function drag (): d3.DragBehavior<Element, unknown, unknown> {
     .on("end", (event, d: any) => {
       d.fx = null
       d.fy = null
-      force!.alpha(1).restart()
+      _simulation!.alpha(1).restart()
     })
 }
 
@@ -349,14 +349,15 @@ function drag (): d3.DragBehavior<Element, unknown, unknown> {
 //   return typeCenter ? typeCenter.x : 0
 // }
 
-function groupBubbles ({ fullParams, SeriesContainerPositionMap }: {
+function groupBubbles ({ _simulation, fullParams, SeriesContainerPositionMap }: {
+  _simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>
   fullParams: BubblesParams
   // graphicWidth: number
   // graphicHeight: number
   SeriesContainerPositionMap: Map<string, ContainerPosition>
 }) {
   // console.log('groupBubbles')
-  force!
+  _simulation!
     // .force('x', d3.forceX().strength(fullParams.force.strength).x(graphicWidth / 2))
     // .force('y', d3.forceY().strength(fullParams.force.strength).y(graphicHeight / 2))
     .force('x', d3.forceX().strength(fullParams.force.strength).x((data: BubblesSimulationDatum) => {
@@ -404,6 +405,8 @@ function highlight ({ bubblesSelection, highlightIds, fullChartParams }: {
 export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, observer, subject }) => {
   
   const destroy$ = new Subject()
+
+  let simulation: d3.Simulation<d3.SimulationNodeDatum, undefined> | undefined
 
   // 紀錄前一次bubble data
   let LastBubbleDataMap: Map<string, BubblesDatum> = new Map()
@@ -463,9 +466,9 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      if (force) {
+      if (simulation) {
         // 先停止，重新計算之後再restart
-        force.stop()
+        simulation.stop()
       }
 
       const bubblesSelection = renderBubbles({
@@ -476,18 +479,19 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
         sumSeries: data.sumSeries
       })
       
-      force = makeForce(bubblesSelection, data.fullParams)
+      simulation = createSimulation(bubblesSelection, data.fullParams)
 
-      force.nodes(data.bubblesData)
+      simulation.nodes(data.bubblesData)
 
       groupBubbles({
+        _simulation: simulation,
         fullParams: data.fullParams,
         SeriesContainerPositionMap: data.SeriesContainerPositionMap
         // graphicWidth: data.layout.width,
         // graphicHeight: data.layout.height
       })
 
-      force!.alpha(1).restart()
+      simulation!.alpha(1).restart()
 
       return bubblesSelection
     }),
@@ -575,7 +579,7 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
           data: data.computedData
         })
       })
-      .call(drag() as any)
+      .call(drag(simulation) as any)
 
     
   })
@@ -622,18 +626,12 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
 
   })
 
-  // observer.layout$.pipe(
-  //   debounceTime(500),
-  // ).subscribe(() => {
-  //   if (force) {
-  //     force!.alphaTarget(0)
-  //     setTimeout(() => {
-  //       force!.alpha(1).restart()
-  //     }, 250)
-  //   }
-  // })
   
   return () => {
     destroy$.next(undefined)
+    if (simulation) {
+      simulation.stop()
+      simulation = undefined
+    }
   }
 })
