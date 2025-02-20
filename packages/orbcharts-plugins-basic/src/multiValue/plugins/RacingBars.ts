@@ -256,11 +256,11 @@ export const RacingBars = defineMultiValuePlugin(pluginConfig)(({ selection, nam
     fullParams$: observer.fullParams$,
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,
-    layout$: observer.layout$,
+    // layout$: observer.layout$,
     containerPosition$: observer.containerPosition$,
     containerSize$: observer.containerSize$,
     isCategorySeprate$: observer.isCategorySeprate$,
-    xyValueIndex$: observer.xyValueIndex$,
+    // xyValueIndex$: observer.xyValueIndex$,
   })
 
   const unsubscribeBaseRacingValueLabels = createBaseRacingValueLabels(`${pluginName}-valueLabels`, {
@@ -271,20 +271,20 @@ export const RacingBars = defineMultiValuePlugin(pluginConfig)(({ selection, nam
     xScale$: observer.xScale$,
     computedRankingAmount$,
     fullParams$: baseRacingValueLabelsParams$,
-    fullDataFormatter$: observer.fullDataFormatter$,
+    // fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,
-    layout$: observer.layout$,
+    // layout$: observer.layout$,
     containerPosition$: observer.containerPosition$,
     containerSize$: observer.containerSize$,
     isCategorySeprate$: observer.isCategorySeprate$,
-    xyValueIndex$: observer.xyValueIndex$,
+    // xyValueIndex$: observer.xyValueIndex$,
   })
 
   const unsubscribeBaseRacingBars = createBaseRacingBars(`${pluginName}-bars`, {
     selection: baseRacingBarsSelection,
     computedData$: observer.computedData$,
     visibleComputedRankingData$: observer.visibleComputedRankingByIndexData$,
-    xyValueIndex$: observer.xyValueIndex$,
+    // xyValueIndex$: observer.xyValueIndex$,
     CategoryDataMap$: observer.CategoryDataMap$,
     fullParams$: observer.fullParams$,
     fullChartParams$: observer.fullChartParams$,
@@ -324,17 +324,17 @@ export const RacingBars = defineMultiValuePlugin(pluginConfig)(({ selection, nam
     autorun: autorun$,
     valueAmount: valueAmount$,
     tickDurationPeriod: tickDurationPeriod$,
-    xyValueIndex: observer.xyValueIndex$,
+    // xyValueIndex: observer.xyValueIndex$,
     fullDataFormatter: observer.fullDataFormatter$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
-  ).subscribe(({ autorun, valueAmount, tickDurationPeriod, xyValueIndex, fullDataFormatter }) => {
+  ).subscribe(({ autorun, valueAmount, tickDurationPeriod, fullDataFormatter }) => {
     if (toggle == false) {
       return
     }
     if (autorun) {
-      const nextIndex = xyValueIndex[0] + 1
+      const nextIndex = fullDataFormatter.xAxis.valueIndex + 1
       if (nextIndex < valueAmount) {
         toggle = false // timer 執行期間不可再次執行
 

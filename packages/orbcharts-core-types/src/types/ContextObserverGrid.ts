@@ -3,20 +3,20 @@ import type { ContextObserverBase } from './ContextObserver'
 import type { ComputedDataGrid, ComputedDatumGrid } from './ComputedDataGrid'
 import type { TransformData } from './TransformData'
 import type { ContainerPositionScaled } from './ContextObserver'
-import type { ContainerSize } from './ContextObserver'
+import type { ContainerSize } from './Common'
 
 export interface ContextObserverGrid<PluginParams> extends
 ContextObserverBase<'grid', PluginParams>, ContextObserverGridDetail {
   textSizePx$: Observable<number>
+  containerSize$: Observable<ContainerSize>
+  gridHighlight$: Observable<ComputedDatumGrid[]>
 }
 
 export interface ContextObserverGridDetail {
   isSeriesSeprate$: Observable<boolean>
   gridContainerPosition$: Observable<ContainerPositionScaled[]>
-  containerSize$: Observable<ContainerSize>
-  gridAxesSize$: Observable<{ width: number; height: number; }> // 軸轉後的尺寸
+  gridAxesSize$: Observable<ContainerSize> // 軸轉後的尺寸
   gridAxesContainerSize$: Observable<ContainerSize> // 軸轉後的container尺寸
-  gridHighlight$: Observable<ComputedDatumGrid[]>
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>

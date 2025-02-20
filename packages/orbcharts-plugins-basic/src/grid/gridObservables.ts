@@ -154,6 +154,64 @@ export const gridSelectionsObservable = ({ selection, pluginName, clipPathID, se
   }
 }
 
+// 建立 grid 主要的 selection - 只取的container
+export const gridContainerSelectionsObservable = ({ selection, pluginName, computedData$, gridContainerPosition$, isSeriesSeprate$ }: {
+  selection: d3.Selection<any, unknown, any, unknown>
+  pluginName: string
+  computedData$: Observable<ComputedDataGrid>
+  gridContainerPosition$: Observable<ContainerPositionScaled[]>
+  isSeriesSeprate$: Observable<boolean>
+}) => {
+  const containerClassName = getClassName(pluginName, 'container')
+
+  const containerSelection$ = combineLatest({
+    computedData: computedData$.pipe(
+      distinctUntilChanged((a, b) => {
+        // 只有當series的數量改變時，才重新計算
+        return a.length === b.length
+      }),
+    ),
+    isSeriesSeprate: isSeriesSeprate$
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      return data.isSeriesSeprate
+        // series分開的時候顯示各別axis
+        ? data.computedData
+        // series合併的時候只顯示第一個axis
+        : [data.computedData[0]]
+    }),
+    map((computedData, i) => {
+      return selection
+        .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${containerClassName}`)
+        .data(computedData, d => d[0] ? d[0].seriesIndex : i)
+        .join('g')
+        .classed(containerClassName, true)
+    }),
+    shareReplay(1)
+  )
+
+  combineLatest({
+    containerSelection: containerSelection$,
+    gridContainerPosition: gridContainerPosition$
+  }).pipe(
+    switchMap(async d => d)
+  ).subscribe(data => {
+    data.containerSelection
+      .attr('transform', (d, i) => {
+        const gridContainerPosition = data.gridContainerPosition[i] ?? data.gridContainerPosition[0]
+        const translate = gridContainerPosition.translate
+        const scale = gridContainerPosition.scale
+        return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`        
+      })
+      // .attr('opacity', 0)
+      // .transition()
+      // .attr('opacity', 1)
+  })
+
+  return containerSelection$
+}
+
 // 由事件取得group data的function
 export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize$, computedData$, fullChartParams$, gridContainerPosition$, layout$ }: {
   fullDataFormatter$: Observable<DataFormatterGrid>

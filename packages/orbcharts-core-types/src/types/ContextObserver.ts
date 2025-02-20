@@ -59,7 +59,3 @@ export interface ContainerPositionScaled {
   scale: [number, number]
 }
 
-export interface ContainerSize {
-  width: number
-  height: number
-}

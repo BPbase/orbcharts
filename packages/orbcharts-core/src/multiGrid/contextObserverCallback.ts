@@ -1,23 +1,15 @@
 import {
   map,
   shareReplay } from 'rxjs'
-import type { ContextObserverCallback } from '../../lib/core-types'
+import type { ContextObserverCallback, DataGridDatum } from '../../lib/core-types'
 import { multiGridEachDetailObservable, multiGridContainerObservable } from '../utils/multiGridObservables'
-import { textSizePxObservable, containerSizeObservable } from '../utils/observables'
+import { textSizePxObservable, containerSizeObservable, highlightObservable } from '../utils/observables'
+// import { createMultiGridSeriesLabels } from '../utils/orbchartsUtils'
+import { combineLatest } from 'rxjs/internal/observable/combineLatest'
 
 export const contextObserverCallback: ContextObserverCallback<'multiGrid'> = ({ subject, observer }) => {
 
   const textSizePx$ = textSizePxObservable(observer.fullChartParams$).pipe(
-    shareReplay(1)
-  )
-
-  const multiGridEachDetail$ = multiGridEachDetailObservable({
-    fullDataFormatter$: observer.fullDataFormatter$,
-    computedData$: observer.computedData$,
-    layout$: observer.layout$,
-    fullChartParams$: observer.fullChartParams$,
-    event$: subject.event$
-  }).pipe(
     shareReplay(1)
   )
 
@@ -37,6 +29,29 @@ export const contextObserverCallback: ContextObserverCallback<'multiGrid'> = ({ 
   }).pipe(
     shareReplay(1)
   )
+
+  // highlight全部grid
+  const multiGridHighlight$ = highlightObservable({
+    datumList$: observer.computedData$.pipe(
+      map(d => d.flat().flat()),
+      shareReplay(1)
+    ),
+    fullChartParams$: observer.fullChartParams$,
+    event$: subject.event$
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const multiGridEachDetail$ = multiGridEachDetailObservable({
+    fullDataFormatter$: observer.fullDataFormatter$,
+    computedData$: observer.computedData$,
+    layout$: observer.layout$,
+    fullChartParams$: observer.fullChartParams$,
+    event$: subject.event$,
+    containerSize$
+  }).pipe(
+    shareReplay(1)
+  )
   // multiGridContainerPosition$.subscribe(d => {
   //   console.log('multiGridContainerPosition$', d)
   // })
@@ -47,8 +62,9 @@ export const contextObserverCallback: ContextObserverCallback<'multiGrid'> = ({ 
     fullDataFormatter$: observer.fullDataFormatter$,
     computedData$: observer.computedData$,
     layout$: observer.layout$,
-    containerSize$,
     textSizePx$,
+    containerSize$,
+    multiGridHighlight$,
     multiGridContainerPosition$,
     multiGridEachDetail$,
     // multiGridContainer$

@@ -5,6 +5,7 @@ import type { DataFormatterTypeMap, DataFormatterPartialTypeMap } from './DataFo
 export interface Preset<T extends ChartType, AllPluginParams> {
   name: string
   description: string
+  descriptionZh: string
   chartParams: ChartParams
   dataFormatter: DataFormatterTypeMap<T>
   allPluginParams: AllPluginParams
@@ -13,6 +14,7 @@ export interface Preset<T extends ChartType, AllPluginParams> {
 export interface PresetPartial<T extends ChartType, AllPluginParams> {
   name?: string
   description?: string
+  descriptionZh?: string
   chartParams?: ChartParamsPartial
   dataFormatter?: DataFormatterPartialTypeMap<T>
   allPluginParams?: AllPluginParams

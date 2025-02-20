@@ -74,7 +74,7 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
         groupLabel: null,
         categoryLabel: null,
         highlightDefault: d.highlightDefault
-      }
+      } as HighlightTargetValue
     }),
     distinctUntilChanged()
   )
@@ -95,7 +95,7 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
           groupLabel: d.datum.groupLabel,
           categoryLabel: d.datum.categoryLabel,
           highlightDefault: null
-        }
+        } as HighlightTargetValue
         : {
           id: null,
           label: null,
@@ -103,7 +103,7 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
           groupLabel: null,
           categoryLabel: null,
           highlightDefault: null
-        }
+        } as HighlightTargetValue
     })
   )
   const highlightMouseout$ = event$.pipe(

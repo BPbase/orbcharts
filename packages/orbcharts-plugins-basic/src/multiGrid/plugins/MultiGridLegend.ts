@@ -88,18 +88,28 @@ export const MultiGridLegend = defineMultiGridPlugin(pluginConfig)(({ selection,
   
   const destroy$ = new Subject()
 
+  // const seriesLabels$ = observer.multiGridEachDetail$.pipe(
+  //   takeUntil(destroy$),
+  //   map(multiGrid => {
+  //     const seriesLabelsObservableArr = multiGrid.map((grid, gridIndex) => {
+  //       return grid.SeriesDataMap$.pipe(
+  //         // grid內的seriesLabels
+  //         map(seriesDataMap => Array.from(seriesDataMap.keys()))
+  //       )
+  //     })
+  //     return seriesLabelsObservableArr
+  //   }),
+  //   switchMap(seriesLabelsObservableArr => combineLatest(seriesLabelsObservableArr)),
+  //   map(data => data.flat())
+  // )
+
   const seriesLabels$ = observer.multiGridEachDetail$.pipe(
-    takeUntil(destroy$),
-    map(multiGrid => {
-      const seriesLabelsObservableArr = multiGrid.map((grid, gridIndex) => {
-        return grid.SeriesDataMap$.pipe(
-          // grid內的seriesLabels
-          map(seriesDataMap => Array.from(seriesDataMap.keys()))
-        )
-      })
-      return seriesLabelsObservableArr
+    map(multiGridEachDetail => multiGridEachDetail.map(grid => grid.seriesLabels$)),
+    switchMap(d => {
+      return combineLatest(d).pipe(
+        switchMap(async d => d),
+      )
     }),
-    switchMap(seriesLabelsObservableArr => combineLatest(seriesLabelsObservableArr)),
     map(data => data.flat())
   )
 

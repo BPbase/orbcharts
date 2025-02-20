@@ -35,11 +35,11 @@ interface BaseRacingAxisContext {
   fullParams$: Observable<BaseRacingLabelsParams>
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   fullChartParams$: Observable<ChartParams>
-  layout$: Observable<Layout>
+  // layout$: Observable<Layout>
   containerPosition$: Observable<ContainerPositionScaled[]>
   containerSize$: Observable<ContainerSize>
   isCategorySeprate$: Observable<boolean>
-  xyValueIndex$: Observable<[number, number]>
+  // xyValueIndex$: Observable<[number, number]>
 }
 
 type ClipPathDatum = {
@@ -97,7 +97,7 @@ function renderRacingAxisLabel ({ selection, textClassName, fullParams, containe
     .text(d => fullDataFormatter.yAxis.label)
 }
 
-function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingScale, valueScale, categoryData, xyValueIndex }: {
+function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingScale, valueScale, categoryData }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   fullParams: BaseRacingLabelsParams
   fullChartParams: ChartParams
@@ -105,7 +105,7 @@ function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingSc
   valueScale: ((n: number) => number)
   categoryData: ComputedDatumMultiValue[]
   // textReverseTransformWithRotate: string,
-  xyValueIndex: [number, number]
+  // xyValueIndex: [number, number]
 }) {
   const labelData = fullParams.barLabel.position === 'none' ? [] : categoryData
 
@@ -119,7 +119,7 @@ function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingSc
         return enter
           .append('text')
           .style('font-weight', 'bold')
-          .attr('x', d => valueScale(d.value[xyValueIndex[0]]) - fullParams.barLabel.padding)
+          .attr('x', d => valueScale(d.value[d.xValueIndex] ?? 0) - fullParams.barLabel.padding)
           .attr('y', d => rankingScale(d.label)!)
       },
       update => {
@@ -128,7 +128,7 @@ function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingSc
           .duration(fullChartParams.transitionDuration)
           .ease(d3.easeLinear)
           // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
-          .attr('x', d => valueScale(d.value[xyValueIndex[0]]) - fullParams.barLabel.padding)
+          .attr('x', d => valueScale(d.value[d.xValueIndex] ?? 0) - fullParams.barLabel.padding)
           .attr('y', d => rankingScale(d.label)!)
       },
       exit => exit.remove()
@@ -190,11 +190,11 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
   fullParams$,
   fullDataFormatter$,
   fullChartParams$,
-  layout$,
+  // layout$,
   containerPosition$,
   containerSize$,
   isCategorySeprate$,
-  xyValueIndex$
+  // xyValueIndex$
 }) => {
 
   const destroy$ = new Subject()
@@ -335,7 +335,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
     valueScale: valueScale$,
     textReverseTransform: textReverseTransform$,
     // textReverseTransformWithRotate: textReverseTransformWithRotate$,
-    xyValueIndex: xyValueIndex$
+    // xyValueIndex: xyValueIndex$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -370,7 +370,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
         categoryData: data.visibleComputedRankingData[i],
         // textReverseTransformWithRotate: data.textReverseTransformWithRotate,
         valueScale: data.valueScale,
-        xyValueIndex: data.xyValueIndex,
+        // xyValueIndex: data.xyValueIndex,
       })
   
       renderRacingAxisLabel({

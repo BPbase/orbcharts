@@ -112,7 +112,8 @@ function createTextData ({ computedData, valueLabel, valueIndex, renderFn, textA
   textAttrs: Array<{ [key:string]: string | number }>
   textStyles: Array<{ [key:string]: string | number }>
 }): TextDatum[] {
-  const callbackText = renderFn(valueLabel, valueIndex, computedData)
+  const text = valueLabel || String(valueIndex) // 如果沒有文字就跑數字
+  const callbackText = renderFn(text, valueIndex, computedData)
   const textArr = Array.isArray(callbackText) ? callbackText : [callbackText]
   return textArr.map((d, i) => {
     return {

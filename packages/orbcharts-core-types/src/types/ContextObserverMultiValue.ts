@@ -2,7 +2,8 @@ import { Observable } from 'rxjs'
 import type { ContextObserverBase } from './ContextObserver'
 import type { ComputedDataMultiValue, ComputedDatumMultiValue, ComputedDatumWithSumMultiValue } from './ComputedDataMultiValue'
 import type { TransformData } from './TransformData'
-import type { ContainerPositionScaled, ContainerSize } from './ContextObserver'
+import type { ContainerPositionScaled } from './ContextObserver'
+import type { ContainerSize } from './Common'
 
 export interface ContextObserverMultiValue<PluginParams> extends ContextObserverBase<'multiValue', PluginParams> {
   textSizePx$: Observable<number>

@@ -5,6 +5,7 @@ import {
   switchMap,
   first,
   takeUntil,
+  debounceTime,
   Subject, 
   Observable,
   distinctUntilChanged,
@@ -96,6 +97,7 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BUBBLES
 }
 
 let force: d3.Simulation<d3.SimulationNodeDatum, undefined> | undefined
+// let isRunning = false
 
 function makeForce (bubblesSelection: d3.Selection<SVGGElement, BubblesDatum, any, any>, fullParams: BubblesParams) {
   return d3.forceSimulation()
@@ -126,7 +128,12 @@ function makeForce (bubblesSelection: d3.Selection<SVGGElement, BubblesDatum, an
         })
         // .attr("cx", (d) => d.x)
         // .attr("cy", (d) => d.y)
+
+      
     })
+    // .on("end", () => {
+      
+    // })
 
 }
 
@@ -330,6 +337,7 @@ function drag (): d3.DragBehavior<Element, unknown, unknown> {
     .on("end", (event, d: any) => {
       d.fx = null
       d.fy = null
+      force!.alpha(1).restart()
     })
 }
 
@@ -358,7 +366,7 @@ function groupBubbles ({ fullParams, SeriesContainerPositionMap }: {
       return SeriesContainerPositionMap.get(data.seriesLabel)!.centerY
     }))
 
-  force!.alpha(1).restart()
+  // force!.alpha(1).restart()
 }
 
 function highlight ({ bubblesSelection, highlightIds, fullChartParams }: {
@@ -456,6 +464,7 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
     switchMap(async (d) => d),
     map(data => {
       if (force) {
+        // 先停止，重新計算之後再restart
         force.stop()
       }
 
@@ -478,13 +487,11 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
         // graphicHeight: data.layout.height
       })
 
-      // setTimeout(() => {
-      //   force!.alphaTarget(0)
-      //   force!.alpha(1).restart()
-      // }, 2000)
+      force!.alpha(1).restart()
 
       return bubblesSelection
-    })
+    }),
+    shareReplay(1)
   )
   
   combineLatest({
@@ -575,15 +582,15 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
 
   combineLatest({
     bubblesSelection: bubblesSelection$,
-    bubblesData: bubblesData$,
+    // bubblesData: bubblesData$,
     highlight: observer.seriesHighlight$.pipe(
       map(data => data.map(d => d.id))
     ),
     fullChartParams: observer.fullChartParams$,
-    fullParams: observer.fullParams$,
-    sumSeries: sumSeries$,
-    // layout: observer.layout$,
-    SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
+    // fullParams: observer.fullParams$,
+    // sumSeries: sumSeries$,
+    // // layout: observer.layout$,
+    // SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
@@ -614,6 +621,17 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
     // }
 
   })
+
+  // observer.layout$.pipe(
+  //   debounceTime(500),
+  // ).subscribe(() => {
+  //   if (force) {
+  //     force!.alphaTarget(0)
+  //     setTimeout(() => {
+  //       force!.alpha(1).restart()
+  //     }, 250)
+  //   }
+  // })
   
   return () => {
     destroy$.next(undefined)

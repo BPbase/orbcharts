@@ -52,7 +52,7 @@ export const DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS: MultiValueTooltipParams = {
       ? `<tspan>${eventData.datum.label}</tspan>  `
       : ''
     const datumSvg = `<text font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
-    ${datumLabelSvg}<tspan font-weight="bold">${eventData.datum.value}</tspan>
+    ${datumLabelSvg}<tspan font-weight="bold">${eventData.datum._visibleValue}</tspan>
   </text>`
 
     return `${categorySvg}
@@ -76,7 +76,7 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
       ? \`<tspan>\${eventData.datum.label}</tspan>  \`
       : ''
     const datumSvg = \`<text font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
-    \${datumLabelSvg}<tspan font-weight="bold">\${eventData.datum.value}</tspan>
+    \${datumLabelSvg}<tspan font-weight="bold">\${eventData.datum._visibleValue}</tspan>
   </text>\`
 
     return \`\${categorySvg}

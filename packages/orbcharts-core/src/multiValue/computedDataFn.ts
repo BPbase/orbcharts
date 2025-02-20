@@ -87,10 +87,13 @@ export const computedDataFn: ComputedDataFn<'multiValue'> = (context) => {
         value: d.value,
         categoryIndex,
         categoryLabel: d.categoryLabel,
+        xValueIndex: dataFormatter.xAxis.valueIndex,
+        yValueIndex: dataFormatter.yAxis.valueIndex,
         // valueLabel: formatValueToLabel(_d.value, dataFormatter.multiValue[_i].valueFormat),
         // axis: _i == 0 ? xScale(_d.value) : yScale(_d.value),
         visible: true, // 先給預設值
-        color
+        color,
+        _visibleValue: d.value // 預設和value相同
       }
 
       computedDatum.visible = dataFormatter.visibleFilter(computedDatum, context)

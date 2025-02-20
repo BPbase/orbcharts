@@ -88,7 +88,7 @@ export const MultiDots = defineMultiGridPlugin(pluginConfig)(({ selection, name,
             gridGraphicTransform$: d.gridGraphicTransform$,
             gridGraphicReverseScale$: d.gridGraphicReverseScale$,
             gridAxesSize$: d.gridAxesSize$,
-            gridHighlight$: d.gridHighlight$,
+            gridHighlight$: observer.multiGridHighlight$,
             gridContainerPosition$: d.gridContainerPosition$,
             event$: subject.event$ as Subject<any>,
           })

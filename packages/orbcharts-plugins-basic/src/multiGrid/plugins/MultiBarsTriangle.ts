@@ -99,7 +99,7 @@ export const MultiBarsTriangle = defineMultiGridPlugin(pluginConfig)(({ selectio
             gridAxesTransform$: d.gridAxesTransform$,
             gridGraphicTransform$: d.gridGraphicTransform$,
             gridAxesSize$: d.gridAxesSize$,
-            gridHighlight$: d.gridHighlight$,
+            gridHighlight$: observer.multiGridHighlight$,
             gridContainerPosition$: d.gridContainerPosition$,
             isSeriesSeprate$: isSeriesSeprate$,
             event$: subject.event$ as Subject<any>,

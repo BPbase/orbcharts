@@ -85,7 +85,7 @@ export const MultiLines = defineMultiGridPlugin(pluginConfig)(({ selection, root
             gridAxesTransform$: d.gridAxesTransform$,
             gridGraphicTransform$: d.gridGraphicTransform$,
             gridAxesSize$: d.gridAxesSize$,
-            gridHighlight$: d.gridHighlight$,
+            gridHighlight$: observer.multiGridHighlight$,
             gridContainerPosition$: d.gridContainerPosition$,
             allContainerPosition$,
             layout$: observer.layout$,

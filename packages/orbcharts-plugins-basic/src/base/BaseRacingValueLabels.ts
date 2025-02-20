@@ -35,13 +35,13 @@ interface BaseRacingAxisContext {
   xScale$: Observable<(n: number) => number>
   computedRankingAmount$: Observable<number>
   fullParams$: Observable<BaseRacingValueLabelsParams>
-  fullDataFormatter$: Observable<DataFormatterMultiValue>
+  // fullDataFormatter$: Observable<DataFormatterMultiValue>
   fullChartParams$: Observable<ChartParams>
-  layout$: Observable<Layout>
+  // layout$: Observable<Layout>
   containerPosition$: Observable<ContainerPositionScaled[]>
   containerSize$: Observable<ContainerSize>
   isCategorySeprate$: Observable<boolean>
-  xyValueIndex$: Observable<[number, number]>
+  // xyValueIndex$: Observable<[number, number]>
 }
 
 type ClipPathDatum = {
@@ -58,7 +58,7 @@ const yTickTextAnchor = 'start'
 const yTickDominantBaseline = 'middle'
 
 
-function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingScale, xScale, categoryData, computedRankingAmount, xyValueIndex }: {
+function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingScale, xScale, categoryData, computedRankingAmount }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   fullParams: BaseRacingValueLabelsParams
   fullChartParams: ChartParams
@@ -67,7 +67,7 @@ function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingSc
   categoryData: ComputedDatumMultiValue[]
   computedRankingAmount: number
   // textReverseTransform: string
-  xyValueIndex: [number, number]
+  // xyValueIndex: [number, number]
 }) {
 
   const labelData = categoryData.slice(0, computedRankingAmount + 1) // 將多餘的label移除避免不避要的計算
@@ -83,7 +83,7 @@ function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingSc
           .append('g')
           // .attr('x', d => xScale(d.value[xyValueIndex[0]]) + fullParams.padding)
           // .attr('y', d => rankingScale(d.label)!)
-          .attr('transform', d => `translate(${xScale((d.value[xyValueIndex[0]]) ?? 0) + fullParams.padding}, ${rankingScale(d.label)!})`)
+          .attr('transform', d => `translate(${xScale((d.value[d.xValueIndex] ?? 0)) + fullParams.padding}, ${rankingScale(d.label)!})`)
       },
       update => {
         return update
@@ -93,7 +93,7 @@ function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingSc
           // // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
           // .attr('x', d => xScale(d.value[xyValueIndex[0]]) + fullParams.padding)
           // .attr('y', d => rankingScale(d.label)!)
-          .attr('transform', d => `translate(${xScale((d.value[xyValueIndex[0]]) ?? 0) + fullParams.padding}, ${rankingScale(d.label)!})`)
+          .attr('transform', d => `translate(${xScale((d.value[d.xValueIndex] ?? 0)) + fullParams.padding}, ${rankingScale(d.label)!})`)
       },
       exit => exit.remove()
     )
@@ -121,7 +121,7 @@ function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingSc
         .duration(fullChartParams.transitionDuration)
         .ease(d3.easeLinear)
         .textTween(datum => {
-          const currentIndex = xyValueIndex[0]
+          const currentIndex = datum.xValueIndex
           const prevIndex = currentIndex === 0 ? 0 : currentIndex - 1
           const prev = datum.value[prevIndex]
           const current = datum.value[currentIndex]
@@ -229,13 +229,13 @@ export const createBaseRacingValueLabels: BasePluginFn<BaseRacingAxisContext> = 
   xScale$,
   computedRankingAmount$,
   fullParams$,
-  fullDataFormatter$,
+  // fullDataFormatter$,
   fullChartParams$,
-  layout$,
+  // layout$,
   containerPosition$,
   containerSize$,
   isCategorySeprate$,
-  xyValueIndex$
+  // xyValueIndex$
 }) => {
 
   const destroy$ = new Subject()
@@ -359,7 +359,7 @@ export const createBaseRacingValueLabels: BasePluginFn<BaseRacingAxisContext> = 
     xScale: xScale$,
     computedRankingAmount: computedRankingAmount$,
     // textReverseTransform: textReverseTransform$,
-    xyValueIndex: xyValueIndex$
+    // xyValueIndex: xyValueIndex$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -391,7 +391,7 @@ export const createBaseRacingValueLabels: BasePluginFn<BaseRacingAxisContext> = 
         // textReverseTransformWithRotate: data.textReverseTransformWithRotate,
         xScale: data.xScale,
         computedRankingAmount: data.computedRankingAmount,
-        xyValueIndex: data.xyValueIndex,
+        // xyValueIndex: data.xyValueIndex,
       })
     })
 

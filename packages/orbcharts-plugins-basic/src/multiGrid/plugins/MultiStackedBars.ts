@@ -91,7 +91,7 @@ export const MultiStackedBars = defineMultiGridPlugin(pluginConfig)(({ selection
             gridGraphicTransform$: d.gridGraphicTransform$,
             gridGraphicReverseScale$: d.gridGraphicReverseScale$,
             gridAxesSize$: d.gridAxesSize$,
-            gridHighlight$: d.gridHighlight$,
+            gridHighlight$: observer.multiGridHighlight$,
             gridContainerPosition$: d.gridContainerPosition$,
             isSeriesSeprate$,
             event$: subject.event$ as Subject<any>,

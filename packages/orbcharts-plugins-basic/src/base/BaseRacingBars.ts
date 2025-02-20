@@ -40,7 +40,7 @@ interface BaseRacingBarsContext {
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
   fullParams$: Observable<BaseRacingBarsParams>
   fullChartParams$: Observable<ChartParams>
-  xyValueIndex$: Observable<[number, number]>
+  // xyValueIndex$: Observable<[number, number]>
   highlight$: Observable<ComputedDatumMultiValue[]>
   rankingItemHeight$: Observable<number>
   rankingScaleList$: Observable<d3.ScalePoint<string>[]>
@@ -61,7 +61,7 @@ interface RenderGraphicGParams {
 interface RenderBarParams {
   graphicGSelection: d3.Selection<SVGGElement, ComputedDatumMultiValue, any, any>
   rectClassName: string
-  xyValueIndex: [number, number]
+  // xyValueIndex: [number, number]
   xScale: (n: number) => number
   fullParams: BaseRacingBarsParams
   barWidth: number
@@ -110,7 +110,7 @@ function renderGraphicG ({ containerSelection, visibleComputedRankingData, ranki
   return graphicBarSelection
 }
 
-function renderRectBars ({ graphicGSelection, rectClassName, xyValueIndex, xScale, fullParams, barWidth, transitionDuration }: RenderBarParams) {
+function renderRectBars ({ graphicGSelection, rectClassName, xScale, fullParams, barWidth, transitionDuration }: RenderBarParams) {
 
   graphicGSelection
     .each((datum, i, g) => {
@@ -132,7 +132,7 @@ function renderRectBars ({ graphicGSelection, rectClassName, xyValueIndex, xScal
               .classed(rectClassName, true)
               .attr('cursor', 'pointer')
               // .attr('width', d => 1)
-              .attr('width', d => xScale(d.value[xyValueIndex[0]]) ?? 1)
+              .attr('width', d => xScale(d.value[d.xValueIndex]) ?? 1)
               .attr('height', barWidth)
           },
           update => {
@@ -140,7 +140,7 @@ function renderRectBars ({ graphicGSelection, rectClassName, xyValueIndex, xScal
               .transition()
               .duration(transitionDuration)
               .ease(d3.easeLinear)
-              .attr('width', d => xScale(d.value[xyValueIndex[0]]) ?? 1)
+              .attr('width', d => xScale(d.value[d.xValueIndex]) ?? 1)
               .attr('height', barWidth)
           },
           exit => exit.remove()
@@ -224,7 +224,7 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
   selection,
   computedData$,
   visibleComputedRankingData$,
-  xyValueIndex$,
+  // xyValueIndex$,
   // categoryLabels$,
   CategoryDataMap$,
   fullParams$,
@@ -401,7 +401,7 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
 
   const graphicSelection$ = combineLatest({
     graphicGSelection: graphicGSelection$,
-    xyValueIndex: xyValueIndex$,
+    // xyValueIndex: xyValueIndex$,
     xScale: xScale$,
     barWidth: barWidth$,
     transitionDuration: transitionDuration$,
@@ -414,13 +414,14 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
       return renderRectBars({
         graphicGSelection: data.graphicGSelection,
         rectClassName,
-        xyValueIndex: data.xyValueIndex,
+        // xyValueIndex: data.xyValueIndex,
         xScale: data.xScale,
         fullParams: data.fullParams,
         barWidth: data.barWidth,
         transitionDuration: data.transitionDuration,
       })
-    })
+    }),
+    shareReplay(1)
   )
 
   const highlightTarget$ = fullChartParams$.pipe(
@@ -454,6 +455,10 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
         //   data: data.computedData,
         //   event,
         // })
+
+        // 只顯示目前的值
+        datum._visibleValue = [datum.value[datum.xValueIndex]]
+
         event$.next({
           type: 'multiValue',
           eventName: 'mouseover',
@@ -470,6 +475,9 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
       .on('mousemove', (event, datum) => {
         // event.stopPropagation()
 
+        // 只顯示目前的值
+        datum._visibleValue = [datum.value[datum.xValueIndex]]
+        
         event$.next({
           type: 'multiValue',
           eventName: 'mousemove',
@@ -501,6 +509,9 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
       })
       .on('click', (event, datum) => {
         // event.stopPropagation()
+
+        // 只顯示目前的值
+        datum._visibleValue = [datum.value[datum.xValueIndex]]
 
         event$.next({
           type: 'multiValue',

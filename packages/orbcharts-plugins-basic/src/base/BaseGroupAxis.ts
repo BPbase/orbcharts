@@ -258,6 +258,7 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
     .style('fill', 'none')
     .style('stroke', fullParams.tickLineVisible == true ? getColor(fullParams.tickColorType, chartParams) : 'none')
     .style('stroke-dasharray', fullParams.tickFullLineDasharray)
+    .style('vector-effect', 'non-scaling-stroke') // 避免 scale 導致線條變形
     .attr('pointer-events', 'none')
 
   xAxisEl.selectAll('path')
