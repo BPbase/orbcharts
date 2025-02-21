@@ -5,7 +5,8 @@ import type { PresetGridPluginParams, PresetNoneDataPluginParams } from '../type
 export const PRESET_GRID_BASIC: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_GRID_BASIC',
-  description: '基本Grid參數',
+  description: 'Basic Grid',
+  descriptionZh: '基本Grid參數',
   chartParams: {
     colors: {
       light: {
@@ -24,8 +25,8 @@ export const PRESET_GRID_BASIC: PresetPartial<'grid', Partial<PresetGridPluginPa
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 80
     },

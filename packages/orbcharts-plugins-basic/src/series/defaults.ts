@@ -29,17 +29,9 @@ export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
 }
 
 export const DEFAULT_PIE_PARAMS: PieParams = {
-  // padding: {
-  //   top: 50,
-  //   right: 70,
-  //   bottom: 50,
-  //   left: 70
-  // },
   outerRadius: 0.85,
   innerRadius: 0,
   outerRadiusWhileHighlight: 0.9,
-  // label?: LabelStyle
-  // enterDuration: 800,
   startAngle: 0,
   endAngle: Math.PI * 2,
   padAngle: 0,
@@ -47,9 +39,6 @@ export const DEFAULT_PIE_PARAMS: PieParams = {
   strokeWidth: 1,
   // padRadius: 100,
   cornerRadius: 0,
-  // highlightTarget: 'datum',
-  // highlightId: null,
-  // highlightLabel: null,
 }
 
 export const DEFAULT_PIE_EVENT_TEXTS_PARAMS: PieEventTextsParams = {
@@ -119,7 +108,7 @@ export const DEFAULT_PIE_LABELS_PARAMS: PieLabelsParams = {
 DEFAULT_PIE_LABELS_PARAMS.labelFn.toString = () => `d => String(d.label)`
 
 export const DEFAULT_ROSE_PARAMS: RoseParams = {
-  outerRadius: 0.85,
+  outerRadius: 0.95,
   padAngle: 0,
   strokeColorType: 'background',
   strokeWidth: 0.5,
@@ -129,7 +118,7 @@ export const DEFAULT_ROSE_PARAMS: RoseParams = {
 }
 
 export const DEFAULT_ROSE_LABELS_PARAMS: RoseLabelsParams = {
-  outerRadius: 0.85,
+  outerRadius: 0.95,
   labelCentroid: 2.1,
   labelFn: d => String(d.label),
   labelColorType: 'primary',

@@ -7,7 +7,8 @@ import type { PresetGridPluginParams,
 export const PRESET_LINE_AREAS_CURVE: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_LINE_AREAS_CURVE',
-  description: '弧線折線圖',
+  description: 'Curve LineArea',
+  descriptionZh: '弧線的折線區域圖',
   chartParams: {
     colors: {
       light: {
@@ -26,8 +27,8 @@ export const PRESET_LINE_AREAS_CURVE: PresetPartial<'grid', Partial<PresetGridPl
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 80
     },

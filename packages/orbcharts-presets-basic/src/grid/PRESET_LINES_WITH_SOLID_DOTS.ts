@@ -2,12 +2,12 @@ import type { PresetPartial } from '../../lib/core-types'
 import type { PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_LINES_WITH_SOLID_DOTS: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_LINES_WITH_SOLID_DOTS',
-  description: '折線圖及實心圓點',
+  description: 'Solid Dots Line',
+  descriptionZh: '實心圓點的折線圖',
   chartParams: {
     colors: {
       light: {
@@ -26,15 +26,14 @@ export const PRESET_LINES_WITH_SOLID_DOTS: PresetPartial<'grid', Partial<PresetG
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 80
     },
     highlightTarget: 'series'
   },
   allPluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Lines: {},
     Dots: {
       radius: 3,
@@ -45,8 +44,6 @@ export const PRESET_LINES_WITH_SOLID_DOTS: PresetPartial<'grid', Partial<PresetG
     ValueAxis: {},
     GroupAux: {},
     GridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
       listRectHeight: 2

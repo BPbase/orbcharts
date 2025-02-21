@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetSeriesPluginParams, PresetBubblesParams, PresetSeriesLegendParams, PresetSeriesTooltipParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_BUBBLES_SCALING_BY_RADIUS: PresetPartial<'series', Partial<PresetSeriesPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_BUBBLES_SCALING_BY_RADIUS',
-  description: '以半徑尺寸為比例的泡泡圖',
+  description: 'Bubble chart scaled by radius size',
+  descriptionZh: '以半徑尺寸為比例的泡泡圖',
   chartParams: {
     colors: {
       light: {
@@ -25,7 +25,6 @@ export const PRESET_BUBBLES_SCALING_BY_RADIUS: PresetPartial<'series', Partial<P
     }
   },
   allPluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Bubbles: {
       arcScaleType: 'radius'
     },

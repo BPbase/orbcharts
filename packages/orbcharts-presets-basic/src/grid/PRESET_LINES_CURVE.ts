@@ -2,12 +2,12 @@ import type { PresetPartial } from '../../lib/core-types'
 import type { PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_LINES_CURVE: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_LINES_CURVE',
-  description: '弧線折線圖',
+  description: 'Curve Line',
+  descriptionZh: '弧線折線圖',
   chartParams: {
     colors: {
       light: {
@@ -26,15 +26,14 @@ export const PRESET_LINES_CURVE: PresetPartial<'grid', Partial<PresetGridPluginP
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 80
     },
     highlightTarget: 'series'
   },
   allPluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Lines: {
       lineCurve: 'curveMonotoneX',
       lineWidth: 3
@@ -44,8 +43,6 @@ export const PRESET_LINES_CURVE: PresetPartial<'grid', Partial<PresetGridPluginP
     ValueAxis: {},
     GroupAux: {},
     GridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
       listRectHeight: 2

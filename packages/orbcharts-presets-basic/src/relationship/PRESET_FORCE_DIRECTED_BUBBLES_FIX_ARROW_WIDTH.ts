@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetRelationshipPluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_FORCE_DIRECTED_BUBBLES_FIX_ARROW_WIDTH: PresetPartial<'relationship', Partial<PresetRelationshipPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_FORCE_DIRECTED_BUBBLES_FIX_ARROW_WIDTH',
-  description: 'Force Directed Bubbles固定箭頭寬度',
+  description: 'Force-directed bubble chart with fixed arrow width',
+  descriptionZh: '固定箭頭寬度的力導向泡泡圖',
   chartParams: {
     colors: {
       light: {
@@ -23,12 +23,6 @@ export const PRESET_FORCE_DIRECTED_BUBBLES_FIX_ARROW_WIDTH: PresetPartial<'relat
         ],
       }
     }
-    // padding: {
-    //   top: 40,
-    //   right: 40,
-    //   bottom: 60,
-    //   left: 40
-    // },
   },
   allPluginParams: {
     ForceDirectedBubbles: {

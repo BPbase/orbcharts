@@ -7,7 +7,8 @@ import type { PresetGridPluginParams,
 export const PRESET_BARS_HORIZONTAL_AND_THIN: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_BARS_HORIZONTAL_AND_THIN',
-  description: '橫向細長長條圖',
+  description: 'Horizontal thin bars',
+  descriptionZh: '橫向細長長條圖',
   chartParams: {
     colors: {
       light: {
@@ -26,27 +27,19 @@ export const PRESET_BARS_HORIZONTAL_AND_THIN: PresetPartial<'grid', Partial<Pres
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 160
     },
   },
   dataFormatter: {
-    // grid: {
       valueAxis: {
         position: 'bottom'
-        // position: 'top'
-        // position: 'left'
-        // position: 'right'
       },
       groupAxis: {
         position: 'left'
-        // position: 'right'
-        // position: 'bottom'
-        // position: 'top'
       },
-    // }
   },
   allPluginParams: {
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,

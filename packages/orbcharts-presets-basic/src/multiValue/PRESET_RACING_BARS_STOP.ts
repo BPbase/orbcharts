@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_RACING_BARS_STOP: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_RACING_BARS_STOP',
-  description: '停止的賽跑長條圖',
+  description: 'Stopped Racing Bars',
+  descriptionZh: '停止的賽跑長條圖',
   chartParams: {
     colors: {
       light: {

@@ -5,7 +5,8 @@ import type { PresetGridPluginParams, PresetNoneDataPluginParams } from '../type
 export const PRESET_GRID_SEPARATE_SERIES: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_GRID_SEPARATE_SERIES',
-  description: '分開顯示Series',
+  description: 'Separate Series',
+  descriptionZh: '分開顯示Series',
   chartParams: {
     colors: {
       light: {
@@ -24,8 +25,8 @@ export const PRESET_GRID_SEPARATE_SERIES: PresetPartial<'grid', Partial<PresetGr
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 140,
       left: 80
     },

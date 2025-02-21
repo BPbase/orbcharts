@@ -3,12 +3,12 @@ import type {
   PresetMultiGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID: PresetPartial<'multiGrid', Partial<PresetMultiGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_MULTI_LINE_AREAS_SEPARATE_GRID',
-  description: '2組區域圖表',
+  description: '2 groups of Line Area chart',
+  descriptionZh: '2組區域折線圖',
   chartParams: {
     colors: {
       light: {
@@ -27,8 +27,8 @@ export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID: PresetPartial<'multiGrid', P
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 140,
       left: 80
     },
@@ -55,7 +55,6 @@ export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID: PresetPartial<'multiGrid', P
     // }
   },
   allPluginParams: {
-    ...ALL_PLUGIN_PARAMS_NONE_DATA,
     MultiGroupAxis: {
       tickTextRotate: -30,
       gridIndexes: 'all'

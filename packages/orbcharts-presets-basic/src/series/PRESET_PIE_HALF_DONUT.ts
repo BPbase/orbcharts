@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetSeriesPluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_PIE_HALF_DONUT: PresetPartial<'series', Partial<PresetSeriesPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_PIE_HALF_DONUT',
-  description: '半圓甜甜圈圖',
+  description: 'Half donut chart',
+  descriptionZh: '半圓甜甜圈圖',
   chartParams: {
     colors: {
       light: {
@@ -34,7 +34,6 @@ export const PRESET_PIE_HALF_DONUT: PresetPartial<'series', Partial<PresetSeries
     sort: (a, b) => b.value - a.value
   },
   allPluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Pie: {
       innerRadius: 0.5,
       startAngle: - Math.PI / 2,

@@ -3,12 +3,12 @@ import type { PresetBarsParams,
   PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_BARS_HORIZONTAL_AND_ROUND: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_BARS_HORIZONTAL_AND_ROUND',
-  description: '橫向圓角長條圖',
+  description: 'Horizontal bars with round corners',
+  descriptionZh: '橫向圓角長條圖',
   chartParams: {
     colors: {
       light: {
@@ -27,30 +27,21 @@ export const PRESET_BARS_HORIZONTAL_AND_ROUND: PresetPartial<'grid', Partial<Pre
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 160
     },
   },
   dataFormatter: {
-    // grid: {
-      valueAxis: {
-        position: 'bottom'
-        // position: 'top'
-        // position: 'left'
-        // position: 'right'
-      },
-      groupAxis: {
-        position: 'left'
-        // position: 'right'
-        // position: 'bottom'
-        // position: 'top'
-      },
-    // }
+    valueAxis: {
+      position: 'bottom'
+    },
+    groupAxis: {
+      position: 'left'
+    },
   },
   allPluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Bars: {
       barWidth: 0,
       barPadding: 1,
@@ -61,9 +52,6 @@ export const PRESET_BARS_HORIZONTAL_AND_ROUND: PresetPartial<'grid', Partial<Pre
     ValueAxis: {},
     GroupAux: {},
     GridLegend: {
-      // 底部圖例及圓弧列點
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
       listRectRadius: 7,

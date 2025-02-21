@@ -19,6 +19,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             getData: () => import('./data/seriesData3')
           },
           {
+            title: 'PRESET_BUBBLES_SIMPLE',
+            presetName: 'PRESET_BUBBLES_SIMPLE',
+            allPluginNames: ['Bubbles', 'SeriesTooltip'],
+            getData: () => import('./data/seriesData3')
+          },
+          {
             title: 'PRESET_BUBBLES_SCALING_BY_RADIUS',
             presetName: 'PRESET_BUBBLES_SCALING_BY_RADIUS',
             allPluginNames: ['Bubbles', 'SeriesLegend', 'SeriesTooltip'],
@@ -48,6 +54,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             title: 'PRESET_PIE_BASIC',
             presetName: 'PRESET_PIE_BASIC',
             allPluginNames: ['Pie', 'PieLabels', 'SeriesLegend', 'SeriesTooltip'],
+            getData: () => import('./data/seriesData2')
+          },
+          {
+            title: 'PRESET_PIE_SIMPLE',
+            presetName: 'PRESET_PIE_SIMPLE',
+            allPluginNames: ['Pie', 'PieLabels', 'SeriesTooltip'],
             getData: () => import('./data/seriesData2')
           },
           {
@@ -101,6 +113,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             getData: () => import('./data/seriesData2')
           },
           {
+            title: 'PRESET_ROSE_SIMPLE',
+            presetName: 'PRESET_ROSE_SIMPLE',
+            allPluginNames: ['Rose', 'RoseLabels', 'SeriesTooltip'],
+            getData: () => import('./data/seriesData2')
+          },
+          {
             title: 'PRESET_ROSE_SCALING_BY_RADIUS',
             presetName: 'PRESET_ROSE_SCALING_BY_RADIUS',
             allPluginNames: ['Rose', 'RoseLabels', 'SeriesLegend', 'SeriesTooltip'],
@@ -148,6 +166,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             title: 'PRESET_GRID_BASIC',
             presetName: 'PRESET_GRID_BASIC',
             allPluginNames: ['GroupAxis', 'ValueAxis', 'Bars', 'GroupZoom', 'GridLegend', 'GridTooltip'],
+            getData: () => import('./data/gridData1')
+          },
+          {
+            title: 'PRESET_GRID_SIMPLE',
+            presetName: 'PRESET_GRID_SIMPLE',
+            allPluginNames: ['GroupAxis', 'Bars', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
@@ -221,6 +245,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsPN', 'GroupZoom', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData4')
           },
+          {
+            title: 'PRESET_GRID_PN_SCALE_SIMPLE',
+            presetName: 'PRESET_GRID_PN_SCALE_SIMPLE',
+            allPluginNames: ['GroupAxis', 'BarsPN', 'GridLegend', 'GridTooltip'],
+            getData: () => import('./data/gridData4')
+          },
         ]
       },
       {
@@ -233,6 +263,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             title: 'PRESET_GRID_BASIC',
             presetName: 'PRESET_GRID_BASIC',
             allPluginNames: ['GroupAxis', 'StackedValueAxis', 'StackedBars', 'GroupZoom', 'GridLegend', 'GridTooltip'],
+            getData: () => import('./data/gridData1')
+          },
+          {
+            title: 'PRESET_GRID_SIMPLE',
+            presetName: 'PRESET_GRID_SIMPLE',
+            allPluginNames: ['GroupAxis', 'StackedBars', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
@@ -283,6 +319,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             getData: () => import('./data/gridData1')
           },
           {
+            title: 'PRESET_GRID_SIMPLE',
+            presetName: 'PRESET_GRID_SIMPLE',
+            allPluginNames: ['GroupAxis', 'BarsTriangle', 'GridLegend', 'GridTooltip'],
+            getData: () => import('./data/gridData1')
+          },
+          {
             title: 'PRESET_GRID_ROTATE_AXIS_LABEL',
             presetName: 'PRESET_GRID_ROTATE_AXIS_LABEL',
             allPluginNames: ['GroupAxis', 'ValueAxis', 'BarsTriangle', 'GroupZoom', 'GridLegend', 'GridTooltip'],
@@ -327,6 +369,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             title: 'PRESET_LINES_BASIC',
             presetName: 'PRESET_LINES_BASIC',
             allPluginNames: ['GroupAxis', 'ValueAxis', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
+            getData: () => import('./data/gridData1')
+          },
+          {
+            title: 'PRESET_LINES_SIMPLE',
+            presetName: 'PRESET_LINES_SIMPLE',
+            allPluginNames: ['GroupAxis', 'Lines', 'Dots', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
@@ -397,6 +445,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             title: 'PRESET_LINE_AREAS_BASIC',
             presetName: 'PRESET_LINE_AREAS_BASIC',
             allPluginNames: ['GroupAxis', 'ValueAxis', 'LineAreas', 'Lines', 'GroupAux', 'Dots', 'GroupZoom', 'GridLegend', 'GridTooltip'],
+            getData: () => import('./data/gridData1')
+          },
+          {
+            title: 'PRESET_LINE_AREAS_SIMPLE',
+            presetName: 'PRESET_LINE_AREAS_SIMPLE',
+            allPluginNames: ['GroupAxis', 'LineAreas', 'Lines','Dots', 'GridLegend', 'GridTooltip'],
             getData: () => import('./data/gridData1')
           },
           {
@@ -476,6 +530,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             getData: () => import('./data/multiGridData1')
           },
           {
+            title: 'PRESET_MULTI_GRID_DIVERGING_SIMPLE',
+            presetName: 'PRESET_MULTI_GRID_DIVERGING_SIMPLE',
+            allPluginNames: ['MultiGroupAxis', 'MultiBars', 'MultiGridLegend', 'MultiGridTooltip'],
+            getData: () => import('./data/multiGridData0')
+          },
+          {
             title: 'PRESET_MULTI_GRID_SEPARATE_GRID',
             presetName: 'PRESET_MULTI_GRID_SEPARATE_GRID',
             allPluginNames: ['MultiGroupAxis', 'MultiValueAxis', 'MultiBars', 'MultiGridLegend', 'MultiGridTooltip'],
@@ -510,6 +570,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             allPluginNames: ['MultiGroupAxis', 'MultiStackedValueAxis', 'MultiStackedBars', 'MultiGridLegend', 'MultiGridTooltip'],
             getData: () => import('./data/multiGridData3')
           },
+          {
+            title: 'PRESET_MULTI_GRID_SEPARATE_GRID_SIMPLE',
+            presetName: 'PRESET_MULTI_GRID_SEPARATE_GRID_SIMPLE',
+            allPluginNames: ['MultiGroupAxis', 'MultiStackedBars', 'MultiGridLegend', 'MultiGridTooltip'],
+            getData: () => import('./data/multiGridData0')
+          },
           // {
           //   chartType: 'multiGrid',
           //   pluginName: 'MultiStackedBars',
@@ -538,6 +604,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             presetName: 'PRESET_MULTI_GRID_SEPARATE_GRID',
             allPluginNames: ['MultiGroupAxis', 'MultiValueAxis', 'MultiBarsTriangle', 'MultiGridLegend', 'MultiGridTooltip'],
             getData: () => import('./data/multiGridData3')
+          },
+          {
+            title: 'PRESET_MULTI_GRID_SEPARATE_GRID_SIMPLE',
+            presetName: 'PRESET_MULTI_GRID_SEPARATE_GRID_SIMPLE',
+            allPluginNames: ['MultiGroupAxis', 'MultiBarsTriangle', 'MultiGridLegend', 'MultiGridTooltip'],
+            getData: () => import('./data/multiGridData0')
           },
           // {
           //   chartType: 'multiGrid',
@@ -568,6 +640,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             allPluginNames: ['MultiGroupAxis', 'MultiValueAxis', 'MultiLines', 'MultiGridLegend', 'MultiGridTooltip'],
             getData: () => import('./data/multiGridData3')
           },
+          {
+            title: 'PRESET_MULTI_LINES_SEPARATE_GRID_SIMPLE',
+            presetName: 'PRESET_MULTI_LINES_SEPARATE_GRID_SIMPLE',
+            allPluginNames: ['MultiGroupAxis', 'MultiLines', 'MultiGridLegend', 'MultiGridTooltip'],
+            getData: () => import('./data/multiGridData0')
+          },
           // {
           //   chartType: 'multiGrid',
           //   pluginName: 'MultiLines',
@@ -596,6 +674,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             presetName: 'PRESET_MULTI_LINE_AREAS_SEPARATE_GRID',
             allPluginNames: ['MultiGroupAxis', 'MultiValueAxis', 'MultiLineAreas', 'MultiLines', 'MultiGridLegend', 'MultiGridTooltip'],
             getData: () => import('./data/multiGridData3')
+          },
+          {
+            title: 'PRESET_MULTI_LINE_AREAS_SEPARATE_GRID_SIMPLE',
+            presetName: 'PRESET_MULTI_LINE_AREAS_SEPARATE_GRID_SIMPLE',
+            allPluginNames: ['MultiGroupAxis', 'MultiLineAreas', 'MultiLines', 'MultiGridLegend', 'MultiGridTooltip'],
+            getData: () => import('./data/multiGridData0')
           },
           // {
           //   chartType: 'multiGrid',
@@ -627,6 +711,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             getData: () => import('./data/multiGridData1')
           },
           {
+            title: 'PRESET_MULTI_GRID_SIMPLE',
+            presetName: 'PRESET_MULTI_GRID_SIMPLE',
+            allPluginNames: ['MultiGroupAxis', 'MultiBars', 'MultiLines', 'MultiDots', 'MultiGridLegend', 'MultiGridTooltip'],
+            getData: () => import('./data/multiGridData0')
+          },
+          {
             title: 'PRESET_MULTI_GRID_ROUND_STYLE',
             presetName: 'PRESET_MULTI_GRID_ROUND_STYLE',
             allPluginNames: ['MultiGroupAxis', 'OverlappingValueAxes', 'MultiBars', 'MultiLines', 'MultiDots','MultiGridLegend', 'MultiGridTooltip'],
@@ -646,6 +736,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             allPluginNames: ['MultiGroupAxis', 'OverlappingStackedValueAxes', 'MultiStackedBars', 'MultiLines', 'MultiDots', 'MultiGridLegend', 'MultiGridTooltip'],
             getData: () => import('./data/multiGridData1')
           },
+          {
+            title: 'PRESET_MULTI_GRID_SIMPLE',
+            presetName: 'PRESET_MULTI_GRID_SIMPLE',
+            allPluginNames: ['MultiGroupAxis', 'MultiStackedBars', 'MultiLines', 'MultiDots', 'MultiGridLegend', 'MultiGridTooltip'],
+            getData: () => import('./data/multiGridData0')
+          },
         ]
       },
       {
@@ -659,6 +755,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             presetName: 'PRESET_MULTI_GRID_BASIC',
             allPluginNames: ['MultiGroupAxis', 'OverlappingValueAxes', 'MultiBarsTriangle', 'MultiLines', 'MultiDots', 'MultiGridLegend', 'MultiGridTooltip'],
             getData: () => import('./data/multiGridData1')
+          },
+          {
+            title: 'PRESET_MULTI_GRID_SIMPLE',
+            presetName: 'PRESET_MULTI_GRID_SIMPLE',
+            allPluginNames: ['MultiGroupAxis', 'MultiBarsTriangle', 'MultiLines', 'MultiDots', 'MultiGridLegend', 'MultiGridTooltip'],
+            getData: () => import('./data/multiGridData0')
           },
         ]
       }
@@ -681,6 +783,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             getData: () => import('./data/multiValue1')
           },
           {
+            title: 'PRESET_SCATTER_SIMPLE',
+            presetName: 'PRESET_SCATTER_SIMPLE',
+            allPluginNames: ['Scatter', 'MultiValueTooltip', 'XYAxes'],
+            getData: () => import('./data/multiValue0')
+          },
+          {
             title: 'PRESET_SCATTER_SEPARATE_CATEGORY',
             presetName: 'PRESET_SCATTER_SEPARATE_CATEGORY',
             allPluginNames: ['Scatter', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XZoom'],
@@ -699,6 +807,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             presetName: 'PRESET_SCATTER_BUBBLES_BASIC',
             allPluginNames: ['ScatterBubbles', 'MultiValueLegend', 'MultiValueTooltip', 'XYAxes', 'XYAux', 'XZoom'],
             getData: () => import('./data/multiValue1')
+          },
+          {
+            title: 'PRESET_SCATTER_BUBBLES_SIMPLE',
+            presetName: 'PRESET_SCATTER_BUBBLES_SIMPLE',
+            allPluginNames: ['ScatterBubbles', 'MultiValueTooltip', 'XYAxes'],
+            getData: () => import('./data/multiValue0')
           },
           {
             title: 'PRESET_SCATTER_BUBBLES_LINEAR_OPACITY',
@@ -731,6 +845,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             presetName: 'PRESET_RACING_BARS_BASIC',
             allPluginNames: ['RacingBars', 'MultiValueLegend', 'MultiValueTooltip', 'RacingValueAxis', 'RacingCounterTexts'],
             getData: () => import('./data/multiValueData_brand')
+          },
+          {
+            title: 'PRESET_RACING_BARS_SIMPLE',
+            presetName: 'PRESET_RACING_BARS_SIMPLE',
+            allPluginNames: ['RacingBars', 'MultiValueTooltip', 'RacingValueAxis', 'RacingCounterTexts'],
+            getData: () => import('./data/multiValueData_brand_short')
           },
           {
             title: 'PRESET_RACING_BARS_FAST',
@@ -789,6 +909,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             getData: () => import('./data/relationshipData1')
           },
           {
+            title: 'PRESET_FORCE_DIRECTED_SIMPLE',
+            presetName: 'PRESET_FORCE_DIRECTED_SIMPLE',
+            allPluginNames: ['ForceDirected', 'RelationshipTooltip'],
+            getData: () => import('./data/relationshipData1')
+          },
+          {
             title: 'PRESET_FORCE_DIRECTED_FIX_FONT_SIZE',
             presetName: 'PRESET_FORCE_DIRECTED_FIX_FONT_SIZE',
             allPluginNames: ['ForceDirected', 'RelationshipLegend', 'RelationshipTooltip'],
@@ -818,6 +944,12 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             title: 'PRESET_FORCE_DIRECTED_BUBBLES_BASIC',
             presetName: 'PRESET_FORCE_DIRECTED_BUBBLES_BASIC',
             allPluginNames: ['ForceDirectedBubbles', 'RelationshipLegend', 'RelationshipTooltip'],
+            getData: () => import('./data/relationshipData1')
+          },
+          {
+            title: 'PRESET_FORCE_DIRECTED_BUBBLES_SIMPLE',
+            presetName: 'PRESET_FORCE_DIRECTED_BUBBLES_SIMPLE',
+            allPluginNames: ['ForceDirectedBubbles', 'RelationshipTooltip'],
             getData: () => import('./data/relationshipData1')
           },
           {
@@ -853,9 +985,15 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
         mainPluginNames: ['TreeMap'],
         list: [
           {
-            title: 'PRESET_TREE_BASIC',
+            title: 'PRESET_TREE_MAP_BASIC',
             presetName: 'PRESET_TREE_MAP_BASIC',
             allPluginNames: ['TreeMap', 'TreeLegend', 'TreeTooltip'],
+            getData: () => import('./data/treeData1')
+          },
+          {
+            title: 'PRESET_TREE_MAP_SIMPLE',
+            presetName: 'PRESET_TREE_MAP_SIMPLE',
+            allPluginNames: ['TreeMap', 'TreeTooltip'],
             getData: () => import('./data/treeData1')
           },
         ]

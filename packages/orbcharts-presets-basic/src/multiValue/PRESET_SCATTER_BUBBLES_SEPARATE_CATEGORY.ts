@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_SCATTER_BUBBLES_SEPARATE_CATEGORY: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_SCATTER_BUBBLES_SEPARATE_CATEGORY',
-  description: '分開顯示category的散布泡泡圖',
+  description: 'Scatter Bubbles with Separate Category',
+  descriptionZh: '分開顯示category的散布泡泡圖',
   chartParams: {
     colors: {
       light: {
@@ -24,10 +24,10 @@ export const PRESET_SCATTER_BUBBLES_SEPARATE_CATEGORY: PresetPartial<'multiValue
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
-      left: 60
+      left: 80
     },
   },
   dataFormatter: {

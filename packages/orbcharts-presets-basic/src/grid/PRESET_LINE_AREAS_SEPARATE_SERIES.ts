@@ -2,12 +2,12 @@ import type { PresetPartial } from '../../lib/core-types'
 import type { PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_LINE_AREAS_SEPARATE_SERIES: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_LINE_AREAS_SEPARATE_SERIES',
-  description: 'LineAreas 分開顯示Series',
+  description: 'Separate Series LineArea',
+  descriptionZh: '分開顯示Series的折線區域圖',
   chartParams: {
     colors: {
       light: {
@@ -26,24 +26,20 @@ export const PRESET_LINE_AREAS_SEPARATE_SERIES: PresetPartial<'grid', Partial<Pr
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 140,
       left: 80
     },
     highlightTarget: 'series'
   },
   dataFormatter: {
-    // grid: {
-      // seriesSlotIndexes: [0, 1],
-      separateSeries: true,
-      groupAxis: {
-        scalePadding: 0
-      }
-    // },
+    separateSeries: true,
+    groupAxis: {
+      scalePadding: 0
+    }
   },
   allPluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Lines: {},
     LineAreas: {},
     Dots: {},
@@ -56,8 +52,6 @@ export const PRESET_LINE_AREAS_SEPARATE_SERIES: PresetPartial<'grid', Partial<Pr
       labelRotate: -30
     },
     GridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
       listRectHeight: 2

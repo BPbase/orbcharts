@@ -5,7 +5,8 @@ import type { PresetGridPluginParams, PresetNoneDataPluginParams } from '../type
 export const PRESET_GRID_HORIZONTAL: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_GRID_HORIZONTAL',
-  description: '橫向圖',
+  description: 'Horizontal Grid',
+  descriptionZh: '橫向圖',
   chartParams: {
     colors: {
       light: {
@@ -25,8 +26,8 @@ export const PRESET_GRID_HORIZONTAL: PresetPartial<'grid', Partial<PresetGridPlu
     },
     // 間距下面及左邊留空
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 160
     },

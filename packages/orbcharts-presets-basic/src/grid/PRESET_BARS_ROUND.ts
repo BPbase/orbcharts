@@ -7,7 +7,8 @@ import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 export const PRESET_BARS_ROUND: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_BARS_ROUND',
-  description: '圓角長條圖',
+  description: 'Rounded bars',
+  descriptionZh: '圓角長條圖',
   chartParams: {
     colors: {
       light: {
@@ -26,8 +27,8 @@ export const PRESET_BARS_ROUND: PresetPartial<'grid', Partial<PresetGridPluginPa
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 80
     },

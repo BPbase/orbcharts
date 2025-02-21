@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_RACING_BARS_OUTSIDE_LABELS: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_RACING_BARS_OUTSIDE_LABELS',
-  description: '標籤在外面的賽跑長條圖',
+  description: 'Racing Bars with labels outside',
+  descriptionZh: '標籤在外面的賽跑長條圖',
   chartParams: {
     colors: {
       light: {

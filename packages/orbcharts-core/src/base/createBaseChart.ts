@@ -180,6 +180,7 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
       return {
         name: preset.name ?? '',
         description: preset.description ?? '',
+        descriptionZh: preset.descriptionZh ?? '',
         chartParams: preset.chartParams
           ? mergeOptionsWithDefault(preset.chartParams, DEFAULT_CHART_PARAMS)
           : DEFAULT_CHART_PARAMS,
