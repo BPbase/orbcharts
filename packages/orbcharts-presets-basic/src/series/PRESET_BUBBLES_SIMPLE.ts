@@ -1,0 +1,39 @@
+import type { PresetPartial } from '../../lib/core-types'
+import type { PresetSeriesPluginParams, PresetNoneDataPluginParams } from '../types'
+
+export const PRESET_BUBBLES_SIMPLE: PresetPartial<'series', Partial<PresetSeriesPluginParams>
+& Partial<PresetNoneDataPluginParams>> = {
+  name: 'PRESET_BUBBLES_SIMPLE',
+  description: 'Simple bubble chart',
+  descriptionZh: '簡單泡泡圖',
+  chartParams: {
+    padding: {
+      top: 40,
+      right: 40,
+      bottom: 40,
+      left: 40
+    },
+    colors: {
+      light: {
+        label: [
+          "#6CBAFF",
+          "#FF6C6C",
+          "#F9B052",
+          "#7DD3C4",
+          "#AA93D2",
+          "#0088FF",
+          "#FFBABA",
+          "#86DC72",
+          "#EF76FF",
+          "#C4C4C4"
+        ],
+      }
+    }
+  },
+  pluginParams: {
+    SeriesLegend: {
+      listRectRadius: 7, // 圓型圖例列點
+      padding: 7
+    }
+  }
+}

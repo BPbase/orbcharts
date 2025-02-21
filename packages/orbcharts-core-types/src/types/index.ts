@@ -1,6 +1,7 @@
 export * from './Axis'
 export * from './Chart'
 export * from './ChartParams'
+export * from './Common'
 export * from './ComputedData'
 export * from './ComputedDataGrid'
 export * from './ComputedDataMultiGrid'

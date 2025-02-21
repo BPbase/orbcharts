@@ -16,6 +16,7 @@ import type {
   ChartParams,
   ComputedDatumGrid,
   ContainerPositionScaled,
+  ContainerSize,
   TransformData,
   EventGrid,
   ColorType
@@ -23,6 +24,7 @@ import type {
 import type { BaseValueAxisParams } from '../../lib/plugins-basic-types'
 import { parseTickFormatValue } from '../utils/d3Utils'
 import { getColor, getMinMaxValue, getClassName, getUniID } from '../utils/orbchartsUtils'
+import { gridContainerSelectionsObservable } from '../grid/gridObservables'
 
 // export interface BaseValueAxisParams {
 //   labelOffset: [number, number]
@@ -40,7 +42,7 @@ import { getColor, getMinMaxValue, getClassName, getUniID } from '../utils/orbch
 //   tickTextColorType: ColorType
 // }
 
-interface BaseLinesContext {
+interface BaseValueAxisContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
   filteredMinMaxValue$: Observable<[number, number]>
@@ -49,11 +51,13 @@ interface BaseLinesContext {
   fullChartParams$: Observable<ChartParams>
   gridAxesTransform$: Observable<TransformData>
   gridAxesReverseTransform$: Observable<TransformData>
-  gridAxesSize$: Observable<{
-    width: number;
-    height: number;
-  }>
+  // gridAxesSize$: Observable<{
+  //   width: number;
+  //   height: number;
+  // }>
   gridContainerPosition$: Observable<ContainerPositionScaled[]>
+  gridAxesSize$: Observable<ContainerSize>
+  // gridAxesContainerSize$: Observable<ContainerSize>
   isSeriesSeprate$: Observable<boolean>
 }
 
@@ -74,7 +78,7 @@ function renderAxisLabel ({ selection, textClassName, fullParams, axisLabelAlign
   textClassName: string
   fullParams: BaseValueAxisParams
   axisLabelAlign: TextAlign
-  gridAxesSize: { width: number, height: number }
+  gridAxesSize: ContainerSize
   fullDataFormatter: DataFormatterGrid,
   fullChartParams: ChartParams
   textReverseTransform: string,
@@ -155,7 +159,7 @@ function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gri
   yAxisClassName: string
   fullParams: BaseValueAxisParams
   tickTextAlign: TextAlign
-  gridAxesSize: { width: number, height: number }
+  gridAxesSize: ContainerSize
   fullDataFormatter: DataFormatterGrid,
   fullChartParams: ChartParams
   valueScale: d3.ScaleLinear<number, number>
@@ -203,12 +207,14 @@ function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gri
   const yAxisEl = yAxisSelection
     .transition()
     .duration(100)
+    .ease(d3.easeLinear) // 線性的 - 當托曳或快速變動的時候比較滑順
     .call(yAxis)
   
   yAxisEl.selectAll('line')
     .style('fill', 'none')
     .style('stroke', fullParams.tickLineVisible == true ? getColor(fullParams.tickColorType, fullChartParams) : 'none')
     .style('stroke-dasharray', fullParams.tickFullLineDasharray)
+    .style('vector-effect', 'non-scaling-stroke') // 避免 scale 導致線條變形
     .attr('pointer-events', 'none')
   
   yAxisEl.selectAll('path')
@@ -239,17 +245,19 @@ function renderAxis ({ selection, yAxisClassName, fullParams, tickTextAlign, gri
 
 
 
-export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: string, {
+export const createBaseValueAxis: BasePluginFn<BaseValueAxisContext> = (pluginName: string, {
   selection,
   computedData$,
   filteredMinMaxValue$,
   fullParams$,
   fullDataFormatter$,
   fullChartParams$,
+  gridAxesSize$,
   gridAxesTransform$,
   gridAxesReverseTransform$,
-  gridAxesSize$,
+  // gridAxesSize$,
   gridContainerPosition$,
+  // gridAxesContainerSize$,
   isSeriesSeprate$,
 }) => {
   
@@ -260,32 +268,40 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
   const yAxisClassName = getClassName(pluginName, 'yAxis')
   const textClassName = getClassName(pluginName, 'text')
 
-  const containerSelection$ = combineLatest({
-    computedData: computedData$.pipe(
-      distinctUntilChanged((a, b) => {
-        // 只有當series的數量改變時，才重新計算
-        return a.length === b.length
-      }),
-    ),
-    isSeriesSeprate: isSeriesSeprate$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async (d) => d),
-    map(data => {
-      return data.isSeriesSeprate
-        // series分開的時候顯示各別axis
-        ? data.computedData
-        // series合併的時候只顯示第一個axis
-        : [data.computedData[0]]
-    }),
-    map((computedData, i) => {
-      return selection
-        .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${containerClassName}`)
-        .data(computedData, d => d[0] ? d[0].seriesIndex : i)
-        .join('g')
-        .classed(containerClassName, true)
-    })
-  )
+  const containerSelection$ = gridContainerSelectionsObservable({
+    selection,
+    pluginName,
+    computedData$,
+    gridContainerPosition$,
+    isSeriesSeprate$
+  })
+
+  // const containerSelection$ = combineLatest({
+  //   computedData: computedData$.pipe(
+  //     distinctUntilChanged((a, b) => {
+  //       // 只有當series的數量改變時，才重新計算
+  //       return a.length === b.length
+  //     }),
+  //   ),
+  //   isSeriesSeprate: isSeriesSeprate$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(data => {
+  //     return data.isSeriesSeprate
+  //       // series分開的時候顯示各別axis
+  //       ? data.computedData
+  //       // series合併的時候只顯示第一個axis
+  //       : [data.computedData[0]]
+  //   }),
+  //   map((computedData, i) => {
+  //     return selection
+  //       .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${containerClassName}`)
+  //       .data(computedData, d => d[0] ? d[0].seriesIndex : i)
+  //       .join('g')
+  //       .classed(containerClassName, true)
+  //   })
+  // )
 
   const axisSelection$ = containerSelection$.pipe(
     takeUntil(destroy$),
@@ -298,24 +314,25 @@ export const createBaseValueAxis: BasePluginFn<BaseLinesContext> = (pluginName: 
     })
   )
 
-  combineLatest({
-    containerSelection: containerSelection$,
-    gridContainerPosition: gridContainerPosition$
-  }).pipe(
-    takeUntil(destroy$),
-    switchMap(async d => d)
-  ).subscribe(data => {
-    data.containerSelection
-      .attr('transform', (d, i) => {
-        const gridContainerPosition = data.gridContainerPosition[i] ?? data.gridContainerPosition[0]
-        const translate = gridContainerPosition.translate
-        const scale = gridContainerPosition.scale
-        return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
-      })
-      // .attr('opacity', 0)
-      // .transition()
-      // .attr('opacity', 1)
-  })
+  // combineLatest({
+  //   containerSelection: containerSelection$,
+  //   gridContainerPosition: gridContainerPosition$
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async d => d)
+  // ).subscribe(data => {
+  //   data.containerSelection
+  //     .attr('transform', (d, i) => {
+  //       const gridContainerPosition = data.gridContainerPosition[i] ?? data.gridContainerPosition[0]
+  //       const translate = gridContainerPosition.translate
+  //       const scale = gridContainerPosition.scale
+  //       // return `translate(${translate[0]}, ${translate[1]}) scale(${scale[0]}, ${scale[1]})`
+  //       return `translate(${translate[0]}, ${translate[1]})`
+  //     })
+  //     // .attr('opacity', 0)
+  //     // .transition()
+  //     // .attr('opacity', 1)
+  // })
 
   combineLatest({
     axisSelection: axisSelection$,

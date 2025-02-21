@@ -1,6 +1,6 @@
 import type { 
   BaseBarsParams, 
-  BaseStackedBarParams, 
+  BaseStackedBarsParams, 
   BaseBarsTriangleParams, 
   BaseLinesParams, 
   BaseLineAreasParams, 
@@ -68,7 +68,7 @@ export interface MultiBarsParams extends BaseBarsParams {
   gridIndexes: number[] | 'all'
 }
 
-export interface MultiStackedBarParams extends BaseStackedBarParams {
+export interface MultiStackedBarsParams extends BaseStackedBarsParams {
   gridIndexes: number[] | 'all'
 }
 

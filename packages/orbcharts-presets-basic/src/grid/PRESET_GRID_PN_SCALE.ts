@@ -5,7 +5,8 @@ import type { PresetGridPluginParams, PresetNoneDataPluginParams } from '../type
 export const PRESET_GRID_PN_SCALE: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_GRID_PN_SCALE',
-  description: '正負值分向圖',
+  description: 'Positive negative scale',
+  descriptionZh: '正負值分向圖',
   chartParams: {
     colors: {
       light: {
@@ -24,8 +25,8 @@ export const PRESET_GRID_PN_SCALE: PresetPartial<'grid', Partial<PresetGridPlugi
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 80
     },
@@ -38,7 +39,7 @@ export const PRESET_GRID_PN_SCALE: PresetPartial<'grid', Partial<PresetGridPlugi
       },
     // }
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_GRID,
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     GridLegend: {

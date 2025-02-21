@@ -1,49 +1,55 @@
 import { Observable } from 'rxjs'
 import type { ContextObserverBase } from './ContextObserver'
-import type { ComputedDataMultiValue, ComputedDatumMultiValue } from './ComputedDataMultiValue'
+import type { ComputedDataMultiValue, ComputedDatumMultiValue, ComputedDatumWithSumMultiValue } from './ComputedDataMultiValue'
 import type { TransformData } from './TransformData'
 import type { ContainerPositionScaled } from './ContextObserver'
+import type { ContainerSize } from './Common'
 
 export interface ContextObserverMultiValue<PluginParams> extends ContextObserverBase<'multiValue', PluginParams> {
   textSizePx$: Observable<number>
   isCategorySeprate$: Observable<boolean>
-  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+  containerPosition$: Observable<ContainerPositionScaled[]>
+  containerSize$: Observable<ContainerSize>
   // multiValueAxesSize$: Observable<{ width: number; height: number; }>
-  multiValueHighlight$: Observable<ComputedDatumMultiValue[]>
+  highlight$: Observable<ComputedDatumMultiValue[]>
   categoryLabels$: Observable<string[]>
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
-  minMaxXY$: Observable<{
+  xyMinMax$: Observable<{ // xy
     minX: number
     maxX: number
     minY: number
     maxY: number
   }>
-  filteredMinMaxXYData$: Observable<{
-    datumList: ComputedLayoutDatumMultiValue[]
-    minXDatum: ComputedLayoutDatumMultiValue | null
-    maxXDatum: ComputedLayoutDatumMultiValue | null
-    minYDatum: ComputedLayoutDatumMultiValue | null
-    maxYDatum: ComputedLayoutDatumMultiValue | null
+  xyValueIndex$: Observable<[number, number]> // xy
+  filteredXYMinMaxData$: Observable<{ // xy
+    datumList: ComputedXYDatumMultiValue[]
+    minXDatum: ComputedXYDatumMultiValue | null
+    maxXDatum: ComputedXYDatumMultiValue | null
+    minYDatum: ComputedXYDatumMultiValue | null
+    maxYDatum: ComputedXYDatumMultiValue | null
   }>
   visibleComputedData$: Observable<ComputedDataMultiValue>
-  computedLayoutData$: Observable<ComputedLayoutDataMultiValue>
-  visibleComputedLayoutData$: Observable<ComputedLayoutDataMultiValue>
-  // multiValueAxesTransform$: Observable<TransformData>
-  // multiValueAxesReverseTransform$: Observable<TransformData>
-  multiValueGraphicTransform$: Observable<TransformData>
-  multiValueGraphicReverseScale$: Observable<[number, number][]>
+  visibleComputedSumData$: Observable<ComputedDatumWithSumMultiValue[][]>
+  visibleComputedRankingByIndexData$: Observable<ComputedDatumMultiValue[][]> // ranking
+  visibleComputedRankingBySumData$: Observable<ComputedDatumMultiValue[][]> // ranking
+  visibleComputedXYData$: Observable<ComputedXYDataMultiValue> // xy
+  graphicTransform$: Observable<TransformData>
+  graphicReverseScale$: Observable<[number, number][]>
+  xScale$: Observable<d3.ScaleLinear<number, number>>
+  xSumScale$: Observable<d3.ScaleLinear<number, number>>
+  yScale$: Observable<d3.ScaleLinear<number, number>>
 }
 
 // export type MultiValueMinMaxData = {
-//   minXDatum: ComputedLayoutDatumMultiValue
-//   maxXDatum: ComputedLayoutDatumMultiValue
-//   minYDatum: ComputedLayoutDatumMultiValue
-//   maxYDatum: ComputedLayoutDatumMultiValue
+//   minXDatum: ComputedXYDatumMultiValue
+//   maxXDatum: ComputedXYDatumMultiValue
+//   minYDatum: ComputedXYDatumMultiValue
+//   maxYDatum: ComputedXYDatumMultiValue
 // }
 
-export type ComputedLayoutDataMultiValue = ComputedLayoutDatumMultiValue[][]
+export type ComputedXYDataMultiValue = ComputedXYDatumMultiValue[][]
 
-export interface ComputedLayoutDatumMultiValue extends ComputedDatumMultiValue {
+export interface ComputedXYDatumMultiValue extends ComputedDatumMultiValue {
   axisX: number
   axisY: number
 }

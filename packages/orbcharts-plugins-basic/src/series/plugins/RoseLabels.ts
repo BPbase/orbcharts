@@ -406,8 +406,8 @@ function highlight ({ textSelection, lineSelection, ids, fullChartParams }: {
 function createEachPieLabel (pluginName: string, context: {
   containerSelection: d3.Selection<SVGGElement, any, any, unknown>
   // computedData$: Observable<ComputedDatumSeries[][]>
-  visibleComputedLayoutData$: Observable<ComputedDatumSeries[][]>
-  containerVisibleComputedLayoutData$: Observable<ComputedDatumSeries[]>
+  visibleComputedSortedData$: Observable<ComputedDatumSeries[][]>
+  containerVisibleComputedSortedData$: Observable<ComputedDatumSeries[]>
   // SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
   fullParams$: Observable<RoseLabelsParams>
   fullChartParams$: Observable<ChartParams>
@@ -435,7 +435,7 @@ function createEachPieLabel (pluginName: string, context: {
     distinctUntilChanged()
   )
 
-  const maxValue$ = context.visibleComputedLayoutData$.pipe(
+  const maxValue$ = context.visibleComputedSortedData$.pipe(
     map(data => Math.max(...data.flat().map(d => d.value))),
     distinctUntilChanged()
   )
@@ -453,7 +453,7 @@ function createEachPieLabel (pluginName: string, context: {
   combineLatest({
     // layout: context.seriesContainerPosition$,
     shorterSideWith: shorterSideWith$,
-    containerVisibleComputedLayoutData: context.containerVisibleComputedLayoutData$,
+    containerVisibleComputedSortedData: context.containerVisibleComputedSortedData$,
     maxValue: maxValue$,
     fullParams: context.fullParams$,
     fullChartParams: context.fullChartParams$,
@@ -464,9 +464,9 @@ function createEachPieLabel (pluginName: string, context: {
     switchMap(async (d) => d),
   ).subscribe(data => {
 
-    const eachAngle = Math.PI * 2 / data.containerVisibleComputedLayoutData.length
+    const eachAngle = Math.PI * 2 / data.containerVisibleComputedSortedData.length
 
-    const pieData = data.containerVisibleComputedLayoutData.map((d, i) => {
+    const pieData = data.containerVisibleComputedSortedData.map((d, i) => {
       return {
         id: d.id,
         data: d,
@@ -567,7 +567,7 @@ export const RoseLabels = defineSeriesPlugin(pluginConfig)(({ selection, observe
         
         const containerSelection = d3.select(g[containerIndex])
 
-        const containerVisibleComputedLayoutData$ = observer.visibleComputedLayoutData$.pipe(
+        const containerVisibleComputedSortedData$ = observer.visibleComputedSortedData$.pipe(
           takeUntil(destroy$),
           map(data => JSON.parse(JSON.stringify(data[containerIndex] ?? data[0])))
         )
@@ -580,8 +580,8 @@ export const RoseLabels = defineSeriesPlugin(pluginConfig)(({ selection, observe
         unsubscribeFnArr[containerIndex] = createEachPieLabel(pluginName, {
           containerSelection: containerSelection,
           // computedData$: observer.computedData$,
-          visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
-          containerVisibleComputedLayoutData$: containerVisibleComputedLayoutData$,
+          visibleComputedSortedData$: observer.visibleComputedSortedData$,
+          containerVisibleComputedSortedData$: containerVisibleComputedSortedData$,
           // SeriesDataMap$: observer.SeriesDataMap$,
           fullParams$: observer.fullParams$,
           fullChartParams$: observer.fullChartParams$,

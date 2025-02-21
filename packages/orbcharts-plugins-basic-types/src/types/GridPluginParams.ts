@@ -52,7 +52,7 @@ export interface BarsParams {
 
 export interface BarsPNParams extends BarsParams {}
 
-export interface StackedBarParams {
+export interface StackedBarsParams {
   barWidth: number
   barGroupPadding: number
   barRadius: number | boolean
@@ -107,7 +107,7 @@ export interface ValueAxisParams {
 
 export interface StackedValueAxisParams extends ValueAxisParams {}
 
-export interface GridZoomParams {
+export interface GroupZoomParams {
 
 }
 

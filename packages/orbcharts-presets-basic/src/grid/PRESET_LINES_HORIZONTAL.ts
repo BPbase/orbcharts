@@ -2,12 +2,12 @@ import type { PresetPartial } from '../../lib/core-types'
 import type { PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_LINES_HORIZONTAL: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_LINES_HORIZONTAL',
-  description: '橫向折線圖',
+  description: 'Horizontal Line',
+  descriptionZh: '橫向折線圖',
   chartParams: {
     colors: {
       light: {
@@ -26,39 +26,28 @@ export const PRESET_LINES_HORIZONTAL: PresetPartial<'grid', Partial<PresetGridPl
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 160
     },
     highlightTarget: 'series'
   },
   dataFormatter: {
-    // grid: {
-      valueAxis: {
-        position: 'bottom'
-        // position: 'top'
-        // position: 'left'
-        // position: 'right'
-      },
-      groupAxis: {
-        position: 'left'
-        // position: 'right'
-        // position: 'bottom'
-        // position: 'top'
-      },
-    // }
+    valueAxis: {
+      position: 'bottom'
+    },
+    groupAxis: {
+      position: 'left'
+    },
   },
-  allPluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
+  pluginParams: {
     Lines: {},
     Dots: {},
     GroupAxis: {},
     ValueAxis: {},
     GroupAux: {},
     GridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
       listRectHeight: 2

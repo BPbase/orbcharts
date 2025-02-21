@@ -3,12 +3,12 @@ import type {
   PresetMultiGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', Partial<PresetMultiGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_MULTI_GRID_DIVERGING',
-  description: '雙向折線圖',
+  description: 'Diverging Grid',
+  descriptionZh: '雙向Grid',
   chartParams: {
     colors: {
       light: {
@@ -27,8 +27,8 @@ export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', Partial<Pre
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 80
     },
@@ -62,10 +62,8 @@ export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', Partial<Pre
     },
     separateGrid: true // 將兩個grid拆分
   },
-  allPluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
+  pluginParams: {
     MultiGroupAxis: {
-      // tickPadding: 60, // 加長間距
       gridIndexes: [0] // 只顯示一個
     },
     MultiValueAxis: {
@@ -77,7 +75,7 @@ export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', Partial<Pre
     MultiBars: {
       gridIndexes: [0, 1]
     },
-    MultiStackedBar: {
+    MultiStackedBars: {
       gridIndexes: [0, 1]
     },
     MultiBarsTriangle: {
@@ -93,8 +91,6 @@ export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', Partial<Pre
       gridIndexes: [0, 1]
     },
     MultiGridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
     }

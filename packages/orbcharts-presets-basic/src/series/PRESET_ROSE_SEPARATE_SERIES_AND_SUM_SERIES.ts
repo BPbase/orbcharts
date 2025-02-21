@@ -1,12 +1,18 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetSeriesPluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_SERIES, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES: PresetPartial<'series', Partial<PresetSeriesPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES',
-  description: '分開顯示Series並合併Series資料',
+  description: 'Separate and sum Series data',
+  descriptionZh: '分開顯示Series並合併Series資料',
   chartParams: {
+    padding: {
+      top: 40,
+      right: 40,
+      bottom: 40,
+      left: 40
+    },
     colors: {
       light: {
         label:  [
@@ -29,7 +35,7 @@ export const PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES: PresetPartial<'series',
     separateSeries: true,
     sumSeries: true,
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_SERIES,
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
   }

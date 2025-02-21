@@ -446,8 +446,8 @@ export const XYAux = defineMultiValuePlugin(pluginConfig)(({ selection, rootSele
         )
       })
     ),
-    multiValueContainerPosition$: observer.multiValueContainerPosition$,
-    multiValueGraphicTransform$: observer.multiValueGraphicTransform$
+    containerPosition$: observer.containerPosition$,
+    graphicTransform$: observer.graphicTransform$
   })
 
   observer.layout$.pipe(
@@ -476,9 +476,9 @@ export const XYAux = defineMultiValuePlugin(pluginConfig)(({ selection, rootSele
   //   console.log('r:', r)
   // })
 
-  const columnAmount$ = observer.multiValueContainerPosition$.pipe(
-    map(multiValueContainerPosition => {
-      const maxColumnIndex = multiValueContainerPosition.reduce((acc, current) => {
+  const columnAmount$ = observer.containerPosition$.pipe(
+    map(containerPosition => {
+      const maxColumnIndex = containerPosition.reduce((acc, current) => {
         return current.columnIndex > acc ? current.columnIndex : acc
       }, 0)
       return maxColumnIndex + 1
@@ -486,9 +486,9 @@ export const XYAux = defineMultiValuePlugin(pluginConfig)(({ selection, rootSele
     distinctUntilChanged()
   )
 
-  const rowAmount$ = observer.multiValueContainerPosition$.pipe(
-    map(multiValueContainerPosition => {
-      const maxRowIndex = multiValueContainerPosition.reduce((acc, current) => {
+  const rowAmount$ = observer.containerPosition$.pipe(
+    map(containerPosition => {
+      const maxRowIndex = containerPosition.reduce((acc, current) => {
         return current.rowIndex > acc ? current.rowIndex : acc
       }, 0)
       return maxRowIndex + 1
@@ -496,13 +496,13 @@ export const XYAux = defineMultiValuePlugin(pluginConfig)(({ selection, rootSele
     distinctUntilChanged()
   )
 
-  const textReverseTransform$ = observer.multiValueContainerPosition$.pipe(
+  const textReverseTransform$ = observer.containerPosition$.pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
-    map(multiValueContainerPosition => {
+    map(containerPosition => {
       // const axesRotateXYReverseValue = `rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
       // const axesRotateReverseValue = `rotate(${data.gridAxesReverseTransform.rotate}deg)`
-      const containerScaleReverseValue = `scale(${1 / multiValueContainerPosition[0].scale[0]}, ${1 / multiValueContainerPosition[0].scale[1]})`
+      const containerScaleReverseValue = `scale(${1 / containerPosition[0].scale[0]}, ${1 / containerPosition[0].scale[1]})`
       // 抵消最外層scale
       return `${containerScaleReverseValue}`
     }),
@@ -512,8 +512,8 @@ export const XYAux = defineMultiValuePlugin(pluginConfig)(({ selection, rootSele
   const xyPosition$ = multiValueXYPositionObservable({
     rootSelection,
     fullDataFormatter$: observer.fullDataFormatter$,
-    filteredMinMaxXYData$: observer.filteredMinMaxXYData$,
-    multiValueContainerPosition$: observer.multiValueContainerPosition$,
+    filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
+    containerPosition$: observer.containerPosition$,
     layout$: observer.layout$
   }).pipe(
     takeUntil(destroy$)

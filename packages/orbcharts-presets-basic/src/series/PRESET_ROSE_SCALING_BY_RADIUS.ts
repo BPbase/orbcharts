@@ -1,12 +1,18 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetSeriesPluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_ROSE_SCALING_BY_RADIUS: PresetPartial<'series', Partial<PresetSeriesPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_ROSE_SCALING_BY_RADIUS',
-  description: '以半徑尺寸為比例的玫瑰圖',
+  description: 'Rose chart with radius scaling',
+  descriptionZh: '以半徑尺寸為比例的玫瑰圖',
   chartParams: {
+    padding: {
+      top: 40,
+      right: 40,
+      bottom: 40,
+      left: 40
+    },
     colors: {
       light: {
         label:  [
@@ -27,8 +33,7 @@ export const PRESET_ROSE_SCALING_BY_RADIUS: PresetPartial<'series', Partial<Pres
   dataFormatter: {
     sort: (a, b) => b.value - a.value
   },
-  allPluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
+  pluginParams: {
     Rose: {
       arcScaleType: 'radius'
     },

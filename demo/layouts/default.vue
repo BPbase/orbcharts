@@ -14,6 +14,10 @@
           :to="`/demo2`">
           Demo 2
         </NuxtLink>
+        <NuxtLink
+          :to="`/demo3`">
+          Demo 3
+        </NuxtLink>
       </div>
       <div
         class="menu-list"

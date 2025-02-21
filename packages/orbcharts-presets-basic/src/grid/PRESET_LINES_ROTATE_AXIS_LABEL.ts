@@ -2,12 +2,12 @@ import type { PresetPartial } from '../../lib/core-types'
 import type { PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_LINES_ROTATE_AXIS_LABEL: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_LINES_ROTATE_AXIS_LABEL',
-  description: '傾斜標籤',
+  description: 'Line chart with slanted labels',
+  descriptionZh: '傾斜標籤的折線圖',
   chartParams: {
     colors: {
       light: {
@@ -26,15 +26,14 @@ export const PRESET_LINES_ROTATE_AXIS_LABEL: PresetPartial<'grid', Partial<Prese
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 140,
       left: 80
     },
     highlightTarget: 'series'
   },
-  allPluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
+  pluginParams: {
     Lines: {},
     Dots: {},
     GroupAxis: {
@@ -46,8 +45,6 @@ export const PRESET_LINES_ROTATE_AXIS_LABEL: PresetPartial<'grid', Partial<Prese
       labelRotate: -30
     },
     GridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
       listRectHeight: 2

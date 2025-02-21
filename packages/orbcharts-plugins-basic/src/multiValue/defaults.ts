@@ -1,11 +1,16 @@
+import type { ComputedDataTypeMap } from '../../lib/core-types'
 import type {
   MultiValueLegendParams,
   MultiValueTooltipParams,
+  RacingBarsParams,
+  RacingCounterTextsParams,
+  RacingValueAxisParams,
   ScatterParams,
   ScatterBubblesParams,
+  XAxisParams,
   XYAuxParams,
   XYAxesParams,
-  XYZoomParams
+  XZoomParams
 } from '../../lib/plugins-basic-types'
 
 
@@ -47,7 +52,7 @@ export const DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS: MultiValueTooltipParams = {
       ? `<tspan>${eventData.datum.label}</tspan>  `
       : ''
     const datumSvg = `<text font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
-    ${datumLabelSvg}<tspan font-weight="bold">${eventData.datum.value}</tspan>
+    ${datumLabelSvg}<tspan font-weight="bold">${eventData.datum._visibleValue}</tspan>
   </text>`
 
     return `${categorySvg}
@@ -71,7 +76,7 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
       ? \`<tspan>\${eventData.datum.label}</tspan>  \`
       : ''
     const datumSvg = \`<text font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
-    \${datumLabelSvg}<tspan font-weight="bold">\${eventData.datum.value}</tspan>
+    \${datumLabelSvg}<tspan font-weight="bold">\${eventData.datum._visibleValue}</tspan>
   </text>\`
 
     return \`\${categorySvg}
@@ -79,6 +84,117 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
     \${datumSvg}
   </g>\`
 }`
+
+// export const DEFAULT_RANKING_AXIS_PARAMS: RacingAxisParams = {
+//   labelOffset: [0, 0],
+//   labelColorType: 'primary',
+//   axisLineVisible: false,
+//   axisLineColorType: 'primary',
+//   // ticks: null,
+//   // tickFormat: v => v,
+//   tickLineVisible: true,
+//   tickPadding: 20,
+//   // tickFullLine: true,
+//   // tickFullLineDasharray: 'none',
+//   tickColorType: 'secondary',
+//   tickTextRotate: 0,
+//   tickTextColorType: 'primary'
+// }
+
+export const DEFAULT_RACING_BARS_PARAMS: RacingBarsParams = {
+  bar: {
+    barWidth: 0,
+    barPadding: 8,
+    barRadius: false,
+  },
+  barLabel: {
+    position: 'inside',
+    padding: 20,
+    rotate: 0,
+    colorType: 'labelContrast'
+  },
+  valueLabel: {
+    padding: 20,
+    colorType: 'primary',
+    // format: num => {
+    //   if (num === null || Number.isNaN(num) == true) {
+    //     return num || 0
+    //   }
+    //   var parts = num.toString().split('.')
+    //   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    //   return parts.join('.')
+    // }
+    format: v => v
+  },
+  axisLabel: {
+    offset: [0, 0],
+    colorType: 'primary'
+  },
+  // rankingAmount: 'auto'
+  rankingAmount: 10,
+  // timer: {
+  //   active: false,
+  //   period: 500
+  // }
+  autorun: false
+}
+// DEFAULT_RACING_BARS_PARAMS.valueLabel.format.toString = () => `num => {
+//     if (num === null || Number.isNaN(num) == true) {
+//       return num || 0
+//     }
+//     var parts = num.toString().split('.')
+//     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+//     return parts.join('.')
+//   }
+// }`
+DEFAULT_RACING_BARS_PARAMS.valueLabel.format.toString = () => `v => v`
+
+export const DEFAULT_RACING_COUNTER_TEXTS_PARAMS: RacingCounterTextsParams = {
+  renderFn: (valueLabel: string, valueIndex: number, data: ComputedDataTypeMap<'multiValue'>) => {
+    return valueLabel
+  },
+  textAttrs: [
+    {
+      "transform": "translate(0, 0)"
+    }
+  ],
+  textStyles: [
+    {
+      "font-weight": "bold",
+      "text-anchor": "end",
+      "pointer-events": "none",
+      "dominant-baseline": "auto",
+      "font-size": 64,
+      "fill": "#bebebe"
+    },
+    {
+      "text-anchor": "end",
+      "pointer-events": "none",
+      "dominant-baseline": "auto",
+      "font-size": 24,
+      "fill": "#bebebe"
+    },
+  ],
+  paddingRight: 0,
+  paddingBottom: 0
+}
+
+export const DEFAULT_RACING_VALUE_AXIS_PARAMS: RacingValueAxisParams = {
+  labelOffset: [0, 0],
+  labelColorType: 'primary',
+  axisLineVisible: false,
+  axisLineColorType: 'secondary',
+  ticks: null,
+  // tickFormat: ',.0f',
+  tickFormat: v => v,
+  tickLineVisible: true,
+  tickPadding: 20,
+  tickFullLine: true,
+  tickFullLineDasharray: 'none',
+  tickColorType: 'secondary',
+  tickTextColorType: 'primary'
+}
+DEFAULT_RACING_VALUE_AXIS_PARAMS.tickFormat.toString = () => `v => v`
 
 export const DEFAULT_SCATTER_PARAMS: ScatterParams = {
   radius: 5,
@@ -96,6 +212,23 @@ export const DEFAULT_SCATTER_BUBBLES_PARAMS: ScatterBubblesParams = {
   arcScaleType: 'area',
   sizeAdjust: 0.5
 }
+
+export const DEFAULT_X_AXIS_PARAMS: XAxisParams = {
+  labelOffset: [0, 0],
+  labelColorType: 'primary',
+  axisLineVisible: false,
+  axisLineColorType: 'secondary',
+  ticks: null,
+  // tickFormat: ',.0f',
+  tickFormat: v => v,
+  tickLineVisible: true,
+  tickPadding: 20,
+  tickFullLine: true,
+  tickFullLineDasharray: 'none',
+  tickColorType: 'secondary',
+  tickTextColorType: 'primary'
+}
+DEFAULT_X_AXIS_PARAMS.tickFormat.toString = () => `v => v`
 
 export const DEFAULT_X_Y_AUX_PARAMS: XYAuxParams = {
   xAxis: {
@@ -162,6 +295,6 @@ export const DEFAULT_X_Y_AXES_PARAMS: XYAxesParams = {
 DEFAULT_X_Y_AXES_PARAMS.xAxis.tickFormat.toString = () => `v => v`
 DEFAULT_X_Y_AXES_PARAMS.yAxis.tickFormat.toString = () => `v => v`
 
-export const DEFAULT_X_Y_ZOOM_PARAMS: XYZoomParams = {
+export const DEFAULT_X_Y_ZOOM_PARAMS: XZoomParams = {
 
 }

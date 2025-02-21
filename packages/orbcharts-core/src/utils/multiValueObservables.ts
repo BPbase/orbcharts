@@ -18,41 +18,50 @@ import type {
   ComputedDatumTypeMap,
   ComputedDataMultiValue,
   ComputedDatumMultiValue,
+  ComputedDatumWithSumMultiValue,
+  ContainerSize,
   DataFormatterTypeMap,
   DataFormatterMultiValue,
-  DataFormatterAxis,
-  ComputedLayoutDatumMultiValue,
-  ComputedLayoutDataMultiValue,
+  DataFormatterXYAxis,
+  ComputedXYDatumMultiValue,
+  ComputedXYDataMultiValue,
   ContainerPositionScaled,
   HighlightTarget,
   Layout,
   TransformData } from '../../lib/core-types'
 import { getMinMax, getMinMaxMultiValue } from './orbchartsUtils'
 import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from './d3Scale'
-import { calcGridContainerLayout } from './orbchartsUtils'
+import { calcContainerPositionScaled } from './orbchartsUtils'
 
-export const minMaxXYObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'multiValue'>> }) => {
-  return computedData$.pipe(
+export const xyMinMaxObservable = ({ computedData$, xyValueIndex$ }: {
+  computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
+  xyValueIndex$: Observable<[number, number]>
+}) => {
+  return combineLatest({
+    computedData: computedData$,
+    xyValueIndex: xyValueIndex$,
+  }).pipe(
     map(data => {
-      const flatData = data.flat()
-      const [minX, maxX] = getMinMax(flatData.map(d => d.value[0]))
-      const [minY, maxY] = getMinMax(flatData.map(d => d.value[1]))
+      const flatData = data.computedData.flat()
+      const [minX, maxX] = getMinMax(flatData.map(d => d.value[data.xyValueIndex[0]]))
+      const [minY, maxY] = getMinMax(flatData.map(d => d.value[data.xyValueIndex[1]]))
       return { minX, maxX, minY, maxY }
     })
   )
 }
 
-export const multiValueComputedLayoutDataObservable = ({ computedData$, minMaxXY$, fullDataFormatter$, layout$ }: {
+export const computedXYDataObservable = ({ computedData$, xyMinMax$, xyValueIndex$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
-  minMaxXY$: Observable<{ minX: number, maxX: number, minY: number, maxY: number }>
+  xyMinMax$: Observable<{ minX: number, maxX: number, minY: number, maxY: number }>
+  xyValueIndex$: Observable<[number, number]>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiValue'>>
   layout$: Observable<Layout>
-}): Observable<ComputedLayoutDataMultiValue> => {
+}): Observable<ComputedXYDataMultiValue> => {
 
   // 未篩選範圍前的 scale
-  function createOriginXScale (minMaxXY: { minX: number, maxX: number, minY: number, maxY: number }, layout: Layout) {
-    let maxValue = minMaxXY.maxX
-    let minValue = minMaxXY.minX
+  function createOriginXScale (xyMinMax: { minX: number, maxX: number, minY: number, maxY: number }, layout: Layout) {
+    let maxValue = xyMinMax.maxX
+    let minValue = xyMinMax.minX
     if (minValue === maxValue && maxValue === 0) {
       // 避免最大及最小值相同造成無法計算scale
       maxValue = 1
@@ -69,9 +78,9 @@ export const multiValueComputedLayoutDataObservable = ({ computedData$, minMaxXY
   }
 
   // 未篩選範圍及visible前的 scale
-  function createOriginYScale (minMaxXY: { minX: number, maxX: number, minY: number, maxY: number }, layout: Layout) {
-    let maxValue = minMaxXY.maxY
-    let minValue = minMaxXY.minY
+  function createOriginYScale (xyMinMax: { minX: number, maxX: number, minY: number, maxY: number }, layout: Layout) {
+    let maxValue = xyMinMax.maxY
+    let minValue = xyMinMax.minY
     if (minValue === maxValue && maxValue === 0) {
       // 避免最大及最小值相同造成無法計算scale
       maxValue = 1
@@ -90,24 +99,25 @@ export const multiValueComputedLayoutDataObservable = ({ computedData$, minMaxXY
 
   return combineLatest({
     computedData: computedData$,
-    minMaxXY: minMaxXY$,
+    xyMinMax: xyMinMax$,
+    xyValueIndex: xyValueIndex$,
     fullDataFormatter: fullDataFormatter$,
     layout: layout$
   }).pipe(
     switchMap(async d => d),
     map(data => {
       
-      const xScale = createOriginXScale(data.minMaxXY, data.layout)
-      const yScale = createOriginYScale(data.minMaxXY, data.layout)
+      const xScale = createOriginXScale(data.xyMinMax, data.layout)
+      const yScale = createOriginYScale(data.xyMinMax, data.layout)
 
       return data.computedData
         .map((categoryData, categoryIndex) => {
           return categoryData.map((datum, datumIndex) => {
             return {
               ...datum,
-              axisX: xScale(datum.value[0] ?? 0),
+              axisX: xScale(datum.value[data.xyValueIndex[0]] ?? 0),
               // axisY: data.layout.height - yScale(datum.value[1] ?? 0), // y軸的繪圖座標是從上到下，所以反轉
-              axisY: yScale(datum.value[1] ?? 0), // y軸的繪圖座標是從上到下，所以反轉
+              axisY: yScale(datum.value[data.xyValueIndex[1]] ?? 0), // y軸的繪圖座標是從上到下，所以反轉
             }
           })
         })
@@ -122,8 +132,8 @@ export const multiValueComputedLayoutDataObservable = ({ computedData$, minMaxXY
 //   const destroy$ = new Subject()
 
 //   function calcAxesTransform ({ xAxis, yAxis, width, height }: {
-//     xAxis: DataFormatterAxis,
-//     yAxis: DataFormatterAxis,
+//     xAxis: DataFormatterXYAxis,
+//     yAxis: DataFormatterXYAxis,
 //     width: number,
 //     height: number
 //   }): TransformData {
@@ -258,7 +268,7 @@ export const multiValueComputedLayoutDataObservable = ({ computedData$, minMaxXY
 //   })
 // }
 
-// export const multiValueHighlightObservable = ({ computedData$, fullChartParams$, event$ }: {
+// export const highlightObservable = ({ computedData$, fullChartParams$, event$ }: {
 //   computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
 //   fullChartParams$: Observable<ChartParams>
 //   event$: Subject<any>
@@ -269,7 +279,7 @@ export const multiValueComputedLayoutDataObservable = ({ computedData$, minMaxXY
 //   return highlightObservable ({ datumList$, fullChartParams$, event$ })
 // }
 
-export const multiValueCategoryLabelsObservable = ({ computedData$, fullDataFormatter$ }: {
+export const categoryLabelsObservable = ({ computedData$, fullDataFormatter$ }: {
   computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiValue'>>
 }) => {
@@ -285,7 +295,7 @@ export const multiValueCategoryLabelsObservable = ({ computedData$, fullDataForm
   )
 }
 
-export const multiValueVisibleComputedDataObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'multiValue'>> }) => {
+export const visibleComputedDataObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'multiValue'>> }) => {
   return computedData$.pipe(
     map(data => {
       return data
@@ -299,8 +309,100 @@ export const multiValueVisibleComputedDataObservable = ({ computedData$ }: { com
   )
 }
 
-export const multiValueVisibleComputedLayoutDataObservable = ({ computedLayoutData$ }: { computedLayoutData$: Observable<ComputedLayoutDataMultiValue> }) => {
-  return computedLayoutData$.pipe(
+export const visibleComputedSumDataObservable = ({ visibleComputedData$ }: { visibleComputedData$: Observable<ComputedDataMultiValue> }) => {
+  return visibleComputedData$.pipe(
+    map(data => {
+      return data.map(categoryData => {
+        return categoryData
+          .map(d => {
+            let newDatum = d as ComputedDatumWithSumMultiValue
+            // 新增總計資料欄位
+            newDatum.sum = newDatum.value.reduce((acc, curr) => acc + curr, 0)
+            return newDatum
+          })
+      })
+    })
+  )
+}
+
+// Ranking資料 - 用 value[index] 排序
+export const visibleComputedRankingByIndexDataObservable = ({ xyValueIndex$, isCategorySeprate$, visibleComputedData$ }: {
+  xyValueIndex$: Observable<[number, number]>
+  isCategorySeprate$: Observable<boolean>
+  visibleComputedData$: Observable<ComputedDatumMultiValue[][]>
+}) => {
+
+  return combineLatest({
+    isCategorySeprate: isCategorySeprate$,
+    xyValueIndex: xyValueIndex$,
+    visibleComputedData: visibleComputedData$
+  }).pipe(
+    switchMap(async d => d),
+    map(data => {
+      const xValueIndex = data.xyValueIndex[0]
+      // -- category 分開 --
+      if (data.isCategorySeprate) {
+        return data.visibleComputedData
+          .map(categoryData => {
+            return categoryData
+              .sort((a, b) => {
+                const bValue = b.value[xValueIndex] ?? - Infinity // - Infinity 為最小值
+                const aValue = a.value[xValueIndex] ?? - Infinity
+  
+                return bValue - aValue
+              })
+          })
+      // -- 用 value[index] 排序 --
+      } else {
+        return [
+          data.visibleComputedData
+            .flat()
+            .sort((a, b) => {
+              const bValue = b.value[xValueIndex] ?? - Infinity // - Infinity 為最小值
+              const aValue = a.value[xValueIndex] ?? - Infinity
+  
+              return bValue - aValue
+            })
+        ]
+      }
+    })
+  )
+}
+
+// Ranking資料 - 用所有 valueIndex 加總資料排序
+export const visibleComputedRankingBySumDataObservable = ({ isCategorySeprate$, visibleComputedSumData$ }: {
+  isCategorySeprate$: Observable<boolean>
+  // visibleComputedData$: Observable<ComputedDatumMultiValue[][]>
+  visibleComputedSumData$: Observable<ComputedDatumWithSumMultiValue[][]>
+}) => {
+
+  return combineLatest({
+    isCategorySeprate: isCategorySeprate$,
+    visibleComputedSumData: visibleComputedSumData$
+  }).pipe(
+    switchMap(async d => d),
+    map(data => {
+      // -- category 分開 --
+      if (data.isCategorySeprate) {
+        return data.visibleComputedSumData
+          .map(categoryData => {
+            return categoryData
+              .sort((a, b) => b.sum - a.sum)
+          })
+      // -- 用 value[index] 排序 --
+      } else {
+        return [
+          data.visibleComputedSumData
+            .flat()
+            .sort((a, b) => b.sum - a.sum)
+        ]
+      }
+    })
+  )
+}
+
+export const visibleComputedXYDataObservable = ({ computedXYData$ }: { computedXYData$: Observable<ComputedXYDataMultiValue> }) => {
+  return computedXYData$.pipe(
     map(data => {
       return data
         .map(categoryData => {
@@ -313,14 +415,14 @@ export const multiValueVisibleComputedLayoutDataObservable = ({ computedLayoutDa
   )
 }
 
-// 所有container位置（對應series）
-export const multiValueContainerPositionObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
+// 所有container位置（對應category）
+export const containerPositionObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiValue'>>
   layout$: Observable<Layout>
 }): Observable<ContainerPositionScaled[]> => {
 
-  const multiValueContainerPosition$ = combineLatest({
+  const containerPosition$ = combineLatest({
     computedData: computedData$,
     fullDataFormatter: fullDataFormatter$,
     layout: layout$,
@@ -330,7 +432,7 @@ export const multiValueContainerPositionObservable = ({ computedData$, fullDataF
       
       if (data.fullDataFormatter.separateCategory) {
         // -- 依slotIndexes計算 --
-        return calcGridContainerLayout(data.layout, data.fullDataFormatter.container, data.computedData.length)
+        return calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, data.computedData.length)
         // return data.computedData.map((seriesData, seriesIndex) => {
         //   const columnIndex = seriesIndex % data.fullDataFormatter.container.columnAmount
         //   const rowIndex = Math.floor(seriesIndex / data.fullDataFormatter.container.columnAmount)
@@ -345,8 +447,8 @@ export const multiValueContainerPositionObservable = ({ computedData$, fullDataF
         // })
       } else {
         // -- 無拆分 --
-        const multiValueContainerPositionArr = calcGridContainerLayout(data.layout, data.fullDataFormatter.container, 1)
-        return data.computedData.map((d, i) => multiValueContainerPositionArr[0]) // 每個series相同位置
+        const containerPositionArr = calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, 1)
+        return data.computedData.map((d, i) => containerPositionArr[0]) // 每個series相同位置
         // const columnIndex = 0
         // const rowIndex = 0
         // return data.computedData.map((seriesData, seriesIndex) => {
@@ -363,25 +465,69 @@ export const multiValueContainerPositionObservable = ({ computedData$, fullDataF
     })
   )
 
-  return multiValueContainerPosition$
+  return containerPosition$
 }
 
+// export const containerSizeObservable = ({ layout$, containerPosition$ }: {
+//   layout$: Observable<Layout>
+//   containerPosition$: Observable<ContainerPositionScaled[]>
+// }) => {
+//   const rowAmount$ = containerPosition$.pipe(
+//     map(containerPosition => {
+//       const maxRowIndex = containerPosition.reduce((acc, current) => {
+//         return current.rowIndex > acc ? current.rowIndex : acc
+//       }, 0)
+//       return maxRowIndex + 1
+//     }),
+//     distinctUntilChanged(),
+//   )
 
-export const filteredMinMaxXYDataObservable = ({ visibleComputedLayoutData$, minMaxXY$, fullDataFormatter$ }: {
-  visibleComputedLayoutData$: Observable<ComputedLayoutDataMultiValue>
-  minMaxXY$: Observable<{ minX: number, maxX: number, minY: number, maxY: number }>
+//   const columnAmount$ = containerPosition$.pipe(
+//     map(containerPosition => {
+//       const maxColumnIndex = containerPosition.reduce((acc, current) => {
+//         return current.columnIndex > acc ? current.columnIndex : acc
+//       }, 0)
+//       return maxColumnIndex + 1
+//     }),
+//     distinctUntilChanged()
+//   )
+
+//   return combineLatest({
+//     layout: layout$,
+//     rowAmount: rowAmount$,
+//     columnAmount: columnAmount$
+//   }).pipe(
+//     switchMap(async (d) => d),
+//     map(data => {
+//       const width = (data.layout.rootWidth / data.columnAmount) - (data.layout.left + data.layout.right)
+//       const height = (data.layout.rootHeight / data.rowAmount) - (data.layout.top + data.layout.bottom)
+//       return {
+//         width,
+//         height
+//       }
+//     }),
+//     distinctUntilChanged((a, b) => a.width === b.width && a.height === b.height),
+//     shareReplay(1)
+//   )
+// }
+
+export const filteredXYMinMaxDataObservable = ({ visibleComputedXYData$, xyMinMax$, xyValueIndex$, fullDataFormatter$ }: {
+  visibleComputedXYData$: Observable<ComputedXYDataMultiValue>
+  xyMinMax$: Observable<{ minX: number, maxX: number, minY: number, maxY: number }>
+  xyValueIndex$: Observable<[number, number]>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiValue'>>
 }) => {
   return combineLatest({
-    visibleComputedLayoutData: visibleComputedLayoutData$,
-    minMaxXY: minMaxXY$,
+    visibleComputedXYData: visibleComputedXYData$,
+    xyMinMax: xyMinMax$,
+    xyValueIndex: xyValueIndex$,
     fullDataFormatter: fullDataFormatter$,
   }).pipe(
     map(data => {
       // 所有可見資料依 dataFormatter 的 scale 設定篩選出最大小值
       const { minX, maxX, minY, maxY } = (() => {
 
-        let { minX, maxX, minY, maxY } = data.minMaxXY
+        let { minX, maxX, minY, maxY } = data.xyMinMax
 
         if (data.fullDataFormatter.xAxis.scaleDomain[0] === 'auto' && minX > 0) {
           minX = 0
@@ -407,29 +553,31 @@ export const filteredMinMaxXYDataObservable = ({ visibleComputedLayoutData$, min
         return { minX, maxX, minY, maxY }
       })()
 // console.log({ minX, maxX, minY, maxY })
-      let datumList: ComputedLayoutDatumMultiValue[] = []
-      let minXDatum: ComputedLayoutDatumMultiValue | null = null
-      let maxXDatum: ComputedLayoutDatumMultiValue | null = null
-      let minYDatum: ComputedLayoutDatumMultiValue | null = null
-      let maxYDatum: ComputedLayoutDatumMultiValue | null = null
-      // console.log('data.visibleComputedLayoutData', data.visibleComputedLayoutData)
+      let datumList: ComputedXYDatumMultiValue[] = []
+      let minXDatum: ComputedXYDatumMultiValue | null = null
+      let maxXDatum: ComputedXYDatumMultiValue | null = null
+      let minYDatum: ComputedXYDatumMultiValue | null = null
+      let maxYDatum: ComputedXYDatumMultiValue | null = null
+      // console.log('data.visibleComputedXYData', data.visibleComputedXYData)
       // minX, maxX, minY, maxY 範圍內的最大最小值資料
       // console.log({ minX, maxX, minY, maxY })
-      for (let categoryData of data.visibleComputedLayoutData) {
+      for (let categoryData of data.visibleComputedXYData) {
         for (let datum of categoryData) {
+          const xValue = datum.value[data.xyValueIndex[0]]
+          const yValue = datum.value[data.xyValueIndex[1]]
           // 比較矩形範圍（所以 minX, maxX, minY, maxY 要同時比較）
-          if (datum.value[0] >= minX && datum.value[0] <= maxX && datum.value[1] >= minY && datum.value[1] <= maxY) {
+          if (xValue >= minX && xValue <= maxX && yValue >= minY && yValue <= maxY) {
             datumList.push(datum)
-            if (minXDatum == null || datum.value[0] < minXDatum.value[0]) {
+            if (minXDatum == null || xValue < minXDatum.value[data.xyValueIndex[0]]) {
               minXDatum = datum
             }
-            if (maxXDatum == null || datum.value[0] > maxXDatum.value[0]) {
+            if (maxXDatum == null || xValue > maxXDatum.value[data.xyValueIndex[0]]) {
               maxXDatum = datum
             }
-            if (minYDatum == null || datum.value[1] < minYDatum.value[1]) {
+            if (minYDatum == null || yValue <  minYDatum.value[data.xyValueIndex[1]]) {
               minYDatum = datum
             }
-            if (maxYDatum == null || datum.value[1] > maxYDatum.value[1]) {
+            if (maxYDatum == null || yValue > maxYDatum.value[data.xyValueIndex[1]]) {
               maxYDatum = datum
             }
           }
@@ -447,29 +595,123 @@ export const filteredMinMaxXYDataObservable = ({ visibleComputedLayoutData$, min
   )
 }
 
-export const multiValueGraphicTransformObservable = ({ minMaxXY$, filteredMinMaxXYData$, fullDataFormatter$, layout$ }: {
-  minMaxXY$: Observable<{ minX: number, maxX: number, minY: number, maxY: number }>
-  filteredMinMaxXYData$: Observable<{
-    minXDatum: ComputedLayoutDatumMultiValue
-    maxXDatum: ComputedLayoutDatumMultiValue
-    minYDatum: ComputedLayoutDatumMultiValue
-    maxYDatum: ComputedLayoutDatumMultiValue
+// export const visibleComputedRankingDataObservable = ({ visibleComputedData$ }: {
+//   visibleComputedData$: Observable<ComputedDatumMultiValue[][]>
+// }) => {
+//   return visibleComputedData$.pipe(
+//     map(visibleComputedData => visibleComputedData
+//       .flat()
+//       .map(d => {
+//         // 新增總計資料欄位
+//         ;(d as any)._sum = d.value.reduce((acc, curr) => acc + curr, 0)
+//         return d
+//       })
+//       .sort((a: any, b: any) => b._sum - a._sum)
+//     )
+//   )
+
+//   // const labelAmountLimit$ = combineLatest({
+//   //   layout: layout$,
+//   //   textSizePx: textSizePx$,
+//   //   sortedLabels: sortedLabels$
+//   // }).pipe(
+//   //   switchMap(async (d) => d),
+//   //   map(data => {
+//   //     const lineHeight = data.textSizePx * 2 // 2倍行高
+//   //     const labelAmountLimit = Math.floor(data.layout.height / lineHeight)
+//   //     return labelAmountLimit
+//   //   }),
+//   //   distinctUntilChanged()
+//   // )
+
+//   // return combineLatest({
+//   //   sortedLabels: sortedLabels$,
+//   //   labelAmountLimit: labelAmountLimit$
+//   // }).pipe(
+//   //   map(data => {
+//   //     return data.sortedLabels.slice(0, data.labelAmountLimit)
+//   //   })
+//   // )
+
+// }
+
+// export const rankingAmountLimitObservable = ({ layout$, textSizePx$ }: {
+//   layout$: Observable<Layout>
+//   textSizePx$: Observable<number>
+// }) => {
+//   return combineLatest({
+//     layout: layout$,
+//     textSizePx: textSizePx$
+//   }).pipe(
+//     switchMap(async (d) => d),
+//     map(data => {
+//       const lineHeight = data.textSizePx * 2 // 2倍行高
+//       const labelAmountLimit = Math.floor(data.layout.height / lineHeight)
+//       return labelAmountLimit
+//     }),
+//     distinctUntilChanged()
+//   )
+// }
+
+// export const rankingScaleObservable = ({ layout$, visibleComputedRankingData$, rankingAmountLimit$ }: {
+//   layout$: Observable<Layout>
+//   visibleComputedRankingData$: Observable<ComputedDatumMultiValue[]>
+//   rankingAmountLimit$: Observable<number>
+// }) => {
+//   return combineLatest({
+//     layout: layout$,
+//     rankingAmountLimit: rankingAmountLimit$,
+//     visibleComputedRankingData: visibleComputedRankingData$,
+//   }).pipe(
+//     switchMap(async (d) => d),
+//     map(data => {
+//       let labelAmount = 0
+//       let lineHeight = 0
+//       let totalHeight = 0
+//       if (data.visibleComputedRankingData.length > data.rankingAmountLimit) {
+//         labelAmount = data.rankingAmountLimit
+//         lineHeight = data.layout.height / labelAmount
+//         totalHeight = lineHeight * labelAmount // 用全部的數量來算而不是要顯示的數量（要超出圖軸高度）
+//       } else {
+//         labelAmount = data.visibleComputedRankingData.length
+//         lineHeight = data.layout.height / labelAmount
+//         totalHeight = data.layout.height
+//       }
+
+//       return createLabelToAxisScale({
+//         axisLabels: data.visibleComputedRankingData.map(d => d.label),
+//         axisWidth: totalHeight,
+//         padding: 0.5
+//       })
+//     })
+//   )
+// }
+
+export const graphicTransformObservable = ({ xyMinMax$, xyValueIndex$, filteredXYMinMaxData$, fullDataFormatter$, layout$ }: {
+  xyMinMax$: Observable<{ minX: number, maxX: number, minY: number, maxY: number }>
+  xyValueIndex$: Observable<[number, number]>
+  filteredXYMinMaxData$: Observable<{
+    minXDatum: ComputedXYDatumMultiValue
+    maxXDatum: ComputedXYDatumMultiValue
+    minYDatum: ComputedXYDatumMultiValue
+    maxYDatum: ComputedXYDatumMultiValue
   }>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiValue'>>
   layout$: Observable<Layout>
 }): Observable<TransformData> => {
   const destroy$ = new Subject()
 
-  function calcDataAreaTransform ({ minMaxXY, filteredMinMaxXYData, xAxis, yAxis, width, height }: {
-    minMaxXY: { minX: number, maxX: number, minY: number, maxY: number }
-    filteredMinMaxXYData: {
-      minXDatum: ComputedLayoutDatumMultiValue
-      maxXDatum: ComputedLayoutDatumMultiValue
-      minYDatum: ComputedLayoutDatumMultiValue
-      maxYDatum: ComputedLayoutDatumMultiValue
+  function calcDataAreaTransform ({ xyMinMax, xyValueIndex, filteredXYMinMaxData, xAxis, yAxis, width, height }: {
+    xyMinMax: { minX: number, maxX: number, minY: number, maxY: number }
+    xyValueIndex: [number, number]
+    filteredXYMinMaxData: {
+      minXDatum: ComputedXYDatumMultiValue
+      maxXDatum: ComputedXYDatumMultiValue
+      minYDatum: ComputedXYDatumMultiValue
+      maxYDatum: ComputedXYDatumMultiValue
     }
-    xAxis: DataFormatterAxis
-    yAxis: DataFormatterAxis
+    xAxis: DataFormatterXYAxis
+    yAxis: DataFormatterXYAxis
     width: number
     height: number
   }): TransformData {
@@ -509,13 +751,13 @@ export const multiValueGraphicTransformObservable = ({ minMaxXY$, filteredMinMax
     // let filteredMinY = 0
     // let filteredMaxY = 0
     // let [minY, maxY] = getMinMax(flatData.map(d => d.value[1]))
-// console.log('filteredMinMaxXYData', filteredMinMaxXYData)
-    let { minX, maxX, minY, maxY } = minMaxXY
+// console.log('filteredXYMinMaxData', filteredXYMinMaxData)
+    let { minX, maxX, minY, maxY } = xyMinMax
     // console.log({ minX, maxX, minY, maxY })
-    let filteredMinX = filteredMinMaxXYData.minXDatum.value[0] ?? 0
-    let filteredMaxX = filteredMinMaxXYData.maxXDatum.value[0] ?? 0
-    let filteredMinY = filteredMinMaxXYData.minYDatum.value[1] ?? 0
-    let filteredMaxY = filteredMinMaxXYData.maxYDatum.value[1] ?? 0
+    let filteredMinX = filteredXYMinMaxData.minXDatum.value[xyValueIndex[0]] ?? 0
+    let filteredMaxX = filteredXYMinMaxData.maxXDatum.value[xyValueIndex[0]] ?? 0
+    let filteredMinY = filteredXYMinMaxData.minYDatum.value[xyValueIndex[1]] ?? 0
+    let filteredMaxY = filteredXYMinMaxData.maxYDatum.value[xyValueIndex[1]] ?? 0
 
     // if (yAxis.scaleDomain[0] === 'auto' && filteredMinY > 0) {
     //   filteredMinY = 0
@@ -594,24 +836,26 @@ export const multiValueGraphicTransformObservable = ({ minMaxXY$, filteredMinMax
 
   return new Observable(subscriber => {
     combineLatest({
-      minMaxXY: minMaxXY$,
-      filteredMinMaxXYData: filteredMinMaxXYData$,
+      xyMinMax: xyMinMax$,
+      xyValueIndex: xyValueIndex$,
+      filteredXYMinMaxData: filteredXYMinMaxData$,
       fullDataFormatter: fullDataFormatter$,
       layout: layout$
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
-      if (!data.filteredMinMaxXYData.minXDatum || !data.filteredMinMaxXYData.maxXDatum
-        || data.filteredMinMaxXYData.minXDatum.value[0] == null || data.filteredMinMaxXYData.maxXDatum.value[0] == null
-        || !data.filteredMinMaxXYData.minYDatum || !data.filteredMinMaxXYData.maxYDatum
-        || data.filteredMinMaxXYData.minYDatum.value[1] == null || data.filteredMinMaxXYData.maxYDatum.value[1] == null
+      if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
+        || data.filteredXYMinMaxData.minXDatum.value[data.xyValueIndex[0]] == null || data.filteredXYMinMaxData.maxXDatum.value[data.xyValueIndex[0]] == null
+        || !data.filteredXYMinMaxData.minYDatum || !data.filteredXYMinMaxData.maxYDatum
+        || data.filteredXYMinMaxData.minYDatum.value[data.xyValueIndex[1]] == null || data.filteredXYMinMaxData.maxYDatum.value[data.xyValueIndex[1]] == null
       ) {
         return
       }
       const dataAreaTransformData = calcDataAreaTransform({
-        minMaxXY: data.minMaxXY,
-        filteredMinMaxXYData: data.filteredMinMaxXYData,
+        xyMinMax: data.xyMinMax,
+        xyValueIndex: data.xyValueIndex,
+        filteredXYMinMaxData: data.filteredXYMinMaxData,
         xAxis: data.fullDataFormatter.xAxis,
         yAxis: data.fullDataFormatter.yAxis,
         width: data.layout.width,
@@ -629,34 +873,172 @@ export const multiValueGraphicTransformObservable = ({ minMaxXY$, filteredMinMax
   })
 }
 
-export const multiValueGraphicReverseScaleObservable = ({ multiValueContainerPosition$, multiValueGraphicTransform$ }: {
-  multiValueContainerPosition$: Observable<ContainerPositionScaled[]>
+export const graphicReverseScaleObservable = ({ containerPosition$, graphicTransform$ }: {
+  containerPosition$: Observable<ContainerPositionScaled[]>
   // multiValueAxesTransform$: Observable<TransformData>
-  multiValueGraphicTransform$: Observable<TransformData>
+  graphicTransform$: Observable<TransformData>
 }): Observable<[number, number][]> => {
   return combineLatest({
-    multiValueContainerPosition: multiValueContainerPosition$,
+    containerPosition: containerPosition$,
     // multiValueAxesTransform: multiValueAxesTransform$,
-    multiValueGraphicTransform: multiValueGraphicTransform$,
+    graphicTransform: graphicTransform$,
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
       // if (data.multiValueAxesTransform.rotate == 0 || data.multiValueAxesTransform.rotate == 180) {
-        return data.multiValueContainerPosition.map((series, seriesIndex) => {
+        return data.containerPosition.map((series, seriesIndex) => {
           return [
-            1 / data.multiValueGraphicTransform.scale[0] / data.multiValueContainerPosition[seriesIndex].scale[0],
-            1 / data.multiValueGraphicTransform.scale[1] / data.multiValueContainerPosition[seriesIndex].scale[1],
+            1 / data.graphicTransform.scale[0] / data.containerPosition[seriesIndex].scale[0],
+            1 / data.graphicTransform.scale[1] / data.containerPosition[seriesIndex].scale[1],
           ]
         })
       // } else {
-      //   return data.multiValueContainerPosition.map((series, seriesIndex) => {
+      //   return data.containerPosition.map((series, seriesIndex) => {
       //     // 由於有垂直的旋轉，所以外層 (container) x和y的scale要互換
       //     return [
-      //       1 / data.multiValueGraphicTransform.scale[0] / data.multiValueContainerPosition[seriesIndex].scale[1],
-      //       1 / data.multiValueGraphicTransform.scale[1] / data.multiValueContainerPosition[seriesIndex].scale[0],
+      //       1 / data.graphicTransform.scale[0] / data.containerPosition[seriesIndex].scale[1],
+      //       1 / data.graphicTransform.scale[1] / data.containerPosition[seriesIndex].scale[0],
       //     ]
       //   })
       // }
     }),
+  )
+}
+
+// X 軸圖軸 - 用 value[index] 
+export const xScaleObservable = ({ visibleComputedSumData$, fullDataFormatter$, filteredXYMinMaxData$, containerSize$ }: {
+  visibleComputedSumData$: Observable<ComputedDatumMultiValue[][]>
+  fullDataFormatter$: Observable<DataFormatterMultiValue>
+  filteredXYMinMaxData$: Observable<{
+    minXDatum: ComputedXYDatumMultiValue
+    maxXDatum: ComputedXYDatumMultiValue
+    minYDatum: ComputedXYDatumMultiValue
+    maxYDatum: ComputedXYDatumMultiValue
+  }>
+  // layout$: Observable<Layout>
+  containerSize$: Observable<ContainerSize>
+}) => {
+  return combineLatest({
+    visibleComputedSumData: visibleComputedSumData$,
+    fullDataFormatter: fullDataFormatter$,
+    containerSize: containerSize$,
+    // xyMinMax: xyMinMax$
+    filteredXYMinMaxData: filteredXYMinMaxData$
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      const valueIndex = data.fullDataFormatter.xAxis.valueIndex
+      if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
+        // || data.filteredXYMinMaxData.minXDatum.value[valueIndex] == null || data.filteredXYMinMaxData.maxXDatum.value[valueIndex] == null
+      ) {
+        return
+      }
+      let maxValue: number | null = data.filteredXYMinMaxData.maxXDatum.value[valueIndex]
+      let minValue: number | null = data.filteredXYMinMaxData.minXDatum.value[valueIndex]
+      if (maxValue === minValue && maxValue === 0) {
+        // 避免最大及最小值同等於 0 造成無法計算scale
+        maxValue = 1
+      }
+
+      const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
+        maxValue,
+        minValue,
+        axisWidth: data.containerSize.width,
+        scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
+        scaleRange: data.fullDataFormatter.xAxis.scaleRange,
+      })
+      return xScale
+    })
+  )
+}
+
+// X 軸圖軸 - 用所有 valueIndex 加總資料
+export const xSumScaleObservable = ({ fullDataFormatter$, filteredXYMinMaxData$, containerSize$ }: {
+  // valueIndex$: Observable<number>
+  fullDataFormatter$: Observable<DataFormatterMultiValue>
+  filteredXYMinMaxData$: Observable<{
+    minXDatum: ComputedXYDatumMultiValue
+    maxXDatum: ComputedXYDatumMultiValue
+    minYDatum: ComputedXYDatumMultiValue
+    maxYDatum: ComputedXYDatumMultiValue
+  }>
+  // layout$: Observable<Layout>
+  containerSize$: Observable<ContainerSize>
+}) => {
+  return combineLatest({
+    // valueIndex: valueIndex$,
+    fullDataFormatter: fullDataFormatter$,
+    containerSize: containerSize$,
+    // xyMinMax: xyMinMax$
+    filteredXYMinMaxData: filteredXYMinMaxData$
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      const valueIndex = data.fullDataFormatter.xAxis.valueIndex
+      if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
+        // || data.filteredXYMinMaxData.minXDatum.value[valueIndex] == null || data.filteredXYMinMaxData.maxXDatum.value[valueIndex] == null
+      ) {
+        return
+      }
+      let maxValue: number | null = data.filteredXYMinMaxData.maxXDatum.value[valueIndex]
+      let minValue: number | null = data.filteredXYMinMaxData.minXDatum.value[valueIndex]
+      if (maxValue === minValue && maxValue === 0) {
+        // 避免最大及最小值同等於 0 造成無法計算scale
+        maxValue = 1
+      }
+
+      const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
+        maxValue,
+        minValue,
+        axisWidth: data.containerSize.width,
+        scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
+        scaleRange: data.fullDataFormatter.xAxis.scaleRange,
+      })
+      return xScale
+    })
+  )
+}
+
+export const yScaleObservable = ({ fullDataFormatter$, filteredXYMinMaxData$, containerSize$ }: {
+  fullDataFormatter$: Observable<DataFormatterMultiValue>
+  filteredXYMinMaxData$: Observable<{
+    minXDatum: ComputedXYDatumMultiValue
+    maxXDatum: ComputedXYDatumMultiValue
+    minYDatum: ComputedXYDatumMultiValue
+    maxYDatum: ComputedXYDatumMultiValue
+  }>
+  containerSize$: Observable<ContainerSize>
+}) => {
+  return combineLatest({
+    fullDataFormatter: fullDataFormatter$,
+    containerSize: containerSize$,
+    // xyMinMax: observer.xyMinMax$
+    filteredXYMinMaxData: filteredXYMinMaxData$
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      const valueIndex = data.fullDataFormatter.yAxis.valueIndex
+      if (!data.filteredXYMinMaxData.minYDatum || !data.filteredXYMinMaxData.maxYDatum
+        || data.filteredXYMinMaxData.minYDatum.value[valueIndex] == null || data.filteredXYMinMaxData.maxYDatum.value[valueIndex] == null
+      ) {
+        return
+      }
+      let maxValue = data.filteredXYMinMaxData.maxYDatum.value[valueIndex]
+      let minValue = data.filteredXYMinMaxData.minYDatum.value[valueIndex]
+      if (maxValue === minValue && maxValue === 0) {
+        // 避免最大及最小值同等於 0 造成無法計算scale
+        maxValue = 1
+      }
+
+      const yScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
+        maxValue,
+        minValue,
+        axisWidth: data.containerSize.height,
+        scaleDomain: data.fullDataFormatter.yAxis.scaleDomain,
+        scaleRange: data.fullDataFormatter.yAxis.scaleRange,
+        reverse: true
+      })
+      return yScale
+    })
   )
 }

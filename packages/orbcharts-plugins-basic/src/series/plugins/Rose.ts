@@ -213,8 +213,8 @@ function createEachRose (pluginName: string, context: {
   containerSelection: d3.Selection<SVGGElement, any, any, unknown>
   computedData$: Observable<ComputedDatumSeries[][]>
   visibleComputedData$: Observable<ComputedDatumSeries[][]>
-  visibleComputedLayoutData$: Observable<ComputedDatumSeries[][]>
-  containerVisibleComputedLayoutData$: Observable<ComputedDatumSeries[]>
+  visibleComputedSortedData$: Observable<ComputedDatumSeries[][]>
+  containerVisibleComputedSortedData$: Observable<ComputedDatumSeries[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
   fullParams$: Observable<RoseParams>
   fullChartParams$: Observable<ChartParams>
@@ -235,14 +235,14 @@ function createEachRose (pluginName: string, context: {
   )
 
   const pieData$: Observable<PieDatum[]> = combineLatest({
-    containerVisibleComputedLayoutData: context.containerVisibleComputedLayoutData$,
+    containerVisibleComputedSortedData: context.containerVisibleComputedSortedData$,
     fullParams: context.fullParams$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      const eachAngle = roseEndAngle / data.containerVisibleComputedLayoutData.length
-      return data.containerVisibleComputedLayoutData.map((d, i) => {
+      const eachAngle = roseEndAngle / data.containerVisibleComputedSortedData.length
+      return data.containerVisibleComputedSortedData.map((d, i) => {
         return {
           id: d.id,
           data: d,
@@ -263,13 +263,13 @@ function createEachRose (pluginName: string, context: {
     distinctUntilChanged()
   )
 
-  const maxValue$ = context.visibleComputedLayoutData$.pipe(
+  const maxValue$ = context.visibleComputedSortedData$.pipe(
     map(data => Math.max(...data.flat().map(d => d.value))),
     distinctUntilChanged()
   )
 
-  // context.visibleComputedLayoutData$.subscribe(data => {
-  //   console.log('visibleComputedLayoutData$', data)
+  // context.visibleComputedSortedData$.subscribe(data => {
+  //   console.log('visibleComputedSortedData$', data)
   // })
 
   const tweenArc$ = combineLatest({
@@ -483,7 +483,7 @@ export const Rose = defineSeriesPlugin(pluginConfig)(({ selection, name, subject
       seriesCenterSelection.each((d, containerIndex, g) => { 
         const containerSelection = d3.select(g[containerIndex])
 
-        const containerVisibleComputedLayoutData$ = observer.visibleComputedLayoutData$.pipe(
+        const containerVisibleComputedSortedData$ = observer.visibleComputedSortedData$.pipe(
           takeUntil(destroy$),
           map(data => JSON.parse(JSON.stringify(data[containerIndex] ?? data[0])))
         )
@@ -497,8 +497,8 @@ export const Rose = defineSeriesPlugin(pluginConfig)(({ selection, name, subject
           containerSelection: containerSelection,
           computedData$: observer.computedData$,
           visibleComputedData$: observer.visibleComputedData$,
-          visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
-          containerVisibleComputedLayoutData$: containerVisibleComputedLayoutData$,
+          visibleComputedSortedData$: observer.visibleComputedSortedData$,
+          containerVisibleComputedSortedData$: containerVisibleComputedSortedData$,
           SeriesDataMap$: observer.SeriesDataMap$,
           fullParams$: observer.fullParams$,
           fullChartParams$: observer.fullChartParams$,

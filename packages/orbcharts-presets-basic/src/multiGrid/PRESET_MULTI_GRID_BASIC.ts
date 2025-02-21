@@ -3,12 +3,12 @@ import type {
   PresetMultiGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-// import { ALL_PLUGIN_PARAMS_MULTI_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_MULTI_GRID_BASIC: PresetPartial<'multiGrid', Partial<PresetMultiGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_MULTI_GRID_BASIC',
-  description: '基本MultiGrid參數',
+  description: 'Basic MultiGrid',
+  descriptionZh: '基本MultiGrid參數',
   chartParams: {
     colors: {
       light: {
@@ -27,19 +27,15 @@ export const PRESET_MULTI_GRID_BASIC: PresetPartial<'multiGrid', Partial<PresetM
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 80
     },
     highlightTarget: 'series'
   },
-  allPluginParams: {
-    // ...ALL_PLUGIN_PARAMS_MULTI_GRID,
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
+  pluginParams: {
     MultiGridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
       gridList: [

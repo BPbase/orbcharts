@@ -2,12 +2,12 @@ import type { PresetPartial } from '../../lib/core-types'
 import type { PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_LINE_AREAS_LOOSE_TICKS: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_LINE_AREAS_LOOSE_TICKS',
-  description: '寬鬆標籤',
+  description: 'Loose Ticks LineArea',
+  descriptionZh: '寬鬆標籤的折線區域圖',
   chartParams: {
     colors: {
       light: {
@@ -26,22 +26,19 @@ export const PRESET_LINE_AREAS_LOOSE_TICKS: PresetPartial<'grid', Partial<Preset
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 80
     },
     highlightTarget: 'series'
   },
   dataFormatter: {
-    // grid: {
-      groupAxis: {
-        scalePadding: 0
-      }
-    // }
+    groupAxis: {
+      scalePadding: 0
+    }
   },
-  allPluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
+  pluginParams: {
     Lines: {},
     LineAreas: {},
     Dots: {},
@@ -51,8 +48,6 @@ export const PRESET_LINE_AREAS_LOOSE_TICKS: PresetPartial<'grid', Partial<Preset
     ValueAxis: {},
     GroupAux: {},
     GridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
       listRectHeight: 2

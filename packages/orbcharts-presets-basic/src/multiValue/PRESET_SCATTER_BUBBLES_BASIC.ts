@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_SCATTER_BUBBLES_BASIC: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_SCATTER_BUBBLES_BASIC',
-  description: '基本的散布泡泡圖',
+  description: 'Basic Scatter Bubbles',
+  descriptionZh: '基本的散布泡泡圖',
   chartParams: {
     colors: {
       light: {
@@ -24,16 +24,17 @@ export const PRESET_SCATTER_BUBBLES_BASIC: PresetPartial<'multiValue', Partial<P
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
-      left: 60
+      left: 80
     },
   },
-  allPluginParams: {
+  pluginParams: {
     MultiValueLegend: {
       placement: 'bottom',
       padding: 14,
+      listRectRadius: 7 // 圓型圖例列點
     }
   }
 }

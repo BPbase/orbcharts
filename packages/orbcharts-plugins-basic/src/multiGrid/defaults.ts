@@ -1,7 +1,7 @@
 import type {
   MultiGridLegendParams,
   MultiBarsParams,
-  MultiStackedBarParams,
+  MultiStackedBarsParams,
   MultiBarsTriangleParams,
   MultiLinesParams,
   MultiLineAreasParams,
@@ -85,7 +85,7 @@ export const DEFAULT_MULTI_BARS_PARAMS: MultiBarsParams = {
   gridIndexes: [0]
 }
 
-export const DEFAULT_MULTI_STACKED_BAR_PARAMS: MultiStackedBarParams = {
+export const DEFAULT_MULTI_STACKED_BAR_PARAMS: MultiStackedBarsParams = {
   barWidth: 0,
   barGroupPadding: 10,
   barRadius: false,

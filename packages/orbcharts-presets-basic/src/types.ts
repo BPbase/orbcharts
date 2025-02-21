@@ -12,7 +12,7 @@ import type {
   // -- grid --
   BarsParams,
   BarsPNParams,
-  StackedBarParams,
+  StackedBarsParams,
   BarsTriangleParams,
   DotsParams,
   GridLegendParams,
@@ -21,13 +21,13 @@ import type {
   LineAreasParams,
   LinesParams,
   GridTooltipParams,
-  GridZoomParams,
+  GroupZoomParams,
   ValueAxisParams,
   StackedValueAxisParams,
 
   // -- multiGrid --
   MultiBarsParams,
-  MultiStackedBarParams,
+  MultiStackedBarsParams,
   MultiBarsTriangleParams,
   MultiDotsParams,
   MultiGridLegendParams,
@@ -42,12 +42,15 @@ import type {
 
   // -- multiValue --
   MultiValueLegendParams,
-  MultiValueTooltipParams,  
+  MultiValueTooltipParams,
+  RacingBarsParams,
+  RacingCounterTextsParams,
+  RacingValueAxisParams,
   ScatterParams,
   ScatterBubblesParams,
   XYAuxParams,
   XYAxesParams,
-  XYZoomParams,
+  XZoomParams,
 
   // -- relationship --
   ForceDirectedParams,
@@ -63,8 +66,9 @@ import type {
   // -- noneData --
   // TooltipParams
 } from '../lib/plugins-basic-types'
+import type { DeepPartial } from '../lib/core-types'
 
-type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>
+// type DeepPartial<T> = Partial<{ [P in keyof T]: DeepPartial<T[P]> }>
 
 // -- series --
 // series的全部plugin參數
@@ -113,7 +117,7 @@ export interface PresetSeriesTooltipParams {
 // grid的全部plugin參數
 export type PresetGridPluginParams = PresetBarsParams
   & PresetBarsPNParams
-  & PresetStackedBarParams
+  & PresetStackedBarsParams
   & PresetBarsTriangleParams
   & PresetDotsParams
   & PresetGridLegendParams
@@ -122,7 +126,7 @@ export type PresetGridPluginParams = PresetBarsParams
   & PresetGroupAxisParams
   & PresetLineAreasParams
   & PresetLinesParams
-  & PresetGridZoomParams
+  & PresetGroupZoomParams
   & PresetValueAxisParams
   & PresetStackedValueAxisParams
 
@@ -134,8 +138,8 @@ export interface PresetBarsPNParams {
   BarsPN: Partial<BarsPNParams>
 }
 
-export interface PresetStackedBarParams {
-  StackedBar: Partial<StackedBarParams>
+export interface PresetStackedBarsParams {
+  StackedBars: Partial<StackedBarsParams>
 }
 
 export interface PresetBarsTriangleParams {
@@ -170,8 +174,8 @@ export interface PresetLinesParams {
   Lines: Partial<LinesParams>
 }
 
-export interface PresetGridZoomParams {
-  GridZoom: Partial<GridZoomParams>
+export interface PresetGroupZoomParams {
+  GroupZoom: Partial<GroupZoomParams>
 }
 
 export interface PresetValueAxisParams {
@@ -185,7 +189,7 @@ export interface PresetStackedValueAxisParams {
 // -- multiGrid --
 // multiGrid的全部plugin參數
 export type PresetMultiGridPluginParams = PresetMultiBarsParams
-  & PresetMultiStackedBarParams
+  & PresetMultiStackedBarsParams
   & PresetMultiBarsTriangleParams
   & PresetMultiDotsParams
   & PresetMultiGridLegendParams
@@ -208,8 +212,8 @@ export interface PresetMultiBarsParams {
   MultiBars: Partial<MultiBarsParams>
 }
 
-export interface PresetMultiStackedBarParams {
-  MultiStackedBar: Partial<MultiStackedBarParams>
+export interface PresetMultiStackedBarsParams {
+  MultiStackedBars: Partial<MultiStackedBarsParams>
 }
 
 export interface PresetMultiBarsTriangleParams {
@@ -259,11 +263,14 @@ export interface PresetOverlappingStackedValueAxesParams {
 // -- multiValue --
 export type PresetMultiValuePluginParams = PresetMultiValueLegendParams
   & PresetMultiValueTooltipParams
+  & PresetRacingBarsParams
+  & PresetRacingCounterTextsParams
+  & PresetRacingValueAxisParams
   & PresetScatterParams
   & PresetScatterBubblesParams
   & PresetXYAuxParams
   & PresetXYAxesParams
-  & PresetXYZoomParams
+  & PresetXZoomParams
 
 export interface PresetMultiValueAxisParams {
   MultiValueAxis: Partial<MultiValueAxisParams>
@@ -281,6 +288,18 @@ export interface PresetMultiValueTooltipParams {
   MultiValueTooltip: Partial<MultiValueTooltipParams>
 }
 
+export interface PresetRacingBarsParams {
+  RacingBars: DeepPartial<RacingBarsParams>
+}
+
+export interface PresetRacingCounterTextsParams {
+  RacingCounterTexts: Partial<RacingCounterTextsParams>
+}
+
+export interface PresetRacingValueAxisParams {
+  RacingValueAxis: Partial<RacingValueAxisParams>
+}
+
 export interface PresetScatterParams {
   Scatter: Partial<ScatterParams>
 }
@@ -294,11 +313,11 @@ export interface PresetXYAuxParams {
 }
 
 export interface PresetXYAxesParams {
-  XYAxes: Partial<XYAxesParams>
+  XYAxes: DeepPartial<XYAxesParams>
 }
 
-export interface PresetXYZoomParams {
-  XYZoom: Partial<XYZoomParams>
+export interface PresetXZoomParams {
+  XZoom: Partial<XZoomParams>
 }
 
 // -- relationship --

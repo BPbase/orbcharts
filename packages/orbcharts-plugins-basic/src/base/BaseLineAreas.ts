@@ -13,7 +13,7 @@ import type {
   ComputedDatumGrid,
   ComputedDataGrid,
   ComputedLayoutDatumGrid,
-  ComputedLayoutDataGrid,
+  ComputedAxesDataGrid,
   DataFormatterGrid,
   EventGrid,
   ContainerPositionScaled,
@@ -36,9 +36,9 @@ import { gridSelectionsObservable } from '../grid/gridObservables'
 interface BaseLineAreasContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
-  computedLayoutData$: Observable<ComputedLayoutDataGrid>
+  computedAxesData$: Observable<ComputedAxesDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
-  visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
+  visibleComputedAxesData$: Observable<ComputedAxesDataGrid>
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
@@ -262,9 +262,9 @@ function renderClipPath ({ defsSelection, clipPathData, transitionDuration, tran
 export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginName: string, {
   selection,
   computedData$,
-  computedLayoutData$,
+  computedAxesData$,
   visibleComputedData$,
-  visibleComputedLayoutData$,
+  visibleComputedAxesData$,
   seriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
@@ -431,7 +431,7 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
   const pathSelectionArr$ = combineLatest({
     graphicGSelection: graphicGSelection$,
     defsSelection: defsSelection$,
-    visibleComputedLayoutData: visibleComputedLayoutData$,
+    visibleComputedAxesData: visibleComputedAxesData$,
     linearGradientIds: linearGradientIds$,
     areaPath: areaPath$,
     params: fullParams$,
@@ -453,7 +453,7 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
       // 繪圖
       data.graphicGSelection.each((d, i, all) => {
         // 將資料分段
-        const segmentData = makeSegmentData(data.visibleComputedLayoutData[i] ?? [])
+        const segmentData = makeSegmentData(data.visibleComputedAxesData[i] ?? [])
 
         pathSelectionArr[i] = renderLineAreas({
           selection: d3.select(all[i]),
@@ -465,7 +465,7 @@ export const createBaseLineAreas: BasePluginFn<BaseLineAreasContext> = (pluginNa
         })
         renderLinearGradient({
           defsSelection: data.defsSelection,
-          computedData: data.visibleComputedLayoutData,
+          computedData: data.visibleComputedAxesData,
           linearGradientIds: data.linearGradientIds,
           params: data.params
         })

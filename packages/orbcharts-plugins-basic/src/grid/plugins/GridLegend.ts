@@ -65,12 +65,12 @@ export const GridLegend = defineGridPlugin(pluginConfig)(({ selection, rootSelec
   
   const destroy$ = new Subject()
 
-  const seriesLabels$: Observable<string[]> = observer.SeriesDataMap$.pipe(
-    takeUntil(destroy$),
-    map(data => {
-      return Array.from(data.keys())
-    })
-  )
+  // const seriesLabels$: Observable<string[]> = observer.SeriesDataMap$.pipe(
+  //   takeUntil(destroy$),
+  //   map(data => {
+  //     return Array.from(data.keys())
+  //   })
+  // )
 
   // 全部列點矩型使用相同樣式參數
   const fullParams$ = observer.fullParams$.pipe(
@@ -92,7 +92,7 @@ export const GridLegend = defineGridPlugin(pluginConfig)(({ selection, rootSelec
 
   const unsubscribeBaseLegend = createBaseLegend(pluginName, {
     rootSelection,
-    legendLabels$: seriesLabels$,
+    legendLabels$: observer.seriesLabels$,
     fullParams$,
     layout$: observer.layout$,
     fullChartParams$: observer.fullChartParams$,

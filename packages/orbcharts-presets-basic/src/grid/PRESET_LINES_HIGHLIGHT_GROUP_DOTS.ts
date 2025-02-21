@@ -2,12 +2,12 @@ import type { PresetPartial } from '../../lib/core-types'
 import type { PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_LINES_HIGHLIGHT_GROUP_DOTS: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_LINES_HIGHLIGHT_GROUP_DOTS',
-  description: '折線圖及Highlight Group圓點',
+  description: 'Highlight Group Dots',
+  descriptionZh: 'Highlight Group圓點的折線圖',
   chartParams: {
     colors: {
       light: {
@@ -26,15 +26,14 @@ export const PRESET_LINES_HIGHLIGHT_GROUP_DOTS: PresetPartial<'grid', Partial<Pr
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 80
     },
     highlightTarget: 'group'
   },
-  allPluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
+  pluginParams: {
     Lines: {},
     Dots: {
       onlyShowHighlighted: false
@@ -43,8 +42,6 @@ export const PRESET_LINES_HIGHLIGHT_GROUP_DOTS: PresetPartial<'grid', Partial<Pr
     ValueAxis: {},
     GroupAux: {},
     GridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
       listRectHeight: 2

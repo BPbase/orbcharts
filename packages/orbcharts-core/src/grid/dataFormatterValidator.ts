@@ -11,32 +11,51 @@ export const dataFormatterValidator: DataFormatterValidator<'grid'> = (dataForma
     // },
     container: {
       toBeTypes: ['object']
+    },
+    seriesDirection: {
+      toBe: '"row" | "column"',
+      test: (value) => value === 'row' || value === 'column'
+    },
+    rowLabels: {
+      toBeTypes: ['string[]']
+    },
+    columnLabels: {
+      toBeTypes: ['string[]']
+    },
+    valueAxis: {
+      toBeTypes: ['object']
+    },
+    groupAxis: {
+      toBeTypes: ['object']
+    },
+    separateSeries: {
+      toBeTypes: ['boolean']
     }
   })
   // if (dataFormatter.grid) {
-    const visibleFilterResult = validateColumns(dataFormatter, {
-      seriesDirection: {
-        toBe: '"row" | "column"',
-        test: (value) => value === 'row' || value === 'column'
-      },
-      rowLabels: {
-        toBeTypes: ['string[]']
-      },
-      columnLabels: {
-        toBeTypes: ['string[]']
-      },
-      valueAxis: {
-        toBeTypes: ['object']
-      },
-      groupAxis: {
-        toBeTypes: ['object']
-      },
-      separateSeries: {
-        toBeTypes: ['boolean']
-      }
-    })
-    if (visibleFilterResult.status === 'error') {
-      return visibleFilterResult
+    // const visibleFilterResult = validateColumns(dataFormatter, {
+    //   seriesDirection: {
+    //     toBe: '"row" | "column"',
+    //     test: (value) => value === 'row' || value === 'column'
+    //   },
+    //   rowLabels: {
+    //     toBeTypes: ['string[]']
+    //   },
+    //   columnLabels: {
+    //     toBeTypes: ['string[]']
+    //   },
+    //   valueAxis: {
+    //     toBeTypes: ['object']
+    //   },
+    //   groupAxis: {
+    //     toBeTypes: ['object']
+    //   },
+    //   separateSeries: {
+    //     toBeTypes: ['boolean']
+    //   }
+    // })
+    if (result.status === 'error') {
+      return result
     }
     if (dataFormatter.valueAxis) {
       const valueAxisResult = validateColumns(dataFormatter.valueAxis, {

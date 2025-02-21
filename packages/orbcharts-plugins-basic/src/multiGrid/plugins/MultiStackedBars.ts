@@ -10,12 +10,12 @@ import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineMultiGridPlugin } from '../../../lib/core'
 import { DEFAULT_MULTI_STACKED_BAR_PARAMS } from '../defaults'
-import { createBaseStackedBar } from '../../base/BaseStackedBar'
+import { createBaseStackedBars } from '../../base/BaseStackedBars'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
 
-const pluginName = 'MultiStackedBar'
+const pluginName = 'MultiStackedBars'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
@@ -45,7 +45,7 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_S
   }
 }
 
-export const MultiStackedBar = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
+export const MultiStackedBars = defineMultiGridPlugin(pluginConfig)(({ selection, name, subject, observer }) => {
   const destroy$ = new Subject()
 
   const unsubscribeFnArr: (() => void)[] = []
@@ -75,12 +75,12 @@ export const MultiStackedBar = defineMultiGridPlugin(pluginConfig)(({ selection,
             shareReplay(1)
           )
 
-          unsubscribeFnArr[i] = createBaseStackedBar(pluginName, {
+          unsubscribeFnArr[i] = createBaseStackedBars(pluginName, {
             selection: gridSelection,
             computedData$: d.computedData$,
             visibleComputedData$: d.visibleComputedData$,
-            computedLayoutData$: d.computedLayoutData$,
-            visibleComputedLayoutData$: d.visibleComputedLayoutData$,
+            computedAxesData$: d.computedAxesData$,
+            visibleComputedAxesData$: d.visibleComputedAxesData$,
             seriesLabels$: d.seriesLabels$,
             SeriesDataMap$: d.SeriesDataMap$,
             GroupDataMap$: d.GroupDataMap$,
@@ -91,7 +91,7 @@ export const MultiStackedBar = defineMultiGridPlugin(pluginConfig)(({ selection,
             gridGraphicTransform$: d.gridGraphicTransform$,
             gridGraphicReverseScale$: d.gridGraphicReverseScale$,
             gridAxesSize$: d.gridAxesSize$,
-            gridHighlight$: d.gridHighlight$,
+            gridHighlight$: observer.multiGridHighlight$,
             gridContainerPosition$: d.gridContainerPosition$,
             isSeriesSeprate$,
             event$: subject.event$ as Subject<any>,

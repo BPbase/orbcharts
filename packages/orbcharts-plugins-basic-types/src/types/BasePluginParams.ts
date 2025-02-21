@@ -10,7 +10,7 @@ export interface BaseBarsParams {
   barRadius: number | boolean
 }
 
-export interface BaseStackedBarParams {
+export interface BaseStackedBarsParams {
   barWidth: number
   barGroupPadding: number
   barRadius: number | boolean
@@ -88,6 +88,48 @@ export interface BaseLinesParams {
   // labelPadding: number
 }
 
+export interface BaseRacingBarsParams {
+  bar: {
+    barWidth: number
+    barPadding: number
+    barRadius: number | boolean
+  }
+  rankingAmount: 'auto' | number
+}
+
+export interface BaseRacingLabelsParams {
+  // labelOffset: [number, number]
+  // labelColorType: ColorType
+  // axisLineVisible: boolean
+  // axisLineColorType: ColorType
+  // // ticks: number | null
+  // // tickFormat: string | ((text: d3.NumberValue) => string | d3.NumberValue)
+  // tickLineVisible: boolean
+  // tickPadding: number
+  // // tickFullLine: boolean
+  // // tickFullLineDasharray: string
+  // tickColorType: ColorType
+  // tickTextRotate: number
+  // tickTextColorType: ColorType
+  barLabel: {
+    position: 'inside' | 'outside' | 'none'
+    padding: number
+    rotate: number
+    colorType: ColorType
+  }
+  axisLabel: {
+    offset: [number, number]
+    colorType: ColorType
+  }
+}
+
+export interface BaseRacingValueLabelsParams {
+  padding: number
+  colorType: ColorType
+  format: string | ((text: d3.NumberValue) => string | d3.NumberValue)
+}
+
+
 export interface BaseTooltipStyle {
   backgroundColor: string
   backgroundOpacity: number
@@ -137,5 +179,41 @@ export interface BaseValueAxisParams {
   tickFullLineDasharray: string
   tickColorType: ColorType
   tickTextRotate: number
+  tickTextColorType: ColorType
+}
+
+export interface BaseXAxisParams {
+  labelOffset: [number, number]
+  labelColorType: ColorType
+  axisLineVisible: boolean
+  axisLineColorType: ColorType
+  ticks: number | null
+  tickFormat: string | ((text: d3.NumberValue) => string | d3.NumberValue)
+  tickLineVisible: boolean
+  tickPadding: number
+  tickFullLine: boolean
+  tickFullLineDasharray: string
+  tickColorType: ColorType
+  // axisLineColor: string
+  // axisLabelColor: string
+  // tickTextRotate: number
+  tickTextColorType: ColorType
+}
+
+export interface BaseYAxisParams {
+  labelOffset: [number, number]
+  labelColorType: ColorType
+  axisLineVisible: boolean
+  axisLineColorType: ColorType
+  ticks: number | null
+  tickFormat: string | ((text: d3.NumberValue) => string | d3.NumberValue)
+  tickLineVisible: boolean
+  tickPadding: number
+  tickFullLine: boolean
+  tickFullLineDasharray: string
+  tickColorType: ColorType
+  // axisLineColor: string
+  // axisLabelColor: string
+  // tickTextRotate: number
   tickTextColorType: ColorType
 }

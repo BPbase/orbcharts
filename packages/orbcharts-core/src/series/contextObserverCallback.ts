@@ -8,7 +8,7 @@ import { highlightObservable, textSizePxObservable } from '../utils/observables'
 import {
   separateSeriesObservable,
   seriesVisibleComputedDataObservable,
-  seriesComputedLayoutDataObservable,
+  seriesComputedSortedDataObservable,
   seriesLabelsObservable,
   seriesContainerPositionObservable,
   seriesContainerPositionMapObservable
@@ -22,22 +22,28 @@ export const contextObserverCallback: ContextObserverCallback<'series'> = ({ sub
 
   const separateSeries$ = separateSeriesObservable({
     fullDataFormatter$: observer.fullDataFormatter$
-  })
+  }).pipe(
+    shareReplay(1)
+  )
 
   const visibleComputedData$ = seriesVisibleComputedDataObservable({
     computedData$: observer.computedData$,
-  })
+  }).pipe(
+    shareReplay(1)
+  )
 
-  const computedLayoutData$ = seriesComputedLayoutDataObservable({
+  const computedSortedData$ = seriesComputedSortedDataObservable({
     computedData$: observer.computedData$,
     fullDataFormatter$: observer.fullDataFormatter$
   }).pipe(
     shareReplay(1)
   )
 
-  const visibleComputedLayoutData$ = seriesVisibleComputedDataObservable({
-    computedData$: computedLayoutData$,
-  })
+  const visibleComputedSortedData$ = seriesVisibleComputedDataObservable({
+    computedData$: computedSortedData$,
+  }).pipe(
+    shareReplay(1)
+  )
 
   const datumList$ = observer.computedData$.pipe(
     map(d => d.flat())
@@ -55,8 +61,9 @@ export const contextObserverCallback: ContextObserverCallback<'series'> = ({ sub
 
   const seriesLabels$ = seriesLabelsObservable({
     computedData$: observer.computedData$,
-  })
-
+  }).pipe(
+    shareReplay(1)
+  )
 
   const SeriesDataMap$ = seriesDataMapObservable({
     datumList$
@@ -88,9 +95,9 @@ export const contextObserverCallback: ContextObserverCallback<'series'> = ({ sub
     layout$: observer.layout$,
     textSizePx$,
     visibleComputedData$,
-    visibleComputedLayoutData$,
+    visibleComputedSortedData$,
     separateSeries$,
-    computedLayoutData$,
+    computedSortedData$,
     seriesHighlight$,
     seriesLabels$,
     SeriesDataMap$,

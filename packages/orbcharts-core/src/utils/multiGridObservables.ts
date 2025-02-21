@@ -18,6 +18,7 @@ import type {
   ComputedDataTypeMap,
   ComputedDataGrid,
   ContextObserverMultiGridDetail,
+  ContainerSize,
   DataTypeMap,
   DataFormatterTypeMap,
   DataFormatterGrid,
@@ -32,11 +33,12 @@ import {
   seriesDataMapObservable,
   groupDataMapObservable } from './observables'
 import {
-  gridComputedLayoutDataObservable,
+  gridComputedAxesDataObservable,
   gridAxesSizeObservable,
+  gridAxesContainerSizeObservable,
   gridSeriesLabelsObservable,
   gridVisibleComputedDataObservable,
-  gridVisibleComputedLayoutDataObservable,
+  gridVisibleComputedAxesDataObservable,
   // isSeriesSeprateObservable,
   gridContainerPositionObservable,
   computedStackedDataObservables,
@@ -48,30 +50,31 @@ import {
   gridGraphicReverseScaleObservable,
 } from './gridObservables'
 import { DEFAULT_DATA_FORMATTER_MULTI_GRID_GRID } from '../defaults'
-import { calcGridContainerLayout } from './orbchartsUtils'
+import { calcContainerPositionScaled } from './orbchartsUtils'
 
 // 每一個grid計算出來的所有Observable
-export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData$, layout$, fullChartParams$, event$ }: {
+export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData$, layout$, fullChartParams$, event$, containerSize$ }: {
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiGrid'>>
   computedData$: Observable<ComputedDataTypeMap<'multiGrid'>>
   layout$: Observable<Layout>
   fullChartParams$: Observable<ChartParams>
   event$: Subject<EventMultiGrid>
+  containerSize$: Observable<ContainerSize>
 }): Observable<ContextObserverMultiGridDetail[]> => {
 
   const destroy$ = new Subject()
 
-  // highlight全部grid
-  const allGridHighlight$ = highlightObservable({
-    datumList$: computedData$.pipe(
-      map(d => d.flat().flat()),
-      shareReplay(1)
-    ),
-    fullChartParams$: fullChartParams$,
-    event$: event$
-  }).pipe(
-    shareReplay(1)
-  )
+  // // highlight全部grid
+  // const allGridHighlight$ = highlightObservable({
+  //   datumList$: computedData$.pipe(
+  //     map(d => d.flat().flat()),
+  //     shareReplay(1)
+  //   ),
+  //   fullChartParams$: fullChartParams$,
+  //   event$: event$
+  // }).pipe(
+  //   shareReplay(1)
+  // )
 
   const multiGridContainer$ = multiGridContainerObservable({
     computedData$: computedData$,
@@ -146,14 +149,19 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           takeUntil(destroy$),
           shareReplay(1)
         )
-        
-        
-    
+
         const gridAxesSize$ = gridAxesSizeObservable({
           fullDataFormatter$: gridDataFormatter$,
           layout$: layout$
         }).pipe(
           takeUntil(destroy$),
+          shareReplay(1)
+        )
+        
+        const gridAxesContainerSize$ = gridAxesContainerSizeObservable({
+          fullDataFormatter$: gridDataFormatter$,
+          containerSize$: containerSize$
+        }).pipe(
           shareReplay(1)
         )
     
@@ -200,7 +208,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           shareReplay(1)
         )
 
-        const computedLayoutData$ = gridComputedLayoutDataObservable({
+        const computedAxesData$ = gridComputedAxesDataObservable({
           computedData$: gridComputedData$,
           fullDataFormatter$: gridDataFormatter$,
           layout$: layout$,
@@ -209,8 +217,8 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           shareReplay(1)
         )
     
-        const visibleComputedLayoutData$ = gridVisibleComputedLayoutDataObservable({
-          computedLayoutData$: computedLayoutData$,
+        const visibleComputedAxesData$ = gridVisibleComputedAxesDataObservable({
+          computedAxesData$: computedAxesData$,
         }).pipe(
           takeUntil(destroy$),
           shareReplay(1)
@@ -276,15 +284,16 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           isSeriesSeprate$,
           gridContainerPosition$,
           gridAxesSize$,
-          gridHighlight$: allGridHighlight$,
+          gridAxesContainerSize$,
+          // gridHighlight$: allGridHighlight$,
           seriesLabels$,
           SeriesDataMap$,
           GroupDataMap$,
           dataFormatter$: gridDataFormatter$,
           computedData$: gridComputedData$,
-          computedLayoutData$,
+          computedAxesData$,
           visibleComputedData$,
-          visibleComputedLayoutData$,
+          visibleComputedAxesData$,
           computedStackedData$,
           groupScaleDomainValue$,
           filteredMinMaxValue$,
@@ -325,7 +334,7 @@ export const multiGridContainerObservable = ({ computedData$, fullDataFormatter$
         return acc + gridSlotAmount
       }, 0) || 1
 
-      const gridContainerLayout = calcGridContainerLayout(data.layout, data.fullDataFormatter.container, slotAmount)
+      const gridContainerLayout = calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, slotAmount)
 
       let accGridSlotIndex = 0
       const gridContainerPositionArr = data.computedData.map((gridData, gridIndex) => {

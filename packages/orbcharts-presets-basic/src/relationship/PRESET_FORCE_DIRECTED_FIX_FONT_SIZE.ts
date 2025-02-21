@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetRelationshipPluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_FORCE_DIRECTED_FIX_FONT_SIZE: PresetPartial<'relationship', Partial<PresetRelationshipPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_FORCE_DIRECTED_FIX_FONT_SIZE',
-  description: '基本Force Directed參數',
+  description: 'Force Directed Chart with fixed font size',
+  descriptionZh: '固定字體大小的力導向圖',
   chartParams: {
     colors: {
       light: {
@@ -23,14 +23,8 @@ export const PRESET_FORCE_DIRECTED_FIX_FONT_SIZE: PresetPartial<'relationship', 
         ],
       }
     },
-    // padding: {
-    //   top: 40,
-    //   right: 40,
-    //   bottom: 60,
-    //   left: 40
-    // },
   },
-  allPluginParams: {
+  pluginParams: {
     ForceDirected: {
       dotLabel: {
         sizeFixed: true

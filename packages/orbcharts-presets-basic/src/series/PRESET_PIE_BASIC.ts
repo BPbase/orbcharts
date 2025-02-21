@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetSeriesPluginParams, PresetSeriesTooltipParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_SERIES, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_PIE_BASIC: PresetPartial<'series', Partial<PresetSeriesPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_PIE_BASIC',
-  description: '基本圓餅圖',
+  description: 'Basic pie chart',
+  descriptionZh: '基本圓餅圖',
   chartParams: {
     colors: {
       light: {
@@ -27,8 +27,7 @@ export const PRESET_PIE_BASIC: PresetPartial<'series', Partial<PresetSeriesPlugi
   dataFormatter: {
     sort: (a, b) => b.value - a.value
   },
-  allPluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
+  pluginParams: {
     SeriesLegend: {
       listRectRadius: 7 // 圓型圖例列點
     }

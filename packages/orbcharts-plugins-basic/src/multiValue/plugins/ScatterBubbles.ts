@@ -14,8 +14,8 @@ import {
 import type {
   ComputedDatumMultiValue,
   ComputedDataMultiValue,
-  ComputedLayoutDatumMultiValue,
-  ComputedLayoutDataMultiValue,
+  ComputedXYDatumMultiValue,
+  ComputedXYDataMultiValue,
   DefinePluginConfig,
   EventMultiValue,
   ChartParams, 
@@ -42,7 +42,7 @@ type ClipPathDatum = {
   height: number;
 }
 
-interface BubbleDatum extends ComputedLayoutDatumMultiValue {
+interface BubbleDatum extends ComputedXYDatumMultiValue {
   r: number
   opacity: number
 }
@@ -91,7 +91,7 @@ function renderDots ({ graphicGSelection, circleGClassName, circleClassName, bub
   graphicGSelection: d3.Selection<SVGGElement, any, any, any>
   circleGClassName: string
   circleClassName: string
-  // visibleComputedLayoutData: ComputedLayoutDataMultiValue
+  // visibleComputedLayoutData: ComputedXYDataMultiValue
   bubbleData: BubbleDatum[][]
   fullParams: ScatterBubblesParams
   fullChartParams: ChartParams
@@ -254,19 +254,19 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
     pluginName,
     clipPathID,
     categoryLabels$: observer.categoryLabels$,
-    multiValueContainerPosition$: observer.multiValueContainerPosition$,
-    multiValueGraphicTransform$: observer.multiValueGraphicTransform$
+    containerPosition$: observer.containerPosition$,
+    graphicTransform$: observer.graphicTransform$
   })
 
   const graphicReverseScale$: Observable<[number, number][]> = combineLatest({
     computedData: observer.computedData$,
-    multiValueGraphicReverseScale: observer.multiValueGraphicReverseScale$
+    graphicReverseScale: observer.graphicReverseScale$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async data => data),
     map(data => {
       return data.computedData.map((series, categoryIndex) => {
-        return data.multiValueGraphicReverseScale[categoryIndex]
+        return data.graphicReverseScale[categoryIndex]
       })
     })
   )
@@ -290,13 +290,13 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
     })
   })
 
-  const filteredValueList$ = observer.filteredMinMaxXYData$.pipe(
+  const filteredValueList$ = observer.filteredXYMinMaxData$.pipe(
     takeUntil(destroy$),
     map(data => data.datumList.flat().map(d => d.value[2] ?? 0)),
     shareReplay(1)
   )
 
-  const filteredMinMaxValue$ = observer.filteredMinMaxXYData$.pipe(
+  const filteredMinMaxValue$ = observer.filteredXYMinMaxData$.pipe(
     takeUntil(destroy$),
     map(data => {
       return getMinMax(data.datumList.flat().map(d => d.value[2] ?? 0))
@@ -376,7 +376,7 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
   )
 
   const bubbleData$ = combineLatest({
-    computedLayoutData: observer.computedLayoutData$,
+    visibleComputedXYData: observer.visibleComputedXYData$,
     opacityScale: opacityScale$,
     radiusScale: radiusScale$,
     scaleFactor: scaleFactor$,
@@ -385,7 +385,7 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      return data.computedLayoutData.map(category => {
+      return data.visibleComputedXYData.map(category => {
         return category.map(_d => {
           const d: BubbleDatum = _d as BubbleDatum
           d.r = data.radiusScale(d.value[2]) * data.scaleFactor * adjustmentFactor
@@ -517,7 +517,7 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
 
   combineLatest({
     graphicSelection: graphicSelection$,
-    highlight: observer.multiValueHighlight$.pipe(
+    highlight: observer.highlight$.pipe(
       map(data => data.map(d => d.id))
     ),
     fullChartParams: observer.fullChartParams$

@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_MULTI_VALUE_BASIC: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_MULTI_VALUE_BASIC',
-  description: '基本MultiValue參數',
+  description: 'Basic MultiValue',
+  descriptionZh: '基本MultiValue參數',
   chartParams: {
     colors: {
       light: {
@@ -24,13 +24,13 @@ export const PRESET_MULTI_VALUE_BASIC: PresetPartial<'multiValue', Partial<Prese
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
-      left: 60
+      left: 80
     },
   },
-  allPluginParams: {
+  pluginParams: {
     MultiValueLegend: {
       placement: 'bottom',
       padding: 14,

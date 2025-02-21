@@ -34,6 +34,7 @@ export const multiGridPluginDetailObservables = (observer: ContextObserverMultiG
     multiGridEachDetail: observer.multiGridEachDetail$,
     gridIndexes: gridIndexes$,
   }).pipe(
+    switchMap(async d => d),
     map(data => {
       // 對應所有grid
       if (data.gridIndexes === 'all') {

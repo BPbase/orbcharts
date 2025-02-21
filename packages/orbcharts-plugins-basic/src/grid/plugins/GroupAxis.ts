@@ -44,30 +44,6 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_GROUP_A
           return value === null || value === 'all' || typeof value === 'number'
         }
       },
-      tickFormat: {
-        toBeTypes: ['string', 'Function']
-      },
-      tickLineVisible: {
-        toBeTypes: ['boolean']
-      },
-      tickPadding: {
-        toBeTypes: ['number']
-      },
-      tickFullLine: {
-        toBeTypes: ['boolean']
-      },
-      tickFullLineDasharray: {
-        toBeTypes: ['string']
-      },
-      tickColorType: {
-        toBeOption: 'ColorType',
-      },
-      tickTextRotate: {
-        toBeTypes: ['number']
-      },
-      tickTextColorType: {
-        toBeOption: 'ColorType',
-      }
     })
     return result
   }

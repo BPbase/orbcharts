@@ -14,6 +14,7 @@ import {
 import type {
   ChartType,
   CreateBasePlugin,
+  DeepPartial,
   DefinePluginConfig,
   PluginInitFn,
   PluginContext,
@@ -34,7 +35,7 @@ function createPluginEntity <T extends ChartType, PluginName, PluginParams>({ ch
   let pluginDestroyFn = () => {}
   let pluginContext: PluginContext<T, PluginName, PluginParams> | undefined
   const mergedDefaultParams$ = new BehaviorSubject(config.defaultParams)
-  const params$: Subject<Partial<typeof config.defaultParams>> = new BehaviorSubject({})
+  const params$: Subject<DeepPartial<typeof config.defaultParams>> = new BehaviorSubject({})
   const fullParams$ = mergedDefaultParams$.pipe(
     switchMap(mergedDefaultParams => {
       return params$
@@ -98,7 +99,7 @@ function createPluginEntity <T extends ChartType, PluginName, PluginParams>({ ch
       }
       destroy$.next(undefined)
     },
-    setPresetParams: (presetParams: Partial<PluginParams>) => {
+    setPresetParams: (presetParams: DeepPartial<PluginParams>) => {
       mergedDefaultParams$.next(mergeOptionsWithDefault(presetParams, config.defaultParams))
       
     },
@@ -119,7 +120,7 @@ export const createBasePlugin: CreateBasePlugin = <T extends ChartType>(chartTyp
     return function definePluginInitFn (initFn: PluginInitFn<T, PluginName, PluginParams>) {
 
       return class Plugin {
-        params$: Subject<Partial<PluginParams>>
+        params$: Subject<DeepPartial<PluginParams>>
         name: PluginName
         chartType: T
         defaultParams: PluginParams
@@ -127,7 +128,7 @@ export const createBasePlugin: CreateBasePlugin = <T extends ChartType>(chartTyp
         // presetParams: Partial<PluginParams>
         init: () => void
         destroy: () => void
-        setPresetParams: (presetParams: Partial<PluginParams>) => void
+        setPresetParams: (presetParams: DeepPartial<PluginParams>) => void
         setContext: (pluginContext: PluginContext<T, PluginName, PluginParams>) => void
         constructor () {
           const pluginEntity = createPluginEntity<T, PluginName, PluginParams>({

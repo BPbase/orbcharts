@@ -17,6 +17,7 @@ import type {
   ComputedDataTypeMap,
   ComputedDatumTypeMap,
   ComputedDataGrid,
+  ContainerSize,
   DataTypeMap,
   DataGridDatum,
   ComputedDatumGrid,
@@ -25,17 +26,17 @@ import type {
   DataFormatterValueAxis,
   DataFormatterGroupAxis,
   ComputedLayoutDatumGrid,
-  ComputedLayoutDataGrid,
+  ComputedAxesDataGrid,
   ContainerPositionScaled,
   HighlightTarget,
   Layout,
   TransformData } from '../../lib/core-types'
 import { getMinMaxGrid } from './orbchartsUtils'
 import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from './d3Scale'
-import { calcGridContainerLayout } from './orbchartsUtils'
+import { calcContainerPositionScaled } from './orbchartsUtils'
 import { getMinMaxValue } from './orbchartsUtils'
 
-export const gridComputedLayoutDataObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
+export const gridComputedAxesDataObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'grid'>>
   fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
   layout$: Observable<Layout>
@@ -138,9 +139,20 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
     }
   }
 
+  const groupAxisPosition$ = fullDataFormatter$.pipe(
+    map(d => d.groupAxis.position),
+    distinctUntilChanged()
+  )
+
+  const valueAxisPosition$ = fullDataFormatter$.pipe(
+    map(d => d.valueAxis.position),
+    distinctUntilChanged()
+  )
+
   return new Observable(subscriber => {
     combineLatest({
-      fullDataFormatter: fullDataFormatter$,
+      groupAxisPosition: groupAxisPosition$,
+      valueAxisPosition: valueAxisPosition$,
       layout: layout$
     }).pipe(
       takeUntil(destroy$),
@@ -148,8 +160,8 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
     ).subscribe(data => {
       
       const axisSize = calcAxesSize({
-        xAxisPosition: data.fullDataFormatter.groupAxis.position,
-        yAxisPosition: data.fullDataFormatter.valueAxis.position,
+        xAxisPosition: data.groupAxisPosition,
+        yAxisPosition: data.valueAxisPosition,
         width: data.layout.width,
         height: data.layout.height,
       })
@@ -160,6 +172,16 @@ export const gridAxesSizeObservable = ({ fullDataFormatter$, layout$ }: {
         destroy$.next(undefined)
       }
     })
+  })
+}
+
+export const gridAxesContainerSizeObservable = ({ fullDataFormatter$, containerSize$ }: {
+  containerSize$: Observable<ContainerSize>
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'grid'>>
+}): Observable<ContainerSize> => {
+  return gridAxesSizeObservable({
+    fullDataFormatter$,
+    layout$: containerSize$ as Observable<Layout>
   })
 }
 
@@ -204,8 +226,8 @@ export const gridVisibleComputedDataObservable = ({ computedData$ }: { computedD
   )
 }
 
-export const gridVisibleComputedLayoutDataObservable = ({ computedLayoutData$ }: { computedLayoutData$: Observable<ComputedLayoutDataGrid> }) => {
-  return computedLayoutData$.pipe(
+export const gridVisibleComputedAxesDataObservable = ({ computedAxesData$ }: { computedAxesData$: Observable<ComputedAxesDataGrid> }) => {
+  return computedAxesData$.pipe(
     map(data => {
       const visibleComputedData = data
         .map(d => {
@@ -236,7 +258,7 @@ export const gridContainerPositionObservable = ({ computedData$, fullDataFormatt
       
       if (data.fullDataFormatter.separateSeries) {
         // -- 依slotIndexes計算 --
-        return calcGridContainerLayout(data.layout, data.fullDataFormatter.container, data.computedData.length)
+        return calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, data.computedData.length)
         // return data.computedData.map((seriesData, seriesIndex) => {
         //   const columnIndex = seriesIndex % data.fullDataFormatter.container.columnAmount
         //   const rowIndex = Math.floor(seriesIndex / data.fullDataFormatter.container.columnAmount)
@@ -251,7 +273,7 @@ export const gridContainerPositionObservable = ({ computedData$, fullDataFormatt
         // })
       } else {
         // -- 無拆分 --
-        const gridContainerPositionArr = calcGridContainerLayout(data.layout, data.fullDataFormatter.container, 1)
+        const gridContainerPositionArr = calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, 1)
         return data.computedData.map((d, i) => gridContainerPositionArr[0]) // 每個series相同位置
         // const columnIndex = 0
         // const rowIndex = 0

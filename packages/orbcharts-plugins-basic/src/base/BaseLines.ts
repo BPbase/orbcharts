@@ -13,7 +13,7 @@ import type {
   ComputedDatumGrid,
   ComputedDataGrid,
   ComputedLayoutDatumGrid,
-  ComputedLayoutDataGrid,
+  ComputedAxesDataGrid,
   DataFormatterGrid,
   EventGrid,
   ContainerPositionScaled,
@@ -42,9 +42,9 @@ import { gridSelectionsObservable } from '../grid/gridObservables'
 interface BaseLinesContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataGrid>
-  computedLayoutData$: Observable<ComputedLayoutDataGrid>
+  computedAxesData$: Observable<ComputedAxesDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
-  visibleComputedLayoutData$: Observable<ComputedLayoutDataGrid>
+  visibleComputedAxesData$: Observable<ComputedAxesDataGrid>
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
@@ -230,9 +230,9 @@ function renderClipPath ({ defsSelection, clipPathData, transitionDuration, tran
 export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: string, {
   selection,
   computedData$,
-  computedLayoutData$,
+  computedAxesData$,
   visibleComputedData$,
-  visibleComputedLayoutData$,
+  visibleComputedAxesData$,
   seriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
@@ -515,7 +515,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
   
   const pathSelectionArr$ = combineLatest({
     graphicGSelection: graphicGSelection$,
-    visibleComputedLayoutData: visibleComputedLayoutData$,
+    visibleComputedAxesData: visibleComputedAxesData$,
     linePath: linePath$,
     params: fullParams$,
   }).pipe(
@@ -536,7 +536,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
       // 繪圖
       data.graphicGSelection.each((d, i, all) => {
         // 將資料分段
-        const segmentData = makeSegmentData(data.visibleComputedLayoutData[i] ?? [])
+        const segmentData = makeSegmentData(data.visibleComputedAxesData[i] ?? [])
 
         pathSelectionArr[i] = renderLines({
           selection: d3.select(all[i]),

@@ -4,13 +4,13 @@ import type {
   GroupAuxParams,
   DotsParams,
   BarsParams,
-  StackedBarParams,
+  StackedBarsParams,
   BarsTriangleParams,
   GroupAxisParams,
   ValueAxisParams,
   StackedValueAxisParams,
   GridTooltipParams,
-  GridZoomParams,
+  GroupZoomParams,
   GridLegendParams
 } from '../../lib/plugins-basic-types'
 // import { measureTextWidth } from '../utils/commonUtils'
@@ -59,7 +59,7 @@ export const DEFAULT_BARS_DIVERGING_PARAMS: BarsParams = {
   ...DEFAULT_BARS_PARAMS
 }
 
-export const DEFAULT_STACKED_BAR_PARAMS: StackedBarParams = {
+export const DEFAULT_STACKED_BAR_PARAMS: StackedBarsParams = {
   barWidth: 0,
   barGroupPadding: 10,
   barRadius: false,
@@ -113,13 +113,11 @@ export const DEFAULT_STACKED_VALUE_AXIS_PARAMS: StackedValueAxisParams = {
   ...DEFAULT_VALUE_AXIS_PARAMS
 }
 
-export const DEFAULT_GRID_ZOOM_PARAMS: GridZoomParams = {
+export const DEFAULT_GRID_ZOOM_PARAMS: GroupZoomParams = {
 
 }
 
 export const DEFAULT_GRID_LEGEND_PARAMS: GridLegendParams = {
-  // position: 'right',
-  // justify: 'end',
   placement: 'bottom',
   padding: 28,
   // offset: [0, 0],
@@ -140,56 +138,6 @@ export const DEFAULT_GRID_TOOLTIP_PARAMS: GridTooltipParams = {
   textColorType: 'primary',
   offset: [20, 5],
   padding: 10,
-//   renderFn: (eventData, { styles }) => {
-//     const bulletWidth = styles.textSizePx * 0.7
-//     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
-//     if (eventData.highlightTarget === 'group') {
-//       const titleSvg = `<g><text dominant-baseline="hanging" font-size="${styles.textSizePx}">${eventData.groupLabel}</text></g>`
-//       const maxLengthText = eventData.group.reduce((acc, group) => {
-//         const text = `${group.seriesLabel}${group.value}`
-//         return text.length > acc.length ? text : acc
-//       }, '')
-//       const maxTextWidth = measureTextWidth(maxLengthText, styles.textSizePx)
-//       const lineEndX = maxTextWidth + styles.textSizePx * 2
-//       const contentSvg = eventData.group
-//         .map((group, i) => {
-//           const y = i * styles.textSizePx * 1.5
-//           return `<g transform="translate(0, ${styles.textSizePx * 2})">
-//   <rect width="${bulletWidth}" height="${bulletWidth}" x="${offset}" y="${y + offset}" rx="${bulletWidth / 2}" fill="${group.color}"></rect>
-//   <text x="${styles.textSizePx * 1.5}" y="${y}" font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
-//     <tspan>${group.seriesLabel}</tspan>
-//     <tspan font-weight="bold" text-anchor="end" x="${lineEndX}">${group.value}</tspan>
-//   </text>
-// </g>`
-//         })
-//         .join('')
-//       return `${titleSvg}
-// ${contentSvg}`
-//     } else if (eventData.highlightTarget === 'series') {
-//       const titleSvg = `<g><text dominant-baseline="hanging" font-size="${styles.textSizePx}">${eventData.groupLabel}</text></g>`
-//       const textWidth = measureTextWidth(`${eventData.seriesLabel}${eventData.datum.value}`, styles.textSizePx)
-//       const lineEndX = textWidth + styles.textSizePx * 2
-//       const contentSvg = `<g transform="translate(0, ${styles.textSizePx * 2})">
-//   <rect width="${bulletWidth}" height="${bulletWidth}" x="${offset}" y="${offset}" rx="${bulletWidth / 2}" fill="${eventData.datum.color}"></rect>
-//   <text x="${styles.textSizePx * 1.5}" font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
-//     <tspan>${eventData.seriesLabel}</tspan>
-//     <tspan font-weight="bold" text-anchor="end" x="${lineEndX}">${eventData.datum.value}</tspan>
-//   </text>
-// </g>`
-//       return `${titleSvg}
-// ${contentSvg}`
-//     } else {
-//       const textWidth = measureTextWidth(`${eventData.datum.label}${eventData.datum.value}`, styles.textSizePx)
-//       const lineEndX = textWidth + styles.textSizePx * 2
-//       return `<g>
-//   <rect width="${bulletWidth}" height="${bulletWidth}" x="${offset}" y="${offset}" rx="${bulletWidth / 2}" fill="${eventData.datum.color}"></rect>
-//   <text x="${styles.textSizePx * 1.5}" font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
-//     <tspan>${eventData.datum.label}</tspan>
-//     <tspan font-weight="bold" text-anchor="end" x="${lineEndX}">${eventData.datum.value}</tspan>
-//   </text>
-// </g>`
-//     }
-//   },
   renderFn: (eventData, { styles, utils }) => {
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)

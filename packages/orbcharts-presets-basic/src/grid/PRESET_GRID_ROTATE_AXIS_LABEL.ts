@@ -5,7 +5,8 @@ import type { PresetGridPluginParams, PresetNoneDataPluginParams } from '../type
 export const PRESET_GRID_ROTATE_AXIS_LABEL: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_GRID_ROTATE_AXIS_LABEL',
-  description: '傾斜標籤',
+  description: 'Rotate axis label',
+  descriptionZh: '傾斜標籤',
   chartParams: {
     colors: {
       light: {
@@ -25,13 +26,13 @@ export const PRESET_GRID_ROTATE_AXIS_LABEL: PresetPartial<'grid', Partial<Preset
     },
     // 間距下面加長留空
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 140,
       left: 80
     },
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_GRID,
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     GroupAux: {

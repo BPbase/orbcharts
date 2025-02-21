@@ -17,7 +17,7 @@ import { DEFAULT_X_Y_ZOOM_PARAMS } from '../defaults'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { LAYER_INDEX_OF_ROOT } from '../../const'
 
-const pluginName = 'XYZoom'
+const pluginName = 'XZoom'
 const rectClassName = getClassName(pluginName, 'rect')
 
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_X_Y_ZOOM_PARAMS> = {
@@ -33,7 +33,7 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_X_Y_ZOO
   }
 }
 
-export const XYZoom = defineMultiValuePlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
+export const XZoom = defineMultiValuePlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
 
   const destroy$ = new Subject()
 
@@ -119,15 +119,15 @@ export const XYZoom = defineMultiValuePlugin(pluginConfig)(({ selection, rootSel
     combineLatest({
       initXAxis: initXAxis$,
       layout: observer.layout$,
-      minMaxXY: observer.minMaxXY$
+      xyMinMax: observer.xyMinMax$
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
     
       const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-        maxValue: data.minMaxXY.maxX,
-        minValue: data.minMaxXY.minX,
+        maxValue: data.xyMinMax.maxX,
+        minValue: data.xyMinMax.minX,
         axisWidth: data.layout.width,
         scaleDomain: data.initXAxis.scaleDomain,
         scaleRange: data.initXAxis.scaleRange,
@@ -141,15 +141,15 @@ export const XYZoom = defineMultiValuePlugin(pluginConfig)(({ selection, rootSel
     combineLatest({
       initYAxis: initYAxis$,
       layout: observer.layout$,
-      minMaxXY: observer.minMaxXY$
+      xyMinMax: observer.xyMinMax$
     }).pipe(
       takeUntil(destroy$),
       switchMap(async (d) => d),
     ).subscribe(data => {
     
       const yScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-        maxValue: data.minMaxXY.maxY,
-        minValue: data.minMaxXY.minY,
+        maxValue: data.xyMinMax.maxY,
+        minValue: data.xyMinMax.minY,
         axisWidth: data.layout.height,
         scaleDomain: data.initYAxis.scaleDomain,
         scaleRange: data.initYAxis.scaleRange,
@@ -163,15 +163,15 @@ export const XYZoom = defineMultiValuePlugin(pluginConfig)(({ selection, rootSel
   const minMaxScaleDomain$ = combineLatest({
     initXAxis: initXAxis$,
     initYAxis: initYAxis$,
-    minMaxXY: observer.minMaxXY$
+    xyMinMax: observer.xyMinMax$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      let minX = data.minMaxXY.minX
-      let maxX = data.minMaxXY.maxX
-      let minY = data.minMaxXY.minY
-      let maxY = data.minMaxXY.maxY
+      let minX = data.xyMinMax.minX
+      let maxX = data.xyMinMax.maxX
+      let minY = data.xyMinMax.minY
+      let maxY = data.xyMinMax.maxY
 
       // 原始設定為auto時要額外判斷
       if (data.initXAxis.scaleDomain[0] === 'auto' && minX > 0) {
@@ -202,7 +202,7 @@ export const XYZoom = defineMultiValuePlugin(pluginConfig)(({ selection, rootSel
     // fullDataFormatter: fullDataFormatter$.pipe(first()), // 只用第一次資料來計算scale才不會造成每次變動都受到影響
     fullDataFormatter: observer.fullDataFormatter$,
     // groupMax: groupMax$,
-    // minMaxXY: observer.minMaxXY$,
+    // xyMinMax: observer.xyMinMax$,
     minMaxScaleDomain: minMaxScaleDomain$,
     // layout: observer.layout$,
     // axisSize: observer.gridAxesSize$

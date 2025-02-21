@@ -49,9 +49,9 @@ export const BarsTriangle = defineGridPlugin(pluginConfig)(({ selection, name, s
   const unsubscribeBaseBars = createBaseBarsTriangle(pluginName, {
     selection,
     computedData$: observer.computedData$,
-    computedLayoutData$: observer.computedLayoutData$,
+    computedAxesData$: observer.computedAxesData$,
     visibleComputedData$: observer.visibleComputedData$,
-    visibleComputedLayoutData$: observer.visibleComputedLayoutData$,
+    visibleComputedAxesData$: observer.visibleComputedAxesData$,
     fullDataFormatter$: observer.fullDataFormatter$,
     seriesLabels$: observer.seriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,

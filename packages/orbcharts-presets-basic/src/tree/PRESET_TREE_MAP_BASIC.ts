@@ -5,7 +5,8 @@ import type { PresetTreePluginParams, PresetNoneDataPluginParams } from '../type
 export const PRESET_TREE_MAP_BASIC: PresetPartial<'tree', Partial<PresetTreePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_TREE_MAP_BASIC',
-  description: '基本Tree Map參數',
+  description: 'Basic Tree Map',
+  descriptionZh: '基本樹狀矩形圖',
   chartParams: {
     colors: {
       light: {
@@ -30,7 +31,7 @@ export const PRESET_TREE_MAP_BASIC: PresetPartial<'tree', Partial<PresetTreePlug
       left: 40
     },
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     TreeMap: {},
     TreeLegend: {

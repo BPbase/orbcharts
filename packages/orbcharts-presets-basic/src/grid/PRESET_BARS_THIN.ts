@@ -7,7 +7,8 @@ import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 export const PRESET_BARS_THIN: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_BARS_THIN',
-  description: '細長條圖',
+  description: 'Thin bars',
+  descriptionZh: '細長條圖',
   chartParams: {
     colors: {
       light: {
@@ -26,13 +27,13 @@ export const PRESET_BARS_THIN: PresetPartial<'grid', Partial<PresetGridPluginPar
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
       left: 80
     },
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Bars: {
       barWidth: 20,

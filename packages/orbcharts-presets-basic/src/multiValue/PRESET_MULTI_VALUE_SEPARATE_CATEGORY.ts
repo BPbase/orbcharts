@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_MULTI_VALUE_SEPARATE_CATEGORY: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_MULTI_VALUE_SEPARATE_CATEGORY',
-  description: 'MultiValue 分開顯示category',
+  description: 'MultiValue separate category',
+  descriptionZh: 'MultiValue 分開顯示category',
   chartParams: {
     colors: {
       light: {
@@ -24,16 +24,24 @@ export const PRESET_MULTI_VALUE_SEPARATE_CATEGORY: PresetPartial<'multiValue', P
       }
     },
     padding: {
-      top: 60,
-      right: 60,
+      top: 40,
+      right: 40,
       bottom: 100,
-      left: 60
+      left: 80
     },
   },
   dataFormatter: {
     separateCategory: true
   },
-  allPluginParams: {
+  pluginParams: {
+    XYAxes: {
+      xAxis: {
+        ticks: 3,
+      },
+      yAxis: {
+        ticks: 3,
+      }
+    },
     MultiValueLegend: {
       placement: 'bottom',
       padding: 14,
