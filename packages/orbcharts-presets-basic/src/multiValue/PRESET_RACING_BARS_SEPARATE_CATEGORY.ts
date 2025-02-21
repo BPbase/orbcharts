@@ -24,17 +24,20 @@ export const PRESET_RACING_BARS_SEPARATE_CATEGORY: PresetPartial<'multiValue', P
       }
     },
     padding: {
-      top: 60,
-      right: 20,
-      bottom: 100,
-      left: 80
+      top: 40,
+      right: 40,
+      bottom: 60,
+      left: 140
     },
     transitionDuration: 500
   },
   dataFormatter: {
-    separateCategory: true
+    separateCategory: true,
+    container: {
+      gap:80
+    },
   },
-  allPluginParams: {
+  pluginParams: {
     RacingBars: {
       barLabel: {
         position: 'outside',

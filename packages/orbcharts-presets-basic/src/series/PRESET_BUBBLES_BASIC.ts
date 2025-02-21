@@ -24,7 +24,7 @@ export const PRESET_BUBBLES_BASIC: PresetPartial<'series', Partial<PresetSeriesP
       }
     }
   },
-  allPluginParams: {
+  pluginParams: {
     SeriesLegend: {
       listRectRadius: 7 // 圓型圖例列點
     }

@@ -54,7 +54,7 @@ export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID: PresetPartial<'multiGrid', P
     //   columnAmount: 2,
     // }
   },
-  allPluginParams: {
+  pluginParams: {
     MultiGroupAxis: {
       tickTextRotate: -30,
       gridIndexes: 'all'

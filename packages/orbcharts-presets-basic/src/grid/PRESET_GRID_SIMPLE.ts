@@ -35,7 +35,7 @@ export const PRESET_GRID_SIMPLE: PresetPartial<'grid', Partial<PresetGridPluginP
       scaleRange: [0, 0.95]
     }
   },
-  allPluginParams: {
+  pluginParams: {
     GridLegend: {
       placement: 'bottom',
       padding: 7,

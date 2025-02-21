@@ -38,7 +38,7 @@ export const PRESET_LINE_AREAS_LOOSE_TICKS: PresetPartial<'grid', Partial<Preset
       scalePadding: 0
     }
   },
-  allPluginParams: {
+  pluginParams: {
     Lines: {},
     LineAreas: {},
     Dots: {},

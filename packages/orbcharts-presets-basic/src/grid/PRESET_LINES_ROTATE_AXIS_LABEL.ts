@@ -33,7 +33,7 @@ export const PRESET_LINES_ROTATE_AXIS_LABEL: PresetPartial<'grid', Partial<Prese
     },
     highlightTarget: 'series'
   },
-  allPluginParams: {
+  pluginParams: {
     Lines: {},
     Dots: {},
     GroupAxis: {

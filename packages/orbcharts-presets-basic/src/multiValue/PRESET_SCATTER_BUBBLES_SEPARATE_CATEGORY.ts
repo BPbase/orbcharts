@@ -33,7 +33,7 @@ export const PRESET_SCATTER_BUBBLES_SEPARATE_CATEGORY: PresetPartial<'multiValue
   dataFormatter: {
     separateCategory: true
   },
-  allPluginParams: {
+  pluginParams: {
     MultiValueLegend: {
       placement: 'bottom',
       padding: 14,

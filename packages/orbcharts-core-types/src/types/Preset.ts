@@ -8,7 +8,7 @@ export interface Preset<T extends ChartType, AllPluginParams> {
   descriptionZh: string
   chartParams: ChartParams
   dataFormatter: DataFormatterTypeMap<T>
-  allPluginParams: AllPluginParams
+  pluginParams: AllPluginParams
 }
 
 export interface PresetPartial<T extends ChartType, AllPluginParams> {
@@ -17,5 +17,5 @@ export interface PresetPartial<T extends ChartType, AllPluginParams> {
   descriptionZh?: string
   chartParams?: ChartParamsPartial
   dataFormatter?: DataFormatterPartialTypeMap<T>
-  allPluginParams?: AllPluginParams
+  pluginParams?: AllPluginParams
 }

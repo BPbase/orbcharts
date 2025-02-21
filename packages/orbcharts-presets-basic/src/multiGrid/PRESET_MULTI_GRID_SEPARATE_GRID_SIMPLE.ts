@@ -47,7 +47,7 @@ export const PRESET_MULTI_GRID_SEPARATE_GRID_SIMPLE: PresetPartial<'multiGrid', 
       gap: 40
     },
   },
-  allPluginParams: {
+  pluginParams: {
     MultiGroupAxis: {
       // tickTextRotate: -30,
       gridIndexes: 'all'

@@ -48,7 +48,7 @@ export const PRESET_GRID_HORIZONTAL: PresetPartial<'grid', Partial<PresetGridPlu
       },
     // }
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_GRID,
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     GridLegend: {

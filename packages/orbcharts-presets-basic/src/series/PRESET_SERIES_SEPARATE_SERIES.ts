@@ -10,7 +10,7 @@ export const PRESET_SERIES_SEPARATE_SERIES: PresetPartial<'series', Partial<Pres
     sort: (a, b) => b.value - a.value,
     separateSeries: true,
   },
-  allPluginParams: {
+  pluginParams: {
   }
 }
 PRESET_SERIES_SEPARATE_SERIES.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`

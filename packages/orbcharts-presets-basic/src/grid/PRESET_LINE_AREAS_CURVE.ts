@@ -41,7 +41,7 @@ export const PRESET_LINE_AREAS_CURVE: PresetPartial<'grid', Partial<PresetGridPl
       }
     // }
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Lines: {
       lineCurve: 'curveMonotoneX',

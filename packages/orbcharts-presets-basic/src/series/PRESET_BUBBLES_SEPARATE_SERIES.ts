@@ -34,7 +34,7 @@ export const PRESET_BUBBLES_SEPARATE_SERIES: PresetPartial<'series', Partial<Pre
   dataFormatter: {
     separateSeries: true,
   },
-  allPluginParams: {
+  pluginParams: {
     Bubbles: {},
     SeriesLegend: {
       listRectRadius: 7 // 圓型圖例列點

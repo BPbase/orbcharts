@@ -24,7 +24,7 @@ export const PRESET_FORCE_DIRECTED_BUBBLES_NONE_ZOOM: PresetPartial<'relationshi
       }
     }
   },
-  allPluginParams: {
+  pluginParams: {
     ForceDirectedBubbles: {
       zoomable: false,
     },

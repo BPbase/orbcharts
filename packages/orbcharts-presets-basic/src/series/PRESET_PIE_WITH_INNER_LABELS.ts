@@ -27,7 +27,7 @@ export const PRESET_PIE_WITH_INNER_LABELS: PresetPartial<'series', Partial<Prese
   dataFormatter: {
     sort: (a, b) => b.value - a.value
   },
-  allPluginParams: {
+  pluginParams: {
     Pie: {},
     PieLabels: {
       "labelCentroid": 1.3, // 圖內資料標籤

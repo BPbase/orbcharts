@@ -32,7 +32,7 @@ export const PRESET_GRID_ROTATE_AXIS_LABEL: PresetPartial<'grid', Partial<Preset
       left: 80
     },
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_GRID,
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     GroupAux: {

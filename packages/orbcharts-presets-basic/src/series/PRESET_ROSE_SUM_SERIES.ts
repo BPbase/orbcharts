@@ -34,7 +34,7 @@ export const PRESET_ROSE_SUM_SERIES: PresetPartial<'series', Partial<PresetSerie
     sort: (a, b) => b.value - a.value,
     sumSeries: true
   },
-  allPluginParams: {
+  pluginParams: {
   }
 }
 PRESET_ROSE_SUM_SERIES.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`

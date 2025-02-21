@@ -10,7 +10,7 @@ export const PRESET_SERIES_SUM_SERIES: PresetPartial<'series', Partial<PresetSer
     sort: (a, b) => b.value - a.value,
     sumSeries: true
   },
-  allPluginParams: {
+  pluginParams: {
 
   }
 }

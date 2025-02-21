@@ -42,7 +42,7 @@ export const PRESET_LINE_AREAS_HORIZONTAL: PresetPartial<'grid', Partial<PresetG
       scalePadding: 0
     },
   },
-  allPluginParams: {
+  pluginParams: {
     Lines: {},
     LineAreas: {},
     Dots: {},

@@ -31,7 +31,7 @@ export const PRESET_RACING_BARS_OUTSIDE_LABELS: PresetPartial<'multiValue', Part
     },
     transitionDuration: 500
   },
-  allPluginParams: {
+  pluginParams: {
     RacingBars: {
       barLabel: {
         position: 'outside',

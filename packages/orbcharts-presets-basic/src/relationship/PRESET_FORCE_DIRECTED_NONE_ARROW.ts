@@ -24,7 +24,7 @@ export const PRESET_FORCE_DIRECTED_NONE_ARROW: PresetPartial<'relationship', Par
       }
     },
   },
-  allPluginParams: {
+  pluginParams: {
     ForceDirected: {
       arrow: {
         pointerWidth: 0,

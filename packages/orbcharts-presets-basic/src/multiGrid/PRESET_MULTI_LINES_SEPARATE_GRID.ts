@@ -36,7 +36,7 @@ export const PRESET_MULTI_LINES_SEPARATE_GRID: PresetPartial<'multiGrid', Partia
   dataFormatter: {
     separateGrid: true,
   },
-  allPluginParams: {
+  pluginParams: {
     MultiGroupAxis: {
       tickTextRotate: -30,
       gridIndexes: 'all'

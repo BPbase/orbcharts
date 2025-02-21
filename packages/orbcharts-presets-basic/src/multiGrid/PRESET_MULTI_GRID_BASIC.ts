@@ -34,7 +34,7 @@ export const PRESET_MULTI_GRID_BASIC: PresetPartial<'multiGrid', Partial<PresetM
     },
     highlightTarget: 'series'
   },
-  allPluginParams: {
+  pluginParams: {
     MultiGridLegend: {
       placement: 'bottom',
       padding: 14,

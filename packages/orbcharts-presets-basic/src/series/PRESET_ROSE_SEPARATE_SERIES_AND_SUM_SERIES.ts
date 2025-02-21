@@ -35,7 +35,7 @@ export const PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES: PresetPartial<'series',
     separateSeries: true,
     sumSeries: true,
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_SERIES,
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
   }

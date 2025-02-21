@@ -41,7 +41,7 @@ export const PRESET_BARS_HORIZONTAL_AND_ROUND: PresetPartial<'grid', Partial<Pre
       position: 'left'
     },
   },
-  allPluginParams: {
+  pluginParams: {
     Bars: {
       barWidth: 0,
       barPadding: 1,

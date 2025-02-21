@@ -64,7 +64,7 @@ export const PRESET_MULTI_GRID_DIVERGING_SIMPLE: PresetPartial<'multiGrid', Part
     },
     separateGrid: true // 將兩個grid拆分
   },
-  allPluginParams: {
+  pluginParams: {
     MultiGroupAxis: {
       tickPadding: 10,
       gridIndexes: [0] // 只顯示一個

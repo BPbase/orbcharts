@@ -33,7 +33,7 @@ export const PRESET_MULTI_VALUE_SEPARATE_CATEGORY: PresetPartial<'multiValue', P
   dataFormatter: {
     separateCategory: true
   },
-  allPluginParams: {
+  pluginParams: {
     XYAxes: {
       xAxis: {
         ticks: 3,

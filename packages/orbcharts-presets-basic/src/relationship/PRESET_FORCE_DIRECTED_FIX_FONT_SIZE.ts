@@ -24,7 +24,7 @@ export const PRESET_FORCE_DIRECTED_FIX_FONT_SIZE: PresetPartial<'relationship', 
       }
     },
   },
-  allPluginParams: {
+  pluginParams: {
     ForceDirected: {
       dotLabel: {
         sizeFixed: true

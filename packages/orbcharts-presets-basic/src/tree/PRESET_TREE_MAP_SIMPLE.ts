@@ -31,7 +31,7 @@ export const PRESET_TREE_MAP_SIMPLE: PresetPartial<'tree', Partial<PresetTreePlu
       left: 40
     },
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     TreeMap: {},
     TreeLegend: {

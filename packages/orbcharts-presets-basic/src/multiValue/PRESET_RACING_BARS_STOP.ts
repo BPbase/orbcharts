@@ -30,7 +30,7 @@ export const PRESET_RACING_BARS_STOP: PresetPartial<'multiValue', Partial<Preset
       left: 60
     },
   },
-  allPluginParams: {
+  pluginParams: {
     RacingBars: {
       autorun: false,
     },

@@ -31,7 +31,7 @@ export const PRESET_RACING_BARS_BASIC: PresetPartial<'multiValue', Partial<Prese
     },
     transitionDuration: 500
   },
-  allPluginParams: {
+  pluginParams: {
     RacingBars: {
       autorun: true,
     },

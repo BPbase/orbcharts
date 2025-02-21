@@ -27,7 +27,7 @@ export const PRESET_PIE_DONUT: PresetPartial<'series', Partial<PresetSeriesPlugi
   dataFormatter: {
     sort: (a, b) => b.value - a.value
   },
-  allPluginParams: {
+  pluginParams: {
     Pie: {
       innerRadius: 0.5
     },

@@ -24,7 +24,7 @@ export const PRESET_BUBBLES_SCALING_BY_RADIUS: PresetPartial<'series', Partial<P
       }
     }
   },
-  allPluginParams: {
+  pluginParams: {
     Bubbles: {
       arcScaleType: 'radius'
     },

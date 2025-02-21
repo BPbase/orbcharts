@@ -55,6 +55,9 @@ export const ALL_PLUGIN_PARAMS_MULTI_GRID: PresetMultiGridPluginParams = {
 export const ALL_PLUGIN_PARAMS_MULTI_VALUE: PresetMultiValuePluginParams = {
   MultiValueLegend: {},
   MultiValueTooltip: {},
+  RacingBars: {},
+  RacingCounterTexts: {},
+  RacingValueAxis: {},
   Scatter: {},
   ScatterBubbles: {},
   XYAxes: {},

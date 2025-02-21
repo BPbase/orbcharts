@@ -36,7 +36,7 @@ export const PRESET_MULTI_GRID_ROUND_STYLE: PresetPartial<'multiGrid', Partial<P
     },
     highlightTarget: 'series'
   },
-  allPluginParams: {
+  pluginParams: {
     MultiBars: {
       barWidth: 0,
       barPadding: 1,

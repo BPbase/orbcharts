@@ -33,7 +33,7 @@ export const PRESET_LINES_BASIC: PresetPartial<'grid', Partial<PresetGridPluginP
     },
     highlightTarget: 'series'
   },
-  allPluginParams: {
+  pluginParams: {
     Lines: {},
     Dots: {},
     GroupAxis: {},

@@ -188,8 +188,8 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
           // ? mergeOptionsWithDefault(preset.dataFormatter, defaultDataFormatter)
           ? mergeDataFormatter(preset.dataFormatter, defaultDataFormatter, chartType)
           : defaultDataFormatter,
-        allPluginParams: preset.allPluginParams
-          ? preset.allPluginParams
+        pluginParams: preset.pluginParams
+          ? preset.pluginParams
           : {}
       }
     })(options)
@@ -465,7 +465,7 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
                   observer: pluginObserver
                 }
         
-                plugin.setPresetParams(mergedPresetWithDefault.allPluginParams[plugin.name] ?? {})
+                plugin.setPresetParams(mergedPresetWithDefault.pluginParams[plugin.name] ?? {})
                 // 傳入context
                 plugin.setContext(pluginContext)
           

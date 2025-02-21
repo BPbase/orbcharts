@@ -50,7 +50,7 @@ export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID_SIMPLE: PresetPartial<'multiG
     //   gap: 40
     // }
   },
-  allPluginParams: {
+  pluginParams: {
     MultiGroupAxis: {
       // tickTextRotate: -30,
       gridIndexes: 'all'

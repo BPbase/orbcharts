@@ -33,7 +33,7 @@ export const PRESET_LINES_CURVE: PresetPartial<'grid', Partial<PresetGridPluginP
     },
     highlightTarget: 'series'
   },
-  allPluginParams: {
+  pluginParams: {
     Lines: {
       lineCurve: 'curveMonotoneX',
       lineWidth: 3

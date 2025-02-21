@@ -24,7 +24,7 @@ export const PRESET_SERIES_BASIC: PresetPartial<'series', Partial<PresetSeriesPl
       }
     }
   },
-  allPluginParams: {
+  pluginParams: {
     SeriesLegend: {
       listRectRadius: 7 // 圓型圖例列點
     }

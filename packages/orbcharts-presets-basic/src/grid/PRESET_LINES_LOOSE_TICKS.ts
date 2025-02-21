@@ -33,7 +33,7 @@ export const PRESET_LINES_LOOSE_TICKS: PresetPartial<'grid', Partial<PresetGridP
     },
     highlightTarget: 'series'
   },
-  allPluginParams: {
+  pluginParams: {
     Lines: {},
     Dots: {},
     GroupAxis: {

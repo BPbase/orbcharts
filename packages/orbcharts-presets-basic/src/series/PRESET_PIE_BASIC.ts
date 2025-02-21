@@ -27,7 +27,7 @@ export const PRESET_PIE_BASIC: PresetPartial<'series', Partial<PresetSeriesPlugi
   dataFormatter: {
     sort: (a, b) => b.value - a.value
   },
-  allPluginParams: {
+  pluginParams: {
     SeriesLegend: {
       listRectRadius: 7 // 圓型圖例列點
     }

@@ -33,7 +33,7 @@ export const PRESET_ROSE_BASIC: PresetPartial<'series', Partial<PresetSeriesPlug
   dataFormatter: {
     sort: (a, b) => b.value - a.value
   },
-  allPluginParams: {
+  pluginParams: {
     SeriesLegend: {
       listRectRadius: 7 // 圓型圖例列點
     }

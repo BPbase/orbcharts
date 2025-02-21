@@ -24,7 +24,7 @@ export const PRESET_FORCE_DIRECTED_NONE_ZOOM: PresetPartial<'relationship', Part
       }
     },
   },
-  allPluginParams: {
+  pluginParams: {
     ForceDirected: {
       zoomable: false,
     },

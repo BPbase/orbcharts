@@ -24,7 +24,7 @@ export const PRESET_FORCE_DIRECTED_BUBBLES_BASIC: PresetPartial<'relationship', 
       }
     }
   },
-  allPluginParams: {
+  pluginParams: {
     ForceDirectedBubbles: {},
     RelationshipLegend: {
       listRectRadius: 7 // 圓型圖例列點

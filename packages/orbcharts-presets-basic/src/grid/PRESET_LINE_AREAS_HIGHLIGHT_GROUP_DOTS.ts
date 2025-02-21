@@ -38,7 +38,7 @@ export const PRESET_LINE_AREAS_HIGHLIGHT_GROUP_DOTS: PresetPartial<'grid', Parti
       scalePadding: 0
     }
   },
-  allPluginParams: {
+  pluginParams: {
     Lines: {
       lineWidth: 3
     },

@@ -30,7 +30,7 @@ export const PRESET_BUBBLES_SIMPLE: PresetPartial<'series', Partial<PresetSeries
       }
     }
   },
-  allPluginParams: {
+  pluginParams: {
     SeriesLegend: {
       listRectRadius: 7, // 圓型圖例列點
       padding: 7

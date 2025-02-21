@@ -33,7 +33,7 @@ export const PRESET_LINES_HIGHLIGHT_GROUP_DOTS: PresetPartial<'grid', Partial<Pr
     },
     highlightTarget: 'group'
   },
-  allPluginParams: {
+  pluginParams: {
     Lines: {},
     Dots: {
       onlyShowHighlighted: false

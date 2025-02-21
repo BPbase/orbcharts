@@ -34,7 +34,7 @@ export const PRESET_ROSE_SEPARATE_SERIES: PresetPartial<'series', Partial<Preset
     sort: (a, b) => b.value - a.value,
     separateSeries: true,
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_SERIES,
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
   }

@@ -28,7 +28,7 @@ export const PRESET_BUBBLES_SUM_SERIES: PresetPartial<'series', Partial<PresetSe
     sort: (a, b) => b.value - a.value,
     sumSeries: true
   },
-  allPluginParams: {
+  pluginParams: {
   }
 }
 PRESET_BUBBLES_SUM_SERIES.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`

@@ -30,7 +30,7 @@ export const PRESET_SCATTER_BASIC: PresetPartial<'multiValue', Partial<PresetMul
       left: 80
     },
   },
-  allPluginParams: {
+  pluginParams: {
     MultiValueLegend: {
       placement: 'bottom',
       padding: 14,

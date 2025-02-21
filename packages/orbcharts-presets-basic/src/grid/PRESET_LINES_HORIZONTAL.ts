@@ -41,7 +41,7 @@ export const PRESET_LINES_HORIZONTAL: PresetPartial<'grid', Partial<PresetGridPl
       position: 'left'
     },
   },
-  allPluginParams: {
+  pluginParams: {
     Lines: {},
     Dots: {},
     GroupAxis: {},

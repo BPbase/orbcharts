@@ -33,7 +33,7 @@ export const PRESET_BARS_THIN: PresetPartial<'grid', Partial<PresetGridPluginPar
       left: 80
     },
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Bars: {
       barWidth: 20,

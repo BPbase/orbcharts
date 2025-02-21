@@ -30,7 +30,7 @@ export const PRESET_SCATTER_BUBBLES_SCALING_BY_RADIUS: PresetPartial<'multiValue
       left: 80
     },
   },
-  allPluginParams: {
+  pluginParams: {
     MultiValueLegend: {
       placement: 'bottom',
       padding: 14,

@@ -39,7 +39,7 @@ export const PRESET_LINE_AREAS_SEPARATE_SERIES: PresetPartial<'grid', Partial<Pr
       scalePadding: 0
     }
   },
-  allPluginParams: {
+  pluginParams: {
     Lines: {},
     LineAreas: {},
     Dots: {},

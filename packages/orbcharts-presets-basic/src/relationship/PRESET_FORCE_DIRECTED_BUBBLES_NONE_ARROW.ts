@@ -24,7 +24,7 @@ export const PRESET_FORCE_DIRECTED_BUBBLES_NONE_ARROW: PresetPartial<'relationsh
       }
     }
   },
-  allPluginParams: {
+  pluginParams: {
     ForceDirectedBubbles: {
       arrow: {
         pointerWidth: 0,

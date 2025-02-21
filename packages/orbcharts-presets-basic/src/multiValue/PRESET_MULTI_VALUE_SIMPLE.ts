@@ -30,7 +30,7 @@ export const PRESET_MULTI_VALUE_SIMPLE: PresetPartial<'multiValue', Partial<Pres
       left: 80
     },
   },
-  allPluginParams: {
+  pluginParams: {
     MultiValueLegend: {
       placement: 'bottom',
       padding: 7,

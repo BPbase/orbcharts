@@ -31,7 +31,7 @@ export const PRESET_GRID_BASIC: PresetPartial<'grid', Partial<PresetGridPluginPa
       left: 80
     },
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_GRID,
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     GridLegend: {

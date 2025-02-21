@@ -41,7 +41,7 @@ export const PRESET_BARS_HORIZONTAL_AND_THIN: PresetPartial<'grid', Partial<Pres
         position: 'left'
       },
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Bars: {
       barWidth: 20,

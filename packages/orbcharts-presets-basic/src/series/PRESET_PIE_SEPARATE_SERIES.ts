@@ -28,7 +28,7 @@ export const PRESET_PIE_SEPARATE_SERIES: PresetPartial<'series', Partial<PresetS
     sort: (a, b) => b.value - a.value,
     separateSeries: true,
   },
-  allPluginParams: {
+  pluginParams: {
   }
 }
 PRESET_PIE_SEPARATE_SERIES.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`

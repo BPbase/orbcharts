@@ -33,7 +33,7 @@ export const PRESET_ROSE_SCALING_BY_RADIUS: PresetPartial<'series', Partial<Pres
   dataFormatter: {
     sort: (a, b) => b.value - a.value
   },
-  allPluginParams: {
+  pluginParams: {
     Rose: {
       arcScaleType: 'radius'
     },

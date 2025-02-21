@@ -24,7 +24,7 @@ export const PRESET_FORCE_DIRECTED_SIMPLE: PresetPartial<'relationship', Partial
       }
     },
   },
-  allPluginParams: {
+  pluginParams: {
     ForceDirected: {},
     RelationshipLegend: {
       listRectRadius: 7, // 圓型圖例列點

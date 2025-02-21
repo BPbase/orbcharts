@@ -38,7 +38,7 @@ export const PRESET_LINES_SIMPLE: PresetPartial<'grid', Partial<PresetGridPlugin
       scaleRange: [0, 0.95]
     }
   },
-  allPluginParams: {
+  pluginParams: {
     Lines: {},
     Dots: {},
     GroupAxis: {},

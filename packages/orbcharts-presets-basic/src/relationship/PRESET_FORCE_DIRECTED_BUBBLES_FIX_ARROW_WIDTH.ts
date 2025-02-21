@@ -24,7 +24,7 @@ export const PRESET_FORCE_DIRECTED_BUBBLES_FIX_ARROW_WIDTH: PresetPartial<'relat
       }
     }
   },
-  allPluginParams: {
+  pluginParams: {
     ForceDirectedBubbles: {
       arrow: {
         strokeWidthMin: 1.5,

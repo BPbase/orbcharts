@@ -41,7 +41,7 @@ export const PRESET_LINE_AREAS_SIMPLE: PresetPartial<'grid', Partial<PresetGridP
       scaleRange: [0, 0.95]
     }
   },
-  allPluginParams: {
+  pluginParams: {
     Lines: {},
     LineAreas: {},
     Dots: {},

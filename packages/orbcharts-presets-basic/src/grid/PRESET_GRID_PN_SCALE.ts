@@ -39,7 +39,7 @@ export const PRESET_GRID_PN_SCALE: PresetPartial<'grid', Partial<PresetGridPlugi
       },
     // }
   },
-  allPluginParams: {
+  pluginParams: {
     // ...ALL_PLUGIN_PARAMS_GRID,
     // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     GridLegend: {

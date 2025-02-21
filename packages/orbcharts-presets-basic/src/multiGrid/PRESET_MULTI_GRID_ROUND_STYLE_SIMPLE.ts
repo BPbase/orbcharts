@@ -46,7 +46,7 @@ export const PRESET_MULTI_GRID_ROUND_STYLE_SIMPLE: PresetPartial<'multiGrid', Pa
       },
     ],
   },
-  allPluginParams: {
+  pluginParams: {
     MultiBars: {
       barWidth: 0,
       barPadding: 1,
