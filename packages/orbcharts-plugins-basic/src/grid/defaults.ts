@@ -98,7 +98,15 @@ export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
   axisLineColorType: 'primary',
   ticks: null,
   // tickFormat: ',.0f',
-  tickFormat: v => v,
+  // tickFormat: v => v,
+  tickFormat: num => {
+    if (num === null || Number.isNaN(num) == true) {
+      return num || 0
+    }
+    var parts = num.toString().split('.')
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return parts.join('.')
+  },
   tickLineVisible: true,
   tickPadding: 20,
   tickFullLine: true,
@@ -107,7 +115,14 @@ export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
   tickTextRotate: 0,
   tickTextColorType: 'primary'
 }
-DEFAULT_VALUE_AXIS_PARAMS.tickFormat.toString = () => 'v => v'
+DEFAULT_VALUE_AXIS_PARAMS.tickFormat.toString = () => `num => {
+  if (num === null || Number.isNaN(num) == true) {
+    return num || 0
+  }
+  var parts = num.toString().split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return parts.join('.')
+}`
 
 export const DEFAULT_STACKED_VALUE_AXIS_PARAMS: StackedValueAxisParams = {
   ...DEFAULT_VALUE_AXIS_PARAMS
@@ -145,7 +160,7 @@ export const DEFAULT_GRID_TOOLTIP_PARAMS: GridTooltipParams = {
     const titleSvg = `<g><text dominant-baseline="hanging" font-size="${styles.textSizePx}" fill="${styles.textColor}">${eventData.groupLabel}</text></g>`
     const groupLabelTextWidth = utils.measureTextWidth(eventData.groupLabel, styles.textSizePx)
     const listTextWidth = eventData.group.reduce((acc, group) => {
-      const text = `${group.seriesLabel}${group.value}`
+      const text = `${group.seriesLabel}${utils.toCurrency(group.value)}`
       const _maxTextWidth = utils.measureTextWidth(text, styles.textSizePx)
       return _maxTextWidth > acc ? _maxTextWidth : acc
     }, 0)
@@ -159,7 +174,7 @@ export const DEFAULT_GRID_TOOLTIP_PARAMS: GridTooltipParams = {
   <rect width="${bulletWidth}" height="${bulletWidth}" x="${offset}" y="${y + offset}" rx="${bulletWidth / 2}" fill="${group.color}"></rect>
   <text x="${styles.textSizePx * 1.5}" y="${y}" font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
     <tspan font-weight="${isHighlight ? 'bold' : ''}">${group.seriesLabel}</tspan>
-    <tspan font-weight="bold" text-anchor="end" x="${lineEndX}">${group.value}</tspan>
+    <tspan font-weight="bold" text-anchor="end" x="${lineEndX}">${utils.toCurrency(group.value)}</tspan>
   </text>
 </g>`
       })
@@ -175,7 +190,7 @@ DEFAULT_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, uti
     const titleSvg = \`<g><text dominant-baseline="hanging" font-size="\${styles.textSizePx}" fill="\${styles.textColor}">\${eventData.groupLabel}</text></g>\`
     const groupLabelTextWidth = utils.measureTextWidth(eventData.groupLabel, styles.textSizePx)
     const listTextWidth = eventData.group.reduce((acc, group) => {
-      const text = \`\${group.seriesLabel}\${group.value}\`
+      const text = \`\${group.seriesLabel}\${utils.toCurrency(group.value)}\`
       const _maxTextWidth = utils.measureTextWidth(text, styles.textSizePx)
       return _maxTextWidth > acc ? _maxTextWidth : acc
     }, 0)
@@ -189,7 +204,7 @@ DEFAULT_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, uti
   <rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${y + offset}" rx="\${bulletWidth / 2}" fill="\${group.color}"></rect>
   <text x="\${styles.textSizePx * 1.5}" y="\${y}" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
     <tspan font-weight="\${isHighlight ? 'bold' : ''}">\${group.seriesLabel}</tspan>
-    <tspan font-weight="bold" text-anchor="end" x="\${lineEndX}">\${group.value}</tspan>
+    <tspan font-weight="bold" text-anchor="end" x="\${lineEndX}">\${utils.toCurrency(group.value)}</tspan>
   </text>
 </g>\`
       })

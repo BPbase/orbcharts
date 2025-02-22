@@ -7,8 +7,8 @@ import type {
 export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID: PresetPartial<'multiGrid', Partial<PresetMultiGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_MULTI_LINE_AREAS_SEPARATE_GRID',
-  description: '2 groups of Line Area chart',
-  descriptionZh: '2組區域折線圖',
+  description: 'Separate Grid line areas',
+  descriptionZh: '分開顯示Grid的折線區域圖',
   chartParams: {
     colors: {
       light: {

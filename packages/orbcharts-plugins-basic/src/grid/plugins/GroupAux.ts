@@ -225,22 +225,38 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
       // -- label偏移位置 --
       let rectX = - rectWidth / 2
       let rectY = -2
+      let x = rectX
+      let y = rectY - 3 // 奇怪的偏移修正
       if (fullDataFormatter.groupAxis.position === 'bottom') {
         rectX = fullParams.labelRotate
           ? - rectWidth + rectHeight // 有傾斜時以末端對齊（+height是為了修正移動太多）
           : - rectWidth / 2
         rectY = 2
+        x = rectX
+        y = rectY - 3 // 奇怪的偏移修正
       } else if (fullDataFormatter.groupAxis.position === 'left') {
         rectX = - rectWidth + 2
         rectY = - rectHeight / 2
+        x = rectX
+        y = rectY - 3 // 奇怪的偏移修正
+        if (fullParams.labelRotate) {
+          y += rectHeight
+        }
       } else if (fullDataFormatter.groupAxis.position === 'right') {
         rectX = - 2
         rectY = - rectHeight / 2
+        x = rectX
+        y = rectY - 3 // 奇怪的偏移修正
+        if (fullParams.labelRotate) {
+          y += rectHeight
+        }
       } else if (fullDataFormatter.groupAxis.position === 'top') {
         rectX = fullParams.labelRotate
           ? - rectWidth + rectHeight // 有傾斜時以末端對齊（+height是為了修正移動太多）
           : - rectWidth / 2
-        rectY = - rectHeight + 2
+        rectY = - rectHeight + 6
+        x = - rectHeight
+        y = rectY - 3 // 奇怪的偏移修正
       }
 
       // -- rect --
@@ -258,8 +274,8 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
         .attr('width', d => `${rectWidth}px`)
         .attr('height', `${rectHeight}px`)
         .attr('fill', d => getColor(fullParams.labelColorType, fullChartParams))
-        .attr('x', rectX)
-        .attr('y', rectY - 3) // 奇怪的偏移修正
+        .attr('x', x)
+        .attr('y', y) // 奇怪的偏移修正
         .style('transform', textReverseTransformWithRotate)
 
       // const rectUpdate = d3.select(n[i])
@@ -295,13 +311,14 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
         .style('transform', textReverseTransformWithRotate)
         .attr('fill', d => getColor(fullParams.labelTextColorType, fullChartParams))
         .attr('font-size', fullChartParams.styles.textSize)
-        .attr('x', rectX + 6)
-        .attr('y', rectY)
+        .attr('x', x + 6)
+        .attr('y', y + 3)
         .each((d, i, n) => {
           renderTspansOnAxis(d3.select(n[i]), {
             textArr: datum.textArr,
             textSizePx,
-            groupAxisPosition: fullDataFormatter.groupAxis.position
+            groupAxisPosition: fullDataFormatter.groupAxis.position,
+            isContainerRotated: false
           })
         })
 

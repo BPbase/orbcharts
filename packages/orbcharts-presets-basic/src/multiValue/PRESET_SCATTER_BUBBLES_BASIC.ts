@@ -4,7 +4,7 @@ import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '.
 export const PRESET_SCATTER_BUBBLES_BASIC: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_SCATTER_BUBBLES_BASIC',
-  description: 'Basic Scatter Bubbles',
+  description: 'Basic scatter bubbles',
   descriptionZh: '基本的散布泡泡圖',
   chartParams: {
     colors: {

@@ -4,7 +4,7 @@ import type { PresetRelationshipPluginParams, PresetNoneDataPluginParams } from 
 export const PRESET_FORCE_DIRECTED_BUBBLES_NONE_ZOOM: PresetPartial<'relationship', Partial<PresetRelationshipPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_FORCE_DIRECTED_BUBBLES_NONE_ZOOM',
-  description: 'Force Directed Bubbles Chart without mouse drag and zoom control',
+  description: 'Force Directed bubbles chart without mouse drag and zoom control',
   descriptionZh: '無滑鼠托曳及縮放控制的力導向泡泡圖',
   chartParams: {
     colors: {

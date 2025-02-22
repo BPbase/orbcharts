@@ -4,7 +4,7 @@ import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '.
 export const PRESET_SCATTER_BUBBLES_LINEAR_OPACITY: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_SCATTER_BUBBLES_LINEAR_OPACITY',
-  description: 'Scatter Bubbles with Linear Opacity',
+  description: 'Scatter bubbles with linear opacity',
   descriptionZh: '漸變透明度的散布泡泡圖',
   chartParams: {
     colors: {

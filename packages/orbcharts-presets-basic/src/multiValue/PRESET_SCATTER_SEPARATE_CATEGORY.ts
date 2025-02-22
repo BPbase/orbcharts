@@ -4,7 +4,7 @@ import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '.
 export const PRESET_SCATTER_SEPARATE_CATEGORY: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_SCATTER_SEPARATE_CATEGORY',
-  description: 'Scatter with Separate Category',
+  description: 'Scatter with separate category',
   descriptionZh: '分開顯示category的散布圖',
   chartParams: {
     colors: {

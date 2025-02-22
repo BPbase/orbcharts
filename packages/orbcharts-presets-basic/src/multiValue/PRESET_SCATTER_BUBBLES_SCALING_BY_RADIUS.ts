@@ -4,7 +4,7 @@ import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '.
 export const PRESET_SCATTER_BUBBLES_SCALING_BY_RADIUS: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_SCATTER_BUBBLES_SCALING_BY_RADIUS',
-  description: 'Scatter Bubbles with Radius Scaling',
+  description: 'Scatter bubbles with radius scaling',
   descriptionZh: '以半徑尺寸為比例的散布泡泡圖',
   chartParams: {
     colors: {

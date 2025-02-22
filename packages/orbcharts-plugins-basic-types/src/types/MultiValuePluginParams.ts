@@ -67,17 +67,6 @@ export interface RacingBarsParams {
     barRadius: number | boolean
   }
   barLabel: {
-    // // axisLineVisible: boolean
-    // // axisLineColorType: ColorType
-    // // ticks: number | null
-    // // tickFormat: string | ((text: d3.NumberValue) => string | d3.NumberValue)
-    // // tickLineVisible: boolean
-    // tickPadding: number
-    // // tickFullLine: boolean
-    // // tickFullLineDasharray: string
-    // // tickColorType: ColorType
-    // tickTextRotate: number
-    // tickTextColorType: ColorType
     position: 'inside' | 'outside' | 'none'
     padding: number
     rotate: number
@@ -94,10 +83,7 @@ export interface RacingBarsParams {
   }
   rankingAmount: 'auto' | number
   autorun: boolean
-  // timer: {
-  //   active: boolean
-  //   loop: boolean
-  // }
+  loop: boolean
 }
 
 export interface RacingCounterTextsParams {

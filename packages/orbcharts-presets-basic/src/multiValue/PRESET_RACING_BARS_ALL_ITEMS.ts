@@ -4,7 +4,7 @@ import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '.
 export const PRESET_RACING_BARS_ALL_ITEMS: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_RACING_BARS_ALL_ITEMS',
-  description: 'Racing Bars for all items',
+  description: 'Racing bars for all items',
   descriptionZh: '顯示全部項目的賽跑長條圖',
   chartParams: {
     colors: {

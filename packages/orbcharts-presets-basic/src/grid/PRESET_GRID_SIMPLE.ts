@@ -5,7 +5,7 @@ export const PRESET_GRID_SIMPLE: PresetPartial<'grid', Partial<PresetGridPluginP
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_GRID_SIMPLE',
   description: 'Simple Grid',
-  descriptionZh: '簡單Grid參數',
+  descriptionZh: '簡單Grid',
   chartParams: {
     colors: {
       light: {

@@ -4,7 +4,7 @@ import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '.
 export const PRESET_RACING_BARS_STOP: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_RACING_BARS_STOP',
-  description: 'Stopped Racing Bars',
+  description: 'Stopped racing bars',
   descriptionZh: '停止的賽跑長條圖',
   chartParams: {
     colors: {

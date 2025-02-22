@@ -4,7 +4,7 @@ import type { PresetRelationshipPluginParams, PresetNoneDataPluginParams } from 
 export const PRESET_FORCE_DIRECTED_FIX_FONT_SIZE: PresetPartial<'relationship', Partial<PresetRelationshipPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_FORCE_DIRECTED_FIX_FONT_SIZE',
-  description: 'Force Directed Chart with fixed font size',
+  description: 'Force directed chart with fixed font size',
   descriptionZh: '固定字體大小的力導向圖',
   chartParams: {
     colors: {

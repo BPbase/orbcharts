@@ -49,14 +49,29 @@ onMounted(() => {
 
   const groupAxis = new GroupAxis()
 
-  // groupAxis.params$.next({
-  //   tickFormat: (d) => {
-  //     console.log(d)
-  //     return d === 'test2\ntest2' ? 'yes\ntest' : ''
-  //   }
-  // })
+  const groupAux = new GroupAux()
+
+  groupAux.params$.next({
+    // labelPadding: 0
+    // labelRotate: 45,
+  })
+
+  groupAxis.params$.next({
+    // tickTextRotate: 45,
+    // tickPadding: 0,
+    // tickFormat: (d) => {
+    //   console.log(d)
+    //   return d === 'test2\ntest2' ? 'yes\ntest' : ''
+    // }
+    // ticks: 5,
+    tickFullLine: true
+  })
 
   const valueAxis = new ValueAxis()
+
+  valueAxis.params$.next({
+    // tickFullLine: false
+  })
 
   const stackedValueAxis = new StackedValueAxis()
 
@@ -66,16 +81,17 @@ onMounted(() => {
   // })
 
   chart.dataFormatter$.next({
-    grid: {
-      groupAxis: {
-        scalePadding: 0
-      },
-      valueAxis: {
-        position: 'left'
-      },
-      rowLabels: ['a'],
-      columnLabels: ['test1\ntest1', 'test2\ntest2', 'test3\ntest3', 'test4\ntest4', 'test5\ntest5'],
+    groupAxis: {
+      // position: 'right',
+      scalePadding: 0,
+      label: 'xxx'
     },
+    valueAxis: {
+      // position: 'bottom',
+      label: 'yyy'
+    },
+    rowLabels: ['a'],
+    columnLabels: ['test1\ntest1', 'test2\ntest2', 'test3\ntest3', 'test4\ntest4', 'test5\ntest5'],
     visibleFilter: (datum, context) => {
       if (datum.id === 'grid_0_0_4') {
         // console.log('grid_0_1_4')
@@ -106,7 +122,7 @@ onMounted(() => {
     highlightTarget: 'group'
   })
   
-  chart.plugins$.next([groupAxis, valueAxis, new GroupAux(), lines, lineAreas, dots, new GroupZoom(), new GridTooltip()])
+  chart.plugins$.next([groupAxis, valueAxis, groupAux, lines, lineAreas, dots, new GroupZoom(), new GridTooltip()])
   
   chart.data$.next(gridData5)
   

@@ -7,8 +7,8 @@ import type {
 export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID_SIMPLE: PresetPartial<'multiGrid', Partial<PresetMultiGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_MULTI_LINE_AREAS_SEPARATE_GRID_SIMPLE',
-  description: 'Simple 2 groups of Line Area chart',
-  descriptionZh: '簡單2組區域折線圖',
+  description: 'Simple separate grid line areas',
+  descriptionZh: '簡單的分開顯示Grid的折線區域圖',
   chartParams: {
     colors: {
       light: {
@@ -28,9 +28,9 @@ export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID_SIMPLE: PresetPartial<'multiG
     },
     padding: {
       top: 40,
-      right: 60,
+      right: 80, // lineAre 的左右刻度靠邊，要避免太窄造成 label 超出
       bottom: 80,
-      left: 60
+      left: 80 // lineAre 的左右刻度靠邊，要避免太窄造成 label 超出
     },
   },
   dataFormatter: {
@@ -46,9 +46,9 @@ export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID_SIMPLE: PresetPartial<'multiG
       },
     ],
     separateGrid: true,
-    // container: {
-    //   gap: 40
-    // }
+    container: {
+      gap: 160
+    }
   },
   pluginParams: {
     MultiGroupAxis: {

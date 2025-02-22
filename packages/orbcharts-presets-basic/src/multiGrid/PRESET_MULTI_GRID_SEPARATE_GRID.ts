@@ -7,8 +7,8 @@ import type {
 export const PRESET_MULTI_GRID_SEPARATE_GRID: PresetPartial<'multiGrid', Partial<PresetMultiGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_MULTI_GRID_SEPARATE_GRID',
-  description: '2 groups of Grid chart',
-  descriptionZh: '2組Grid圖表',
+  description: 'Separate Grid',
+  descriptionZh: '分開顯示Grid圖表',
   chartParams: {
     colors: {
       light: {

@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '../types'
 
-export const PRESET_RACING_BARS_FAST: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
+export const PRESET_RACING_BARS_LOOP: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
-  name: 'PRESET_RACING_BARS_FAST',
-  description: 'Fast racing bars',
-  descriptionZh: '快速的賽跑長條圖',
+  name: 'PRESET_RACING_BARS_LOOP',
+  description: 'Looping racing bars',
+  descriptionZh: '循環的賽跑長條圖',
   chartParams: {
     colors: {
       light: {
@@ -29,11 +29,12 @@ export const PRESET_RACING_BARS_FAST: PresetPartial<'multiValue', Partial<Preset
       bottom: 100,
       left: 60
     },
-    transitionDuration: 250
+    transitionDuration: 500
   },
   pluginParams: {
     RacingBars: {
       autorun: true,
+      loop: true,
     },
     MultiValueLegend: {
       placement: 'bottom',

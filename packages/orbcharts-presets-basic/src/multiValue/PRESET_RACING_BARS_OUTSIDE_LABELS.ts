@@ -4,7 +4,7 @@ import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '.
 export const PRESET_RACING_BARS_OUTSIDE_LABELS: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_RACING_BARS_OUTSIDE_LABELS',
-  description: 'Racing Bars with labels outside',
+  description: 'Racing bars with labels outside',
   descriptionZh: '標籤在外面的賽跑長條圖',
   chartParams: {
     colors: {

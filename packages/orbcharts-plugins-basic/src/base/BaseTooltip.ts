@@ -23,7 +23,7 @@ import type { BasePluginFn } from './types'
 import { defineNoneDataPlugin, textSizePxObservable } from '../../lib/core'
 import { getSvgGElementSize, appendSvg } from '../utils/d3Utils'
 import { getColor, getClassName } from '../utils/orbchartsUtils'
-import { measureTextWidth } from '../utils/commonUtils'
+import { measureTextWidth, toCurrency } from '../utils/commonUtils'
 
 interface BaseTooltipContext {
   rootSelection: d3.Selection<any, unknown, any, unknown>
@@ -288,6 +288,7 @@ export const createBaseTooltip: BasePluginFn<BaseTooltipContext> = (pluginName: 
           // context
           {
             utils: {
+              toCurrency,
               measureTextWidth
             },
             styles: data.tooltipStyle

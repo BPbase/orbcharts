@@ -4,7 +4,7 @@ import type { PresetRelationshipPluginParams, PresetNoneDataPluginParams } from 
 export const PRESET_FORCE_DIRECTED_BUBBLES_BASIC: PresetPartial<'relationship', Partial<PresetRelationshipPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_FORCE_DIRECTED_BUBBLES_BASIC',
-  description: 'Basic Force Directed Bubbles Chart',
+  description: 'Basic force directed bubbles chart',
   descriptionZh: '基本力導向泡泡圖',
   chartParams: {
     colors: {

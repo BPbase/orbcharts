@@ -4,7 +4,7 @@ import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '.
 export const PRESET_RACING_BARS_SIMPLE: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_RACING_BARS_SIMPLE',
-  description: 'Simple Racing Bars',
+  description: 'Simple racing bars',
   descriptionZh: '簡單賽跑長條圖',
   chartParams: {
     colors: {

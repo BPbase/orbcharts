@@ -20,3 +20,12 @@ export function getMinMax (data: number[]): [number, number] {
   }, [data[0], data[0]])
   return minMax
 }
+
+export function toCurrency (num: number | null): string {
+  if (num === null || Number.isNaN(num) == true) {
+    return String(num || 0)
+  }
+  var parts = num.toString().split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return parts.join('.')
+}

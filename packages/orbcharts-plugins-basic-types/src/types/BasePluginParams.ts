@@ -143,6 +143,7 @@ export interface BaseTooltipStyle {
 }
 
 export interface BaseTooltipUtils {
+  toCurrency: (num: number | null) => string
   measureTextWidth (text: string, size?: number): number
 }
 
