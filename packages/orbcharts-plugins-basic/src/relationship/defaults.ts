@@ -37,7 +37,8 @@ export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
   dotLabel: {
     colorType: 'primary',
     sizeFixed: false,
-    styleFn: (node) => 'text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff'
+    // styleFn: (node) => 'text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff'
+    styleFn: (node) => ''
   },
   arrow: {
     colorType: 'primary',
@@ -70,7 +71,7 @@ export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
   }
 }
 DEFAULT_FORCE_DIRECTED_PARAMS.dot.styleFn.toString = () => `(node) => ''`
-DEFAULT_FORCE_DIRECTED_PARAMS.dotLabel.styleFn.toString = () => `(node) => 'text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff'`
+DEFAULT_FORCE_DIRECTED_PARAMS.dotLabel.styleFn.toString = () => `(node) => ''`
 DEFAULT_FORCE_DIRECTED_PARAMS.arrow.styleFn.toString = () => `(edge) => ''`
 DEFAULT_FORCE_DIRECTED_PARAMS.arrowLabel.styleFn.toString = () => `(edge) => ''`
 

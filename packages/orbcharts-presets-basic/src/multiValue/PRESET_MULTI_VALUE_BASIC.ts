@@ -21,6 +21,20 @@ export const PRESET_MULTI_VALUE_BASIC: PresetPartial<'multiValue', Partial<Prese
           "#904026",
           "#C4C4C4"
         ],
+      },
+      dark: {
+        label: [
+          "#7DD3C4",
+          "#FFA0A0",
+          "#6CBAFF",
+          "#55D339",
+          "#F9B052",
+          "#FF6C6C",
+          "#8E6BC9",
+          "#0088FF",
+          "#904026",
+          "#C4C4C4"
+        ]
       }
     },
     padding: {

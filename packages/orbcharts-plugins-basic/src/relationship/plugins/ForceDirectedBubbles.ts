@@ -35,7 +35,7 @@ import {
   getMinMax
 } from '../../../lib/core'
 import type { BubblesParams, ArcScaleType, ForceDirectedBubblesParams } from '../../../lib/plugins-basic-types'
-import { getDatumColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
+import { getColor, getDatumColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS } from '../defaults'
 // import { renderCircleText } from '../../utils/d3Graphics'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
@@ -356,10 +356,12 @@ function linkArcFn (d: RenderEdge): string {
 
 
 
-function renderArrowMarker ({ defsSelection, markerParams, markerData }: {
+function renderArrowMarker ({ defsSelection, markerParams, markerData, fullParams, fullChartParams }: {
   defsSelection: d3.Selection<SVGDefsElement, any, any, unknown>
   markerParams: MarkerParams
   markerData: MarkerDatum[]
+  fullParams: ForceDirectedBubblesParams
+  fullChartParams: ChartParams
 }) {
   return defsSelection
     .selectAll<SVGMarkerElement, any>(`marker.${defsArrowMarkerClassName}`)
@@ -383,6 +385,7 @@ function renderArrowMarker ({ defsSelection, markerParams, markerData }: {
       }
     )
     .attr('id', d => d.id)
+    .attr('fill', d => getColor(fullParams.arrow.colorType, fullChartParams ))
     .attr("markerWidth", markerParams.pointerWidth)
     .attr("markerHeight", markerParams.pointerHeight)
     .attr('refX', d => d.refX)
@@ -1208,14 +1211,19 @@ export const ForceDirectedBubbles = defineRelationshipPlugin(pluginConfig)(({ se
   combineLatest({
     defsSelection,
     markerParams: markerParams$,
-    markerData: markerData$
+    markerData: markerData$,
+    fullParams: observer.fullParams$,
+    fullChartParams: observer.fullChartParams$
   }).pipe(
     takeUntil(destroy$),
+    switchMap(async d => d),
     map(data => {
       return renderArrowMarker({
         defsSelection,
         markerParams: data.markerParams,
-        markerData: data.markerData
+        markerData: data.markerData,
+        fullParams: data.fullParams,
+        fullChartParams: data.fullChartParams
       })
     })
   ).subscribe()

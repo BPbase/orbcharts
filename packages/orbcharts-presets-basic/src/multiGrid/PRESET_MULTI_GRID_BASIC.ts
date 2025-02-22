@@ -12,7 +12,7 @@ export const PRESET_MULTI_GRID_BASIC: PresetPartial<'multiGrid', Partial<PresetM
   chartParams: {
     colors: {
       light: {
-        label:  [
+        label: [
           "#4BABFF",
           "#94D6CB",
           "#F9B052",
@@ -24,6 +24,20 @@ export const PRESET_MULTI_GRID_BASIC: PresetPartial<'multiGrid', Partial<PresetM
           "#C50669",
           "#4B25B3"
         ],
+      },
+      dark: {
+        label: [
+          "#4BABFF",
+          "#94D6CB",
+          "#F9B052",
+          "#8454D4",
+          "#D58C75",
+          "#42C724",
+          "#FF8B8B",
+          "#904026",
+          "#C50669",
+          "#4B25B3"
+        ]
       }
     },
     padding: {
