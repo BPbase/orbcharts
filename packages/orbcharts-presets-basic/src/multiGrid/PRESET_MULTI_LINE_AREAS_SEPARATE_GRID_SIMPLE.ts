@@ -24,6 +24,20 @@ export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID_SIMPLE: PresetPartial<'multiG
           "#C50669",
           "#4B25B3"
         ],
+      },
+      dark: {
+        label: [
+          "#4BABFF",
+          "#94D6CB",
+          "#F9B052",
+          "#8454D4",
+          "#D58C75",
+          "#42C724",
+          "#FF8B8B",
+          "#904026",
+          "#C50669",
+          "#4B25B3"
+        ]
       }
     },
     padding: {

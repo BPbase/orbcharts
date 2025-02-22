@@ -33,7 +33,7 @@ import type {
 import {
   defineRelationshipPlugin } from '../../../lib/core'
 import type { BubblesParams, ArcScaleType, ForceDirectedParams } from '../../../lib/plugins-basic-types'
-import { getDatumColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
+import { getColor, getDatumColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { DEFAULT_FORCE_DIRECTED_PARAMS } from '../defaults'
 // import { renderCircleText } from '../../utils/d3Graphics'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../const'
@@ -317,7 +317,7 @@ function linkArcFn (d: RenderEdge): string {
 
 
 
-function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any, unknown>, fullParams: ForceDirectedParams) {
+function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any, unknown>, fullParams: ForceDirectedParams, fullChartParams: ChartParams) {
   return defsSelection
     .selectAll<SVGMarkerElement, any>(`marker.${defsArrowMarkerClassName}`)
     .data([fullParams])
@@ -327,6 +327,7 @@ function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any
           .append("marker")
           .classed(defsArrowMarkerClassName, true)
           .attr('id', defsArrowMarkerId)
+          .attr('fill', d => getColor(fullParams.arrow.colorType, fullChartParams ))
           .attr("viewBox", d => `-${d.arrow.pointerWidth} -${d.arrow.pointerHeight / 2} ${d.arrow.pointerWidth} ${d.arrow.pointerHeight}`)
           .attr("orient", "auto")
         enterSelection.append("path")
@@ -887,10 +888,14 @@ export const ForceDirected = defineRelationshipPlugin(pluginConfig)(({ selection
   const mouseEvent$ = new Subject<EventRelationship>()
 
   // <marker> marker selection
-  observer.fullParams$.pipe(
+  combineLatest({
+    fullParams: observer.fullParams$,
+    fullChartParams: observer.fullChartParams$
+  }).pipe(
     takeUntil(destroy$),
-    map(fullParams => {
-      return renderArrowMarker(defsSelection, fullParams)
+    switchMap(async d => d),
+    map(({ fullParams, fullChartParams }) => {
+      return renderArrowMarker(defsSelection, fullParams, fullChartParams)
     })
   ).subscribe()
 

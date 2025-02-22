@@ -21,6 +21,20 @@ export const PRESET_SCATTER_BASIC: PresetPartial<'multiValue', Partial<PresetMul
           "#C50669",
           "#4B25B3"
         ],
+      },
+      dark: {
+        label: [
+          "#16B59B",
+          "#0088FF",
+          "#FF3232",
+          "#8E6BC9",
+          "#904026",
+          "#D117EA",
+          "#F38428",
+          "#6BDC51",
+          "#C50669",
+          "#4B25B3"
+        ]
       }
     },
     padding: {

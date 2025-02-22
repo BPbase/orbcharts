@@ -21,6 +21,20 @@ export const PRESET_BUBBLES_SCALING_BY_RADIUS: PresetPartial<'series', Partial<P
           "#EF76FF",
           "#C4C4C4"
         ],
+      },
+      dark: {
+        label: [
+          "#6CBAFF",
+          "#FF6C6C",
+          "#F9B052",
+          "#7DD3C4",
+          "#AA93D2",
+          "#0088FF",
+          "#FFBABA",
+          "#86DC72",
+          "#EF76FF",
+          "#C4C4C4"
+        ]
       }
     }
   },

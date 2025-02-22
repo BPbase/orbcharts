@@ -27,6 +27,20 @@ export const PRESET_ROSE_SCALING_BY_RADIUS: PresetPartial<'series', Partial<Pres
           "#FF6C6C",
           "#C4C4C4"
         ]
+      },
+      dark: {
+        label: [
+          "#8BC8FF",
+          "#4BABFF",
+          "#0088FF",
+          "#55D339",
+          "#29AB0C",
+          "#16B59B",
+          "#FCDCAD",
+          "#F9B052",
+          "#FF6C6C",
+          "#C4C4C4"
+        ]
       }
     }
   },

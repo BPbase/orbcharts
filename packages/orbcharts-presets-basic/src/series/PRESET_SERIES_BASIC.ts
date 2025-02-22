@@ -21,6 +21,20 @@ export const PRESET_SERIES_BASIC: PresetPartial<'series', Partial<PresetSeriesPl
           "#EF76FF",
           "#C4C4C4"
         ],
+      },
+      dark: {
+        label: [
+          "#6CBAFF",
+          "#FF6C6C",
+          "#F9B052",
+          "#7DD3C4",
+          "#AA93D2",
+          "#0088FF",
+          "#FFBABA",
+          "#86DC72",
+          "#EF76FF",
+          "#C4C4C4"
+        ]
       }
     }
   },

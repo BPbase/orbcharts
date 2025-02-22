@@ -1,6 +1,6 @@
 {
   "name": "orbcharts",
-  "version": "3.0.0-beta.16",
+  "version": "3.0.0-beta.17",
   "description": "OrbCharts is an open source chart library based on d3.js and rx.js",
   "author": "Blue Planet Inc.",
   "license": "Apache-2.0",
@@ -31,9 +31,9 @@
   "dependencies": {
     "@orbcharts/core": "^3.0.0-beta.12",
     "@orbcharts/core-types": "^3.0.0-beta.10",
-    "@orbcharts/plugins-basic": "^3.0.0-beta.17",
+    "@orbcharts/plugins-basic": "^3.0.0-beta.18",
     "@orbcharts/plugins-basic-types": "^3.0.0-beta.14",
-    "@orbcharts/presets-basic": "^3.0.0-beta.13",
+    "@orbcharts/presets-basic": "^3.0.0-beta.14",
     "d3": "^7.8.5",
     "rxjs": "^7.8.1"
   }
