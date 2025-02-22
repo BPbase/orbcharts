@@ -31,15 +31,15 @@ onMounted(() => {
   const multiValueTooltip = new MultiValueTooltip()
 
 
-  chart.chartParams$.next({
-    padding: {
-      top: 200,
-      right: 200,
-      bottom: 200,
-      left: 200
-    },
-    // highlightTarget: 'series'
-  })
+  // chart.chartParams$.next({
+  //   padding: {
+  //     top: 200,
+  //     right: 200,
+  //     bottom: 200,
+  //     left: 200
+  //   },
+  //   // highlightTarget: 'series'
+  // })
   chart!.plugins$.next([ racingBars, racingValueAxis, racingCounterTexts, multiValueLegend, multiValueTooltip ])
   chart.dataFormatter$.next({
     categoryLabels: [
@@ -242,7 +242,7 @@ onMounted(() => {
     ]
   })
 
-  chart!.data$.next(multiValueData_brand)
+  chart!.data$.next(multiValueData_brand as any)
 
 
 })

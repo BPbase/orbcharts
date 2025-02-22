@@ -4,7 +4,7 @@ import type { PresetRelationshipPluginParams, PresetNoneDataPluginParams } from 
 export const PRESET_FORCE_DIRECTED_SIMPLE: PresetPartial<'relationship', Partial<PresetRelationshipPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_FORCE_DIRECTED_SIMPLE',
-  description: 'Simple Force Directed Chart',
+  description: 'Simple force directed chart',
   descriptionZh: '簡單力導向圖',
   chartParams: {
     colors: {

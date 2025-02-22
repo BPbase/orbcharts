@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { SeriesChart } from '../../../packages/orbcharts-core/src'
 import { Pie, PieLabels, Rose, RoseLabels, PieEventTexts, Bubbles, SeriesLegend } from '../../../packages/orbcharts-plugins-basic/src'
-// import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
+import { PRESET_BUBBLES_BASIC } from '../../../packages/orbcharts-presets-basic/src/index'
 import seriesData3 from '../../../packages/orbcharts-demo/src/data/seriesData3'
 
 useHead({
@@ -23,7 +23,7 @@ onMounted(() => {
   const el = document.querySelector('#chart')
 
   const chart = new SeriesChart(el!, {
-    // preset: PRESET_MULTI_GRID_2_GRID_SLOT
+    preset: PRESET_BUBBLES_BASIC
   })
 
   const pie = new Pie()
@@ -44,10 +44,10 @@ onMounted(() => {
 
   chart.chartParams$.next({
     padding: {
-      top: 200,
-      right: 200,
-      bottom: 200,
-      left: 200
+      top: 60,
+      right: 120,
+      bottom: 60,
+      left: 120
     },
     // highlightTarget: 'series'
   })

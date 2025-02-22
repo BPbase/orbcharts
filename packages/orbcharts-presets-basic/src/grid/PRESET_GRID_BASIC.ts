@@ -6,7 +6,7 @@ export const PRESET_GRID_BASIC: PresetPartial<'grid', Partial<PresetGridPluginPa
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_GRID_BASIC',
   description: 'Basic Grid',
-  descriptionZh: '基本Grid參數',
+  descriptionZh: '基本Grid',
   chartParams: {
     colors: {
       light: {

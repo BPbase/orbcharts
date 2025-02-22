@@ -23,7 +23,7 @@ import type {
 } from '../../lib/core-types'
 import type { BaseRacingLabelsParams } from '../../lib/plugins-basic-types'
 import type { BasePluginFn } from './types'
-import { getColor, getClassName, getUniID } from '../utils/orbchartsUtils'
+import { getColor, getDatumColor, getClassName, getUniID } from '../utils/orbchartsUtils'
 import { multiValueContainerSelectionsObservable } from '../multiValue/multiValueObservables'
 
 interface BaseRacingAxisContext {
@@ -136,7 +136,11 @@ function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingSc
     .attr('text-anchor', yTickTextAnchor)
     .attr('dominant-baseline', yTickDominantBaseline)
     .attr('font-size', fullChartParams.styles.textSize)
-    .style('fill', getColor(fullParams.barLabel.colorType, fullChartParams))
+    .style('fill', d => getDatumColor({
+      colorType: fullParams.barLabel.colorType,
+      fullChartParams: fullChartParams,
+      datum: d
+    }))
     // .style('transform', textReverseTransformWithRotate)
     .text(d => d.label)
 

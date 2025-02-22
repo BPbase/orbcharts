@@ -8,7 +8,7 @@ export const PRESET_MULTI_GRID_BASIC: PresetPartial<'multiGrid', Partial<PresetM
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_MULTI_GRID_BASIC',
   description: 'Basic MultiGrid',
-  descriptionZh: '基本MultiGrid參數',
+  descriptionZh: '基本MultiGrid',
   chartParams: {
     colors: {
       light: {

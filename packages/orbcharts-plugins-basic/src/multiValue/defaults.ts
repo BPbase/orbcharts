@@ -40,6 +40,7 @@ export const DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS: MultiValueTooltipParams = {
   renderFn: (eventData, { styles, utils }) => {
     const hasCategoryLabel = eventData.categoryLabel === '' ? false : true
     const hasDatumLabel = eventData.datum.label.slice(0, 11) === 'multiValue_' ? false : true
+    const valueText = eventData.datum._visibleValue.map(d => utils.toCurrency(d))
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
     const categorySvg = hasCategoryLabel
@@ -52,7 +53,7 @@ export const DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS: MultiValueTooltipParams = {
       ? `<tspan>${eventData.datum.label}</tspan>  `
       : ''
     const datumSvg = `<text font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
-    ${datumLabelSvg}<tspan font-weight="bold">${eventData.datum._visibleValue}</tspan>
+    ${datumLabelSvg}<tspan font-weight="bold">${valueText}</tspan>
   </text>`
 
     return `${categorySvg}
@@ -64,6 +65,7 @@ export const DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS: MultiValueTooltipParams = {
 DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils }) => {
     const hasCategoryLabel = eventData.categoryLabel === '' ? false : true
     const hasDatumLabel = eventData.datum.label.slice(0, 11) === 'multiValue_' ? false : true
+    const valueText = eventData.datum._visibleValue.map(d => utils.toCurrency(d))
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
     const categorySvg = hasCategoryLabel
@@ -76,7 +78,7 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
       ? \`<tspan>\${eventData.datum.label}</tspan>  \`
       : ''
     const datumSvg = \`<text font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
-    \${datumLabelSvg}<tspan font-weight="bold">\${eventData.datum._visibleValue}</tspan>
+    \${datumLabelSvg}<tspan font-weight="bold">\${valueText}</tspan>
   </text>\`
 
     return \`\${categorySvg}
@@ -132,11 +134,8 @@ export const DEFAULT_RACING_BARS_PARAMS: RacingBarsParams = {
   },
   // rankingAmount: 'auto'
   rankingAmount: 10,
-  // timer: {
-  //   active: false,
-  //   period: 500
-  // }
-  autorun: false
+  autorun: false,
+  loop: false
 }
 // DEFAULT_RACING_BARS_PARAMS.valueLabel.format.toString = () => `num => {
 //     if (num === null || Number.isNaN(num) == true) {
@@ -186,7 +185,15 @@ export const DEFAULT_RACING_VALUE_AXIS_PARAMS: RacingValueAxisParams = {
   axisLineColorType: 'secondary',
   ticks: null,
   // tickFormat: ',.0f',
-  tickFormat: v => v,
+  // tickFormat: v => v,
+  tickFormat: num => {
+    if (num === null || Number.isNaN(num) == true) {
+      return num || 0
+    }
+    var parts = num.toString().split('.')
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return parts.join('.')
+  },
   tickLineVisible: true,
   tickPadding: 20,
   tickFullLine: true,
@@ -194,7 +201,14 @@ export const DEFAULT_RACING_VALUE_AXIS_PARAMS: RacingValueAxisParams = {
   tickColorType: 'secondary',
   tickTextColorType: 'primary'
 }
-DEFAULT_RACING_VALUE_AXIS_PARAMS.tickFormat.toString = () => `v => v`
+DEFAULT_RACING_VALUE_AXIS_PARAMS.tickFormat.toString = () => `num => {
+  if (num === null || Number.isNaN(num) == true) {
+    return num || 0
+  }
+  var parts = num.toString().split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return parts.join('.')
+}`
 
 export const DEFAULT_SCATTER_PARAMS: ScatterParams = {
   radius: 5,
@@ -220,7 +234,15 @@ export const DEFAULT_X_AXIS_PARAMS: XAxisParams = {
   axisLineColorType: 'secondary',
   ticks: null,
   // tickFormat: ',.0f',
-  tickFormat: v => v,
+  // tickFormat: v => v,
+  tickFormat: num => {
+    if (num === null || Number.isNaN(num) == true) {
+      return num || 0
+    }
+    var parts = num.toString().split('.')
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return parts.join('.')
+  },
   tickLineVisible: true,
   tickPadding: 20,
   tickFullLine: true,
@@ -228,7 +250,14 @@ export const DEFAULT_X_AXIS_PARAMS: XAxisParams = {
   tickColorType: 'secondary',
   tickTextColorType: 'primary'
 }
-DEFAULT_X_AXIS_PARAMS.tickFormat.toString = () => `v => v`
+DEFAULT_X_AXIS_PARAMS.tickFormat.toString = () => `num => {
+  if (num === null || Number.isNaN(num) == true) {
+    return num || 0
+  }
+  var parts = num.toString().split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return parts.join('.')
+}`
 
 export const DEFAULT_X_Y_AUX_PARAMS: XYAuxParams = {
   xAxis: {
@@ -239,7 +268,15 @@ export const DEFAULT_X_Y_AUX_PARAMS: XYAuxParams = {
     labelColorType: 'primary',
     labelTextColorType: 'background',
     // labelTextFormat: text => text,
-    labelTextFormat: (value: number) => String(Math.round(value)),
+    // labelTextFormat: (value: number) => String(Math.round(value)),
+    labelTextFormat: num => {
+      if (num === null || Number.isNaN(num) == true) {
+        return num || 0
+      }
+      var parts = num.toString().split('.')
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      return parts.join('.')
+    },
     labelPadding: 20,
     // labelRotate: 0
   },
@@ -251,13 +288,35 @@ export const DEFAULT_X_Y_AUX_PARAMS: XYAuxParams = {
     labelColorType: 'primary',
     labelTextColorType: 'background',
     // labelTextFormat: text => text,
-    labelTextFormat: (value: number) => String(Math.round(value)),
+    // labelTextFormat: (value: number) => String(Math.round(value)),
+    labelTextFormat: num => {
+      if (num === null || Number.isNaN(num) == true) {
+        return num || 0
+      }
+      var parts = num.toString().split('.')
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      return parts.join('.')
+    },
     labelPadding: 20,
     // labelRotate: 0
   }
 }
-DEFAULT_X_Y_AUX_PARAMS.xAxis.labelTextFormat.toString = () => `(value: number) => String(Math.round(value))`
-DEFAULT_X_Y_AUX_PARAMS.yAxis.labelTextFormat.toString = () => `(value: number) => String(Math.round(value))`
+DEFAULT_X_Y_AUX_PARAMS.xAxis.labelTextFormat.toString = () => `num => {
+  if (num === null || Number.isNaN(num) == true) {
+    return num || 0
+  }
+  var parts = num.toString().split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return parts.join('.')
+}`
+DEFAULT_X_Y_AUX_PARAMS.yAxis.labelTextFormat.toString = () => `num => {
+  if (num === null || Number.isNaN(num) == true) {
+    return num || 0
+  }
+  var parts = num.toString().split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return parts.join('.')
+}`
 
 
 export const DEFAULT_X_Y_AXES_PARAMS: XYAxesParams = {
@@ -268,7 +327,15 @@ export const DEFAULT_X_Y_AXES_PARAMS: XYAxesParams = {
     axisLineColorType: 'primary',
     ticks: null,
     // tickFormat: ',.0f',
-    tickFormat: v => v,
+    // tickFormat: v => v,
+    tickFormat: num => {
+      if (num === null || Number.isNaN(num) == true) {
+        return num || 0
+      }
+      var parts = num.toString().split('.')
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      return parts.join('.')
+    },
     tickLineVisible: true,
     tickPadding: 20,
     tickFullLine: true,
@@ -283,7 +350,15 @@ export const DEFAULT_X_Y_AXES_PARAMS: XYAxesParams = {
     axisLineColorType: 'primary',
     ticks: null,
     // tickFormat: ',.0f',
-    tickFormat: v => v,
+    // tickFormat: v => v,
+    tickFormat: num => {
+      if (num === null || Number.isNaN(num) == true) {
+        return num || 0
+      }
+      var parts = num.toString().split('.')
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      return parts.join('.')
+    },
     tickLineVisible: true,
     tickPadding: 20,
     tickFullLine: true,
@@ -292,8 +367,22 @@ export const DEFAULT_X_Y_AXES_PARAMS: XYAxesParams = {
     tickTextColorType: 'primary'
   }
 }
-DEFAULT_X_Y_AXES_PARAMS.xAxis.tickFormat.toString = () => `v => v`
-DEFAULT_X_Y_AXES_PARAMS.yAxis.tickFormat.toString = () => `v => v`
+DEFAULT_X_Y_AXES_PARAMS.xAxis.tickFormat.toString = () => `num => {
+  if (num === null || Number.isNaN(num) == true) {
+    return num || 0
+  }
+  var parts = num.toString().split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return parts.join('.')
+}`
+DEFAULT_X_Y_AXES_PARAMS.yAxis.tickFormat.toString = () => `num => {
+  if (num === null || Number.isNaN(num) == true) {
+    return num || 0
+  }
+  var parts = num.toString().split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return parts.join('.')
+}`
 
 export const DEFAULT_X_Y_ZOOM_PARAMS: XZoomParams = {
 

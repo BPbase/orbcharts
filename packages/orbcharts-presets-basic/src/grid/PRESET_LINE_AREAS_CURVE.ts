@@ -28,7 +28,7 @@ export const PRESET_LINE_AREAS_CURVE: PresetPartial<'grid', Partial<PresetGridPl
     },
     padding: {
       top: 40,
-      right: 40,
+      right: 80, // lineAre 的左右刻度靠邊，要避免太窄造成 label 超出
       bottom: 100,
       left: 80
     },

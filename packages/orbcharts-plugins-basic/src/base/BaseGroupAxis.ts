@@ -204,15 +204,23 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
     tickPadding = 0
     textX = fullParams.tickPadding
   } else if (fullDataFormatter.groupAxis.position === 'bottom') {
-    tickPadding = fullParams.tickPadding
+    if (fullParams.tickFullLine == true) {
+      tickPadding = - fullParams.tickPadding
+    } else {
+      tickPadding = - fullParams.tickPadding - defaultTickSize
+    }
     textX = 0
   } else if (fullDataFormatter.groupAxis.position === 'top') {
-    tickPadding = - fullParams.tickPadding
+    if (fullParams.tickFullLine == true) {
+      tickPadding = fullParams.tickPadding
+    } else {
+      tickPadding = fullParams.tickPadding - defaultTickSize
+    }
     textX = - 0
   }
 
   // 設定X軸刻度
-  const xAxis = d3.axisBottom(groupScale)
+  const xAxis = d3.axisTop(groupScale)
     .scale(groupScale)
     .ticks(fullParams.ticks === 'all'
       ? allTicksAmount
@@ -220,8 +228,8 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
         ? allTicksAmount // 不顯示超過groupLabels數量的刻度
         : fullParams.ticks)
     .tickSize(fullParams.tickFullLine == true
-      ? gridAxesSize.height
-      : - defaultTickSize)
+      ? - gridAxesSize.height
+      : defaultTickSize)
     .tickSizeOuter(0)
     .tickFormat((groupIndex: number) => {
       // 用index對應到groupLabel
@@ -236,6 +244,7 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
     .duration(100)
     .ease(d3.easeLinear) // 線性的 - 當托曳或快速變動的時候比較滑順
     .call(xAxis)
+    
     .on('end', (self, t) => {
       // 先等transition結束再處理文字，否則會被原本的文字覆蓋
       xAxisSelection
@@ -249,7 +258,8 @@ function renderAxis ({ selection, xAxisClassName, fullParams, tickTextAlign, gri
           renderTspansOnAxis(d3.select(n[i]), {
             textArr,
             textSizePx,
-            groupAxisPosition: fullDataFormatter.groupAxis.position
+            groupAxisPosition: fullDataFormatter.groupAxis.position,
+            isContainerRotated: true
           })
         })
     })

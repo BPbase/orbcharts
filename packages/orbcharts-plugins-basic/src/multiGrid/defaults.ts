@@ -62,7 +62,15 @@ export const DEFAULT_MULTI_VALUE_AXIS_PARAMS: MultiValueAxisParams = {
   axisLineVisible: false,
   axisLineColorType: 'primary',
   ticks: 4,
-  tickFormat: ',.0f',
+  // tickFormat: ',.0f',
+  tickFormat: num => {
+    if (num === null || Number.isNaN(num) == true) {
+      return num || 0
+    }
+    var parts = num.toString().split('.')
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return parts.join('.')
+  },
   tickLineVisible: true,
   tickPadding: 20,
   tickFullLine: true,
@@ -72,6 +80,14 @@ export const DEFAULT_MULTI_VALUE_AXIS_PARAMS: MultiValueAxisParams = {
   tickTextColorType: 'primary',
   gridIndexes: 'all'
 }
+DEFAULT_MULTI_VALUE_AXIS_PARAMS.tickFormat.toString = () => `num => {
+  if (num === null || Number.isNaN(num) == true) {
+    return num || 0
+  }
+  var parts = num.toString().split('.')
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  return parts.join('.')
+}`
 
 export const DEFAULT_MULTI_STACKED_VALUE_AXIS_PARAMS: MultiStackedValueAxisParams = {
   ...DEFAULT_MULTI_VALUE_AXIS_PARAMS
@@ -189,7 +205,7 @@ export const DEFAULT_MULTI_GRID_TOOLTIP_PARAMS: MultiGridTooltipParams = {
   <rect width="${bulletWidth}" height="${bulletWidth}" x="${offset}" y="${y + offset}" rx="${bulletWidth / 2}" fill="${group.color}"></rect>
   <text x="${styles.textSizePx * 1.5}" y="${y}" font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
     <tspan font-weight="${isHighlight ? 'bold' : ''}">${group.seriesLabel}</tspan>
-    <tspan font-weight="bold" text-anchor="end" x="${lineEndX}">${group.value}</tspan>
+    <tspan font-weight="bold" text-anchor="end" x="${lineEndX}">${utils.toCurrency(group.value)}</tspan>
   </text>
 </g>`
       })
@@ -219,7 +235,7 @@ DEFAULT_MULTI_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { style
   <rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${y + offset}" rx="\${bulletWidth / 2}" fill="\${group.color}"></rect>
   <text x="\${styles.textSizePx * 1.5}" y="\${y}" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
     <tspan font-weight="\${isHighlight ? 'bold' : ''}">\${group.seriesLabel}</tspan>
-    <tspan font-weight="bold" text-anchor="end" x="\${lineEndX}">\${group.value}</tspan>
+    <tspan font-weight="bold" text-anchor="end" x="\${lineEndX}">\${utils.toCurrency(group.value)}</tspan>
   </text>
 </g>\`
       })

@@ -395,7 +395,8 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
             textSizePx,
             groupAxisPosition: i === 0
               ? 'bottom' // x axis
-              : 'left' // y axis
+              : 'left', // y axis
+            isContainerRotated: false
           })
         })
     })

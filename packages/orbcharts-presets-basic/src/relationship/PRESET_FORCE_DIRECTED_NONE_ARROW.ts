@@ -4,7 +4,7 @@ import type { PresetRelationshipPluginParams, PresetNoneDataPluginParams } from 
 export const PRESET_FORCE_DIRECTED_NONE_ARROW: PresetPartial<'relationship', Partial<PresetRelationshipPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_FORCE_DIRECTED_NONE_ARROW',
-  description: 'Force Directed Chart without Arrows',
+  description: 'Force directed chart without arrows',
   descriptionZh: '沒有箭頭的力導向圖',
   chartParams: {
     colors: {

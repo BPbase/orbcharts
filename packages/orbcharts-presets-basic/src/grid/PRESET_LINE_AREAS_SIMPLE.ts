@@ -27,9 +27,9 @@ export const PRESET_LINE_AREAS_SIMPLE: PresetPartial<'grid', Partial<PresetGridP
     },
     padding: {
       top: 40,
-      right: 40,
+      right: 80, // lineAre 的左右刻度靠邊，要避免太窄造成 label 超出
       bottom: 80,
-      left: 40
+      left: 80 // lineAre 的左右刻度靠邊，要避免太窄造成 label 超出
     },
     highlightTarget: 'series'
   },

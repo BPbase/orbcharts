@@ -152,6 +152,7 @@ export const DEFAULT_SERIES_TOOLTIP_PARAMS: SeriesTooltipParams = {
   renderFn: (eventData, { styles, utils }) => {
     const hasSeriesLabel = eventData.seriesLabel.slice(0, 7) === 'series_' ? false : true
     const hasDatumLabel = eventData.datum.label.slice(0, 7) === 'series_' ? false : true
+    const valueText = utils.toCurrency(eventData.datum.value)
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
     const seriesSvg = hasSeriesLabel
@@ -164,10 +165,10 @@ export const DEFAULT_SERIES_TOOLTIP_PARAMS: SeriesTooltipParams = {
       ? `<tspan>${eventData.datum.label}</tspan>  `
       : ''
     const seriesLabelTextWidth = hasSeriesLabel
-      ? utils.measureTextWidth(`${eventData.seriesLabel}${eventData.datum.value}`, styles.textSizePx) + styles.textSizePx * 1.5
+      ? utils.measureTextWidth(`${eventData.seriesLabel}${valueText}`, styles.textSizePx) + styles.textSizePx * 1.5
       : 0
     const datumLabelTextWidth = hasDatumLabel
-      ? utils.measureTextWidth(`${eventData.datum.label}${eventData.datum.value}`, styles.textSizePx)
+      ? utils.measureTextWidth(`${eventData.datum.label}${valueText}`, styles.textSizePx)
       : 0
     const maxTextWidth = Math.max(seriesLabelTextWidth, datumLabelTextWidth)
     const lineEndX = hasDatumLabel
@@ -175,7 +176,7 @@ export const DEFAULT_SERIES_TOOLTIP_PARAMS: SeriesTooltipParams = {
       : 0
     const valueTextAnchor = hasDatumLabel ? 'end' : 'start'
     const datumSvg = `<text font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
-    ${datumLabelSvg}<tspan font-weight="bold" text-anchor="${valueTextAnchor}" x="${lineEndX}">${eventData.datum.value}</tspan>
+    ${datumLabelSvg}<tspan font-weight="bold" text-anchor="${valueTextAnchor}" x="${lineEndX}">${valueText}</tspan>
   </text>`
 
     return `${seriesSvg}
@@ -185,36 +186,37 @@ export const DEFAULT_SERIES_TOOLTIP_PARAMS: SeriesTooltipParams = {
   },
 }
 DEFAULT_SERIES_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils }) => {
-    const hasSeriesLabel = eventData.seriesLabel.slice(0, 7) === 'series_' ? false : true
-    const hasDatumLabel = eventData.datum.label.slice(0, 7) === 'series_' ? false : true
-    const bulletWidth = styles.textSizePx * 0.7
-    const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
-    const seriesSvg = hasSeriesLabel
-      ? \`<rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${offset - 1}" rx="\${bulletWidth / 2}" fill="\${eventData.datum.color}"></rect>
-  <text x="\${styles.textSizePx * 1.5}" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
-    <tspan>\${eventData.seriesLabel}</tspan>
-  </text>\`
-      : ''
-    const datumLabelSvg = hasDatumLabel
-      ? \`<tspan>\${eventData.datum.label}</tspan>  \`
-      : ''
-    const seriesLabelTextWidth = hasSeriesLabel
-      ? utils.measureTextWidth(\`\${eventData.seriesLabel}\${eventData.datum.value}\`, styles.textSizePx) + styles.textSizePx * 1.5
-      : 0
-    const datumLabelTextWidth = hasDatumLabel
-      ? utils.measureTextWidth(\`\${eventData.datum.label}\${eventData.datum.value}\`, styles.textSizePx)
-      : 0
-    const maxTextWidth = Math.max(seriesLabelTextWidth, datumLabelTextWidth)
-    const lineEndX = hasDatumLabel
-      ? maxTextWidth + styles.textSizePx * 1.5
-      : 0
-    const valueTextAnchor = hasDatumLabel ? 'end' : 'start'
-    const datumSvg = \`<text font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
-    \${datumLabelSvg}<tspan font-weight="bold" text-anchor="\${valueTextAnchor}" x="\${lineEndX}">\${eventData.datum.value}</tspan>
-  </text>\`
+  const hasSeriesLabel = eventData.seriesLabel.slice(0, 7) === 'series_' ? false : true
+  const hasDatumLabel = eventData.datum.label.slice(0, 7) === 'series_' ? false : true
+  const valueText = utils.toCurrency(eventData.datum.value)
+  const bulletWidth = styles.textSizePx * 0.7
+  const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
+  const seriesSvg = hasSeriesLabel
+    ? \`<rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${offset - 1}" rx="\${bulletWidth / 2}" fill="\${eventData.datum.color}"></rect>
+<text x="\${styles.textSizePx * 1.5}" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
+  <tspan>\${eventData.seriesLabel}</tspan>
+</text>\`
+    : ''
+  const datumLabelSvg = hasDatumLabel
+    ? \`<tspan>\${eventData.datum.label}</tspan>  \`
+    : ''
+  const seriesLabelTextWidth = hasSeriesLabel
+    ? utils.measureTextWidth(\`\${eventData.seriesLabel}\${valueText}\`, styles.textSizePx) + styles.textSizePx * 1.5
+    : 0
+  const datumLabelTextWidth = hasDatumLabel
+    ? utils.measureTextWidth(\`\${eventData.datum.label}\${valueText}\`, styles.textSizePx)
+    : 0
+  const maxTextWidth = Math.max(seriesLabelTextWidth, datumLabelTextWidth)
+  const lineEndX = hasDatumLabel
+    ? maxTextWidth + styles.textSizePx * 1.5
+    : 0
+  const valueTextAnchor = hasDatumLabel ? 'end' : 'start'
+  const datumSvg = \`<text font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
+  \${datumLabelSvg}<tspan font-weight="bold" text-anchor="\${valueTextAnchor}" x="\${lineEndX}">\${valueText}</tspan>
+</text>\`
 
-    return \`\${seriesSvg}
-  <g \${hasSeriesLabel ? \`transform="translate(0, \${styles.textSizePx * 2})"\` : ''}>
-    \${datumSvg}
-  </g>\`
+  return \`\${seriesSvg}
+<g \${hasSeriesLabel ? \`transform="translate(0, \${styles.textSizePx * 2})"\` : ''}>
+  \${datumSvg}
+</g>\`
 }`

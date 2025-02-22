@@ -4,7 +4,7 @@ import type { PresetMultiValuePluginParams, PresetNoneDataPluginParams } from '.
 export const PRESET_SCATTER_SIMPLE: PresetPartial<'multiValue', Partial<PresetMultiValuePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_SCATTER_SIMPLE',
-  description: 'Simple Scatter',
+  description: 'Simple scatter',
   descriptionZh: '簡單散布圖',
   chartParams: {
     colors: {

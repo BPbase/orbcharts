@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { MultiGridChart } from '../../../packages/orbcharts-core/src'
 import { MultiBars, MultiLines, MultiDots, MultiGridLegend, MultiGroupAxis, MultiValueAxis, OverlappingValueAxes, MultiGridTooltip } from '../../../packages/orbcharts-plugins-basic/src'
-// import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
+import { PRESET_MULTI_GRID_BASIC } from '../../../packages/orbcharts-presets-basic/src/index'
 import multiGridData1 from '../../../packages/orbcharts-demo/src/data/multiGridData1'
 
 useHead({
@@ -23,7 +23,7 @@ onMounted(() => {
   const el = document.querySelector('#chart')
 
   const chart = new MultiGridChart(el!, {
-    // preset: PRESET_MULTI_GRID_2_GRID_SLOT
+    preset: PRESET_MULTI_GRID_BASIC
   })
 
   // chart!.dataFormatter$.next({

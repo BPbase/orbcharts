@@ -27,6 +27,8 @@ export interface DemoItem<T extends ChartType> {
   title: string
   // chartType: 'series' | 'grid' | 'multiGrid' | 'multiValue' | 'relationship' | 'tree'
   presetName: KeyOfOrbChartsPresetsBasic
+  description: string
+  descriptionZh: string
   allPluginNames: PluginList<T>[]
   getData: () => Promise<any>
 }

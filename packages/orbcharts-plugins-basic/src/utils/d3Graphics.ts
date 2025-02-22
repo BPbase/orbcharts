@@ -128,18 +128,20 @@ export function renderCircleText (selection: d3.Selection<any, any, any, any>, {
 export function renderTspansOnAxis (textSelection: d3.Selection<d3.BaseType, unknown, null, undefined>, {
   textArr,
   textSizePx,
-  groupAxisPosition
+  groupAxisPosition,
+  isContainerRotated // 外層是否有變形處理
 }: {
   textArr: string[]
   textSizePx: number
   groupAxisPosition: 'top' | 'right' | 'bottom' | 'left'
+  isContainerRotated: boolean
 }) {
   // -- 將原本單行文字改為多行文字 --
   textSelection.text(null) // 先清空原本的 text
 
   const textX = Number(textSelection.attr('x'))
   let textY = Number(textSelection.attr('y'))
-  if (groupAxisPosition === 'top') {
+  if (isContainerRotated && groupAxisPosition === 'top') {
     // 當文字在上方時，要往上偏移第一行的高度
     textY -= (textArr.length - 1) * textSizePx
   }
