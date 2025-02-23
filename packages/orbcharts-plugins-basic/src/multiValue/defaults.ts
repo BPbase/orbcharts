@@ -177,6 +177,9 @@ export const DEFAULT_RACING_COUNTER_TEXTS_PARAMS: RacingCounterTextsParams = {
   paddingRight: 0,
   paddingBottom: 0
 }
+DEFAULT_RACING_COUNTER_TEXTS_PARAMS.renderFn.toString = () => `(valueLabel, valueIndex, data) => {
+  return valueLabel
+}`
 
 export const DEFAULT_RACING_VALUE_AXIS_PARAMS: RacingValueAxisParams = {
   labelOffset: [0, 0],
@@ -384,6 +387,6 @@ DEFAULT_X_Y_AXES_PARAMS.yAxis.tickFormat.toString = () => `num => {
   return parts.join('.')
 }`
 
-export const DEFAULT_X_Y_ZOOM_PARAMS: XZoomParams = {
+export const DEFAULT_X_ZOOM_PARAMS: XZoomParams = {
 
 }

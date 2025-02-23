@@ -5,7 +5,7 @@ export const PRESET_SCATTER_BUBBLES_LINEAR_OPACITY: PresetPartial<'multiValue', 
 & Partial<PresetNoneDataPluginParams>> = {
   name: 'PRESET_SCATTER_BUBBLES_LINEAR_OPACITY',
   description: 'Scatter bubbles with linear opacity',
-  descriptionZh: '漸變透明度的散布泡泡圖',
+  descriptionZh: '以資料量漸變透明度的散布泡泡圖',
   chartParams: {
     colors: {
       light: {
@@ -51,7 +51,7 @@ export const PRESET_SCATTER_BUBBLES_LINEAR_OPACITY: PresetPartial<'multiValue', 
       listRectRadius: 7 // 圓型圖例列點
     },
     ScatterBubbles: {
-      valueLinearOpacity: [0.6, 0.95]
+      valueLinearOpacity: [0.5, 1]
     }
   }
 }

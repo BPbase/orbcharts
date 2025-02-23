@@ -101,7 +101,7 @@ export const DEFAULT_MULTI_BARS_PARAMS: MultiBarsParams = {
   gridIndexes: [0]
 }
 
-export const DEFAULT_MULTI_STACKED_BAR_PARAMS: MultiStackedBarsParams = {
+export const DEFAULT_MULTI_STACKED_BARS_PARAMS: MultiStackedBarsParams = {
   barWidth: 0,
   barGroupPadding: 10,
   barRadius: false,
@@ -187,11 +187,11 @@ export const DEFAULT_MULTI_GRID_TOOLTIP_PARAMS: MultiGridTooltipParams = {
   renderFn: (eventData, { styles, utils }) => {
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
-
+    
     const titleSvg = `<g><text dominant-baseline="hanging" font-size="${styles.textSizePx}" fill="${styles.textColor}">${eventData.groupLabel}</text></g>`
     const groupLabelTextWidth = utils.measureTextWidth(eventData.groupLabel, styles.textSizePx)
     const listTextWidth = eventData.group.reduce((acc, group) => {
-      const text = `${group.seriesLabel}${group.value}`
+      const text = `${group.seriesLabel}${utils.toCurrency(group.value)}`
       const _maxTextWidth = utils.measureTextWidth(text, styles.textSizePx)
       return _maxTextWidth > acc ? _maxTextWidth : acc
     }, 0)
@@ -221,7 +221,7 @@ DEFAULT_MULTI_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { style
     const titleSvg = \`<g><text dominant-baseline="hanging" font-size="\${styles.textSizePx}" fill="\${styles.textColor}">\${eventData.groupLabel}</text></g>\`
     const groupLabelTextWidth = utils.measureTextWidth(eventData.groupLabel, styles.textSizePx)
     const listTextWidth = eventData.group.reduce((acc, group) => {
-      const text = \`\${group.seriesLabel}\${group.value}\`
+      const text = \`\${group.seriesLabel}\${utils.toCurrency(group.value)}\`
       const _maxTextWidth = utils.measureTextWidth(text, styles.textSizePx)
       return _maxTextWidth > acc ? _maxTextWidth : acc
     }, 0)
