@@ -59,7 +59,7 @@ export const DEFAULT_BARS_DIVERGING_PARAMS: BarsParams = {
   ...DEFAULT_BARS_PARAMS
 }
 
-export const DEFAULT_STACKED_BAR_PARAMS: StackedBarsParams = {
+export const DEFAULT_STACKED_BARS_PARAMS: StackedBarsParams = {
   barWidth: 0,
   barGroupPadding: 10,
   barRadius: false,
@@ -128,7 +128,7 @@ export const DEFAULT_STACKED_VALUE_AXIS_PARAMS: StackedValueAxisParams = {
   ...DEFAULT_VALUE_AXIS_PARAMS
 }
 
-export const DEFAULT_GRID_ZOOM_PARAMS: GroupZoomParams = {
+export const DEFAULT_GROUP_ZOOM_PARAMS: GroupZoomParams = {
 
 }
 

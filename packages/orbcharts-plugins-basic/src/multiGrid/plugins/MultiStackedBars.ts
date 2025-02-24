@@ -9,7 +9,7 @@ import {
 import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
   defineMultiGridPlugin } from '../../../lib/core'
-import { DEFAULT_MULTI_STACKED_BAR_PARAMS } from '../defaults'
+import { DEFAULT_MULTI_STACKED_BARS_PARAMS } from '../defaults'
 import { createBaseStackedBars } from '../../base/BaseStackedBars'
 import { multiGridPluginDetailObservables } from '../multiGridObservables'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
@@ -19,9 +19,9 @@ const pluginName = 'MultiStackedBars'
 
 const gridClassName = getClassName(pluginName, 'grid')
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_STACKED_BAR_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_MULTI_STACKED_BARS_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_MULTI_STACKED_BAR_PARAMS,
+  defaultParams: DEFAULT_MULTI_STACKED_BARS_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {

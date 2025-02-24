@@ -10,28 +10,28 @@ export const PRESET_FORCE_DIRECTED_BUBBLES_SIMPLE: PresetPartial<'relationship',
     colors: {
       light: {
         label: [
-          "#6CBAFF",
-          "#FF6C6C",
-          "#F9B052",
-          "#7DD3C4",
-          "#AA93D2",
           "#0088FF",
-          "#FFBABA",
-          "#86DC72",
-          "#EF76FF",
-          "#C4C4C4"
+          "#FF3232",
+          "#38BEA8",
+          "#6F3BD5",
+          "#314285",
+          "#42C724",
+          "#D52580",
+          "#F4721B",
+          "#D117EA",
+          "#7E7D7D"
         ],
       },
       dark: {
         label: [
-          "#6CBAFF",
+          "#4BABFF",
           "#FF6C6C",
-          "#F9B052",
           "#7DD3C4",
-          "#AA93D2",
-          "#0088FF",
-          "#FFBABA",
+          "#8E6BC9",
+          "#5366AC",
           "#86DC72",
+          "#FF72BB",
+          "#F9B052",
           "#EF76FF",
           "#C4C4C4"
         ]

@@ -13,16 +13,16 @@ import type { DefinePluginConfig } from '../../../lib/core-types'
 import type { DataFormatterGrid } from '../../../lib/core-types'
 import {
   defineGridPlugin, createValueToAxisScale } from '../../../lib/core'
-import { DEFAULT_GRID_ZOOM_PARAMS } from '../defaults'
+import { DEFAULT_GROUP_ZOOM_PARAMS } from '../defaults'
 import { getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { LAYER_INDEX_OF_ROOT } from '../../const'
 
 const pluginName = 'GroupZoom'
 const rectClassName = getClassName(pluginName, 'rect')
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_GRID_ZOOM_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_GROUP_ZOOM_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_GRID_ZOOM_PARAMS,
+  defaultParams: DEFAULT_GROUP_ZOOM_PARAMS,
   layerIndex: LAYER_INDEX_OF_ROOT,
   validator: (params, { validateColumns }) => {
     return {

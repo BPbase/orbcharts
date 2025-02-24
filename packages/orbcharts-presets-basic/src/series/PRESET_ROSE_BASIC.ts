@@ -15,17 +15,17 @@ export const PRESET_ROSE_BASIC: PresetPartial<'series', Partial<PresetSeriesPlug
     },
     colors: {
       light: {
-        label:  [
-          "#8BC8FF",
+        label: [
           "#4BABFF",
           "#0088FF",
-          "#55D339",
-          "#29AB0C",
+          "#435399",
+          "#86DC72",
+          "#42C724",
           "#16B59B",
-          "#FCDCAD",
           "#F9B052",
-          "#FF6C6C",
-          "#C4C4C4"
+          "#F4721B",
+          "#FF3232",
+          "#7E7D7D"
         ]
       },
       dark: {
