@@ -103,7 +103,7 @@ export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
     if (num === null || Number.isNaN(num) == true) {
       return num || 0
     }
-    var parts = num.toString().split('.')
+    const parts = num.toString().split('.')
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     return parts.join('.')
   },
@@ -119,7 +119,7 @@ DEFAULT_VALUE_AXIS_PARAMS.tickFormat.toString = () => `num => {
   if (num === null || Number.isNaN(num) == true) {
     return num || 0
   }
-  var parts = num.toString().split('.')
+  const parts = num.toString().split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   return parts.join('.')
 }`

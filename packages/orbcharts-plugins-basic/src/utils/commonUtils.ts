@@ -25,7 +25,7 @@ export function toCurrency (num: number | null): string {
   if (num === null || Number.isNaN(num) == true) {
     return String(num || 0)
   }
-  var parts = num.toString().split('.')
+  const parts = num.toString().split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   return parts.join('.')
 }

@@ -122,7 +122,7 @@ export const DEFAULT_RACING_BARS_PARAMS: RacingBarsParams = {
     //   if (num === null || Number.isNaN(num) == true) {
     //     return num || 0
     //   }
-    //   var parts = num.toString().split('.')
+    //   const parts = num.toString().split('.')
     //   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     //   return parts.join('.')
     // }
@@ -141,7 +141,7 @@ export const DEFAULT_RACING_BARS_PARAMS: RacingBarsParams = {
 //     if (num === null || Number.isNaN(num) == true) {
 //       return num || 0
 //     }
-//     var parts = num.toString().split('.')
+//     const parts = num.toString().split('.')
 //     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 //     return parts.join('.')
 //   }
@@ -193,7 +193,7 @@ export const DEFAULT_RACING_VALUE_AXIS_PARAMS: RacingValueAxisParams = {
     if (num === null || Number.isNaN(num) == true) {
       return num || 0
     }
-    var parts = num.toString().split('.')
+    const parts = num.toString().split('.')
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     return parts.join('.')
   },
@@ -208,7 +208,7 @@ DEFAULT_RACING_VALUE_AXIS_PARAMS.tickFormat.toString = () => `num => {
   if (num === null || Number.isNaN(num) == true) {
     return num || 0
   }
-  var parts = num.toString().split('.')
+  const parts = num.toString().split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   return parts.join('.')
 }`
@@ -242,7 +242,7 @@ export const DEFAULT_X_AXIS_PARAMS: XAxisParams = {
     if (num === null || Number.isNaN(num) == true) {
       return num || 0
     }
-    var parts = num.toString().split('.')
+    const parts = num.toString().split('.')
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     return parts.join('.')
   },
@@ -257,7 +257,7 @@ DEFAULT_X_AXIS_PARAMS.tickFormat.toString = () => `num => {
   if (num === null || Number.isNaN(num) == true) {
     return num || 0
   }
-  var parts = num.toString().split('.')
+  const parts = num.toString().split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   return parts.join('.')
 }`
@@ -276,9 +276,19 @@ export const DEFAULT_X_Y_AUX_PARAMS: XYAuxParams = {
       if (num === null || Number.isNaN(num) == true) {
         return num || 0
       }
-      var parts = num.toString().split('.')
+      const absNum = Math.abs(num)
+      if (absNum > 0 && absNum < 1) {
+        const strNum = num.toString()
+        const match = strNum.match(/0\.(0*)([1-9])/)
+        if (match) {
+            const precision = match[1].length + 1
+            return num.toFixed(precision)
+        }
+        return num.toString()
+      }
+      const parts = num.toString().split('.')
       parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-      return parts.join('.')
+      return parts[0]
     },
     labelPadding: 20,
     // labelRotate: 0
@@ -296,9 +306,19 @@ export const DEFAULT_X_Y_AUX_PARAMS: XYAuxParams = {
       if (num === null || Number.isNaN(num) == true) {
         return num || 0
       }
-      var parts = num.toString().split('.')
+      const absNum = Math.abs(num)
+      if (absNum > 0 && absNum < 1) {
+        const strNum = num.toString()
+        const match = strNum.match(/0\.(0*)([1-9])/)
+        if (match) {
+            const precision = match[1].length + 1
+            return num.toFixed(precision)
+        }
+        return num.toString()
+      }
+      const parts = num.toString().split('.')
       parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-      return parts.join('.')
+      return parts[0]
     },
     labelPadding: 20,
     // labelRotate: 0
@@ -308,17 +328,37 @@ DEFAULT_X_Y_AUX_PARAMS.xAxis.labelTextFormat.toString = () => `num => {
   if (num === null || Number.isNaN(num) == true) {
     return num || 0
   }
-  var parts = num.toString().split('.')
+  const absNum = Math.abs(num)
+  if (absNum > 0 && absNum < 1) {
+    const strNum = num.toString()
+    const match = strNum.match(/0\.(0*)([1-9])/)
+    if (match) {
+        const precision = match[1].length + 1
+        return num.toFixed(precision)
+    }
+    return num.toString()
+  }
+  const parts = num.toString().split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  return parts.join('.')
+  return parts[0]
 }`
 DEFAULT_X_Y_AUX_PARAMS.yAxis.labelTextFormat.toString = () => `num => {
   if (num === null || Number.isNaN(num) == true) {
     return num || 0
   }
-  var parts = num.toString().split('.')
+  const absNum = Math.abs(num)
+  if (absNum > 0 && absNum < 1) {
+    const strNum = num.toString()
+    const match = strNum.match(/0\.(0*)([1-9])/)
+    if (match) {
+        const precision = match[1].length + 1
+        return num.toFixed(precision)
+    }
+    return num.toString()
+  }
+  const parts = num.toString().split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  return parts.join('.')
+  return parts[0]
 }`
 
 
@@ -335,7 +375,7 @@ export const DEFAULT_X_Y_AXES_PARAMS: XYAxesParams = {
       if (num === null || Number.isNaN(num) == true) {
         return num || 0
       }
-      var parts = num.toString().split('.')
+      const parts = num.toString().split('.')
       parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
       return parts.join('.')
     },
@@ -358,7 +398,7 @@ export const DEFAULT_X_Y_AXES_PARAMS: XYAxesParams = {
       if (num === null || Number.isNaN(num) == true) {
         return num || 0
       }
-      var parts = num.toString().split('.')
+      const parts = num.toString().split('.')
       parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
       return parts.join('.')
     },
@@ -374,7 +414,7 @@ DEFAULT_X_Y_AXES_PARAMS.xAxis.tickFormat.toString = () => `num => {
   if (num === null || Number.isNaN(num) == true) {
     return num || 0
   }
-  var parts = num.toString().split('.')
+  const parts = num.toString().split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   return parts.join('.')
 }`
@@ -382,7 +422,7 @@ DEFAULT_X_Y_AXES_PARAMS.yAxis.tickFormat.toString = () => `num => {
   if (num === null || Number.isNaN(num) == true) {
     return num || 0
   }
-  var parts = num.toString().split('.')
+  const parts = num.toString().split('.')
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   return parts.join('.')
 }`

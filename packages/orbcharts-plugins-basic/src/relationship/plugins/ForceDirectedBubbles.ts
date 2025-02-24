@@ -342,7 +342,7 @@ function translateCenterFn (d: any): string {
 function linkArcFn (d: RenderEdge): string {
   // console.log('linkArcFn', d)
   
-  // var dx = d.target.x - d.source.x,
+  // const dx = d.target.x - d.source.x,
   //     dy = d.target.y - d.source.y
   // dr讓方向線變成有弧度的
   //     dr = Math.sqrt(dx * dx + dy * dy);
