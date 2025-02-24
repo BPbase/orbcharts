@@ -10,16 +10,16 @@ export const PRESET_FORCE_DIRECTED_NONE_ARROW: PresetPartial<'relationship', Par
     colors: {
       light: {
         label: [
-          "#4BABFF",
-          "#FFA0A0",
-          "#7DD3C4",
+          "#0088FF",
+          "#FF72BB",
+          "#16B59B",
           "#F9B052",
-          "#8454D4",
+          "#6F3BD5",
           "#42C724",
-          "#FF4B4B",
+          "#FF3232",
           "#904026",
-          "#4B25B3",
-          "#C50669"
+          "#1F3172",
+          "#E23D93"
         ],
       },
       dark: {
@@ -27,13 +27,13 @@ export const PRESET_FORCE_DIRECTED_NONE_ARROW: PresetPartial<'relationship', Par
           "#4BABFF",
           "#FFA0A0",
           "#7DD3C4",
-          "#F9B052",
+          "#FAC77D",
           "#8454D4",
           "#42C724",
-          "#FF4B4B",
-          "#904026",
-          "#4B25B3",
-          "#C50669"
+          "#FF6C6C",
+          "#D4785A",
+          "#5366AC",
+          "#FF8DC8"
         ]
       }
     },

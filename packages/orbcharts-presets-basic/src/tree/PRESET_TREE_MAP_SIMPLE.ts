@@ -9,31 +9,31 @@ export const PRESET_TREE_MAP_SIMPLE: PresetPartial<'tree', Partial<PresetTreePlu
   chartParams: {
     colors: {
       light: {
-        label:  [
-          "#4BABFF",
-          "#94D6CB",
+        label: [
+          "#0088FF",
+          "#16B59B",
+          "#6F3BD5",
+          "#EE5F13",
           "#F9B052",
-          "#8454D4",
-          "#D58C75",
+          "#D4785A",
           "#42C724",
-          "#FF8B8B",
-          "#904026",
-          "#C50669",
-          "#4B25B3"
+          "#FF4B4B",
+          "#1F3172",
+          "#E23D93"
         ],
       },
       dark: {
         label: [
           "#4BABFF",
-          "#94D6CB",
-          "#F9B052",
+          "#7DD3C4",
           "#8454D4",
+          "#FF6C6C",
+          "#FAC77D",
           "#D58C75",
           "#42C724",
           "#FF8B8B",
-          "#904026",
-          "#C50669",
-          "#4B25B3"
+          "#5366AC",
+          "#FF8DC8"
         ]
       }
     },

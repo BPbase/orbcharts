@@ -9,30 +9,30 @@ export const PRESET_PIE_BASIC: PresetPartial<'series', Partial<PresetSeriesPlugi
   chartParams: {
     colors: {
       light: {
-        label:  [
-          "#7DD3C4",
-          "#FFA0A0",
-          "#6CBAFF",
-          "#55D339",
-          "#F9B052",
-          "#FF6C6C",
-          "#8E6BC9",
+        label: [
           "#0088FF",
-          "#904026",
-          "#C4C4C4"
+          "#4BABFF",
+          "#38BEA8",
+          "#86DC72",
+          "#F9B052",
+          "#F4721B",
+          "#FF3232",
+          "#5F2714",
+          "#D117EA",
+          "7E7D7D"
         ],
       },
       dark: {
         label: [
-          "#7DD3C4",
-          "#FFA0A0",
-          "#6CBAFF",
-          "#55D339",
+          "#4BABFF",
+          "#8BC8FF",
+          "#61CBB9",
+          "#ACE1A0",
+          "#FCDCAD",
           "#F9B052",
           "#FF6C6C",
-          "#8E6BC9",
-          "#0088FF",
           "#904026",
+          "#EF76FF",
           "#C4C4C4"
         ]
       }

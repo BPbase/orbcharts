@@ -9,13 +9,13 @@ export const PRESET_SCATTER_SIMPLE: PresetPartial<'multiValue', Partial<PresetMu
   chartParams: {
     colors: {
       light: {
-        label:  [
+        label:[
           "#16B59B",
           "#0088FF",
           "#FF3232",
           "#8E6BC9",
           "#904026",
-          "#D117EA",
+          "#E23D93",
           "#F38428",
           "#6BDC51",
           "#C50669",
@@ -24,16 +24,16 @@ export const PRESET_SCATTER_SIMPLE: PresetPartial<'multiValue', Partial<PresetMu
       },
       dark: {
         label: [
-          "#16B59B",
-          "#0088FF",
-          "#FF3232",
-          "#8E6BC9",
-          "#904026",
-          "#D117EA",
-          "#F38428",
-          "#6BDC51",
-          "#C50669",
-          "#4B25B3"
+          "#7DD3C4",
+          "#4BABFF",
+          "#FF6C6C",
+          "#AA93D2",
+          "#D58C75",
+          "#FF8DC8",
+          "#F9B052",
+          "#ACE1A0",
+          "#F35CAA",
+          "#6F3BD5"
         ]
       }
     },

@@ -9,31 +9,31 @@ export const PRESET_RACING_BARS_OUTSIDE_LABELS: PresetPartial<'multiValue', Part
   chartParams: {
     colors: {
       light: {
-        label:  [
-          "#4BABFF",
-          "#FFA0A0",
-          "#7DD3C4",
+        label: [
+          "#0088FF",
+          "#16B59B",
+          "#6F3BD5",
+          "#EE5F13",
           "#F9B052",
-          "#8454D4",
+          "#D4785A",
           "#42C724",
           "#FF4B4B",
-          "#904026",
-          "#4B25B3",
-          "#C50669"
+          "#1F3172",
+          "#E23D93"
         ],
       },
       dark: {
         label: [
           "#4BABFF",
-          "#FFA0A0",
           "#7DD3C4",
-          "#F9B052",
           "#8454D4",
+          "#FF6C6C",
+          "#FAC77D",
+          "#D58C75",
           "#42C724",
-          "#FF4B4B",
-          "#904026",
-          "#4B25B3",
-          "#C50669"
+          "#FF8B8B",
+          "#5366AC",
+          "#FF8DC8"
         ]
       }
     },
