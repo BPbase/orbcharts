@@ -58,16 +58,16 @@ export const DEFAULT_CHART_PARAMS: ChartParams = {
   colors: {
     light: {
       label: [
-        "#6CBAFF",
-        "#FF6C6C",
-        "#F9B052",
-        "#7DD3C4",
-        "#AA93D2",
         "#0088FF",
-        "#FFBABA",
-        "#86DC72",
-        "#EF76FF",
-        "#C4C4C4"
+        "#FF3232",
+        "#38BEA8",
+        "#6F3BD5",
+        "#314285",
+        "#42C724",
+        "#D52580",
+        "#F4721B",
+        "#D117EA",
+        "#7E7D7D"
       ],
       // label: ['#67B7DC', '#6794DC', '#6771DC', '#8067DC', '#A367DC', '#C767DC', '#DC67CE', '#DC67AB', '#DC6788', '#DC6967', '#DC8C67', '#DCAF67'],
       // label: ['#F3A356', '#7A60F0', '#38B1AF', '#60A2F0', '#F06062', '#FF383C', '#6580EA', '#079F9C', '#9F65EA', '#EA7465', '#EA7465', '#8657D2', '#59B757', '#2797FF', '#D25786', '#F54BA6', '#4BECF5', '#74FD72', '#CA4BF5', '#EFE26E'],
@@ -82,14 +82,14 @@ export const DEFAULT_CHART_PARAMS: ChartParams = {
     },
     dark: {
       label: [
-        "#6CBAFF",
+        "#4BABFF",
         "#FF6C6C",
-        "#F9B052",
         "#7DD3C4",
-        "#AA93D2",
-        "#0088FF",
-        "#FFBABA",
+        "#8E6BC9",
+        "#5366AC",
         "#86DC72",
+        "#FF72BB",
+        "#F9B052",
         "#EF76FF",
         "#C4C4C4"
       ],
