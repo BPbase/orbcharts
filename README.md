@@ -1,14 +1,13 @@
 # OrbCharts
 
-資料驅動的 Javascript 圖表函式庫
+![logo - light mode](https://orbcharts.blueplanet.com.tw/images/logo_light_temp2.png)
 
-[首頁](https://orbcharts.blueplanet.com.tw)
+「資料驅動的 Javascript 圖表函式庫」
 
-[文件](https://orbcharts.blueplanet.com.tw/docs/guide/index.html)
+* [官方網站](https://orbcharts.blueplanet.com.tw)
 
-[NPM](https://www.npmjs.com/package/orbcharts)
+* [NPM](https://www.npmjs.com/package/orbcharts)
 
-note: 目前版本為 Beta，預計於 2025/2/25 升至正式版
 
 ## Features
 
@@ -58,3 +57,6 @@ chart.data$.next([
 
 ```
 
+## License
+
+OrbCharts 基於 [Apache License 2.0](https://github.com/BPbase/orbcharts/blob/main/LICENSE) 發布。
