@@ -119,6 +119,7 @@ function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingSc
         return enter
           .append('text')
           .style('font-weight', 'bold')
+          .style('pointer-events', 'none')
           .attr('x', d => valueScale(d.value[d.xValueIndex] ?? 0) - fullParams.barLabel.padding)
           .attr('y', d => rankingScale(d.label)!)
       },
