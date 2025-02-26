@@ -38,6 +38,7 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
   xScale$: Observable<d3.ScaleLinear<number, number>>
   xSumScale$: Observable<d3.ScaleLinear<number, number>>
   yScale$: Observable<d3.ScaleLinear<number, number>>
+  ordinalXScale$: Observable<d3.ScaleLinear<number, number>>
 }
 
 // export type MultiValueMinMaxData = {

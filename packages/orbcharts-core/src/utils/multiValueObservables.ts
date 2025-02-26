@@ -1042,3 +1042,41 @@ export const yScaleObservable = ({ fullDataFormatter$, filteredXYMinMaxData$, co
     })
   )
 }
+
+// 定性的 X 軸圖軸 - 用 value 的 index 計算
+export const ordinalXScaleObservable = ({ fullDataFormatter$, computedData$, containerSize$ }: {
+  fullDataFormatter$: Observable<DataFormatterMultiValue>
+  computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
+  containerSize$: Observable<ContainerSize>
+}) => {
+  return combineLatest({
+    fullDataFormatter: fullDataFormatter$,
+    containerSize: containerSize$,
+    computedData: computedData$
+  }).pipe(
+    switchMap(async (d) => d),
+    map(data => {
+      if (!data.computedData.length || !data.computedData[0][0]
+      ) {
+        return
+      }
+      let maxValue: number = data.computedData[0][0].value.length
+        ? data.computedData[0][0].value.length - 0.5 // 最右邊留半格間距
+        : 0.5 // 最右邊留半格間距
+      let minValue: number = -0.5 // 最左邊留半格間距
+      // if (maxValue === minValue && maxValue === 0) {
+      //   // 避免最大及最小值同等於 0 造成無法計算scale
+      //   maxValue = 1
+      // }
+
+      const xScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
+        maxValue,
+        minValue,
+        axisWidth: data.containerSize.width,
+        scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
+        scaleRange: data.fullDataFormatter.xAxis.scaleRange,
+      })
+      return xScale
+    })
+  )
+}

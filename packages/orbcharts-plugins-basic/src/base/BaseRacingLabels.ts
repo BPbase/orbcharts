@@ -58,7 +58,7 @@ const yAxisLabelAnchor = 'end'
 const yAxisLabelDominantBaseline = 'auto'
 // const textClassName = getClassName(pluginName, 'yLabel')
 
-function renderRacingAxisLabel ({ selection, textClassName, fullParams, containerSize, fullDataFormatter, fullChartParams, textReverseTransform }: {
+function renderRacingAxisLabel ({ selection, textClassName, fullParams, containerSize, fullDataFormatter, fullChartParams }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   textClassName: string
   fullParams: BaseRacingLabelsParams
@@ -66,7 +66,7 @@ function renderRacingAxisLabel ({ selection, textClassName, fullParams, containe
   containerSize: ContainerSize
   fullDataFormatter: DataFormatterMultiValue,
   fullChartParams: ChartParams
-  textReverseTransform: string,
+  // textReverseTransform: string,
 }) {
   const offsetX = fullParams.barLabel.padding - fullParams.axisLabel.offset[0]
   const offsetY = - fullParams.barLabel.padding - fullParams.axisLabel.offset[1]
@@ -267,18 +267,18 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
   //     // .attr('opacity', 1)
   // })
 
-  const textReverseTransform$ = containerPosition$.pipe(
-    takeUntil(destroy$),
-    switchMap(async (d) => d),
-    map(containerPosition => {
-      // const axesRotateXYReverseValue = `rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
-      // const axesRotateReverseValue = `rotate(${data.gridAxesReverseTransform.rotate}deg)`
-      const containerScaleReverseValue = `scale(${1 / containerPosition[0].scale[0]}, ${1 / containerPosition[0].scale[1]})`
-      // 抵消最外層scale
-      return `${containerScaleReverseValue}`
-    }),
-    distinctUntilChanged()
-  )
+  // const textReverseTransform$ = containerPosition$.pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(containerPosition => {
+  //     // const axesRotateXYReverseValue = `rotateX(${data.gridAxesReverseTransform.rotateX}deg) rotateY(${data.gridAxesReverseTransform.rotateY}deg)`
+  //     // const axesRotateReverseValue = `rotate(${data.gridAxesReverseTransform.rotate}deg)`
+  //     const containerScaleReverseValue = `scale(${1 / containerPosition[0].scale[0]}, ${1 / containerPosition[0].scale[1]})`
+  //     // 抵消最外層scale
+  //     return `${containerScaleReverseValue}`
+  //   }),
+  //   distinctUntilChanged()
+  // )
 
   // const textReverseTransformWithRotate$ = combineLatest({
   //   textReverseTransform: textReverseTransform$,
@@ -338,7 +338,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
     // rankingLabelList: rankingLabelList$,
     rankingScaleList: rankingScaleList$,
     valueScale: valueScale$,
-    textReverseTransform: textReverseTransform$,
+    // textReverseTransform: textReverseTransform$,
     // textReverseTransformWithRotate: textReverseTransformWithRotate$,
     // xyValueIndex: xyValueIndex$
   }).pipe(
@@ -385,7 +385,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
         containerSize: data.containerSize,
         fullDataFormatter: data.fullDataFormatter,
         fullChartParams: data.fullChartParams,
-        textReverseTransform: data.textReverseTransform,
+        // textReverseTransform: data.textReverseTransform,
       })
     })
 

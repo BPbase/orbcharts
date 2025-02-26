@@ -2,6 +2,7 @@ import type { ComputedDataTypeMap } from '../../lib/core-types'
 import type {
   MultiValueLegendParams,
   MultiValueTooltipParams,
+  OrdinalXAxisParams,
   RacingBarsParams,
   RacingCounterTextsParams,
   RacingValueAxisParams,
@@ -87,21 +88,23 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
   </g>\`
 }`
 
-// export const DEFAULT_RANKING_AXIS_PARAMS: RacingAxisParams = {
-//   labelOffset: [0, 0],
-//   labelColorType: 'primary',
-//   axisLineVisible: false,
-//   axisLineColorType: 'primary',
-//   // ticks: null,
-//   // tickFormat: v => v,
-//   tickLineVisible: true,
-//   tickPadding: 20,
-//   // tickFullLine: true,
-//   // tickFullLineDasharray: 'none',
-//   tickColorType: 'secondary',
-//   tickTextRotate: 0,
-//   tickTextColorType: 'primary'
-// }
+export const DEFAULT_ORDINAL_X_AXIS_PARAMS: OrdinalXAxisParams = {
+  labelOffset: [0, 0],
+  labelColorType: 'primary',
+  axisLineVisible: false,
+  axisLineColorType: 'secondary',
+  ticks: null,
+  // tickFormat: ',.0f',
+  tickFormat: v => v,
+  tickLineVisible: true,
+  tickPadding: 20,
+  tickFullLine: true,
+  tickFullLineDasharray: 'none',
+  tickColorType: 'secondary',
+  tickTextRotate: 0,
+  tickTextColorType: 'primary'
+}
+DEFAULT_ORDINAL_X_AXIS_PARAMS.tickFormat.toString = () => `v => v`
 
 export const DEFAULT_RACING_BARS_PARAMS: RacingBarsParams = {
   bar: {

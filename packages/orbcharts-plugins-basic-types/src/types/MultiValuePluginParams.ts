@@ -36,11 +36,25 @@ export interface MultiValueTooltipParams {
   )
 }
 
-export interface OrdinalAxisParams {
-
+export interface OrdinalXAxisParams {
+  labelOffset: [number, number]
+  labelColorType: ColorType
+  axisLineVisible: boolean
+  axisLineColorType: ColorType
+  ticks: number | null
+  tickFormat: string | ((text: d3.NumberValue) => string | d3.NumberValue)
+  tickLineVisible: boolean
+  tickPadding: number
+  tickFullLine: boolean
+  tickFullLineDasharray: string
+  tickColorType: ColorType
+  // axisLineColor: string
+  // axisLabelColor: string
+  tickTextRotate: number
+  tickTextColorType: ColorType
 }
 
-export interface OrdinalZoomParams {
+export interface OrdinalXZoomParams {
 
 }
 

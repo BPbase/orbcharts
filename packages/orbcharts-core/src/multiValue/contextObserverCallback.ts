@@ -28,7 +28,8 @@ import {
   // rankingScaleObservable
   xScaleObservable,
   xSumScaleObservable,
-  yScaleObservable
+  yScaleObservable,
+  ordinalXScaleObservable
 } from '../utils/multiValueObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({ subject, observer }) => {
@@ -240,6 +241,14 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
 
+  const ordinalXScale$ = ordinalXScaleObservable({
+    fullDataFormatter$: observer.fullDataFormatter$,
+    computedData$: observer.computedData$,
+    containerSize$: containerSize$,
+  }).pipe(
+    shareReplay(1)
+  )
+
   return <ContextObserverTypeMap<'multiValue', any>>{
     fullParams$: observer.fullParams$,
     fullChartParams$: observer.fullChartParams$,
@@ -271,6 +280,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     graphicReverseScale$,
     xScale$,
     xSumScale$,
-    yScale$
+    yScale$,
+    ordinalXScale$
   }
 }
