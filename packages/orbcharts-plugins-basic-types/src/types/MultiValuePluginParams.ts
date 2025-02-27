@@ -41,7 +41,7 @@ export interface OrdinalXAxisParams {
   labelColorType: ColorType
   axisLineVisible: boolean
   axisLineColorType: ColorType
-  ticks: number | null
+  ticks: number | null | 'all'
   tickFormat: string | ((text: d3.NumberValue) => string | d3.NumberValue)
   tickLineVisible: boolean
   tickPadding: number

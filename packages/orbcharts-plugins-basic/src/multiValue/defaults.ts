@@ -93,7 +93,7 @@ export const DEFAULT_ORDINAL_X_AXIS_PARAMS: OrdinalXAxisParams = {
   labelColorType: 'primary',
   axisLineVisible: false,
   axisLineColorType: 'secondary',
-  ticks: null,
+  ticks: 'all',
   // tickFormat: ',.0f',
   tickFormat: v => v,
   tickLineVisible: true,

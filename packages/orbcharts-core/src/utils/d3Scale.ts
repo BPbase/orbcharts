@@ -72,6 +72,7 @@ export const createValueToAxisScale = ({
       .domain([axisDomainMinValue, axisDomainMaxValue])
       .range([axisWidth, 0])
   } else {
+    console.log('domain', [axisDomainMinValue, axisDomainMaxValue])
     return d3.scaleLinear()
       .domain([axisDomainMinValue, axisDomainMaxValue])
       .range([0, axisWidth])
