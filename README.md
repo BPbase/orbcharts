@@ -28,12 +28,22 @@ OrbCharts 以 6 種「資料格式」為核心，每個資料格式各別對應�
 
 ### 安裝
 
-OrbCharts 提供 npm 安裝方式，適用於一般使用 webpack, vite 等打包工具的前端開發專案中，不受限於特定的前端框架，同時支援 Javascript 以及 Typescript 開發環境。
+OrbCharts 支援 CDN 下載及 npm 安裝方式，使用 ESM 模組化標準，不受限於特定的前端框架，同時支援 Javascript 以及 Typescript 開發環境。
 
-安裝指令很簡單，和所有你安裝過的套件一樣只有一行：
+npm 安裝：
 
 ```sh
 npm i orbcharts
+```
+
+或
+
+CDN 下載：
+
+```html
+<script type="module">
+import * as orbcharts from 'https://cdn.jsdelivr.net/npm/orbcharts@3.0.0/+esm'
+</script>
 ```
 
 ### 執行
