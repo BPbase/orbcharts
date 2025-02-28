@@ -1,12 +1,13 @@
 {
   "name": "@orbcharts/plugins-basic",
-  "version": "3.0.1",
-  "description": "plugins for OrbCharts",
+  "version": "3.0.2",
+  "description": "Plugins for OrbCharts",
   "author": "Blue Planet Inc.",
   "license": "Apache-2.0",
   "keywords": [
     "d3",
     "rxjs",
+    "typescript",
     "svg",
     "visualization",
     "infographic",
@@ -21,8 +22,11 @@
   "files": [
     "*"
   ],
+  "main": "./dist/orbcharts-plugins-basic.umd.js",
   "module": "./dist/orbcharts-plugins-basic.es.js",
   "types": "./dist/src/index.d.ts",
+  "unpkg": "./dist/orbcharts-plugins-basic.umd.js",
+  "jsdelivr": "./dist/orbcharts-plugins-basic.umd.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build --mode production"

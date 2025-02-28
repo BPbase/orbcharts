@@ -1,12 +1,13 @@
 {
   "name": "@orbcharts/core",
-  "version": "3.0.1",
-  "description": "OrbCharts is an open source chart library based on d3.js and rx.js",
+  "version": "3.0.2",
+  "description": "Core codes for OrbCharts",
   "author": "Blue Planet Inc.",
   "license": "Apache-2.0",
   "keywords": [
     "d3",
     "rxjs",
+    "typescript",
     "svg",
     "visualization",
     "infographic",
@@ -21,8 +22,11 @@
   "files": [
     "*"
   ],
+  "main": "./dist/orbcharts-core.umd.js",
   "module": "./dist/orbcharts-core.es.js",
   "types": "./dist/src/index.d.ts",
+  "unpkg": "./dist/orbcharts-core.umd.js",
+  "jsdelivr": "./dist/orbcharts-core.umd.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build --mode production"

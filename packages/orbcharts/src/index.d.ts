@@ -1,5 +1,0 @@
-export * from '@orbcharts/core/dist/src/index.d.ts'
-export * from '@orbcharts/core-types/dist/src/index.d.ts'
-export * from '@orbcharts/plugins-basic/dist/src/index.d.ts'
-export * from '@orbcharts/plugins-basic-types/dist/src/index.d.ts'
-export * from '@orbcharts/presets-basic/dist/src/index.d.ts'
