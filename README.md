@@ -30,20 +30,26 @@ OrbCharts 以 6 種「資料格式」為核心，每個資料格式各別對應�
 
 OrbCharts 支援 CDN 下載及 npm 安裝方式，使用 ESM 模組化標準，不受限於特定的前端框架，同時支援 Javascript 以及 Typescript 開發環境。
 
-npm 安裝：
+以下幾種安裝方式：
+
+1. npm 安裝
 
 ```sh
 npm i orbcharts
 ```
 
-或
-
-CDN 下載：
+2. ESM 格式的 CDN 下載
 
 ```html
 <script type="module">
-import * as orbcharts from 'https://cdn.jsdelivr.net/npm/orbcharts@3.0.0/+esm'
+import * as orbcharts from 'https://cdn.jsdelivr.net/npm/orbcharts@3.0.1/+esm'
 </script>
+```
+
+1. UMD 格式的 CDN 下載
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/orbcharts@3.0.1/dist/orbcharts.umd.min.js"></script>
 ```
 
 ### 執行

@@ -1,13 +1,12 @@
 {
-  "name": "@orbcharts/presets-basic",
-  "version": "3.0.1",
-  "description": "Presets for OrbCharts",
+  "name": "@orbcharts/test",
+  "version": "3.0.1-beta.2",
+  "description": "OrbCharts is a data-driven Javascript chart library",
   "author": "Blue Planet Inc.",
   "license": "Apache-2.0",
   "keywords": [
     "d3",
     "rxjs",
-    "typescript",
     "svg",
     "visualization",
     "infographic",
@@ -22,11 +21,11 @@
   "files": [
     "*"
   ],
-  "main": "./dist/orbcharts-presets-basic.umd.js",
-  "module": "./dist/orbcharts-presets-basic.es.js",
+  "main": "./dist/orbcharts-test.umd.js",
+  "module": "./dist/orbcharts-test.es.js",
   "types": "./dist/src/index.d.ts",
-  "unpkg": "./dist/orbcharts-presets-basic.umd.js",
-  "jsdelivr": "./dist/orbcharts-presets-basic.umd.js",
+  "unpkg": "./dist/orbcharts-test.umd.js",
+  "jsdelivr": "./dist/orbcharts-test.umd.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build --mode production"
@@ -39,8 +38,12 @@
     "vite-plugin-dts": "^3.7.3"
   },
   "dependencies": {
-    "@orbcharts/core-types": "^3.0.0",
-    "@orbcharts/plugins-basic-types": "^3.0.0",
-    "d3": "^7.8.5"
+    "@orbcharts/core": "^3.0.2",
+    "@orbcharts/core-types": "^3.0.1",
+    "@orbcharts/plugins-basic": "^3.0.2",
+    "@orbcharts/plugins-basic-types": "^3.0.1",
+    "@orbcharts/presets-basic": "^3.0.1",
+    "d3": "^7.8.5",
+    "rxjs": "^7.8.1"
   }
 }
