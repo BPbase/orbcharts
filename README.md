@@ -46,7 +46,7 @@ import * as orbcharts from 'https://cdn.jsdelivr.net/npm/orbcharts@3.0.1/+esm'
 </script>
 ```
 
-1. UMD 格式的 CDN 下載
+3. UMD 格式的 CDN 下載
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/orbcharts@3.0.1/dist/orbcharts.umd.min.js"></script>
