@@ -114,7 +114,7 @@ export interface BaseRacingLabelsParams {
   barLabel: {
     position: 'inside' | 'outside' | 'none'
     padding: number
-    rotate: number
+    // rotate: number
     colorType: ColorType
   }
   axisLabel: {

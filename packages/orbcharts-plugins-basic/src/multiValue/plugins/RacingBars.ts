@@ -92,9 +92,9 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_RACING_
         padding: {
           toBeTypes: ['number']
         },
-        rotate: {
-          toBeTypes: ['number']
-        },
+        // rotate: {
+        //   toBeTypes: ['number']
+        // },
         colorType: {
           toBeOption: 'ColorType',
         },

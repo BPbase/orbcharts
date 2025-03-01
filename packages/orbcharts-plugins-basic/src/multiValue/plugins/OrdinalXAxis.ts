@@ -13,6 +13,7 @@ import {
 import type {
   ContainerSize,
   ChartParams,
+  ComputedDatumMultiValue,
   DataFormatterMultiValue,
   DefinePluginConfig,
   Layout
@@ -50,8 +51,8 @@ interface ValueLabelData {
 const pluginName = 'OrdinalXAxis'
 
 const defaultTickSize = 6
-const yAxisLabelAnchor = 'end'
-const yAxisLabelDominantBaseline = 'auto'
+const xAxisLabelAnchor = 'start'
+const xAxisLabelDominantBaseline = 'hanging'
 
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_ORDINAL_X_AXIS_PARAMS> = {
   name: pluginName,
@@ -134,33 +135,52 @@ function renderAxisLabel ({ selection, axisLabelClassName, fullParams, container
   fullChartParams: ChartParams
   // textReverseTransform: string,
 }) {
-  const offsetX = fullParams.tickPadding - fullParams.labelOffset[0]
-  const offsetY = - fullParams.tickPadding - fullParams.labelOffset[1]
-  let labelX = - offsetX
-  let labelY = - offsetY
-
-  selection
-    .attr('transform', d => `translate(0, ${containerSize.height})`)
-    .selectAll<SVGTextElement, OrdinalXAxisParams>(`text`)
-    .data([fullParams])
-    .join(
-      enter => {
-        return enter
-          .append('text')
-          .style('font-weight', 'bold')
-      },
-      update => update,
-      exit => exit.remove()
-    )
-    .attr('text-anchor', yAxisLabelAnchor)
-    .attr('dominant-baseline', yAxisLabelDominantBaseline)
-    .attr('font-size', fullChartParams.styles.textSize)
-    .style('fill', getColor(fullParams.labelColorType, fullChartParams))
-    // .style('transform', textReverseTransform)
-    // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
-    .attr('x', labelX)
-    .attr('y', labelY)
-    .text(d => fullDataFormatter.yAxis.label)
+  const offsetX = fullParams.tickPadding + fullParams.labelOffset[0]
+    // const offsetY = fullParams.tickPadding + fullParams.labelOffset[1]
+    let labelX = offsetX
+    
+  
+    let y: number // = position === 'top' ? 0 : layout.height
+    let offsetY
+    // if (position === 'top') {
+      y = 0
+      offsetY = -fullParams.tickPadding - fullParams.labelOffset[1]
+    // } else {
+    //   y = containerSize.height
+    //   offsetY = fullParams.tickPadding + fullParams.labelOffset[1]
+    // }
+  
+    let labelY = offsetY
+  
+    const axisLabelSelection = selection
+      .selectAll<SVGGElement, OrdinalXAxisParams>(`g.${axisLabelClassName}`)
+      .data([fullParams])
+      .join('g')
+      .classed(axisLabelClassName, true)
+      .each((d, i, g) => {
+        const text = d3.select(g[i])
+          .selectAll<SVGTextElement, OrdinalXAxisParams>(`text`)
+          .data([d])
+          .join(
+            enter => {
+              return enter
+                .append('text')
+                .style('font-weight', 'bold')
+            },
+            update => update,
+            exit => exit.remove()
+          )
+          .attr('text-anchor', xAxisLabelAnchor)
+          .attr('dominant-baseline', xAxisLabelDominantBaseline)
+          .attr('font-size', fullChartParams.styles.textSize)
+          .style('fill', getColor(fullParams.labelColorType, fullChartParams))
+          // .style('transform', textReverseTransform)
+          // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
+          .attr('x', labelX)
+          .attr('y', labelY)
+          .text(d => fullDataFormatter.xAxis.label)
+      })
+      .attr('transform', d => `translate(${containerSize.width}, ${y})`)
 }
 
 function renderAxis ({ selection, ordinalXAxisClassName, fullParams, containerSize, fullDataFormatter, fullChartParams, ordinalXScale, ordinalXScaleDomain, valueLabelData, textRotateTransform, textSizePx }: {
@@ -193,7 +213,7 @@ function renderAxis ({ selection, ordinalXAxisClassName, fullParams, containerSi
 
   // 計算所有範圍內groupLabels數量（顯示所有刻度）
   const allTicksAmount = Math.floor(ordinalXScaleDomain[1]) - Math.ceil(ordinalXScaleDomain[0]) + 1
-console.log('allTicksAmount', allTicksAmount, ordinalXScaleDomain)
+
   // 刻度文字偏移
   let tickPadding = 0
   let textX = 0
@@ -231,12 +251,11 @@ console.log('allTicksAmount', allTicksAmount, ordinalXScaleDomain)
       ? - containerSize.height
       : defaultTickSize)
     .tickSizeOuter(0)
-    .tickFormat((groupIndex: number, i) => {
+    .tickFormat((valueIndex: number, i) => {
       // 用index對應到groupLabel
-      // const groupLabel = groupLabels[groupIndex] ?? '' // 非整數index不顯示
+      // const groupLabel = groupLabels[valueIndex ] ?? '' // 非整數index不顯示
       // return parseTickFormatValue(groupLabel, fullParams.tickFormat)
-      console.log(groupIndex, i, valueLabelData[i]?.text)
-      return valueLabelData[i]?.text ?? ''
+      return valueLabelData[valueIndex]?.text ?? ''
     })
     .tickPadding(tickPadding)
 
@@ -250,11 +269,11 @@ console.log('allTicksAmount', allTicksAmount, ordinalXScaleDomain)
       // 先等transition結束再處理文字，否則會被原本的文字覆蓋
       xAxisSelection
         .selectAll('.tick text')
-        .each((groupIndex: number, i, n) => {
-          // const groupLabel = groupLabels[groupIndex] ?? '' // 非整數index不顯示
+        .each((valueIndex: number, i, n) => {
+          // const groupLabel = groupLabels[valueIndex ] ?? '' // 非整數index不顯示
           // const groupLabelText = parseTickFormatValue(groupLabel, fullParams.tickFormat)
-          const textArr = valueLabelData[i]?.textArr ?? []
-          console.log('text', groupIndex, i, textArr)
+          // console.log(valueIndex)
+          const textArr = valueLabelData[valueIndex]?.textArr ?? []
           // 將原本單行文字改為多行文字
           renderTspansOnAxis(d3.select(n[i]), {
             textArr,
@@ -337,6 +356,7 @@ export const OrdinalXAxis = defineMultiValuePlugin(pluginConfig)(({ selection, n
   
   const destroy$ = new Subject()
 
+  const xAxisGClassName = getClassName(pluginName, 'xAxisG')
   const ordinalXAxisClassName = getClassName(pluginName, 'axis')
   const axisLabelClassName = getClassName(pluginName, 'axis-label')
   const clipPathID = getUniID(pluginName, 'clipPath-box')
@@ -367,6 +387,17 @@ export const OrdinalXAxis = defineMultiValuePlugin(pluginConfig)(({ selection, n
       // textReverseTransform: data.textReverseTransform
     })
   })
+
+  const axisSelection$ = containerSelection$.pipe(
+      takeUntil(destroy$),
+      map((containerSelection, i) => {
+        return containerSelection
+          .selectAll<SVGGElement, ComputedDatumMultiValue[]>(`g.${xAxisGClassName}`)
+          .data([xAxisGClassName])
+          .join('g')
+          .classed(xAxisGClassName, true)
+      })
+    )
 
   const valueLabelData$ = combineLatest({
     computedData: observer.computedData$,
@@ -439,7 +470,7 @@ export const OrdinalXAxis = defineMultiValuePlugin(pluginConfig)(({ selection, n
   )
 
   combineLatest({
-    containerSelection: containerSelection$,
+    axisSelection: axisSelection$,
     fullParams: observer.fullParams$,
     // tickTextAlign: tickTextAlign$,
     // axisLabelAlign: axisLabelAlign$,
@@ -461,7 +492,7 @@ export const OrdinalXAxis = defineMultiValuePlugin(pluginConfig)(({ selection, n
   ).subscribe(data => {
 
     renderAxis({
-      selection: data.containerSelection,
+      selection: data.axisSelection,
       ordinalXAxisClassName,
       fullParams: data.fullParams,
       // tickTextAlign: data.tickTextAlign,
@@ -478,7 +509,7 @@ export const OrdinalXAxis = defineMultiValuePlugin(pluginConfig)(({ selection, n
     })
 
     renderAxisLabel({
-      selection: data.containerSelection,
+      selection: data.axisSelection,
       axisLabelClassName,
       fullParams: data.fullParams,
       // axisLabelAlign: data.axisLabelAlign,

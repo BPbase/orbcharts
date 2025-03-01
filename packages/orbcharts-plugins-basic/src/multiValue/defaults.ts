@@ -2,6 +2,7 @@ import type { ComputedDataTypeMap } from '../../lib/core-types'
 import type {
   MultiValueLegendParams,
   MultiValueTooltipParams,
+  OrdinalBubblesParams,
   OrdinalXAxisParams,
   RacingBarsParams,
   RacingCounterTextsParams,
@@ -88,6 +89,24 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
   </g>\`
 }`
 
+export const DEFAULT_ORDINAL_BUBBLES_PARAMS: OrdinalBubblesParams = {
+  bubble: {
+    sizeAdjust: 1,
+    arcScaleType: 'area',
+    valueLinearOpacity: [0.9, 0.9]
+    
+  },
+  itemLabel: {
+    padding: 20,
+    colorType: 'primary'
+  },
+  axisLabel: {
+    offset: [0, 0],
+    colorType: 'primary'
+  },
+  rankingAmount: 10
+}
+
 export const DEFAULT_ORDINAL_X_AXIS_PARAMS: OrdinalXAxisParams = {
   labelOffset: [0, 0],
   labelColorType: 'primary',
@@ -115,7 +134,7 @@ export const DEFAULT_RACING_BARS_PARAMS: RacingBarsParams = {
   barLabel: {
     position: 'inside',
     padding: 20,
-    rotate: 0,
+    // rotate: 0,
     colorType: 'labelContrast'
   },
   valueLabel: {
