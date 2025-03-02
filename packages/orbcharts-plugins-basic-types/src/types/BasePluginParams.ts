@@ -88,6 +88,23 @@ export interface BaseLinesParams {
   // labelPadding: number
 }
 
+export interface BaseOrdinalBubblesParams {
+  bubble: {
+    // radiusMin: number // 對應value最小值
+    // radiusMax: number // 對應value最大值
+    sizeAdjust: number
+    arcScaleType: 'area' | 'radius',
+    valueLinearOpacity: [number, number]
+  }
+  itemLabel: {
+    padding: number
+    // rotate: number
+    colorType: ColorType
+  }
+  rankingAmount: 'auto' | number
+}
+
+
 export interface BaseRacingBarsParams {
   bar: {
     barWidth: number

@@ -93,7 +93,7 @@ export const DEFAULT_ORDINAL_BUBBLES_PARAMS: OrdinalBubblesParams = {
   bubble: {
     sizeAdjust: 1,
     arcScaleType: 'area',
-    valueLinearOpacity: [0.9, 0.9]
+    valueLinearOpacity: [0.8, 0.8]
     
   },
   itemLabel: {
@@ -112,7 +112,7 @@ export const DEFAULT_ORDINAL_X_AXIS_PARAMS: OrdinalXAxisParams = {
   labelColorType: 'primary',
   axisLineVisible: false,
   axisLineColorType: 'secondary',
-  ticks: 'all',
+  ticks: 4,
   // tickFormat: ',.0f',
   tickFormat: v => v,
   tickLineVisible: true,
