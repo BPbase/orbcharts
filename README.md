@@ -8,15 +8,15 @@ OrbCharts is a "data-driven JavaScript chart library" that currently supports 6 
 
 ## Features
 
-1. 6 Major Data Formats
+### (1) 6 Major Data Formats
 
 OrbCharts is centered around 6 "data formats", each corresponding to unique visualizations. You can manipulate the data through parameters - filtering, axis transformation, scaling, etc., dynamically mapping to the chart's visual presentation.
 
-2. Modular Plugins
+### (2) Modular Plugins
 
 All chart elements are embedded plugins that can be dynamically extended or replaced within the same data category, stacking or expanding functionality like building blocks.
 
-1. Based on D3.js and RxJS
+### (3) Based on D3.js and RxJS
 
 To create the most "data-driven" chart design framework, D3.js and RxJS are used as the main development technologies. Both are very popular libraries in the front-end development field, with high application and expansion potential.
 
