@@ -29,7 +29,8 @@ import {
   xScaleObservable,
   xSumScaleObservable,
   yScaleObservable,
-  ordinalXScaleObservable
+  ordinalScaleObservable,
+  // valueLabelsObservable
 } from '../utils/multiValueObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({ subject, observer }) => {
@@ -241,13 +242,20 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
 
-  const ordinalXScale$ = ordinalXScaleObservable({
+  const ordinalScale$ = ordinalScaleObservable({
     fullDataFormatter$: observer.fullDataFormatter$,
     computedData$: observer.computedData$,
     containerSize$: containerSize$,
   }).pipe(
     shareReplay(1)
   )
+
+  // const valueLabels$ = valueLabelsObservable({
+  //   fullDataFormatter$: observer.fullDataFormatter$,
+  //   computedData$: observer.computedData$,
+  // }).pipe(
+  //   shareReplay(1)
+  // )
 
   return <ContextObserverTypeMap<'multiValue', any>>{
     fullParams$: observer.fullParams$,
@@ -281,6 +289,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     xScale$,
     xSumScale$,
     yScale$,
-    ordinalXScale$
+    ordinalScale$,
+    // valueLabels$
   }
 }

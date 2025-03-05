@@ -139,7 +139,7 @@ function renderDots ({ graphicGSelection, circleGClassName, circleClassName, bub
                   .delay((_d, _i) => {
                     return i * enterDuration
                   })
-                  .attr('opacity', 0.8)
+                  .attr('opacity', _d => _d.opacity)
               },
               update => {
                 return update
@@ -147,7 +147,7 @@ function renderDots ({ graphicGSelection, circleGClassName, circleClassName, bub
                   .duration(50)
                   // .attr('cx', d => d.axisX)
                   // .attr('cy', d => d.axisY)
-                  .attr('opacity', 0.8)
+                  .attr('opacity', _d => _d.opacity)
               },
               exit => exit.remove()
             )

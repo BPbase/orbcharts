@@ -1044,7 +1044,7 @@ export const yScaleObservable = ({ fullDataFormatter$, filteredXYMinMaxData$, co
 }
 
 // 定性的 X 軸圖軸 - 用 value 的 index 計算
-export const ordinalXScaleObservable = ({ fullDataFormatter$, computedData$, containerSize$ }: {
+export const ordinalScaleObservable = ({ fullDataFormatter$, computedData$, containerSize$ }: {
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
   containerSize$: Observable<ContainerSize>
@@ -1080,3 +1080,21 @@ export const ordinalXScaleObservable = ({ fullDataFormatter$, computedData$, con
     })
   )
 }
+
+// export const valueLabelsObservable = ({ fullDataFormatter$, computedData$ }: {
+//   fullDataFormatter$: Observable<DataFormatterMultiValue>
+//   computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
+// }) => {
+//   return combineLatest({
+//     fullDataFormatter: fullDataFormatter$,
+//     computedData: computedData$
+//   }).pipe(
+//     switchMap(async (d) => d),
+//     map(data => {
+//       const valueLabels = data.computedData[0] && data.computedData[0][0] && data.computedData[0][0].value.length
+//         ? data.computedData[0][0].value.map((d, i) => data.fullDataFormatter.valueLabels[i] ?? String(i)) // 預設為 0, 1, 2, 3...
+//         : []
+//       return valueLabels
+//     })
+//   )
+// }

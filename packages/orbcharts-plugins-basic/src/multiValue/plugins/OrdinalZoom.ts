@@ -1,4 +1,6 @@
 import {
+  takeUntil,
+  map,
   Subject } from 'rxjs'
 import type { DefinePluginConfig } from '../../../lib/core-types'
 import {
@@ -7,7 +9,7 @@ import { DEFAULT_X_ZOOM_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_ROOT } from '../../const'
 import { createBaseXZoom } from '../../base/BaseXZoom'
 
-const pluginName = 'XZoom'
+const pluginName = 'OrdinalZoom'
 
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_X_ZOOM_PARAMS> = {
   name: pluginName,
@@ -22,14 +24,28 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_X_ZOOM_
   }
 }
 
-export const XZoom = defineMultiValuePlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
+export const OrdinalZoom = defineMultiValuePlugin(pluginConfig)(({ selection, rootSelection, name, observer, subject }) => {
 
   const destroy$ = new Subject()
+
+  const ordinalXYMinMax$ = observer.computedData$.pipe(
+    takeUntil(destroy$),
+    map(computedData => {
+      return {
+        minX: 0,
+        maxX: computedData[0] && computedData[0][0]
+          ? computedData[0][0].value.length - 1
+          : 0,
+        minY: 0, // 沒用到
+        maxY: 0 // 沒用到
+      }
+    })
+  )
 
   const unsubscribeBaseOrdinalBubbles = createBaseXZoom(pluginName, {
       rootSelection,
       fullDataFormatter$: observer.fullDataFormatter$,
-      xyMinMax$: observer.xyMinMax$,
+      xyMinMax$: ordinalXYMinMax$,
       layout$: observer.layout$,
       dataFormatter$: subject.dataFormatter$,
     })

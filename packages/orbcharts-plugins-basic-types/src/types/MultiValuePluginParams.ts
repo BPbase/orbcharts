@@ -57,7 +57,7 @@ export interface OrdinalBubblesParams {
 }
 
 
-export interface OrdinalXAxisParams {
+export interface OrdinalAxisParams {
   labelOffset: [number, number]
   labelColorType: ColorType
   axisLineVisible: boolean
@@ -75,7 +75,7 @@ export interface OrdinalXAxisParams {
   tickTextColorType: ColorType
 }
 
-export interface OrdinalXZoomParams {
+export interface OrdinalZoomParams {
 
 }
 

@@ -11,6 +11,7 @@ import {
 import type { BasePluginFn } from './types'
 import type {
   ComputedDatumMultiValue,
+  ComputedDatumWithSumMultiValue,
   ComputedDataMultiValue,
   // ComputedLayoutDataGrid,
   DataFormatterTypeMap,
@@ -36,7 +37,7 @@ import { multiValueContainerSelectionsObservable } from '../multiValue/multiValu
 interface BaseRacingBarsContext {
   selection: d3.Selection<any, unknown, any, unknown>
   computedData$: Observable<ComputedDataMultiValue>
-  visibleComputedRankingData$: Observable<ComputedDatumMultiValue[][]>
+  visibleComputedRankingData$: Observable<ComputedDatumWithSumMultiValue[][]>
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
   fullParams$: Observable<BaseOrdinalBubblesParams >
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiValue'>>
@@ -47,7 +48,7 @@ interface BaseRacingBarsContext {
   rankingScaleList$: Observable<d3.ScalePoint<string>[]>
   containerPosition$: Observable<ContainerPositionScaled[]>
   containerSize$: Observable<ContainerSize>
-  ordinalXScale$: Observable<d3.ScaleLinear<number, number>>
+  ordinalScale$: Observable<d3.ScaleLinear<number, number>>
   isCategorySeprate$: Observable<boolean>
   event$: Subject<EventMultiValue>
 }
@@ -59,14 +60,20 @@ interface RenderGraphicGParams {
   transitionDuration: number
 }
 
-interface BubblesDatum extends ComputedDatumMultiValue {
-  graphicValue: Array<{
-    x: number
-    y: number
-    r: number
-    opacity: number
-    // _originR: number // 紀錄變化前的r
-  }>
+// 對應到 value 裡的每個值
+interface BubbleValueDatum {
+  index: number
+  x: number
+  y: number
+  r: number
+  opacity: number
+  // _originR: number // 紀錄變化前的r
+  _refDatum: ComputedDatumWithSumMultiValue // reference到資料本身
+}
+
+interface BubblesDatum extends ComputedDatumWithSumMultiValue {
+  graphicValue: Array<BubbleValueDatum>
+  _visibleValue: number[]
 }
 
 type ClipPathDatum = {
@@ -177,7 +184,7 @@ function renderBubbles ({ graphicGSelection }: {
   //       .data(d)
   //   })
 
-  const bubblesSelection: d3.Selection<SVGRectElement, ComputedDatumMultiValue, SVGGElement, unknown> = graphicGSelection.selectAll(`circle`)
+  const bubblesSelection: d3.Selection<SVGRectElement, BubbleValueDatum, SVGGElement, unknown> = graphicGSelection.selectAll(`circle`)
 
   return bubblesSelection
 }
@@ -218,7 +225,7 @@ function renderClipPath ({ defsSelection, clipPathData }: {
 }
 
 function highlight ({ selection, ids, fullChartParams }: {
-  selection: d3.Selection<any, ComputedDatumMultiValue, any, any>
+  selection: d3.Selection<any, BubbleValueDatum, any, any>
   ids: string[]
   fullChartParams: ChartParams
 }) {
@@ -229,15 +236,16 @@ function highlight ({ selection, ids, fullChartParams }: {
     selection
       .transition('highlight')
       .duration(200)
-      .style('opacity', 1)
+      .style('opacity', (d, i) => d.opacity)
     return
   }
   
   selection
     .each((d, i, n) => {
-      if (ids.includes(d.id)) {
+      const datum = d._refDatum
+      if (ids.includes(datum.id)) {
         d3.select(n[i])
-          .style('opacity', 1)
+          .style('opacity', (d: BubbleValueDatum) => d.opacity)
       } else {
         d3.select(n[i])
           .style('opacity', fullChartParams.styles.unhighlightedOpacity)
@@ -266,7 +274,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
   containerPosition$,
   containerSize$,
   // layout$,
-  ordinalXScale$,
+  ordinalScale$,
   isCategorySeprate$,
   event$
 }) => {
@@ -328,34 +336,39 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
     takeUntil(destroy$),
     switchMap(async d => d),
     map(data => {
+      const firstValue = data.visibleComputedRankingData[0] && data.visibleComputedRankingData[0][0]
+        ? data.visibleComputedRankingData[0][0].value
+        : []
       let minValue = 0
       let maxValue = 0
       let startIndex = data.scaleDomain[0] === 'auto' || data.scaleDomain[0] === 'min'
         ? 0
         : data.scaleDomain[0]
       let endIndex = data.scaleDomain[1] === 'auto' || data.scaleDomain[1] === 'max'
-        ? data.visibleComputedRankingData.length - 1
+        ? firstValue.length - 1 // 用第一筆資料判斷value長度
         : data.scaleDomain[1]
       
       data.visibleComputedRankingData.forEach(categoryData => {
-        for (let i = startIndex; i <= endIndex; i++) {
-          const value = categoryData[i].value
-          value.forEach(v => {
+        categoryData.forEach(datum => {
+          for (let i = startIndex; i <= endIndex; i++) {
+            const v = datum.value[i]
+            if (v == null) {
+              continue
+            }
             if (v > maxValue) {
               maxValue = v
             } else if (v < minValue) {
               minValue = v
             }
-          })
-        }  
+          }  
+        })
       })
-      
+      // console.log([minValue, maxValue])
       return [minValue, maxValue]
     }),
     distinctUntilChanged(),
     shareReplay(1)
   )
-
 
 
   const opacityScale$ = combineLatest({
@@ -386,8 +399,8 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
     map(data => {
       // 半徑比例尺
       const radiusScale = d3.scalePow()
-        .domain([data.minMaxValue[0], data.minMaxValue[1]])
-        .range([4, data.maxRadius])
+        .domain([0, data.minMaxValue[1]])
+        .range([2, data.maxRadius]) // 最小半徑為2
         .exponent(data.arcScaleType === 'area'
           ? 0.5 // 數值映射面積（0.5為取平方根）
           : 1 // 數值映射半徑
@@ -405,7 +418,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
     // fullChartParams: fullChartParams$,
     radiusScale: radiusScale$,
     rankingScaleList: rankingScaleList$,
-    ordinalXScale: ordinalXScale$,
+    ordinalScale: ordinalScale$,
     opacityScale: opacityScale$,
   }).pipe(
     takeUntil(destroy$),
@@ -419,14 +432,17 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
           const d = _d as BubblesDatum
           const graphicValue = d.value.map((v, vIndex) => {
             return {
-              x: data.ordinalXScale(vIndex),
+              index: vIndex,
+              x: data.ordinalScale(vIndex),
               y: rankingScale(d.label),
               r: data.radiusScale(v),
               opacity: data.opacityScale(v),
               // _originR: data.radiusScale(v)
+              _refDatum: d // reference到資料本身
             }
           })
           d.graphicValue = graphicValue
+          d._visibleValue = [] // highlight的時候才寫入
           return d
         })
       })
@@ -448,7 +464,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      console.log('bubbleData', data.bubbleData)
+      // console.log('bubbleData', data.bubbleData)
       return renderGraphicG({
         containerSelection: data.containerSelection,
         bubbleData: data.bubbleData,
@@ -461,7 +477,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
   const graphicSelection$ = combineLatest({
     graphicGSelection: graphicGSelection$,
     // xyValueIndex: xyValueIndex$,
-    ordinalXScale: ordinalXScale$,
+    ordinalScale: ordinalScale$,
     bubbleData: bubbleData$,
     transitionDuration: transitionDuration$,
     fullParams: fullParams$,
@@ -484,104 +500,110 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
     distinctUntilChanged()
   )
 
-  // combineLatest({
-  //   graphicSelection: graphicSelection$,
-  //   computedData: computedData$,
-  //   CategoryDataMap: CategoryDataMap$,
-  //   highlightTarget: highlightTarget$
-  // }).pipe(
-  //   takeUntil(destroy$),
-  //   switchMap(async (d) => d),
-  // ).subscribe(data => {
+  combineLatest({
+    graphicSelection: graphicSelection$,
+    computedData: computedData$,
+    CategoryDataMap: CategoryDataMap$,
+    highlightTarget: highlightTarget$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+  ).subscribe(data => {
 
-  //   data.graphicSelection
-  //     .on('mouseover', (event, datum) => {
-  //       // event.stopPropagation()
-  //       // console.log({
-  //       //   type: 'multiValue',
-  //       //   eventName: 'mouseover',
-  //       //   pluginName,
-  //       //   highlightTarget: data.highlightTarget,
-  //       //   datum,
-  //       //   category: data.CategoryDataMap.get(datum.categoryLabel)!,
-  //       //   categoryIndex: datum.categoryIndex,
-  //       //   categoryLabel: datum.categoryLabel,
-  //       //   data: data.computedData,
-  //       //   event,
-  //       // })
-
-  //       // 只顯示目前的值
-  //       datum._visibleValue = [datum.value[datum.xValueIndex]]
-
-  //       event$.next({
-  //         type: 'multiValue',
-  //         eventName: 'mouseover',
-  //         pluginName,
-  //         highlightTarget: data.highlightTarget,
-  //         datum,
-  //         category: data.CategoryDataMap.get(datum.categoryLabel)!,
-  //         categoryIndex: datum.categoryIndex,
-  //         categoryLabel: datum.categoryLabel,
-  //         data: data.computedData,
-  //         event,
-  //       })
-  //     })
-  //     .on('mousemove', (event, datum) => {
-  //       // event.stopPropagation()
-
-  //       // 只顯示目前的值
-  //       datum._visibleValue = [datum.value[datum.xValueIndex]]
+    data.graphicSelection
+      .on('mouseover', (event, valueDatum) => {
+        // event.stopPropagation()
         
-  //       event$.next({
-  //         type: 'multiValue',
-  //         eventName: 'mousemove',
-  //         pluginName,
-  //         highlightTarget: data.highlightTarget,
-  //         datum,
-  //         category: data.CategoryDataMap.get(datum.categoryLabel)!,
-  //         categoryIndex: datum.categoryIndex,
-  //         categoryLabel: datum.categoryLabel,
-  //         data: data.computedData,
-  //         event,
-  //       })
-  //     })
-  //     .on('mouseout', (event, datum) => {
-  //       // event.stopPropagation()
+        // reference 到資料本身
+        const datum = valueDatum._refDatum
+        
+        // 只顯示目前的值
+        // datum._visibleValue = [datum.value[valueDatum.index]]
+        // 只顯示總數
+        datum._visibleValue = [datum.sum]
 
-  //       event$.next({
-  //         type: 'multiValue',
-  //         eventName: 'mouseout',
-  //         pluginName,
-  //         highlightTarget: data.highlightTarget,
-  //         datum,
-  //         category: data.CategoryDataMap.get(datum.categoryLabel)!,
-  //         categoryIndex: datum.categoryIndex,
-  //         categoryLabel: datum.categoryLabel,
-  //         data: data.computedData,
-  //         event,
-  //       })
-  //     })
-  //     .on('click', (event, datum) => {
-  //       // event.stopPropagation()
+        event$.next({
+          type: 'multiValue',
+          eventName: 'mouseover',
+          pluginName,
+          highlightTarget: data.highlightTarget,
+          datum: datum,
+          category: data.CategoryDataMap.get(datum.categoryLabel)!,
+          categoryIndex: datum.categoryIndex,
+          categoryLabel: datum.categoryLabel,
+          data: data.computedData,
+          event,
+        })
+      })
+      .on('mousemove', (event, valueDatum) => {
+        // event.stopPropagation()
 
-  //       // 只顯示目前的值
-  //       datum._visibleValue = [datum.value[datum.xValueIndex]]
+        // reference 到資料本身
+        const datum = valueDatum._refDatum
 
-  //       event$.next({
-  //         type: 'multiValue',
-  //         eventName: 'click',
-  //         pluginName,
-  //         highlightTarget: data.highlightTarget,
-  //         datum,
-  //         category: data.CategoryDataMap.get(datum.categoryLabel)!,
-  //         categoryIndex: datum.categoryIndex,
-  //         categoryLabel: datum.categoryLabel,
-  //         data: data.computedData,
-  //         event,
-  //       })
-  //     })
+        // 只顯示目前的值
+        // datum._visibleValue = [datum.value[valueDatum.index]]
+        // 只顯示總數
+        datum._visibleValue = [datum.sum]
+        
+        event$.next({
+          type: 'multiValue',
+          eventName: 'mousemove',
+          pluginName,
+          highlightTarget: data.highlightTarget,
+          datum,
+          category: data.CategoryDataMap.get(datum.categoryLabel)!,
+          categoryIndex: datum.categoryIndex,
+          categoryLabel: datum.categoryLabel,
+          data: data.computedData,
+          event,
+        })
+      })
+      .on('mouseout', (event, valueDatum) => {
+        // event.stopPropagation()
 
-  // })
+        // reference 到資料本身
+        const datum = valueDatum._refDatum
+
+        event$.next({
+          type: 'multiValue',
+          eventName: 'mouseout',
+          pluginName,
+          highlightTarget: data.highlightTarget,
+          datum,
+          category: data.CategoryDataMap.get(datum.categoryLabel)!,
+          categoryIndex: datum.categoryIndex,
+          categoryLabel: datum.categoryLabel,
+          data: data.computedData,
+          event,
+        })
+      })
+      .on('click', (event, valueDatum) => {
+        // event.stopPropagation()
+
+        // reference 到資料本身
+        const datum = valueDatum._refDatum
+
+        // 只顯示目前的值
+        // datum._visibleValue = [datum.value[valueDatum.index]]
+        // 只顯示總數
+        datum._visibleValue = [datum.sum]
+
+        event$.next({
+          type: 'multiValue',
+          eventName: 'click',
+          pluginName,
+          highlightTarget: data.highlightTarget,
+          datum,
+          category: data.CategoryDataMap.get(datum.categoryLabel)!,
+          categoryIndex: datum.categoryIndex,
+          categoryLabel: datum.categoryLabel,
+          data: data.computedData,
+          event,
+        })
+      })
+
+  })
 
   combineLatest({
     graphicSelection: graphicSelection$,
@@ -593,11 +615,11 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
     takeUntil(destroy$),
     switchMap(async d => d)
   ).subscribe(data => {
-    // highlight({
-    //   selection: data.graphicSelection,
-    //   ids: data.highlight,
-    //   fullChartParams: data.fullChartParams
-    // })
+    highlight({
+      selection: data.graphicSelection,
+      ids: data.highlight,
+      fullChartParams: data.fullChartParams
+    })
   })
 
   return () => {

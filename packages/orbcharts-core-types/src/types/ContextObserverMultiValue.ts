@@ -31,14 +31,15 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
   visibleComputedData$: Observable<ComputedDataMultiValue>
   visibleComputedSumData$: Observable<ComputedDatumWithSumMultiValue[][]>
   visibleComputedRankingByIndexData$: Observable<ComputedDatumMultiValue[][]> // ranking
-  visibleComputedRankingBySumData$: Observable<ComputedDatumMultiValue[][]> // ranking
+  visibleComputedRankingBySumData$: Observable<ComputedDatumWithSumMultiValue[][]> // ranking
   visibleComputedXYData$: Observable<ComputedXYDataMultiValue> // xy
   graphicTransform$: Observable<TransformData>
   graphicReverseScale$: Observable<[number, number][]>
   xScale$: Observable<d3.ScaleLinear<number, number>>
   xSumScale$: Observable<d3.ScaleLinear<number, number>>
   yScale$: Observable<d3.ScaleLinear<number, number>>
-  ordinalXScale$: Observable<d3.ScaleLinear<number, number>>
+  ordinalScale$: Observable<d3.ScaleLinear<number, number>>
+  // valueLabels$: Observable<string[]>
 }
 
 // export type MultiValueMinMaxData = {

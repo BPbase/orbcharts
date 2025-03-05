@@ -18,11 +18,11 @@ import type {
   DefinePluginConfig,
   Layout
 } from '../../../lib/core-types'
-import type { OrdinalXAxisParams } from '../../../lib/plugins-basic-types'
+import type { OrdinalAxisParams } from '../../../lib/plugins-basic-types'
 import {
   defineMultiValuePlugin,
 } from '../../../lib/core'
-import { DEFAULT_ORDINAL_X_AXIS_PARAMS } from '../defaults'
+import { DEFAULT_ORDINAL_AXIS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_AXIS } from '../../const'
 // import { createBaseXAxis } from '../../base/BaseXAxis'
 import { getColor, getDatumColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
@@ -48,15 +48,15 @@ interface ValueLabelData {
   textArr: string[]
 }
 
-const pluginName = 'OrdinalXAxis'
+const pluginName = 'OrdinalAxis'
 
 const defaultTickSize = 6
 const xAxisLabelAnchor = 'start'
 const xAxisLabelDominantBaseline = 'hanging'
 
-const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_ORDINAL_X_AXIS_PARAMS> = {
+const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_ORDINAL_AXIS_PARAMS> = {
   name: pluginName,
-  defaultParams: DEFAULT_ORDINAL_X_AXIS_PARAMS,
+  defaultParams: DEFAULT_ORDINAL_AXIS_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
   validator: (params, { validateColumns }) => {
     const result = validateColumns(params, {
@@ -128,7 +128,7 @@ function createValueLabelData (groupLabels: string[], tickFormat: string | ((tex
 function renderAxisLabel ({ selection, axisLabelClassName, fullParams, containerSize, fullDataFormatter, fullChartParams }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   axisLabelClassName: string
-  fullParams: OrdinalXAxisParams
+  fullParams: OrdinalAxisParams
   // axisLabelAlign: TextAlign
   containerSize: ContainerSize
   fullDataFormatter: DataFormatterMultiValue,
@@ -153,13 +153,13 @@ function renderAxisLabel ({ selection, axisLabelClassName, fullParams, container
     let labelY = offsetY
   
     const axisLabelSelection = selection
-      .selectAll<SVGGElement, OrdinalXAxisParams>(`g.${axisLabelClassName}`)
+      .selectAll<SVGGElement, OrdinalAxisParams>(`g.${axisLabelClassName}`)
       .data([fullParams])
       .join('g')
       .classed(axisLabelClassName, true)
       .each((d, i, g) => {
         const text = d3.select(g[i])
-          .selectAll<SVGTextElement, OrdinalXAxisParams>(`text`)
+          .selectAll<SVGTextElement, OrdinalAxisParams>(`text`)
           .data([d])
           .join(
             enter => {
@@ -183,16 +183,16 @@ function renderAxisLabel ({ selection, axisLabelClassName, fullParams, container
       .attr('transform', d => `translate(${containerSize.width}, ${y})`)
 }
 
-function renderAxis ({ selection, ordinalXAxisClassName, fullParams, containerSize, fullDataFormatter, fullChartParams, ordinalXScale, ordinalXScaleDomain, valueLabelData, textRotateTransform, textSizePx }: {
+function renderAxis ({ selection, ordinalXAxisClassName, fullParams, containerSize, fullDataFormatter, fullChartParams, ordinalScale, ordinalScaleDomain, valueLabelData, textRotateTransform, textSizePx }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   ordinalXAxisClassName: string
-  fullParams: OrdinalXAxisParams
+  fullParams: OrdinalAxisParams
   // tickTextAlign: TextAlign
   containerSize: ContainerSize
   fullDataFormatter: DataFormatterMultiValue,
   fullChartParams: ChartParams
-  ordinalXScale: d3.ScaleLinear<number, number>
-  ordinalXScaleDomain: number[]
+  ordinalScale: d3.ScaleLinear<number, number>
+  ordinalScaleDomain: number[]
   // groupLabels: string[]
   valueLabelData: ValueLabelData[]
   // textReverseTransformWithRotate: string
@@ -206,13 +206,13 @@ function renderAxis ({ selection, ordinalXAxisClassName, fullParams, containerSi
   const dominantBaseline = 'auto'
 
   const xAxisSelection = selection
-    .selectAll<SVGGElement, OrdinalXAxisParams>(`g.${ordinalXAxisClassName}`)
+    .selectAll<SVGGElement, OrdinalAxisParams>(`g.${ordinalXAxisClassName}`)
     .data([fullParams])
     .join('g')
     .classed(ordinalXAxisClassName, true)
 
   // 計算所有範圍內groupLabels數量（顯示所有刻度）
-  const allTicksAmount = Math.floor(ordinalXScaleDomain[1]) - Math.ceil(ordinalXScaleDomain[0]) + 1
+  const allTicksAmount = Math.floor(ordinalScaleDomain[1]) - Math.ceil(ordinalScaleDomain[0]) + 1
 
   // 刻度文字偏移
   let tickPadding = 0
@@ -240,8 +240,8 @@ function renderAxis ({ selection, ordinalXAxisClassName, fullParams, containerSi
   // }
 
   // 設定X軸刻度
-  const xAxis = d3.axisTop(ordinalXScale)
-    .scale(ordinalXScale)
+  const xAxis = d3.axisTop(ordinalScale)
+    .scale(ordinalScale)
     .ticks(fullParams.ticks === 'all'
       ? allTicksAmount
       : fullParams.ticks > allTicksAmount
@@ -296,7 +296,7 @@ function renderAxis ({ selection, ordinalXAxisClassName, fullParams, containerSi
     .style('stroke', fullParams.axisLineVisible == true ? getColor(fullParams.axisLineColorType, fullChartParams) : 'none')
     .style('shape-rendering', 'crispEdges')
 
-  const xText = xAxisSelection.selectAll<SVGTextElement, OrdinalXAxisParams>('text')
+  const xText = xAxisSelection.selectAll<SVGTextElement, OrdinalAxisParams>('text')
     // .style('font-family', 'sans-serif')
     .attr('font-size', fullChartParams.styles.textSize)
     // .style('font-weight', 'bold')
@@ -352,7 +352,7 @@ function renderClipPath ({ defsSelection, clipPathData }: {
     })
 }
 
-export const OrdinalXAxis = defineMultiValuePlugin(pluginConfig)(({ selection, name, observer, subject }) => {
+export const OrdinalAxis = defineMultiValuePlugin(pluginConfig)(({ selection, name, observer, subject }) => {
   
   const destroy$ = new Subject()
 
@@ -400,6 +400,7 @@ export const OrdinalXAxis = defineMultiValuePlugin(pluginConfig)(({ selection, n
     )
 
   const valueLabelData$ = combineLatest({
+    // valueLabels: observer.valueLabels$,
     computedData: observer.computedData$,
     fullParams: observer.fullParams$,
     fullDataFormatter: observer.fullDataFormatter$,
@@ -434,11 +435,9 @@ export const OrdinalXAxis = defineMultiValuePlugin(pluginConfig)(({ selection, n
   //   })
   // )
 
-  const ordinalXScaleDomain$ = combineLatest({
+  const ordinalScaleDomain$ = combineLatest({
     valueLabelData: valueLabelData$,
     fullDataFormatter: observer.fullDataFormatter$,
-    gridAxesSize: observer.containerSize$,
-    // computedData: computedData$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -477,8 +476,8 @@ export const OrdinalXAxis = defineMultiValuePlugin(pluginConfig)(({ selection, n
     containerSize: observer.containerSize$,
     fullDataFormatter: observer.fullDataFormatter$,
     fullChartParams: observer.fullChartParams$,
-    ordinalXScale: observer.ordinalXScale$,
-    ordinalXScaleDomain: ordinalXScaleDomain$,
+    ordinalScale: observer.ordinalScale$,
+    ordinalScaleDomain: ordinalScaleDomain$,
     // groupLabels: groupLabels$,
     valueLabelData: valueLabelData$,
     // textReverseTransform: textReverseTransform$,
@@ -499,8 +498,8 @@ export const OrdinalXAxis = defineMultiValuePlugin(pluginConfig)(({ selection, n
       containerSize: data.containerSize,
       fullDataFormatter: data.fullDataFormatter,
       fullChartParams: data.fullChartParams,
-      ordinalXScale: data.ordinalXScale,
-      ordinalXScaleDomain: data.ordinalXScaleDomain,
+      ordinalScale: data.ordinalScale,
+      ordinalScaleDomain: data.ordinalScaleDomain,
       // groupLabels: data.groupLabels,
       valueLabelData: data.valueLabelData,
       // textReverseTransformWithRotate: data.textReverseTransformWithRotate,
