@@ -3,6 +3,7 @@ import type {
   MultiValueLegendParams,
   MultiValueTooltipParams,
   OrdinalBubblesParams,
+  OrdinalAuxParams,
   OrdinalAxisParams,
   OrdinalZoomParams,
   RacingBarsParams,
@@ -108,12 +109,28 @@ export const DEFAULT_ORDINAL_BUBBLES_PARAMS: OrdinalBubblesParams = {
   rankingAmount: 10
 }
 
+export const DEFAULT_ORDINAL_AUX_PARAMS: OrdinalAuxParams = {
+  showLine: true,
+  showLabel: true,
+  lineDashArray: '3, 3',
+  lineColorType: 'primary',
+  labelColorType: 'primary',
+  labelTextColorType: 'background',
+  // labelTextFormat: text => text,
+  // labelTextFormat: (value: number) => String(Math.round(value)),
+  labelTextFormat: v => v,
+  labelPadding: 20,
+  // labelRotate: 0
+}
+DEFAULT_ORDINAL_AUX_PARAMS.labelTextFormat.toString = () => `v => v`
+
 export const DEFAULT_ORDINAL_AXIS_PARAMS: OrdinalAxisParams = {
   labelOffset: [0, 0],
   labelColorType: 'primary',
   axisLineVisible: false,
   axisLineColorType: 'secondary',
   ticks: 4,
+  // ticks: 'all',
   // tickFormat: ',.0f',
   tickFormat: v => v,
   tickLineVisible: true,

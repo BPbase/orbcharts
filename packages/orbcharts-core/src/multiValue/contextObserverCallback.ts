@@ -27,8 +27,10 @@ import {
   // rankingAmountLimitObservable,
   // rankingScaleObservable
   xScaleObservable,
-  xSumScaleObservable,
+  // xSumScaleObservable,
   yScaleObservable,
+  ordinalScaleDomainObservable,
+  ordinalPaddingObservable,
   ordinalScaleObservable,
   // valueLabelsObservable
 } from '../utils/multiValueObservables'
@@ -114,8 +116,16 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
 
+  const ordinalScaleDomain$ = ordinalScaleDomainObservable({
+    fullDataFormatter$: observer.fullDataFormatter$,
+    visibleComputedData$: visibleComputedData$,
+  }).pipe(
+    shareReplay(1)
+  )
+
   const visibleComputedSumData$ = visibleComputedSumDataObservable({
-    visibleComputedData$
+    visibleComputedData$,
+    ordinalScaleDomain$
   }).pipe(
     shareReplay(1)
   )
@@ -226,13 +236,13 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
 
-  const xSumScale$ = xSumScaleObservable({
-    fullDataFormatter$: observer.fullDataFormatter$,
-    filteredXYMinMaxData$,
-    containerSize$: containerSize$,
-  }).pipe(
-    shareReplay(1)
-  )
+  // const xSumScale$ = xSumScaleObservable({
+  //   fullDataFormatter$: observer.fullDataFormatter$,
+  //   filteredXYMinMaxData$,
+  //   containerSize$: containerSize$,
+  // }).pipe(
+  //   shareReplay(1)
+  // )
 
   const yScale$ = yScaleObservable({
     fullDataFormatter$: observer.fullDataFormatter$,
@@ -242,10 +252,19 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     shareReplay(1)
   )
 
-  const ordinalScale$ = ordinalScaleObservable({
-    fullDataFormatter$: observer.fullDataFormatter$,
+  const ordinalPadding$ = ordinalPaddingObservable({
+    ordinalScaleDomain$,
     computedData$: observer.computedData$,
     containerSize$: containerSize$,
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const ordinalScale$ = ordinalScaleObservable({
+    ordinalScaleDomain$,
+    computedData$: observer.computedData$,
+    containerSize$: containerSize$,
+    ordinalPadding$
   }).pipe(
     shareReplay(1)
   )
@@ -287,8 +306,9 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     graphicTransform$,
     graphicReverseScale$,
     xScale$,
-    xSumScale$,
+    // xSumScale$,
     yScale$,
+    ordinalPadding$,
     ordinalScale$,
     // valueLabels$
   }

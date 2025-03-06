@@ -183,7 +183,7 @@ function renderAxisLabel ({ selection, axisLabelClassName, fullParams, container
       .attr('transform', d => `translate(${containerSize.width}, ${y})`)
 }
 
-function renderAxis ({ selection, ordinalXAxisClassName, fullParams, containerSize, fullDataFormatter, fullChartParams, ordinalScale, ordinalScaleDomain, valueLabelData, textRotateTransform, textSizePx }: {
+function renderAxis ({ selection, ordinalXAxisClassName, fullParams, containerSize, fullDataFormatter, fullChartParams, ordinalScale, ordinalScaleDomain, valueLabelData, textRotateTransform, textSizePx, ordinalPadding }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   ordinalXAxisClassName: string
   fullParams: OrdinalAxisParams
@@ -198,6 +198,7 @@ function renderAxis ({ selection, ordinalXAxisClassName, fullParams, containerSi
   // textReverseTransformWithRotate: string
   textRotateTransform: string
   textSizePx: number
+  ordinalPadding: number
 }) {
 
   const textAnchor = fullParams.tickTextRotate
@@ -210,6 +211,7 @@ function renderAxis ({ selection, ordinalXAxisClassName, fullParams, containerSi
     .data([fullParams])
     .join('g')
     .classed(ordinalXAxisClassName, true)
+    .attr('transform', `translate(${ordinalPadding}, 0)`)
 
   // 計算所有範圍內groupLabels數量（顯示所有刻度）
   const allTicksAmount = Math.floor(ordinalScaleDomain[1]) - Math.ceil(ordinalScaleDomain[0]) + 1
@@ -245,7 +247,8 @@ function renderAxis ({ selection, ordinalXAxisClassName, fullParams, containerSi
     .ticks(fullParams.ticks === 'all'
       ? allTicksAmount
       : fullParams.ticks > allTicksAmount
-        ? allTicksAmount // 不顯示超過groupLabels數量的刻度
+        // 不顯示超過groupLabels數量的刻度
+        ? allTicksAmount - 1 // 不知為何設剛好一樣的數字會多一個刻度，所以 -1 強制避免這個狀況
         : fullParams.ticks)
     .tickSize(fullParams.tickFullLine == true
       ? - containerSize.height
@@ -442,17 +445,17 @@ export const OrdinalAxis = defineMultiValuePlugin(pluginConfig)(({ selection, na
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      const groupMin = - 0.5
-      const groupMax = data.valueLabelData.length - 0.5
+      const groupMin = 0//- 0.5
+      const groupMax = data.valueLabelData.length - 1//0.5
       // const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] === 'auto'
       //   ? groupMin - data.fullDataFormatter.groupAxis.scalePadding
       //   : data.fullDataFormatter.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.groupAxis.scalePadding
       const groupScaleDomainMin = data.fullDataFormatter.xAxis.scaleDomain[0] === 'min' || data.fullDataFormatter.xAxis.scaleDomain[0] === 'auto'
         ? groupMin
-        : data.fullDataFormatter.xAxis.scaleDomain[0] as number
+        : data.fullDataFormatter.xAxis.scaleDomain[0] as number// - 0.5
       const groupScaleDomainMax = data.fullDataFormatter.xAxis.scaleDomain[1] === 'max' || data.fullDataFormatter.xAxis.scaleDomain[1] === 'auto'
         ? groupMax
-        : data.fullDataFormatter.xAxis.scaleDomain[1] as number
+        : data.fullDataFormatter.xAxis.scaleDomain[1] as number// - 0.5
 
       return [groupScaleDomainMin, groupScaleDomainMax]
     }),
@@ -483,8 +486,9 @@ export const OrdinalAxis = defineMultiValuePlugin(pluginConfig)(({ selection, na
     // textReverseTransform: textReverseTransform$,
     // textReverseTransformWithRotate: textReverseTransformWithRotate$,
     textRotateTransform: textRotateTransform$,
-    textSizePx: observer.textSizePx$
+    textSizePx: observer.textSizePx$,
     // tickTextFormatter: tickTextFormatter$
+    ordinalPadding: observer.ordinalPadding$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -504,7 +508,8 @@ export const OrdinalAxis = defineMultiValuePlugin(pluginConfig)(({ selection, na
       valueLabelData: data.valueLabelData,
       // textReverseTransformWithRotate: data.textReverseTransformWithRotate,
       textRotateTransform: data.textRotateTransform,
-      textSizePx: data.textSizePx
+      textSizePx: data.textSizePx,
+      ordinalPadding: data.ordinalPadding
     })
 
     renderAxisLabel({

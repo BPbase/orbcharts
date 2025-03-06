@@ -49,15 +49,19 @@ interface BaseRacingBarsContext {
   containerPosition$: Observable<ContainerPositionScaled[]>
   containerSize$: Observable<ContainerSize>
   ordinalScale$: Observable<d3.ScaleLinear<number, number>>
+  ordinalPadding$: Observable<number>
   isCategorySeprate$: Observable<boolean>
   event$: Subject<EventMultiValue>
 }
 
 interface RenderGraphicGParams {
   containerSelection: d3.Selection<SVGGElement, ComputedDatumMultiValue[], any, any>
+  paddingGClassName: string
+  itemGClassName: string
   bubbleData: BubblesDatum[][]
   // rankingScaleList: d3.ScalePoint<string>[]
   transitionDuration: number
+  ordinalPadding: number
 }
 
 // 對應到 value 裡的每個值
@@ -85,45 +89,62 @@ type ClipPathDatum = {
 }
 
 
-function renderGraphicG ({ containerSelection, bubbleData, transitionDuration }: RenderGraphicGParams) {
+function renderGraphicG ({ containerSelection, paddingGClassName, itemGClassName, bubbleData, transitionDuration, ordinalPadding }: RenderGraphicGParams) {
   containerSelection
     .each((_, categoryIndex, g) => {
       const container = d3.select(g[categoryIndex])
-      const graphicG = container.selectAll<SVGGElement, ComputedDatumMultiValue>(`g`)
-        .data(bubbleData[categoryIndex] ?? [], d => d.id)
+      container.selectAll<SVGGElement, ComputedDatumMultiValue>(`g.${paddingGClassName}`)
+        .data([0])
         .join(
           enter => {
             return enter
               .append('g')
-              .attr('cursor', 'pointer')
-              .attr('transform', d => {
-                return `translate(0, ${d.graphicValue[0] ? d.graphicValue[0].y : 0})`
-              })
+              .attr('class', paddingGClassName)
           },
-          update => {
-            return update
-              .transition()
-              .duration(transitionDuration)
-              .ease(d3.easeLinear)
-              .attr('transform', d => {
-                return `translate(0, ${d.graphicValue[0] ? d.graphicValue[0].y : 0})`
-              })
-          },
+          update => update,
           exit => exit.remove()
         )
+        .attr('transform', `translate(${ordinalPadding}, 0)`)
+        .each((d, i, g) => {
+          const paddingG = d3.select(g[i])
+          paddingG.selectAll<SVGGElement, ComputedDatumMultiValue>(`g.${itemGClassName}`)
+            .data(bubbleData[categoryIndex] ?? [], d => d.id)
+            .join(
+              enter => {
+                return enter
+                  .append('g')
+                  .attr('class', itemGClassName)
+                  .attr('cursor', 'pointer')
+                  .attr('transform', d => {
+                    return `translate(0, ${d.graphicValue[0] ? d.graphicValue[0].y : 0})`
+                  })
+              },
+              update => {
+                return update
+                  .transition()
+                  .duration(transitionDuration)
+                  .ease(d3.easeLinear)
+                  .attr('transform', d => {
+                    return `translate(0, ${d.graphicValue[0] ? d.graphicValue[0].y : 0})`
+                  })
+              },
+              exit => exit.remove()
+            )
+        })
     })
 
-  const graphicBarSelection: d3.Selection<SVGRectElement, BubblesDatum, SVGGElement, unknown> = containerSelection.selectAll(`g`)
+  const graphicBarSelection: d3.Selection<SVGRectElement, BubblesDatum, SVGGElement, unknown> = containerSelection.selectAll(`g.${itemGClassName}`)
 
   return graphicBarSelection
 }
 
-function renderBubbles ({ graphicGSelection }: {
+function renderBubbles ({ graphicGSelection, transitionDuration }: {
   graphicGSelection: d3.Selection<SVGGElement, BubblesDatum, any, any>
   // bubblesData: BubblesDatum[][]
   // fullParams: BaseOrdinalBubblesParams
   // fullChartParams: ChartParams
   // sumSeries: boolean
+  transitionDuration: number
 }) {
 
   graphicGSelection
@@ -136,7 +157,7 @@ function renderBubbles ({ graphicGSelection }: {
         .attr('fill', d => datum.color)
         .style('opacity', d => d.opacity)
         .transition()
-        .duration(200)
+        .duration(100)
         .ease(d3.easeLinear)
         .attr('cx', d => d.x)
         // .attr('cy', d => d.y)
@@ -275,6 +296,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
   containerSize$,
   // layout$,
   ordinalScale$,
+  ordinalPadding$,
   isCategorySeprate$,
   event$
 }) => {
@@ -282,6 +304,8 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
   const destroy$ = new Subject()
 
   const clipPathID = getUniID(pluginName, 'clipPath-box')
+  const paddingGClassName = getClassName(pluginName, 'padding-g')
+  const itemGClassName = getClassName(pluginName, 'item-g')
   const bubbleClassName = getClassName(pluginName, 'bubble')
   // const containerClassName = getClassName(pluginName, 'container')
   
@@ -327,7 +351,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
     shareReplay(1)
   )
 
-  const minMaxValue$ = combineLatest({
+  const scaleDomain$ = combineLatest({
     visibleComputedRankingData: visibleComputedRankingData$,
     scaleDomain: fullDataFormatter$.pipe(
       map(d => d.xAxis.scaleDomain),
@@ -339,18 +363,31 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
       const firstValue = data.visibleComputedRankingData[0] && data.visibleComputedRankingData[0][0]
         ? data.visibleComputedRankingData[0][0].value
         : []
-      let minValue = 0
-      let maxValue = 0
       let startIndex = data.scaleDomain[0] === 'auto' || data.scaleDomain[0] === 'min'
         ? 0
         : data.scaleDomain[0]
       let endIndex = data.scaleDomain[1] === 'auto' || data.scaleDomain[1] === 'max'
         ? firstValue.length - 1 // 用第一筆資料判斷value長度
         : data.scaleDomain[1]
-      
+      return [startIndex, endIndex]
+    }),
+    distinctUntilChanged((a, b) => a[0] === b[0] && a[1] === b[1]),
+    shareReplay(1)
+  )
+
+  const minMaxValue$ = combineLatest({
+    visibleComputedRankingData: visibleComputedRankingData$,
+    scaleDomain: scaleDomain$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async d => d),
+    map(data => {
+      let minValue = 0
+      let maxValue = 0
+      // console.log(data.scaleDomain[0], data.scaleDomain[1])
       data.visibleComputedRankingData.forEach(categoryData => {
         categoryData.forEach(datum => {
-          for (let i = startIndex; i <= endIndex; i++) {
+          for (let i = data.scaleDomain[0]; i <= data.scaleDomain[1]; i++) {
             const v = datum.value[i]
             if (v == null) {
               continue
@@ -420,6 +457,8 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
     rankingScaleList: rankingScaleList$,
     ordinalScale: ordinalScale$,
     opacityScale: opacityScale$,
+    scaleDomain: scaleDomain$,
+    containerSize: containerSize$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
@@ -431,9 +470,23 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
         return categoryData.map((_d, i) => {
           const d = _d as BubblesDatum
           const graphicValue = d.value.map((v, vIndex) => {
+            // console.log('data.ordinalScale(vIndex)', data.ordinalScale(vIndex))
+            // const opacity = vIndex < data.scaleDomain[0] || vIndex > data.scaleDomain[1]
+            //   ? 0
+            //   : data.opacityScale(v)
+            let x = data.ordinalScale(vIndex)
+            
+            if (data.scaleDomain[0] === data.scaleDomain[1]) {
+              if (vIndex > data.scaleDomain[0]) {
+                x += data.containerSize.width * 1.5
+              } else if (vIndex < data.scaleDomain[0]) {
+                x -= data.containerSize.width * 1.5
+              }
+            }
+
             return {
               index: vIndex,
-              x: data.ordinalScale(vIndex),
+              x,
               y: rankingScale(d.label),
               r: data.radiusScale(v),
               opacity: data.opacityScale(v),
@@ -460,6 +513,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
     bubbleData: bubbleData$,
     rankingScaleList: rankingScaleList$,
     transitionDuration: transitionDuration$,
+    ordinalPadding: ordinalPadding$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -467,9 +521,12 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
       // console.log('bubbleData', data.bubbleData)
       return renderGraphicG({
         containerSelection: data.containerSelection,
+        paddingGClassName,
+        itemGClassName,
         bubbleData: data.bubbleData,
         // rankingScaleList: data.rankingScaleList,
-        transitionDuration: data.transitionDuration
+        transitionDuration: data.transitionDuration,
+        ordinalPadding: data.ordinalPadding
       })
     })
   )
@@ -489,6 +546,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
       return renderBubbles({
         graphicGSelection: data.graphicGSelection,
         // bubblesData: data.bubbleData
+        transitionDuration: data.transitionDuration
       })
     }),
     shareReplay(1)

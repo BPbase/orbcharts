@@ -32,10 +32,10 @@ export const OrdinalZoom = defineMultiValuePlugin(pluginConfig)(({ selection, ro
     takeUntil(destroy$),
     map(computedData => {
       return {
-        minX: 0,
+        minX: 0,//-0.5,
         maxX: computedData[0] && computedData[0][0]
-          ? computedData[0][0].value.length - 1
-          : 0,
+          ? computedData[0][0].value.length - 1//0.5
+          : 0,//0.5,
         minY: 0, // 沒用到
         maxY: 0 // 沒用到
       }

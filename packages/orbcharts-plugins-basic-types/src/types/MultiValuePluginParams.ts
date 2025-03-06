@@ -56,6 +56,16 @@ export interface OrdinalBubblesParams {
   rankingAmount: 'auto' | number
 }
 
+export interface OrdinalAuxParams {
+  showLine: boolean
+  showLabel: boolean
+  lineDashArray: string
+  lineColorType: ColorType
+  labelColorType: ColorType
+  labelTextColorType: ColorType
+  labelTextFormat: (text: string) => string
+  labelPadding: number
+}
 
 export interface OrdinalAxisParams {
   labelOffset: [number, number]
