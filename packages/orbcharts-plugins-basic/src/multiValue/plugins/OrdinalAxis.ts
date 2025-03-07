@@ -38,10 +38,10 @@ type ClipPathDatum = {
   height: number;
 }
 
-interface TextAlign {
-  textAnchor: "start" | "middle" | "end"
-  dominantBaseline: "middle" | "auto" | "hanging"
-}
+// interface TextAlign {
+//   textAnchor: "start" | "middle" | "end"
+//   dominantBaseline: "middle" | "auto" | "hanging"
+// }
 
 interface ValueLabelData {
   text: string
@@ -52,7 +52,7 @@ const pluginName = 'OrdinalAxis'
 
 const defaultTickSize = 6
 const xAxisLabelAnchor = 'start'
-const xAxisLabelDominantBaseline = 'hanging'
+const xAxisLabelDominantBaseline = 'auto'
 
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_ORDINAL_AXIS_PARAMS> = {
   name: pluginName,

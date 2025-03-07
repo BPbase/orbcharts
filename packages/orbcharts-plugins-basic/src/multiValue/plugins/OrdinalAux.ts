@@ -29,7 +29,7 @@ import { parseTickFormatValue } from '../../utils/d3Utils'
 import { measureTextWidth } from '../../utils/commonUtils'
 import { getColor, getClassName, getUniID } from '../../utils/orbchartsUtils'
 import { d3EventObservable } from '../../utils/observables'
-import { multiValueXYPositionObservable } from '../multiValueObservables'
+import { ordinalPositionObservable } from '../multiValueObservables'
 import type { OrdinalAuxParams } from '../../../lib/plugins-basic-types'
 import { multiValueSelectionsObservable } from '../multiValueObservables'
 import { renderTspansOnAxis } from '../../utils/d3Graphics'
@@ -61,6 +61,11 @@ interface LabelDatum {
   rectY: number
   textX: number
   textY: number
+}
+
+interface ValueLabelData {
+  text: string
+  textArr: string[]
 }
 
 const pluginName = 'OrdinalAux'
@@ -101,13 +106,25 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_ORDINAL
   }
 }
 
-function createLineData ({ axisX, axisY, layout, fullParams }: {
+function createValueLabelData (groupLabels: string[], tickFormat: (text: any) => string): ValueLabelData[] {
+  return groupLabels.map((_text, i) => {
+    const text = parseTickFormatValue(_text, tickFormat)
+    const textArr = typeof text === 'string' ? text.split('\n') : [text]
+    
+    return {
+      text,
+      textArr
+    }
+  })
+}
+
+function createLineData ({ axisX, layout, fullParams }: {
   axisX: number
-  axisY: number
+  // axisY: number
   layout: Layout
   fullParams: OrdinalAuxParams
 }): LineDatum[] {
-  if ((axisX >= 0 && axisX <= layout.width && axisY >= 0 && axisY <= layout.height) === false) {
+  if ((axisX >= 0 && axisX <= layout.width) === false) {
     return []
   }
   return [
@@ -117,33 +134,25 @@ function createLineData ({ axisX, axisY, layout, fullParams }: {
       x2: axisX,
       y1: 0,
       y2: layout.height,
-      dashArray: fullParams.xAxis.lineDashArray ?? 'none',
-      colorType: fullParams.xAxis.lineColorType
+      dashArray: fullParams.lineDashArray ?? 'none',
+      colorType: fullParams.lineColorType
     },
-    {
-      id: 'line-0',
-      x1: 0,
-      x2: layout.width,
-      y1: axisY,
-      y2: axisY,
-      dashArray: fullParams.yAxis.lineDashArray ?? 'none',
-      colorType: fullParams.yAxis.lineColorType
-    }
   ]
 }
 
-function createLabelData ({ axisX, axisY, xValue, yValue, fullParams, textSizePx, layout, columnAmount, rowAmount }: {
+function createLabelData ({ valueLabelData, axisX, xValue, fullParams, textSizePx, layout, rowAmount }: {
+  valueLabelData: ValueLabelData[]
   axisX: number
-  axisY: number
+  // axisY: number
   xValue: number
-  yValue: number
+  // yValue: number
   fullParams: OrdinalAuxParams
   textSizePx: number
   layout: Layout
-  columnAmount: number
+  // columnAmount: number
   rowAmount: number
 }): LabelDatum[] {
-  if ((axisX >= 0 && axisX <= layout.width && axisY >= 0 && axisY <= layout.height) === false) {
+  if ((axisX >= 0 && axisX <= layout.width) === false) {
     return []
   }
   const rectPaddingWidth = 6
@@ -151,9 +160,11 @@ function createLabelData ({ axisX, axisY, xValue, yValue, fullParams, textSizePx
 
   // x
   const xX = axisX
-  const xY = layout.height + (fullParams.xAxis.labelPadding * rowAmount) // rowAmount 是為了把外部 container 的變形逆轉回來
-  const xText = parseTickFormatValue(xValue, fullParams.xAxis.labelTextFormat)
-  const xTextArr = xText.split('\n')
+  const xY = - fullParams.labelPadding * rowAmount // rowAmount 是為了把外部 container 的變形逆轉回來
+  // const xText = fullParams.labelTextFormat(xValue)
+  // const xTextArr = xText.split('\n')
+  const xText = valueLabelData[xValue].text
+  const xTextArr = valueLabelData[xValue].textArr
   const xMaxLengthText = xTextArr.reduce((acc, current) => current.length > acc.length ? current : acc, '')
   const xTextWidth = measureTextWidth(xMaxLengthText, textSizePx)
   const xTextHeight = textSizePx * xTextArr.length
@@ -163,31 +174,17 @@ function createLabelData ({ axisX, axisY, xValue, yValue, fullParams, textSizePx
   const xRectY = - rectPaddingHeight
   const xTextX = xRectX + rectPaddingWidth
   const xTextY = xRectY + rectPaddingHeight
-  // y
-  const yX = - (fullParams.yAxis.labelPadding * columnAmount) // columnAmount 是為了把外部 container 的變形逆轉回來
-  const yY = axisY
-  const yText = parseTickFormatValue(yValue, fullParams.yAxis.labelTextFormat)
-  const yTextArr = yText.split('\n')
-  const yMaxLengthText = yTextArr.reduce((acc, current) => current.length > acc.length ? current : acc, '')
-  const yTextWidth = measureTextWidth(yMaxLengthText, textSizePx)
-  const yTextHeight = textSizePx * yTextArr.length
-  const yRectWidth = yTextWidth + (rectPaddingWidth * 2)
-  const yRectHeight = yTextHeight + (rectPaddingHeight * 2)
-  const yRectX = - yTextWidth - rectPaddingWidth
-  const yRectY = - rectPaddingHeight - yTextHeight / 2
-  const yTextX = yRectX + rectPaddingWidth
-  const yTextY = yRectY + rectPaddingHeight
   return [
     {
       id: 'label-x',
       x: xX,
-      y: xY,
+      y: xY - xRectHeight / 2,
       text: xText,
       textArr: xTextArr,
       textWidth: xTextWidth,
       textHeight: xTextHeight,
-      colorType: fullParams.xAxis.labelColorType,
-      textColorType: fullParams.xAxis.labelTextColorType,
+      colorType: fullParams.labelColorType,
+      textColorType: fullParams.labelTextColorType,
       rectWidth: xRectWidth,
       rectHeight: xRectHeight,
       rectX: xRectX,
@@ -195,23 +192,6 @@ function createLabelData ({ axisX, axisY, xValue, yValue, fullParams, textSizePx
       textX: xTextX,
       textY: xTextY
     },
-    {
-      id: 'label-y',
-      x: yX,
-      y: yY,
-      text: yText,
-      textArr: yTextArr,
-      textWidth: yTextWidth,
-      textHeight: yTextHeight,
-      colorType: fullParams.yAxis.labelColorType,
-      textColorType: fullParams.xAxis.labelTextColorType,
-      rectWidth: yRectWidth,
-      rectHeight: yRectHeight,
-      rectX: yRectX,
-      rectY: yRectY,
-      textX: yTextX,
-      textY: yTextY
-    }
   ]
 }
 
@@ -466,14 +446,44 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
     distinctUntilChanged()
   )
 
-  const xyPosition$ = multiValueXYPositionObservable({
+  // const xyPosition$ = multiValueXYPositionObservable({
+  //   rootSelection,
+  //   fullDataFormatter$: observer.fullDataFormatter$,
+  //   filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
+  //   containerPosition$: observer.containerPosition$,
+  //   layout$: observer.layout$
+  // }).pipe(
+  //   takeUntil(destroy$)
+  // )
+
+  const xyPosition$ = ordinalPositionObservable({
     rootSelection,
-    fullDataFormatter$: observer.fullDataFormatter$,
-    filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
+    // fullDataFormatter$: observer.fullDataFormatter$,
+    ordinalScaleDomain$: observer.ordinalScaleDomain$,
+    // ordinalPadding$: observer.ordinalPadding$,
+    containerSize$: observer.containerSize$,
     containerPosition$: observer.containerPosition$,
-    layout$: observer.layout$
+    layout$: observer.layout$,
+    ordinalScale$: observer.ordinalScale$,
+    ordinalPadding$: observer.ordinalPadding$,
+  })
+
+  const valueLabelData$ = combineLatest({
+    // valueLabels: observer.valueLabels$,
+    computedData: observer.computedData$,
+    fullParams: observer.fullParams$,
+    fullDataFormatter: observer.fullDataFormatter$,
   }).pipe(
-    takeUntil(destroy$)
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      const valueLabels = data.computedData[0] && data.computedData[0][0] && data.computedData[0][0].value.length
+        ? data.computedData[0][0].value.map((d, i) => data.fullDataFormatter.valueLabels[i] ?? String(i))
+        : []
+      return createValueLabelData(valueLabels, data.fullParams.labelTextFormat)
+    }),
+    // distinctUntilChanged(),
+    shareReplay(1)
   )
 
   combineLatest({
@@ -490,17 +500,19 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
     // CategoryDataMap: observer.CategoryDataMap$,
     textSizePx: observer.textSizePx$,
     columnAmount: columnAmount$,
-    rowAmount: rowAmount$
+    rowAmount: rowAmount$,
+    valueLabelData: valueLabelData$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
   ).subscribe(data => {
     // 依event的座標取得group資料
-    const { x, y, xValue, yValue } = data.xyPosition
+    const { x, xValue } = data.xyPosition
+    // console.log({ x, xValue })
 
     const lineData = createLineData({
       axisX: x,
-      axisY: y,
+      // axisY: y,
       layout: data.layout,
       fullParams: data.fullParams,
     })
@@ -512,14 +524,15 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
       fullChartParams: data.fullChartParams
     })
     const labelData = createLabelData({
+      valueLabelData: data.valueLabelData,
       axisX: x,
-      axisY: y,
+      // axisY: y,
       xValue,
-      yValue,
+      // yValue,
       fullParams: data.fullParams,
       textSizePx: data.textSizePx,
       layout: data.layout,
-      columnAmount: data.columnAmount,
+      // columnAmount: data.columnAmount,
       rowAmount: data.rowAmount
     })
     const labelSelection = renderLabel({

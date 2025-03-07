@@ -308,6 +308,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     xScale$,
     // xSumScale$,
     yScale$,
+    ordinalScaleDomain$,
     ordinalPadding$,
     ordinalScale$,
     // valueLabels$

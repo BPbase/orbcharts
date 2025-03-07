@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { MultiValueChart } from '../../../packages/orbcharts-core/src'
-import { OrdinalAxis, OrdinalBubbles, OrdinalZoom, MultiValueLegend, MultiValueTooltip } from '../../../packages/orbcharts-plugins-basic/src'
+import { OrdinalAux, OrdinalAxis, OrdinalBubbles, OrdinalZoom, MultiValueLegend, MultiValueTooltip } from '../../../packages/orbcharts-plugins-basic/src'
 // import { PRESET_MULTI_GRID_2_GRID_SLOT } from '../../../packages/orbcharts-presets-basic/src/index'
 // import multiValue1 from '../../../packages/orbcharts-demo/src/data/multiValue1'
 import multiValueData_channel from '../../../packages/orbcharts-demo/src/data/multiValueData_channel'
@@ -129,13 +129,14 @@ onMounted(() => {
   // }, 2000)
 
 //   const racingBars = new RacingBars()
+  const ordinalAux = new OrdinalAux()
   const ordinalXAxis = new OrdinalAxis()
   const ordinalBubbles = new OrdinalBubbles()
   const ordinalZoom = new OrdinalZoom()
   const multiValueLegend = new MultiValueLegend()
   const multiValueTooltip = new MultiValueTooltip()
 
-  chart!.plugins$.next([ ordinalXAxis, ordinalBubbles, ordinalZoom, multiValueLegend, multiValueTooltip ])
+  chart!.plugins$.next([ ordinalAux, ordinalXAxis, ordinalBubbles, ordinalZoom, multiValueLegend, multiValueTooltip ])
 
 //   racingBars.params$.next({
 //     // timer: {

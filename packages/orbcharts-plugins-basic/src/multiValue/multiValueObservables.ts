@@ -332,7 +332,6 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
   })
 
   const axisValue$ = combineLatest({
-    fullDataFormatter: fullDataFormatter$,
     rootMousemove: rootMousemove$,
     columnAmount: columnAmount$,
     rowAmount: rowAmount$,
@@ -367,73 +366,81 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
   )
 }
 
-// export const ordinalPositionObservable = ({ rootSelection, fullDataFormatter$, ordinalPadding$, containerPosition$, layout$ }: {
-//   rootSelection: d3.Selection<any, unknown, any, unknown>
-//   fullDataFormatter$: Observable<DataFormatterMultiValue>
-//   // ordinalScale$: Observable<d3.ScaleLinear<number, number>>
-//   ordinalPadding$: Observable<number>
-//   containerPosition$: Observable<ContainerPositionScaled[]>
-//   layout$: Observable<Layout>
-// }) => {
-//   const rootMousemove$ = d3EventObservable(rootSelection, 'mousemove').pipe(
-//     debounceTime(2) // 避免過度頻繁觸發，實測時沒加電腦容易卡頓
-//   )
+export const ordinalPositionObservable = ({ rootSelection, ordinalScaleDomain$, ordinalScale$, ordinalPadding$, containerSize$, containerPosition$, layout$ }: {
+  rootSelection: d3.Selection<any, unknown, any, unknown>
+  ordinalScaleDomain$: Observable<[number, number]>
+  ordinalScale$: Observable<d3.ScaleLinear<number, number>>
+  ordinalPadding$: Observable<number>
+  containerSize$: Observable<ContainerSize>
+  containerPosition$: Observable<ContainerPositionScaled[]>
+  layout$: Observable<Layout>
+}) => {
+  const rootMousemove$ = d3EventObservable(rootSelection, 'mousemove').pipe(
+    debounceTime(2) // 避免過度頻繁觸發，實測時沒加電腦容易卡頓
+  )
 
-//   const columnAmount$ = containerPosition$.pipe(
-//     map(containerPosition => {
-//       const maxColumnIndex = containerPosition.reduce((acc, current) => {
-//         return current.columnIndex > acc ? current.columnIndex : acc
-//       }, 0)
-//       return maxColumnIndex + 1
-//     }),
-//     distinctUntilChanged(),
-//     shareReplay(1)
-//   )
+  const columnAmount$ = containerPosition$.pipe(
+    map(containerPosition => {
+      const maxColumnIndex = containerPosition.reduce((acc, current) => {
+        return current.columnIndex > acc ? current.columnIndex : acc
+      }, 0)
+      return maxColumnIndex + 1
+    }),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
 
-//   // const rowAmount$ = containerPosition$.pipe(
-//   //   map(containerPosition => {
-//   //     const maxRowIndex = containerPosition.reduce((acc, current) => {
-//   //       return current.rowIndex > acc ? current.rowIndex : acc
-//   //     }, 0)
-//   //     return maxRowIndex + 1
-//   //   }),
-//   //   distinctUntilChanged(),
-//   //   shareReplay(1)
-//   // )
+  const axisX$ = combineLatest({
+    rootMousemove: rootMousemove$,
+    columnAmount: columnAmount$,
+    layout: layout$,
+    containerPosition: containerPosition$
+  }).pipe(
+    switchMap(async d => d),
+    map(data => {
+      // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
+      return ((data.rootMousemove.offsetX - data.layout.left) / data.containerPosition[0].scale[0])
+        % (data.layout.rootWidth / data.columnAmount / data.containerPosition[0].scale[0])
+    })
+  )
 
-//   const ordinalXScale$ = combineLatest({
+  const scaleRangeLabels$ = ordinalScaleDomain$.pipe(
+    map(data => {
+      const range = data[1] - data[0] + 1
+      return new Array(range).fill(0).map((d, i) => String(i + data[0]))
+    })
+  )
 
-//   })
+  return combineLatest({
+    scaleRangeLabels: scaleRangeLabels$,
+    layout: layout$,
+    containerSize: containerSize$,
+    axisX: axisX$,
+    ordinalScale: ordinalScale$,
+    ordinalPadding: ordinalPadding$,
+    ordinalScaleDomain: ordinalScaleDomain$
+  }).pipe(
+    switchMap(async d => d),
+    map(data => {
+      // 比例尺座標對應非連續資料索引
+      const xIndexScale = createAxisToLabelIndexScale({
+        axisLabels: data.scaleRangeLabels,
+        axisWidth: data.layout.width,
+        padding: 0.5,
+        reverse: false
+      })
 
-//   const axisX$ = combineLatest({
-//     fullDataFormatter: fullDataFormatter$,
-//     rootMousemove: rootMousemove$,
-//     columnAmount: columnAmount$,
-//     // rowAmount: rowAmount$,
-//     layout: layout$,
-//     containerPosition: containerPosition$
-//   }).pipe(
-//     switchMap(async d => d),
-//     map(data => {
-//       // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
-//       return ((data.rootMousemove.offsetX - data.layout.left) / data.containerPosition[0].scale[0])
-//         % (data.layout.rootWidth / data.columnAmount / data.containerPosition[0].scale[0])
-//     })
-//   )
+      const seq = xIndexScale(data.axisX)
+      const xIndex = seq + data.ordinalScaleDomain[0]
+      const x = data.ordinalScale(xIndex) + data.ordinalPadding
 
-//   return combineLatest({
-//     xyScale: xyScale$,
-//     axisX: axisX$
-//   }).pipe(
-//     switchMap(async d => d),
-//     map(data => {
-//       return {
-//         x: data.axisX,
-//         xValue: data.xyScale.xScale(data.axisX),
-//       }
-//     })
-//   )
-// }
+      return {
+        x,
+        xValue: xIndex,
+      }
+    })
+  )
+}
 
 // 排名數量
 export const computedRankingAmountObservable = ({ containerSize$, visibleComputedData$, textSizePx$, rankingAmount$ }: {
