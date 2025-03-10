@@ -36,8 +36,53 @@ export interface MultiValueTooltipParams {
   )
 }
 
-export interface OrdinalAxisParams {
+export interface OrdinalBubblesParams {
+  bubble: {
+    // radiusMin: number // 對應value最小值
+    // radiusMax: number // 對應value最大值
+    sizeAdjust: number
+    arcScaleType: 'area' | 'radius',
+    valueLinearOpacity: [number, number]
+  }
+  itemLabel: {
+    padding: number
+    // rotate: number
+    colorType: ColorType
+  }
+  axisLabel: {
+    offset: [number, number]
+    colorType: ColorType
+  }
+  rankingAmount: 'auto' | number
+}
 
+export interface OrdinalAuxParams {
+  showLine: boolean
+  showLabel: boolean
+  lineDashArray: string
+  lineColorType: ColorType
+  labelColorType: ColorType
+  labelTextColorType: ColorType
+  labelTextFormat: (text: string) => string
+  labelPadding: number
+}
+
+export interface OrdinalAxisParams {
+  labelOffset: [number, number]
+  labelColorType: ColorType
+  axisLineVisible: boolean
+  axisLineColorType: ColorType
+  ticks: number | null | 'all'
+  tickFormat: string | ((text: d3.NumberValue) => string | d3.NumberValue)
+  tickLineVisible: boolean
+  tickPadding: number
+  tickFullLine: boolean
+  tickFullLineDasharray: string
+  tickColorType: ColorType
+  // axisLineColor: string
+  // axisLabelColor: string
+  tickTextRotate: number
+  tickTextColorType: ColorType
 }
 
 export interface OrdinalZoomParams {
@@ -69,7 +114,7 @@ export interface RacingBarsParams {
   barLabel: {
     position: 'inside' | 'outside' | 'none'
     padding: number
-    rotate: number
+    // rotate: number
     colorType: ColorType
   }
   valueLabel: {

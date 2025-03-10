@@ -2,6 +2,10 @@ import type { ComputedDataTypeMap } from '../../lib/core-types'
 import type {
   MultiValueLegendParams,
   MultiValueTooltipParams,
+  OrdinalBubblesParams,
+  OrdinalAuxParams,
+  OrdinalAxisParams,
+  OrdinalZoomParams,
   RacingBarsParams,
   RacingCounterTextsParams,
   RacingValueAxisParams,
@@ -87,21 +91,61 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
   </g>\`
 }`
 
-// export const DEFAULT_RANKING_AXIS_PARAMS: RacingAxisParams = {
-//   labelOffset: [0, 0],
-//   labelColorType: 'primary',
-//   axisLineVisible: false,
-//   axisLineColorType: 'primary',
-//   // ticks: null,
-//   // tickFormat: v => v,
-//   tickLineVisible: true,
-//   tickPadding: 20,
-//   // tickFullLine: true,
-//   // tickFullLineDasharray: 'none',
-//   tickColorType: 'secondary',
-//   tickTextRotate: 0,
-//   tickTextColorType: 'primary'
-// }
+export const DEFAULT_ORDINAL_BUBBLES_PARAMS: OrdinalBubblesParams = {
+  bubble: {
+    sizeAdjust: 1,
+    arcScaleType: 'area',
+    valueLinearOpacity: [0.8, 0.8]
+    
+  },
+  itemLabel: {
+    padding: 20,
+    colorType: 'primary'
+  },
+  axisLabel: {
+    offset: [0, 0],
+    colorType: 'primary'
+  },
+  rankingAmount: 10
+}
+
+export const DEFAULT_ORDINAL_AUX_PARAMS: OrdinalAuxParams = {
+  showLine: true,
+  showLabel: true,
+  lineDashArray: '3, 3',
+  lineColorType: 'primary',
+  labelColorType: 'primary',
+  labelTextColorType: 'background',
+  // labelTextFormat: text => text,
+  // labelTextFormat: (value: number) => String(Math.round(value)),
+  labelTextFormat: v => v,
+  labelPadding: 20,
+  // labelRotate: 0
+}
+DEFAULT_ORDINAL_AUX_PARAMS.labelTextFormat.toString = () => `v => v`
+
+export const DEFAULT_ORDINAL_AXIS_PARAMS: OrdinalAxisParams = {
+  labelOffset: [0, 0],
+  labelColorType: 'primary',
+  axisLineVisible: false,
+  axisLineColorType: 'secondary',
+  ticks: 4,
+  // ticks: 'all',
+  // tickFormat: ',.0f',
+  tickFormat: v => v,
+  tickLineVisible: true,
+  tickPadding: 20,
+  tickFullLine: true,
+  tickFullLineDasharray: 'none',
+  tickColorType: 'secondary',
+  tickTextRotate: 0,
+  tickTextColorType: 'primary'
+}
+DEFAULT_ORDINAL_AXIS_PARAMS.tickFormat.toString = () => `v => v`
+
+export const DEFAULT_ORDINAL_ZOOM_PARAMS: OrdinalZoomParams = {
+
+}
 
 export const DEFAULT_RACING_BARS_PARAMS: RacingBarsParams = {
   bar: {
@@ -112,7 +156,7 @@ export const DEFAULT_RACING_BARS_PARAMS: RacingBarsParams = {
   barLabel: {
     position: 'inside',
     padding: 20,
-    rotate: 0,
+    // rotate: 0,
     colorType: 'labelContrast'
   },
   valueLabel: {
