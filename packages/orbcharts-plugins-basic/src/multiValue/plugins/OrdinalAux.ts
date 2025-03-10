@@ -168,7 +168,7 @@ function createLabelData ({ valueLabelData, axisX, xValue, fullParams, textSizeP
   const xMaxLengthText = xTextArr.reduce((acc, current) => current.length > acc.length ? current : acc, '')
   const xTextWidth = measureTextWidth(xMaxLengthText, textSizePx)
   const xTextHeight = textSizePx * xTextArr.length
-  const xRectWidth = xTextWidth + (rectPaddingWidth * 2)
+  const xRectWidth = xTextWidth + (rectPaddingWidth * 2) + 10 // + 10 是為了增加誤差容錯的 work around
   const xRectHeight = xTextHeight + (rectPaddingHeight * 2)
   const xRectX = - xRectWidth / 2
   const xRectY = - rectPaddingHeight
@@ -395,11 +395,11 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
       .attr('height', d.rootHeight)
   })
 
-  // const highlightTarget$ = observer.fullChartParams$.pipe(
-  //   takeUntil(destroy$),
-  //   map(d => d.highlightTarget),
-  //   distinctUntilChanged()
-  // )
+  const highlightTarget$ = observer.fullChartParams$.pipe(
+    takeUntil(destroy$),
+    map(d => d.highlightTarget),
+    distinctUntilChanged()
+  )
 
   // const rootMousemove$: Observable<any> = d3EventObservable(rootSelection, 'mousemove')
   //   .pipe(
@@ -491,11 +491,11 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
     // rootMousemove: rootMousemove$,
     layout: observer.layout$,
     xyPosition: xyPosition$,
-    // computedData: observer.computedData$,
+    computedData: observer.computedData$,
     fullParams: observer.fullParams$,
     fullDataFormatter: observer.fullDataFormatter$,
     fullChartParams: observer.fullChartParams$,
-    // highlightTarget: highlightTarget$,
+    highlightTarget: highlightTarget$,
     textReverseTransform: textReverseTransform$,
     // CategoryDataMap: observer.CategoryDataMap$,
     textSizePx: observer.textSizePx$,
@@ -546,79 +546,83 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
     })
 
     // label的事件
-    // labelSelection
-    //   .on('mouseover', (event, datum) => {
-    //     event.stopPropagation()
-    //     // const { groupIndex, groupLabel } = data.xyPositionFn(event)
+    labelSelection
+      .on('mouseover', (event, datum) => {
+        event.stopPropagation()
+        // const { groupIndex, groupLabel } = data.xyPositionFn(event)
 
-    //     isLabelMouseover = true
+        isLabelMouseover = true
 
-    //     subject.event$.next({
-    //       type: 'multiValue',
-    //       eventName: 'mouseover',
-    //       pluginName,
-    //       highlightTarget: data.highlightTarget,
-    //       datum,
-    //       category: [],
-    //       categoryIndex: -1,
-    //       categoryLabel: '',
-    //       data: data.computedData,
-    //       event,
-    //     })
-    //   })
-    //   .on('mousemove', (event, datum) => {
-    //     event.stopPropagation()
-    //     // const { groupIndex, groupLabel } = data.xyPositionFn(event)
+        subject.event$.next({
+          type: 'multiValue',
+          eventName: 'mouseover',
+          pluginName,
+          highlightTarget: data.highlightTarget,
+          valueDetail: [],
+          datum: null,
+          category: [],
+          categoryIndex: -1,
+          categoryLabel: '',
+          data: data.computedData,
+          event,
+        })
+      })
+      .on('mousemove', (event, datum) => {
+        event.stopPropagation()
+        // const { groupIndex, groupLabel } = data.xyPositionFn(event)
 
-    //     subject.event$.next({
-    //       type: 'multiValue',
-    //       eventName: 'mousemove',
-    //       pluginName,
-    //       highlightTarget: data.highlightTarget,
-    //       datum,
-    //       category: [],
-    //       categoryIndex: -1,
-    //       categoryLabel: '',
-    //       data: data.computedData,
-    //       event,
-    //     })
-    //   })
-    //   .on('mouseout', (event, datum) => {
-    //     event.stopPropagation()
-    //     // const { groupIndex, groupLabel } = data.xyPositionFn(event)
+        subject.event$.next({
+          type: 'multiValue',
+          eventName: 'mousemove',
+          pluginName,
+          highlightTarget: data.highlightTarget,
+          valueDetail: [],
+          datum: null,
+          category: [],
+          categoryIndex: -1,
+          categoryLabel: '',
+          data: data.computedData,
+          event,
+        })
+      })
+      .on('mouseout', (event, datum) => {
+        event.stopPropagation()
+        // const { groupIndex, groupLabel } = data.xyPositionFn(event)
 
-    //     isLabelMouseover = false
+        isLabelMouseover = false
 
-    //     subject.event$.next({
-    //       type: 'multiValue',
-    //       eventName: 'mouseout',
-    //       pluginName,
-    //       highlightTarget: data.highlightTarget,
-    //       datum,
-    //       category: [],
-    //       categoryIndex: -1,
-    //       categoryLabel: '',
-    //       data: data.computedData,
-    //       event,
-    //     })
-    //   })
-    //   .on('click', (event, datum) => {
-    //     event.stopPropagation()
-    //     // const { groupIndex, groupLabel } = data.xyPositionFn(event)
+        subject.event$.next({
+          type: 'multiValue',
+          eventName: 'mouseout',
+          pluginName,
+          highlightTarget: data.highlightTarget,
+          valueDetail: [],
+          datum: null,
+          category: [],
+          categoryIndex: -1,
+          categoryLabel: '',
+          data: data.computedData,
+          event,
+        })
+      })
+      .on('click', (event, datum) => {
+        event.stopPropagation()
+        // const { groupIndex, groupLabel } = data.xyPositionFn(event)
 
-    //     subject.event$.next({
-    //       type: 'multiValue',
-    //       eventName: 'click',
-    //       pluginName,
-    //       highlightTarget: data.highlightTarget,
-    //       datum,
-    //       category: [],
-    //       categoryIndex: -1,
-    //       categoryLabel: '',
-    //       data: data.computedData,
-    //       event,
-    //     })
-    //   })
+        subject.event$.next({
+          type: 'multiValue',
+          eventName: 'click',
+          pluginName,
+          highlightTarget: data.highlightTarget,
+          valueDetail: [],
+          datum: null,
+          category: [],
+          categoryIndex: -1,
+          categoryLabel: '',
+          data: data.computedData,
+          event,
+        })
+      })
 
   })
 
@@ -635,10 +639,10 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
     switchMap(async d => d)
   ).subscribe(data => {
     setTimeout(() => {
-      // // @Q@ workaround - 不知為何和 label 會有衝突，當滑鼠移動到 label 上時，會觸發 mouseout 事件
-      // if (isLabelMouseover == true) {
-      //   return
-      // }
+      // @Q@ workaround - 不知為何和 label 會有衝突，當滑鼠移動到 label 上時，會觸發 mouseout 事件
+      if (isLabelMouseover == true) {
+        return
+      }
       
       removeLine(data.axesSelection)
       removeLabel(data.axesSelection)

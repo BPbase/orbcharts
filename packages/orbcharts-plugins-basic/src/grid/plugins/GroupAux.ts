@@ -220,7 +220,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
     )
     .each((datum, i, n) => {
       // const rectWidth = measureTextWidth(datum.text, textSizePx) + 12
-      const rectWidth = datum.textWidth + 12
+      const rectWidth = datum.textWidth + 12 + 10 // + 10 是為了增加誤差容錯的 work around
       const rectHeight = datum.textHeight + 6
       // -- label偏移位置 --
       let rectX = - rectWidth / 2
