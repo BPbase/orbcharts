@@ -277,6 +277,7 @@ export const RacingBars = defineMultiValuePlugin(pluginConfig)(({ selection, nam
     // xyValueIndex$: observer.xyValueIndex$,
     CategoryDataMap$: observer.CategoryDataMap$,
     fullParams$: observer.fullParams$,
+    fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,
     highlight$: observer.highlight$,
     rankingItemHeight$,

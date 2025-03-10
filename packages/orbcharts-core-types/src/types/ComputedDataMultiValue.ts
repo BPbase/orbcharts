@@ -3,11 +3,11 @@ import type { ComputedDatumBase, ComputedDatumBaseCategory, ComputedDatumBaseMul
 export type ComputedDataMultiValue = ComputedDatumMultiValue[][]
 
 export interface ComputedDatumMultiValue extends ComputedDatumBase, ComputedDatumBaseCategory, ComputedDatumBaseMultiValue {
-  datumIndex: number
+  // datumIndex: number
   xValueIndex: number
   yValueIndex: number
   value: (number | null)[]
-  _visibleValue: (number | null)[] // 有顯示出來的值（用於tooltip）
+  // _visibleValue: (number | null)[] // 有顯示出來的值（用於tooltip）
 }
 
 export interface ComputedDatumWithSumMultiValue extends ComputedDatumMultiValue {

@@ -66,7 +66,7 @@ interface RenderGraphicGParams {
 
 // 對應到 value 裡的每個值
 interface BubbleValueDatum {
-  index: number
+  valueIndex: number
   x: number
   y: number
   r: number
@@ -77,7 +77,7 @@ interface BubbleValueDatum {
 
 interface BubblesDatum extends ComputedDatumWithSumMultiValue {
   graphicValue: Array<BubbleValueDatum>
-  _visibleValue: number[]
+  // _visibleValue: number[]
 }
 
 type ClipPathDatum = {
@@ -485,7 +485,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
             }
 
             return {
-              index: vIndex,
+              valueIndex: vIndex,
               x,
               y: rankingScale(d.label),
               r: data.radiusScale(v),
@@ -495,7 +495,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
             }
           })
           d.graphicValue = graphicValue
-          d._visibleValue = [] // highlight的時候才寫入
+          // d._visibleValue = [] // highlight的時候才寫入
           return d
         })
       })
@@ -562,7 +562,8 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
     graphicSelection: graphicSelection$,
     computedData: computedData$,
     CategoryDataMap: CategoryDataMap$,
-    highlightTarget: highlightTarget$
+    highlightTarget: highlightTarget$,
+    fullDataFormatter: fullDataFormatter$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -574,17 +575,24 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
         
         // reference 到資料本身
         const datum = valueDatum._refDatum
-        
+
         // 只顯示目前的值
         // datum._visibleValue = [datum.value[valueDatum.index]]
         // 只顯示總數
-        datum._visibleValue = [datum.sum]
+        // datum._visibleValue = [datum.sum]
 
         event$.next({
           type: 'multiValue',
           eventName: 'mouseover',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[valueDatum.valueIndex],
+              valueIndex: valueDatum.valueIndex,
+              valueLabel: data.fullDataFormatter.valueLabels[valueDatum.valueIndex] ?? String(valueDatum.valueIndex)
+            },
+          ],
           datum: datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -602,13 +610,20 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
         // 只顯示目前的值
         // datum._visibleValue = [datum.value[valueDatum.index]]
         // 只顯示總數
-        datum._visibleValue = [datum.sum]
+        // datum._visibleValue = [datum.sum]
         
         event$.next({
           type: 'multiValue',
           eventName: 'mousemove',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[valueDatum.valueIndex],
+              valueIndex: valueDatum.valueIndex,
+              valueLabel: data.fullDataFormatter.valueLabels[valueDatum.valueIndex] ?? String(valueDatum.valueIndex)
+            },
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -628,6 +643,13 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
           eventName: 'mouseout',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[valueDatum.valueIndex],
+              valueIndex: valueDatum.valueIndex,
+              valueLabel: data.fullDataFormatter.valueLabels[valueDatum.valueIndex] ?? String(valueDatum.valueIndex)
+            },
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -645,13 +667,20 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
         // 只顯示目前的值
         // datum._visibleValue = [datum.value[valueDatum.index]]
         // 只顯示總數
-        datum._visibleValue = [datum.sum]
+        // datum._visibleValue = [datum.sum]
 
         event$.next({
           type: 'multiValue',
           eventName: 'click',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[valueDatum.valueIndex],
+              valueIndex: valueDatum.valueIndex,
+              valueLabel: data.fullDataFormatter.valueLabels[valueDatum.valueIndex] ?? String(valueDatum.valueIndex)
+            },
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,

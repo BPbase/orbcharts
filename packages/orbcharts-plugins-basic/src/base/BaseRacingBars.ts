@@ -13,7 +13,7 @@ import type {
   ComputedDatumMultiValue,
   ComputedDataMultiValue,
   // ComputedLayoutDataGrid,
-  DataFormatterTypeMap,
+  DataFormatterMultiValue,
   ContainerPositionScaled,
   ContainerSize,
   EventMultiValue,
@@ -40,6 +40,7 @@ interface BaseRacingBarsContext {
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
   fullParams$: Observable<BaseRacingBarsParams>
   fullChartParams$: Observable<ChartParams>
+  fullDataFormatter$: Observable<DataFormatterMultiValue>
   // xyValueIndex$: Observable<[number, number]>
   highlight$: Observable<ComputedDatumMultiValue[]>
   rankingItemHeight$: Observable<number>
@@ -228,6 +229,7 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
   // categoryLabels$,
   CategoryDataMap$,
   fullParams$,
+  fullDataFormatter$,
   fullChartParams$,
   // layout$,
   // graphicTransform$,
@@ -434,7 +436,8 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
     graphicSelection: graphicSelection$,
     computedData: computedData$,
     CategoryDataMap: CategoryDataMap$,
-    highlightTarget: highlightTarget$
+    highlightTarget: highlightTarget$,
+    fullDataFormatter: fullDataFormatter$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -457,13 +460,20 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
         // })
 
         // 只顯示目前的值
-        datum._visibleValue = [datum.value[datum.xValueIndex]]
+        // datum._visibleValue = [datum.value[datum.xValueIndex]]
 
         event$.next({
           type: 'multiValue',
           eventName: 'mouseover',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[datum.xValueIndex],
+              valueIndex: datum.xValueIndex,
+              valueLabel: data.fullDataFormatter.valueLabels[datum.xValueIndex] ?? String(datum.xValueIndex)
+            },
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -476,13 +486,20 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
         // event.stopPropagation()
 
         // 只顯示目前的值
-        datum._visibleValue = [datum.value[datum.xValueIndex]]
+        // datum._visibleValue = [datum.value[datum.xValueIndex]]
         
         event$.next({
           type: 'multiValue',
           eventName: 'mousemove',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[datum.xValueIndex],
+              valueIndex: datum.xValueIndex,
+              valueLabel: data.fullDataFormatter.valueLabels[datum.xValueIndex] ?? String(datum.xValueIndex)
+            },
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -499,6 +516,13 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
           eventName: 'mouseout',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[datum.xValueIndex],
+              valueIndex: datum.xValueIndex,
+              valueLabel: data.fullDataFormatter.valueLabels[datum.xValueIndex] ?? String(datum.xValueIndex)
+            },
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -511,13 +535,20 @@ export const createBaseRacingBars: BasePluginFn<BaseRacingBarsContext> = (plugin
         // event.stopPropagation()
 
         // 只顯示目前的值
-        datum._visibleValue = [datum.value[datum.xValueIndex]]
+        // datum._visibleValue = [datum.value[datum.xValueIndex]]
 
         event$.next({
           type: 'multiValue',
           eventName: 'click',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[datum.xValueIndex],
+              valueIndex: datum.xValueIndex,
+              valueLabel: data.fullDataFormatter.valueLabels[datum.xValueIndex] ?? String(datum.xValueIndex)
+            },
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,

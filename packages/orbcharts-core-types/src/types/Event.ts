@@ -82,6 +82,12 @@ export interface EventBaseCategoryValue<T extends 'multiValue' | 'relationship' 
   // datum: ComputedDatumTypeMap<T> | null
 }
 
+export interface ValueDetail {
+  value: number | null
+  valueIndex: number
+  valueLabel: string
+}
+
 export interface EventSeries extends EventBase<'series'>, EventBaseSeriesValue {
 
 }
@@ -95,7 +101,7 @@ export interface EventMultiGrid extends EventBase<'multiGrid'>, EventBaseGridVal
 }
 
 export interface EventMultiValue extends EventBase<'multiValue'>, EventBaseCategoryValue<'multiValue'> {
-
+  valueDetail: ValueDetail[]
 }
 
 export interface EventRelationship extends EventBase<'relationship'>, EventBaseCategoryValue<'relationship'> {

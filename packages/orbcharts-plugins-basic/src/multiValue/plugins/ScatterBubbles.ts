@@ -420,6 +420,18 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
     })
   )
 
+  const valueLabels$ = observer.fullDataFormatter$.pipe(
+    takeUntil(destroy$),
+    map(dataFormatter => {
+      return [
+        dataFormatter.valueLabels[0] ?? 'X',
+        dataFormatter.valueLabels[1] ?? 'Y',
+        dataFormatter.valueLabels[2] ?? 'Value'
+      ]
+    }),
+    distinctUntilChanged((a, b) => a[0] === b[0] && a[1] === b[1] && a[2] === b[2])
+  )
+
   const highlightTarget$ = observer.fullChartParams$.pipe(
     takeUntil(destroy$),
     map(d => d.highlightTarget),
@@ -430,7 +442,8 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
     graphicSelection: graphicSelection$,
     computedData: observer.computedData$,
     CategoryDataMap: observer.CategoryDataMap$,
-    highlightTarget: highlightTarget$
+    highlightTarget: highlightTarget$,
+    valueLabels: valueLabels$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -456,6 +469,23 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
           eventName: 'mouseover',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[0],
+              valueIndex: 0,
+              valueLabel: data.valueLabels[0]
+            },
+            {
+              value: datum.value[1],
+              valueIndex: 1,
+              valueLabel: data.valueLabels[1]
+            },
+            {
+              value: datum.value[2],
+              valueIndex: 2,
+              valueLabel: data.valueLabels[2]
+            }
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -472,6 +502,23 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
           eventName: 'mousemove',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[0],
+              valueIndex: 0,
+              valueLabel: data.valueLabels[0]
+            },
+            {
+              value: datum.value[1],
+              valueIndex: 1,
+              valueLabel: data.valueLabels[1]
+            },
+            {
+              value: datum.value[2],
+              valueIndex: 2,
+              valueLabel: data.valueLabels[2]
+            }
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -488,6 +535,23 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
           eventName: 'mouseout',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[0],
+              valueIndex: 0,
+              valueLabel: data.valueLabels[0]
+            },
+            {
+              value: datum.value[1],
+              valueIndex: 1,
+              valueLabel: data.valueLabels[1]
+            },
+            {
+              value: datum.value[2],
+              valueIndex: 2,
+              valueLabel: data.valueLabels[2]
+            }
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -504,6 +568,23 @@ export const ScatterBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
           eventName: 'click',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[0],
+              valueIndex: 0,
+              valueLabel: data.valueLabels[0]
+            },
+            {
+              value: datum.value[1],
+              valueIndex: 1,
+              valueLabel: data.valueLabels[1]
+            },
+            {
+              value: datum.value[2],
+              valueIndex: 2,
+              valueLabel: data.valueLabels[2]
+            }
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,

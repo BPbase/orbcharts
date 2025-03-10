@@ -292,6 +292,17 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
     })
   )
 
+  const valueLabels$ = observer.fullDataFormatter$.pipe(
+    takeUntil(destroy$),
+    map(dataFormatter => {
+      return [
+        dataFormatter.valueLabels[0] ?? 'X',
+        dataFormatter.valueLabels[1] ?? 'Y'
+      ]
+    }),
+    distinctUntilChanged((a, b) => a[0] === b[0] && a[1] === b[1])
+  )
+
   const highlightTarget$ = observer.fullChartParams$.pipe(
     takeUntil(destroy$),
     map(d => d.highlightTarget),
@@ -302,7 +313,8 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
     graphicSelection: graphicSelection$,
     computedData: observer.computedData$,
     CategoryDataMap: observer.CategoryDataMap$,
-    highlightTarget: highlightTarget$
+    highlightTarget: highlightTarget$,
+    valueLabels: valueLabels$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -328,6 +340,18 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
           eventName: 'mouseover',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[0],
+              valueIndex: 0,
+              valueLabel: data.valueLabels[0]
+            },
+            {
+              value: datum.value[1],
+              valueIndex: 1,
+              valueLabel: data.valueLabels[1]
+            }
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -344,6 +368,18 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
           eventName: 'mousemove',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[0],
+              valueIndex: 0,
+              valueLabel: data.valueLabels[0]
+            },
+            {
+              value: datum.value[1],
+              valueIndex: 1,
+              valueLabel: data.valueLabels[1]
+            }
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -360,6 +396,18 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
           eventName: 'mouseout',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[0],
+              valueIndex: 0,
+              valueLabel: data.valueLabels[0]
+            },
+            {
+              value: datum.value[1],
+              valueIndex: 1,
+              valueLabel: data.valueLabels[1]
+            }
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -376,6 +424,18 @@ export const Scatter = defineMultiValuePlugin(pluginConfig)(({ selection, name, 
           eventName: 'click',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[0],
+              valueIndex: 0,
+              valueLabel: data.valueLabels[0]
+            },
+            {
+              value: datum.value[1],
+              valueIndex: 1,
+              valueLabel: data.valueLabels[1]
+            }
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
