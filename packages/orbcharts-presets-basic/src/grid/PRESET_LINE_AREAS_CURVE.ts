@@ -2,7 +2,6 @@ import type { PresetPartial } from '../../lib/core-types'
 import type { PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_LINE_AREAS_CURVE: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
@@ -49,14 +48,11 @@ export const PRESET_LINE_AREAS_CURVE: PresetPartial<'grid', Partial<PresetGridPl
     highlightTarget: 'series'
   },
   dataFormatter: {
-    // grid: {
-      groupAxis: {
-        scalePadding: 0
-      }
-    // }
+    groupAxis: {
+      scalePadding: 0
+    }
   },
   pluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Lines: {
       lineCurve: 'curveMonotoneX',
       lineWidth: 3
@@ -69,8 +65,6 @@ export const PRESET_LINE_AREAS_CURVE: PresetPartial<'grid', Partial<PresetGridPl
     ValueAxis: {},
     GroupAux: {},
     GridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
       listRectHeight: 2

@@ -71,6 +71,9 @@ interface ValueLabelData {
 const pluginName = 'OrdinalAux'
 const labelClassName = getClassName(pluginName, 'label-box')
 
+const rectPaddingWidth = 6
+const rectPaddingHeight = 3
+
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_ORDINAL_AUX_PARAMS> = {
   name: pluginName,
   defaultParams: DEFAULT_ORDINAL_AUX_PARAMS,
@@ -155,8 +158,7 @@ function createLabelData ({ valueLabelData, axisX, xValue, fullParams, textSizeP
   if ((axisX >= 0 && axisX <= layout.width) === false) {
     return []
   }
-  const rectPaddingWidth = 6
-  const rectPaddingHeight = 3
+
 
   // x
   const xX = axisX
@@ -168,7 +170,7 @@ function createLabelData ({ valueLabelData, axisX, xValue, fullParams, textSizeP
   const xMaxLengthText = xTextArr.reduce((acc, current) => current.length > acc.length ? current : acc, '')
   const xTextWidth = measureTextWidth(xMaxLengthText, textSizePx)
   const xTextHeight = textSizePx * xTextArr.length
-  const xRectWidth = xTextWidth + (rectPaddingWidth * 2) + 10 // + 10 是為了增加誤差容錯的 work around
+  const xRectWidth = xTextWidth + (rectPaddingWidth * 2)
   const xRectHeight = xTextHeight + (rectPaddingHeight * 2)
   const xRectX = - xRectWidth / 2
   const xRectY = - rectPaddingHeight
@@ -282,15 +284,10 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
       exit => exit.remove()
     )
     .each((datum, i, n) => {
-      // // const rectWidth = measureTextWidth(datum.text, textSizePx) + 12
-      // const rectWidth = datum.textWidth + 12
-      // const rectHeight = datum.textHeight + 6
-      // // -- label偏移位置 --
-      // let rectX = - rectWidth / 2
-      // let rectY = 2
+      const gSelection = d3.select(n[i])
 
       // -- rect --
-      d3.select(n[i])
+      const rect = gSelection
         .selectAll<SVGRectElement, LabelDatum>('rect')
         .data([datum])
         .join(
@@ -309,7 +306,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
         .style('transform', textReverseTransform)
 
       // -- text --
-      d3.select(n[i])
+      const text = gSelection
         .selectAll<SVGTextElement, LabelDatum>('text')
         .data([datum])
         .join(
@@ -335,6 +332,22 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
             isContainerRotated: false
           })
         })
+      
+      // -- 第二次文字寬度（因為原本計算的文字寬度有可能因為字體差異會有誤差） --
+      // 取得文字寬度
+      let textWidthArr: number[] = []
+      text.selectAll('tspan')
+        .each((d, i, n) => {
+          const tspan = d3.select(n[i])
+          const textNode: SVGTextElement = tspan.node() as SVGTextElement
+          if (textNode && textNode.getBBox()) {
+            textWidthArr.push(textNode.getBBox().width)
+          }
+        })
+      const maxTextWidth = Math.max(...textWidthArr)
+      // 依文字寬度設定矩形寬度
+      rect.attr('width', maxTextWidth + rectPaddingWidth * 2)
+
     })
 
   return axisLabelSelection
@@ -446,7 +459,7 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
     distinctUntilChanged()
   )
 
-  // const xyPosition$ = multiValueXYPositionObservable({
+  // const ordinalPosition$ = multiValueXYPositionObservable({
   //   rootSelection,
   //   fullDataFormatter$: observer.fullDataFormatter$,
   //   filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
@@ -456,7 +469,7 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
   //   takeUntil(destroy$)
   // )
 
-  const xyPosition$ = ordinalPositionObservable({
+  const ordinalPosition$ = ordinalPositionObservable({
     rootSelection,
     // fullDataFormatter$: observer.fullDataFormatter$,
     ordinalScaleDomain$: observer.ordinalScaleDomain$,
@@ -469,20 +482,14 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
   })
 
   const valueLabelData$ = combineLatest({
-    // valueLabels: observer.valueLabels$,
-    computedData: observer.computedData$,
+    valueLabels: observer.valueLabels$,
     fullParams: observer.fullParams$,
-    fullDataFormatter: observer.fullDataFormatter$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      const valueLabels = data.computedData[0] && data.computedData[0][0] && data.computedData[0][0].value.length
-        ? data.computedData[0][0].value.map((d, i) => data.fullDataFormatter.valueLabels[i] ?? String(i))
-        : []
-      return createValueLabelData(valueLabels, data.fullParams.labelTextFormat)
+      return createValueLabelData(data.valueLabels, data.fullParams.labelTextFormat)
     }),
-    // distinctUntilChanged(),
     shareReplay(1)
   )
 
@@ -490,7 +497,7 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
     axesSelection: axesSelection$,
     // rootMousemove: rootMousemove$,
     layout: observer.layout$,
-    xyPosition: xyPosition$,
+    ordinalPosition: ordinalPosition$,
     computedData: observer.computedData$,
     fullParams: observer.fullParams$,
     fullDataFormatter: observer.fullDataFormatter$,
@@ -507,7 +514,7 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
     switchMap(async d => d),
   ).subscribe(data => {
     // 依event的座標取得group資料
-    const { x, xValue } = data.xyPosition
+    const { x, xValue } = data.ordinalPosition
     // console.log({ x, xValue })
 
     const lineData = createLineData({
@@ -549,7 +556,7 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
     labelSelection
       .on('mouseover', (event, datum) => {
         event.stopPropagation()
-        // const { groupIndex, groupLabel } = data.xyPositionFn(event)
+        // const { groupIndex, groupLabel } = data.ordinalPositionFn(event)
 
         isLabelMouseover = true
 
@@ -569,7 +576,7 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
       })
       .on('mousemove', (event, datum) => {
         event.stopPropagation()
-        // const { groupIndex, groupLabel } = data.xyPositionFn(event)
+        // const { groupIndex, groupLabel } = data.ordinalPositionFn(event)
 
         subject.event$.next({
           type: 'multiValue',
@@ -587,7 +594,7 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
       })
       .on('mouseout', (event, datum) => {
         event.stopPropagation()
-        // const { groupIndex, groupLabel } = data.xyPositionFn(event)
+        // const { groupIndex, groupLabel } = data.ordinalPositionFn(event)
 
         isLabelMouseover = false
 
@@ -607,7 +614,7 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
       })
       .on('click', (event, datum) => {
         event.stopPropagation()
-        // const { groupIndex, groupLabel } = data.xyPositionFn(event)
+        // const { groupIndex, groupLabel } = data.ordinalPositionFn(event)
 
         subject.event$.next({
           type: 'multiValue',

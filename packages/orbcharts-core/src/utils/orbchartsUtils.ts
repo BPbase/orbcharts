@@ -54,6 +54,10 @@ export function createDefaultCategoryLabel () {
   return '' // 空值
 }
 
+export function createDefaultValueLabel (chartTypeOrPrefix: string, valueIndex: number) {
+  return `${chartTypeOrPrefix}_value${valueIndex}`
+}
+
 export function createGridSeriesLabels ({ transposedDataGrid, dataFormatterGrid, chartType = 'grid' }: {
   transposedDataGrid: DataGridDatum[][],
   dataFormatterGrid: DataFormatterGridGrid

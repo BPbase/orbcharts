@@ -21,6 +21,7 @@ import type {
 import type { OrdinalAxisParams } from '../../../lib/plugins-basic-types'
 import {
   defineMultiValuePlugin,
+  createDefaultValueLabel
 } from '../../../lib/core'
 import { DEFAULT_ORDINAL_AXIS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_AXIS } from '../../const'
@@ -403,20 +404,14 @@ export const OrdinalAxis = defineMultiValuePlugin(pluginConfig)(({ selection, na
     )
 
   const valueLabelData$ = combineLatest({
-    // valueLabels: observer.valueLabels$,
-    computedData: observer.computedData$,
+    valueLabels: observer.valueLabels$,
     fullParams: observer.fullParams$,
-    fullDataFormatter: observer.fullDataFormatter$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      const valueLabels = data.computedData[0] && data.computedData[0][0] && data.computedData[0][0].value.length
-        ? data.computedData[0][0].value.map((d, i) => data.fullDataFormatter.valueLabels[i] ?? String(i))
-        : []
-      return createValueLabelData(valueLabels, data.fullParams.tickFormat)
+      return createValueLabelData(data.valueLabels, data.fullParams.tickFormat)
     }),
-    // distinctUntilChanged(),
     shareReplay(1)
   )
 

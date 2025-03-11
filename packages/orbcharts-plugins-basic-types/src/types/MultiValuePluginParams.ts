@@ -36,26 +36,6 @@ export interface MultiValueTooltipParams {
   )
 }
 
-export interface OrdinalBubblesParams {
-  bubble: {
-    // radiusMin: number // 對應value最小值
-    // radiusMax: number // 對應value最大值
-    sizeAdjust: number
-    arcScaleType: 'area' | 'radius',
-    valueLinearOpacity: [number, number]
-  }
-  itemLabel: {
-    padding: number
-    // rotate: number
-    colorType: ColorType
-  }
-  axisLabel: {
-    offset: [number, number]
-    colorType: ColorType
-  }
-  rankingAmount: 'auto' | number
-}
-
 export interface OrdinalAuxParams {
   showLine: boolean
   showLabel: boolean
@@ -83,6 +63,26 @@ export interface OrdinalAxisParams {
   // axisLabelColor: string
   tickTextRotate: number
   tickTextColorType: ColorType
+}
+
+export interface OrdinalBubblesParams {
+  bubble: {
+    // radiusMin: number // 對應value最小值
+    // radiusMax: number // 對應value最大值
+    sizeAdjust: number
+    arcScaleType: 'area' | 'radius',
+    valueLinearOpacity: [number, number]
+  }
+  itemLabel: {
+    padding: number
+    // rotate: number
+    colorType: ColorType
+  }
+  axisLabel: {
+    offset: [number, number]
+    colorType: ColorType
+  }
+  rankingAmount: 'auto' | number
 }
 
 export interface OrdinalZoomParams {

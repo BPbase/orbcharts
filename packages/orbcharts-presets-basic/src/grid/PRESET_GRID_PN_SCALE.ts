@@ -1,6 +1,5 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetGridPluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_GRID_PN_SCALE: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
@@ -46,19 +45,13 @@ export const PRESET_GRID_PN_SCALE: PresetPartial<'grid', Partial<PresetGridPlugi
     },
   },
   dataFormatter: {
-    // grid: {
-      valueAxis: {
-        scaleDomain: ['auto', 'auto'],
-        scaleRange: [0.05, 0.95],
-      },
-    // }
+    valueAxis: {
+      scaleDomain: ['auto', 'auto'],
+      scaleRange: [0.05, 0.95],
+    },
   },
   pluginParams: {
-    // ...ALL_PLUGIN_PARAMS_GRID,
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     GridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
     }

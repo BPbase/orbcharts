@@ -50,8 +50,6 @@ export const PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES: PresetPartial<'series',
     sumSeries: true,
   },
   pluginParams: {
-    // ...ALL_PLUGIN_PARAMS_SERIES,
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
   }
 }
 PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`

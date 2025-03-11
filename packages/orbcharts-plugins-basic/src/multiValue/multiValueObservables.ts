@@ -394,7 +394,8 @@ export const ordinalPositionObservable = ({ rootSelection, ordinalScaleDomain$, 
     rootMousemove: rootMousemove$,
     columnAmount: columnAmount$,
     layout: layout$,
-    containerPosition: containerPosition$
+    containerSize: containerSize$,
+    containerPosition: containerPosition$,
   }).pipe(
     switchMap(async d => d),
     map(data => {
@@ -414,11 +415,11 @@ export const ordinalPositionObservable = ({ rootSelection, ordinalScaleDomain$, 
   return combineLatest({
     scaleRangeLabels: scaleRangeLabels$,
     layout: layout$,
-    containerSize: containerSize$,
     axisX: axisX$,
     ordinalScale: ordinalScale$,
     ordinalPadding: ordinalPadding$,
-    ordinalScaleDomain: ordinalScaleDomain$
+    ordinalScaleDomain: ordinalScaleDomain$,
+    containerPosition: containerPosition$
   }).pipe(
     switchMap(async d => d),
     map(data => {
@@ -432,10 +433,10 @@ export const ordinalPositionObservable = ({ rootSelection, ordinalScaleDomain$, 
 
       const seq = xIndexScale(data.axisX)
       const xIndex = seq + data.ordinalScaleDomain[0]
-      const x = data.ordinalScale(xIndex) + data.ordinalPadding
+      const x = (data.ordinalScale(xIndex) + data.ordinalPadding) / data.containerPosition[0].scale[0]
 
       return {
-        x,
+        x: x,
         xValue: xIndex,
       }
     })

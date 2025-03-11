@@ -29,9 +29,25 @@ import type {
   HighlightTarget,
   Layout,
   TransformData } from '../../lib/core-types'
-import { getMinMax, getMinMaxMultiValue } from './orbchartsUtils'
+import { getMinMax, createDefaultValueLabel } from './orbchartsUtils'
 import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from './d3Scale'
 import { calcContainerPositionScaled } from './orbchartsUtils'
+
+export const valueLabelsObservable = ({ computedData$, fullDataFormatter$ }: {
+  computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'multiValue'>>
+}) => {
+  return combineLatest({
+    computedData: computedData$,
+    fullDataFormatter: fullDataFormatter$,
+  }).pipe(
+    map(data => {
+      return data.computedData[0] && data.computedData[0][0] && data.computedData[0][0].value.length
+        ? data.computedData[0][0].value.map((d, i) => data.fullDataFormatter.valueLabels[i] ?? createDefaultValueLabel('multiValue', i))
+        : []
+    }),
+  )
+}
 
 export const xyMinMaxObservable = ({ computedData$, xyValueIndex$ }: {
   computedData$: Observable<ComputedDataTypeMap<'multiValue'>>

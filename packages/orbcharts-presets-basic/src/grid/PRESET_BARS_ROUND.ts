@@ -2,7 +2,6 @@ import type { PresetPartial } from '../../lib/core-types'
 import type { PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_BARS_ROUND: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
@@ -48,7 +47,6 @@ export const PRESET_BARS_ROUND: PresetPartial<'grid', Partial<PresetGridPluginPa
     },
   },
   pluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Bars: {
       barWidth: 0,
       barPadding: 1,

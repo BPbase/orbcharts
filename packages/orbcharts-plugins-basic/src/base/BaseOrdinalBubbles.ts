@@ -39,6 +39,7 @@ interface BaseRacingBarsContext {
   computedData$: Observable<ComputedDataMultiValue>
   visibleComputedRankingData$: Observable<ComputedDatumWithSumMultiValue[][]>
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
+  valueLabels$: Observable<string[]>
   fullParams$: Observable<BaseOrdinalBubblesParams >
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiValue'>>
   fullChartParams$: Observable<ChartParams>
@@ -282,6 +283,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
   // xyValueIndex$,
   // categoryLabels$,
   CategoryDataMap$,
+  valueLabels$,
   fullParams$,
   fullDataFormatter$,
   fullChartParams$,
@@ -562,6 +564,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
     graphicSelection: graphicSelection$,
     computedData: computedData$,
     CategoryDataMap: CategoryDataMap$,
+    valueLabels: valueLabels$,
     highlightTarget: highlightTarget$,
     fullDataFormatter: fullDataFormatter$,
   }).pipe(
@@ -590,7 +593,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
             {
               value: datum.value[valueDatum.valueIndex],
               valueIndex: valueDatum.valueIndex,
-              valueLabel: data.fullDataFormatter.valueLabels[valueDatum.valueIndex] ?? String(valueDatum.valueIndex)
+              valueLabel: data.valueLabels[valueDatum.valueIndex]
             },
           ],
           datum: datum,
@@ -621,7 +624,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
             {
               value: datum.value[valueDatum.valueIndex],
               valueIndex: valueDatum.valueIndex,
-              valueLabel: data.fullDataFormatter.valueLabels[valueDatum.valueIndex] ?? String(valueDatum.valueIndex)
+              valueLabel: data.valueLabels[valueDatum.valueIndex]
             },
           ],
           datum,
@@ -647,7 +650,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
             {
               value: datum.value[valueDatum.valueIndex],
               valueIndex: valueDatum.valueIndex,
-              valueLabel: data.fullDataFormatter.valueLabels[valueDatum.valueIndex] ?? String(valueDatum.valueIndex)
+              valueLabel: data.valueLabels[valueDatum.valueIndex]
             },
           ],
           datum,
@@ -678,7 +681,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
             {
               value: datum.value[valueDatum.valueIndex],
               valueIndex: valueDatum.valueIndex,
-              valueLabel: data.fullDataFormatter.valueLabels[valueDatum.valueIndex] ?? String(valueDatum.valueIndex)
+              valueLabel: data.valueLabels[valueDatum.valueIndex]
             },
           ],
           datum,

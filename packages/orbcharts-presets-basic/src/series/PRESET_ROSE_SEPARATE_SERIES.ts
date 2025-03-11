@@ -49,8 +49,6 @@ export const PRESET_ROSE_SEPARATE_SERIES: PresetPartial<'series', Partial<Preset
     separateSeries: true,
   },
   pluginParams: {
-    // ...ALL_PLUGIN_PARAMS_SERIES,
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
   }
 }
 PRESET_ROSE_SEPARATE_SERIES.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`

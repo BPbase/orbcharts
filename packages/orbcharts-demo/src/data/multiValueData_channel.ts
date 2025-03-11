@@ -175,8 +175,8 @@ export default [
     ]
   },
   {
-    "id": "facebook [東森新聞]",
-    "label": "facebook [東森新聞]",
+    "id": "FB [東森新聞]",
+    "label": "FB [東森新聞]",
     "categoryLabel": "facebook",
     "value": [
       0,
@@ -210,8 +210,8 @@ export default [
     ]
   },
   {
-    "id": "facebook [TVBS新聞]",
-    "label": "facebook [TVBS新聞]",
+    "id": "FB [TVBS新聞]",
+    "label": "FB [TVBS新聞]",
     "categoryLabel": "facebook",
     "value": [
       0,
@@ -245,8 +245,8 @@ export default [
     ]
   },
   {
-    "id": "facebook [TVBS娛樂頭條]",
-    "label": "facebook [TVBS娛樂頭條]",
+    "id": "FB [TVBS娛樂頭條]",
+    "label": "FB [TVBS娛樂頭條]",
     "categoryLabel": "facebook",
     "value": [
       0,
@@ -490,8 +490,8 @@ export default [
     ]
   },
   {
-    "id": "facebook [快點TV]",
-    "label": "facebook [快點TV]",
+    "id": "FB [快點TV]",
+    "label": "FB [快點TV]",
     "categoryLabel": "facebook",
     "value": [
       0,
@@ -560,8 +560,8 @@ export default [
     ]
   },
   {
-    "id": "facebook [三立新聞]",
-    "label": "facebook [三立新聞]",
+    "id": "FB [三立新聞]",
+    "label": "FB [三立新聞]",
     "categoryLabel": "facebook",
     "value": [
       0,
@@ -630,8 +630,8 @@ export default [
     ]
   },
   {
-    "id": "facebook [中時新聞網]",
-    "label": "facebook [中時新聞網]",
+    "id": "FB [中時新聞網]",
+    "label": "FB [中時新聞網]",
     "categoryLabel": "facebook",
     "value": [
       0,

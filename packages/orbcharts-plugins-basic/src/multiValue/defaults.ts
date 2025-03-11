@@ -71,7 +71,7 @@ export const DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS: MultiValueTooltipParams = {
     })()
 
     const valueDetailSvg = eventData.valueDetail.map((detail, i) => {
-      const y = (i * styles.textSizePx * 1.5) + (datumLabelSvg ? styles.textSizePx * 1.5 : 0)
+      const y = (i * styles.textSizePx * 1.5) + (datumLabelSvg ? styles.textSizePx * 2 : 0)
       const lineEndX = maxTextWidth + styles.textSizePx * 3
       return `<text x="0" y="${y}" font-weight="bold" font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
       <tspan>${detail.valueLabel}</tspan>
@@ -79,7 +79,7 @@ export const DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS: MultiValueTooltipParams = {
     </text>`
     }).join('')
 
-    const datumDetailSvg = datumLabelSvg && valueDetailSvg
+    const datumDetailSvg = datumLabelSvg || valueDetailSvg
       ? `<g ${hasCategoryLabel ? `transform="translate(0, ${styles.textSizePx * 2})"` : ''}>
     ${datumLabelSvg}
     ${valueDetailSvg}
@@ -120,7 +120,7 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
   })()
 
   const valueDetailSvg = eventData.valueDetail.map((detail, i) => {
-    const y = (i * styles.textSizePx * 1.5) + (datumLabelSvg ? styles.textSizePx * 1.5 : 0)
+    const y = (i * styles.textSizePx * 1.5) + (datumLabelSvg ? styles.textSizePx * 2 : 0)
     const lineEndX = maxTextWidth + styles.textSizePx * 3
     return \`<text x="0" y="\${y}" font-weight="bold" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
     <tspan>\${detail.valueLabel}</tspan>
@@ -128,7 +128,7 @@ DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styl
   </text>\`
   }).join('')
 
-  const datumDetailSvg = datumLabelSvg && valueDetailSvg
+  const datumDetailSvg = datumLabelSvg || valueDetailSvg
     ? \`<g \${hasCategoryLabel ? \`transform="translate(0, \${styles.textSizePx * 2})"\` : ''}>
   \${datumLabelSvg}
   \${valueDetailSvg}

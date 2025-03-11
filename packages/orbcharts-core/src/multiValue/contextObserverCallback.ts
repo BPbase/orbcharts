@@ -22,6 +22,7 @@ import {
   containerPositionObservable,
   // containerSizeObservable,
   xyMinMaxObservable,
+  valueLabelsObservable,
   filteredXYMinMaxDataObservable,
   // visibleComputedRankingDataObservable,
   // rankingAmountLimitObservable,
@@ -99,6 +100,13 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
 
   const CategoryDataMap$ = categoryDataMapObservable({
     datumList$: datumList$
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const valueLabels$ = valueLabelsObservable({
+    fullDataFormatter$: observer.fullDataFormatter$,
+    computedData$: observer.computedData$,
   }).pipe(
     shareReplay(1)
   )
@@ -290,6 +298,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     highlight$,
     categoryLabels$,
     CategoryDataMap$,
+    valueLabels$,
     xyMinMax$,
     xyValueIndex$,
     // computedXYData$,

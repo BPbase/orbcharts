@@ -43,6 +43,10 @@ import type {
   // -- multiValue --
   MultiValueLegendParams,
   MultiValueTooltipParams,
+  OrdinalAuxParams,
+  OrdinalAxisParams,
+  OrdinalBubblesParams,
+  OrdinalZoomParams,
   RacingBarsParams,
   RacingCounterTextsParams,
   RacingValueAxisParams,
@@ -263,6 +267,10 @@ export interface PresetOverlappingStackedValueAxesParams {
 // -- multiValue --
 export type PresetMultiValuePluginParams = PresetMultiValueLegendParams
   & PresetMultiValueTooltipParams
+  & PresetOrdinalAuxParams
+  & PresetOrdinalAxisParams
+  & PresetOrdinalBubblesParams
+  & PresetOrdinalZoomParams
   & PresetRacingBarsParams
   & PresetRacingCounterTextsParams
   & PresetRacingValueAxisParams
@@ -286,6 +294,22 @@ export interface PresetMultiValueLegendParams {
 
 export interface PresetMultiValueTooltipParams {
   MultiValueTooltip: Partial<MultiValueTooltipParams>
+}
+
+export interface PresetOrdinalAuxParams {
+  OrdinalAux: Partial<OrdinalAuxParams>
+}
+
+export interface PresetOrdinalAxisParams {
+  OrdinalAxis: Partial<OrdinalAxisParams>
+}
+
+export interface PresetOrdinalBubblesParams {
+  OrdinalBubbles: DeepPartial<OrdinalBubblesParams>
+}
+
+export interface PresetOrdinalZoomParams {
+  OrdinalZoom: Partial<OrdinalZoomParams>
 }
 
 export interface PresetRacingBarsParams {

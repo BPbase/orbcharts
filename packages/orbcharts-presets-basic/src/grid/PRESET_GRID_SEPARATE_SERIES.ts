@@ -1,6 +1,5 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetGridPluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_GRID_SEPARATE_SERIES: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
@@ -46,14 +45,9 @@ export const PRESET_GRID_SEPARATE_SERIES: PresetPartial<'grid', Partial<PresetGr
     },
   },
   dataFormatter: {
-    // grid: {
-      // seriesSlotIndexes: [0, 1],
-      separateSeries: true,
-    // },
+    separateSeries: true,
   },
   pluginParams: {
-    // ...ALL_PLUGIN_PARAMS_GRID,
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     GroupAux: {
       labelRotate: -30
     },
@@ -62,8 +56,6 @@ export const PRESET_GRID_SEPARATE_SERIES: PresetPartial<'grid', Partial<PresetGr
       tickTextRotate: -30
     },
     GridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
     }

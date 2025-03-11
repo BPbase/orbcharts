@@ -14,6 +14,7 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
   highlight$: Observable<ComputedDatumMultiValue[]>
   categoryLabels$: Observable<string[]>
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
+  valueLabels$: Observable<string[]>
   xyMinMax$: Observable<{ // xy
     minX: number
     maxX: number
