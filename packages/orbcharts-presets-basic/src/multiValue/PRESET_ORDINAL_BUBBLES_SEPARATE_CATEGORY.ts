@@ -47,7 +47,6 @@ export const PRESET_ORDINAL_BUBBLES_SEPARATE_CATEGORY: PresetPartial<'multiValue
   dataFormatter: {
     separateCategory: true,
     container: {
-      gap: 180
     }
   },
   pluginParams: {

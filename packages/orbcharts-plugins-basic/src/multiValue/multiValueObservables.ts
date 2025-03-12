@@ -295,7 +295,8 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
     yScale: d3.ScaleLinear<number, number, never>;
   }> = new Observable(subscriber => {
     combineLatest({
-      layout: layout$,
+      // layout: layout$,
+      containerSize: containerSize$,
       filteredXYMinMaxData: filteredXYMinMaxData$,
       fullDataFormatter: fullDataFormatter$,
       columnAmount: columnAmount$,
@@ -341,12 +342,37 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
     switchMap(async d => d),
     map(data => {
       // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
-      return {
-        x: ((data.rootMousemove.offsetX - data.layout.left) / data.containerPosition[0].scale[0])
-          % (data.layout.rootWidth / data.columnAmount / data.containerPosition[0].scale[0]),
-        y: ((data.rootMousemove.offsetY - data.layout.top) / data.containerPosition[0].scale[1])
-          % (data.layout.rootHeight / data.rowAmount / data.containerPosition[0].scale[1])
-      }
+      // return {
+      //   x: ((data.rootMousemove.offsetX - data.layout.left) / data.containerPosition[0].scale[0])
+      //     % (data.layout.rootWidth / data.columnAmount / data.containerPosition[0].scale[0]),
+      //   y: ((data.rootMousemove.offsetY - data.layout.top) / data.containerPosition[0].scale[1])
+      //     % (data.layout.rootHeight / data.rowAmount / data.containerPosition[0].scale[1])
+      // }
+      const x = (() => {
+        let x = data.rootMousemove.offsetX
+        const rangeArr = data.containerPosition
+          .map((d, i) => [d.translate[0], data.containerPosition[i + 1]?.translate[0] ?? data.layout.rootWidth])
+          .filter(d => d[0] < d[1])
+        const range = rangeArr.find(d => x >= d[0] && x <= d[1])
+        if (range) {
+          x = x - range[0]
+        }
+        return x - data.layout.left
+      })()
+      
+      const y = (() => {
+        let y = data.rootMousemove.offsetY
+        const rangeArr = data.containerPosition
+          .map((d, i) => [d.translate[1], data.containerPosition[i + 1]?.translate[1] ?? data.layout.rootHeight])
+          .filter(d => d[0] < d[1])
+        const range = rangeArr.find(d => y >= d[0] && y <= d[1])
+        if (range) {
+          y = y - range[0]
+        }
+        return y - data.layout.top
+      })()
+
+      return { x, y }
     })
   )
 
@@ -379,29 +405,39 @@ export const ordinalPositionObservable = ({ rootSelection, ordinalScaleDomain$, 
     debounceTime(2) // 避免過度頻繁觸發，實測時沒加電腦容易卡頓
   )
 
-  const columnAmount$ = containerPosition$.pipe(
-    map(containerPosition => {
-      const maxColumnIndex = containerPosition.reduce((acc, current) => {
-        return current.columnIndex > acc ? current.columnIndex : acc
-      }, 0)
-      return maxColumnIndex + 1
-    }),
-    distinctUntilChanged(),
-    shareReplay(1)
-  )
+  // const columnAmount$ = containerPosition$.pipe(
+  //   map(containerPosition => {
+  //     const maxColumnIndex = containerPosition.reduce((acc, current) => {
+  //       return current.columnIndex > acc ? current.columnIndex : acc
+  //     }, 0)
+  //     return maxColumnIndex + 1
+  //   }),
+  //   distinctUntilChanged(),
+  //   shareReplay(1)
+  // )
 
   const axisX$ = combineLatest({
     rootMousemove: rootMousemove$,
-    columnAmount: columnAmount$,
+    // columnAmount: columnAmount$,
     layout: layout$,
-    containerSize: containerSize$,
+    // containerSize: containerSize$,
     containerPosition: containerPosition$,
   }).pipe(
     switchMap(async d => d),
     map(data => {
       // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
-      return ((data.rootMousemove.offsetX - data.layout.left) / data.containerPosition[0].scale[0])
-        % (data.layout.rootWidth / data.columnAmount / data.containerPosition[0].scale[0])
+      // return ((data.rootMousemove.offsetX - data.layout.left) / data.containerPosition[0].scale[0])
+      //   % (data.layout.rootWidth / data.columnAmount / data.containerPosition[0].scale[0])
+
+      let x = data.rootMousemove.offsetX
+      const rangeArr = data.containerPosition
+        .map((d, i) => [d.translate[0], data.containerPosition[i + 1]?.translate[0] ?? data.layout.rootWidth])
+        .filter(d => d[0] < d[1])
+      const range = rangeArr.find(d => x >= d[0] && x <= d[1])
+      if (range) {
+        x = x - range[0]
+      }
+      return x - data.layout.left
     })
   )
 
@@ -414,7 +450,8 @@ export const ordinalPositionObservable = ({ rootSelection, ordinalScaleDomain$, 
 
   return combineLatest({
     scaleRangeLabels: scaleRangeLabels$,
-    layout: layout$,
+    // layout: layout$,
+    containerSize: containerSize$,
     axisX: axisX$,
     ordinalScale: ordinalScale$,
     ordinalPadding: ordinalPadding$,
@@ -426,7 +463,7 @@ export const ordinalPositionObservable = ({ rootSelection, ordinalScaleDomain$, 
       // 比例尺座標對應非連續資料索引
       const xIndexScale = createAxisToLabelIndexScale({
         axisLabels: data.scaleRangeLabels,
-        axisWidth: data.layout.width,
+        axisWidth: data.containerSize.width,
         padding: 0.5,
         reverse: false
       })

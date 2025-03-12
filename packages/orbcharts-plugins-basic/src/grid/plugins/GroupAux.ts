@@ -756,9 +756,9 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   const gridGroupPosition$ = gridGroupPositionObservable({
     rootSelection,
     fullDataFormatter$: observer.fullDataFormatter$,
-    gridAxesSize$: observer.gridAxesSize$,
+    containerSize$: observer.containerSize$,
+    gridAxesContainerSize$: observer.gridAxesContainerSize$,
     computedData$: observer.computedData$,
-    fullChartParams$: observer.fullChartParams$,
     gridContainerPosition$: observer.gridContainerPosition$,
     layout$: observer.layout$
   }).pipe(

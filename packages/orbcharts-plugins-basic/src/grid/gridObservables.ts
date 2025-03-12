@@ -18,6 +18,7 @@ import type {
   DataFormatterGrid,
   ComputedDataGrid,
   ComputedDatumGrid,
+  ContainerSize,
   TransformData,
   ContainerPositionScaled,
   Layout } from '../../lib/core-types'
@@ -399,15 +400,13 @@ export const gridGroupPositionFnObservable = ({ fullDataFormatter$, gridAxesSize
   })
 }
 
-export const gridGroupPositionObservable = ({ rootSelection, fullDataFormatter$, gridAxesSize$, computedData$, fullChartParams$, gridContainerPosition$, layout$ }: {
+export const gridGroupPositionObservable = ({ rootSelection, fullDataFormatter$, containerSize$, gridAxesContainerSize$, computedData$, gridContainerPosition$, layout$ }: {
   rootSelection: d3.Selection<any, unknown, any, unknown>
   fullDataFormatter$: Observable<DataFormatterGrid>
-  gridAxesSize$: Observable<{
-    width: number;
-    height: number;
-  }>
+  // gridAxesSize$: Observable<ContainerSize>
+  containerSize$: Observable<ContainerSize>
+  gridAxesContainerSize$: Observable<ContainerSize>
   computedData$: Observable<ComputedDataGrid>
-  fullChartParams$: Observable<ChartParams>
   gridContainerPosition$: Observable<ContainerPositionScaled[]>
   layout$: Observable<Layout>
 }) => {
@@ -415,7 +414,7 @@ export const gridGroupPositionObservable = ({ rootSelection, fullDataFormatter$,
 
   const groupScaleDomain$ = combineLatest({
     fullDataFormatter: fullDataFormatter$,
-    gridAxesSize: gridAxesSize$,
+    // gridAxesSize: gridAxesSize$,
     computedData: computedData$
   }).pipe(
     switchMap(async (d) => d),
@@ -467,11 +466,12 @@ export const gridGroupPositionObservable = ({ rootSelection, fullDataFormatter$,
           : false
     })
   )
-
+  
   // 比例尺座標對應非連續資料索引
   const xIndexScale$ = combineLatest({
     reverse: reverse$,
-    gridAxesSize: gridAxesSize$,
+    // gridAxesSize: gridAxesSize$,
+    gridAxesContainerSize: gridAxesContainerSize$,
     scaleRangeGroupLabels: scaleRangeGroupLabels$,
     fullDataFormatter: fullDataFormatter$
   }).pipe(
@@ -479,52 +479,75 @@ export const gridGroupPositionObservable = ({ rootSelection, fullDataFormatter$,
     map(data => {
       return createAxisToLabelIndexScale({
         axisLabels: data.scaleRangeGroupLabels,
-        axisWidth: data.gridAxesSize.width,
+        axisWidth: data.gridAxesContainerSize.width,
         padding: data.fullDataFormatter.groupAxis.scalePadding,
         reverse: data.reverse
       })
     })
   )
 
-  const columnAmount$ = gridContainerPosition$.pipe(
-    map(gridContainerPosition => {
-      const maxColumnIndex = gridContainerPosition.reduce((acc, current) => {
-        return current.columnIndex > acc ? current.columnIndex : acc
-      }, 0)
-      return maxColumnIndex + 1
-    }),
-    distinctUntilChanged()
-  )
+  // const columnAmount$ = gridContainerPosition$.pipe(
+  //   map(gridContainerPosition => {
+  //     const maxColumnIndex = gridContainerPosition.reduce((acc, current) => {
+  //       return current.columnIndex > acc ? current.columnIndex : acc
+  //     }, 0)
+  //     return maxColumnIndex + 1
+  //   }),
+  //   distinctUntilChanged()
+  // )
 
-  const rowAmount$ = gridContainerPosition$.pipe(
-    map(gridContainerPosition => {
-      const maxRowIndex = gridContainerPosition.reduce((acc, current) => {
-        return current.rowIndex > acc ? current.rowIndex : acc
-      }, 0)
-      return maxRowIndex + 1
-    }),
-    distinctUntilChanged()
-  )
+  // const rowAmount$ = gridContainerPosition$.pipe(
+  //   map(gridContainerPosition => {
+  //     const maxRowIndex = gridContainerPosition.reduce((acc, current) => {
+  //       return current.rowIndex > acc ? current.rowIndex : acc
+  //     }, 0)
+  //     return maxRowIndex + 1
+  //   }),
+  //   distinctUntilChanged()
+  // )
 
   const axisValue$ = combineLatest({
     fullDataFormatter: fullDataFormatter$,
-    fullChartParams: fullChartParams$,
     rootMousemove: rootMousemove$,
-    columnAmount: columnAmount$,
-    rowAmount: rowAmount$,
+    // containerSize: containerSize$,
+    gridContainerPosition: gridContainerPosition$,
+    // columnAmount: columnAmount$,
+    // rowAmount: rowAmount$,
     layout: layout$
   }).pipe(
     switchMap(async d => d),
     map(data => {
-      // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
-      const eventData = {
-        offsetX: data.rootMousemove.offsetX * data.columnAmount % data.layout.rootWidth,
-        offsetY: data.rootMousemove.offsetY * data.rowAmount % data.layout.rootHeight
+      // // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
+      // const eventData = {
+      //   offsetX: data.rootMousemove.offsetX * data.columnAmount % data.layout.rootWidth,
+      //   offsetY: data.rootMousemove.offsetY * data.rowAmount % data.layout.rootHeight
+      // }
+      // return data.fullDataFormatter.groupAxis.position === 'bottom'
+      //     || data.fullDataFormatter.groupAxis.position === 'top'
+      //       ? eventData.offsetX - data.layout.left
+      //       : eventData.offsetY - data.layout.top
+      
+      if (data.fullDataFormatter.groupAxis.position === 'bottom' || data.fullDataFormatter.groupAxis.position === 'top') {
+        let x = data.rootMousemove.offsetX
+        const rangeArr = data.gridContainerPosition
+          .map((d, i) => [d.translate[0], data.gridContainerPosition[i + 1]?.translate[0] ?? data.layout.rootWidth])
+          .filter(d => d[0] < d[1])
+        const range = rangeArr.find(d => x >= d[0] && x <= d[1])
+        if (range) {
+          x = x - range[0]
+        }
+        return x - data.layout.left
+      } else {
+        let y = data.rootMousemove.offsetY
+        const rangeArr = data.gridContainerPosition
+          .map((d, i) => [d.translate[1], data.gridContainerPosition[i + 1]?.translate[1] ?? data.layout.rootHeight])
+          .filter(d => d[0] < d[1])
+        const range = rangeArr.find(d => y >= d[0] && y <= d[1])
+        if (range) {
+          y = y - range[0]
+        }
+        return y - data.layout.top
       }
-      return data.fullDataFormatter.groupAxis.position === 'bottom'
-          || data.fullDataFormatter.groupAxis.position === 'top'
-            ? eventData.offsetX - data.fullChartParams.padding.left
-            : eventData.offsetY - data.fullChartParams.padding.top
     })
   )
 

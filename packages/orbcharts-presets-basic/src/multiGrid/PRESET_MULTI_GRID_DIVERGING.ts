@@ -70,7 +70,7 @@ export const PRESET_MULTI_GRID_DIVERGING: PresetPartial<'multiGrid', Partial<Pre
     ],
     // 設定排版方式
     container: {
-      gap: 160,
+      columnGap: 160,
       rowAmount: 1,
       columnAmount: 2
     },

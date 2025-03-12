@@ -58,7 +58,8 @@ export const PRESET_MULTI_GRID_SEPARATE_GRID_SIMPLE: PresetPartial<'multiGrid', 
     ],
     separateGrid: true,
     container: {
-      gap: 40
+      columnGap: 40,
+      rowGap: 40
     },
   },
   pluginParams: {

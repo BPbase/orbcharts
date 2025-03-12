@@ -58,7 +58,10 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
 
   const containerSize$ = containerSizeObservable({
     layout$: observer.layout$,
-    containerPosition$
+    containerPosition$,
+    container$: observer.fullDataFormatter$.pipe( 
+      map(d => d.container)
+    )
   }).pipe(
     shareReplay(1)
   )

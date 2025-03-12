@@ -299,7 +299,13 @@ function calcGridDimensions (amount: number): { rowAmount: number; columnAmount:
 }
 
 export function calcContainerPosition (layout: Layout, container: DataFormatterContainer, amount: number): ContainerPosition[] {
-  const { gap } = container
+  // const { gap } = container
+  const columnGap = container.columnGap === 'auto'
+    ? layout.left + layout.right
+    : container.columnGap
+  const rowGap = container.rowGap === 'auto'
+    ? layout.top + layout.bottom
+    : container.rowGap
   const { rowAmount, columnAmount } = (container.rowAmount * container.columnAmount) >= amount
     // 如果container設定的rowAmount和columnAmount的乘積大於或等於amount，則使用目前設定
     ? container
@@ -310,10 +316,10 @@ export function calcContainerPosition (layout: Layout, container: DataFormatterC
     const columnIndex = index % columnAmount
     const rowIndex = Math.floor(index / columnAmount)
 
-    const width = (layout.width - (gap * (columnAmount - 1))) / columnAmount
-    const height = (layout.height - (gap * (rowAmount - 1))) / rowAmount
-    const x = columnIndex * width + (columnIndex * gap)
-    const y = rowIndex * height + (rowIndex * gap)
+    const width = (layout.width - (columnGap * (columnAmount - 1))) / columnAmount
+    const height = (layout.height - (rowGap * (rowAmount - 1))) / rowAmount
+    const x = columnIndex * width + (columnIndex * columnGap)
+    const y = rowIndex * height + (rowIndex * rowGap)
     // const translate: [number, number] = [x, y]
     
     return {
@@ -332,21 +338,27 @@ export function calcContainerPosition (layout: Layout, container: DataFormatterC
 }
 
 export function calcContainerPositionScaled (layout: Layout, container: DataFormatterContainer, amount: number): ContainerPositionScaled[] {
-  const { gap } = container
+  // const { gap } = container
+  const columnGap = container.columnGap === 'auto'
+    ? layout.left + layout.right
+    : container.columnGap
+  const rowGap = container.rowGap === 'auto'
+    ? layout.top + layout.bottom
+    : container.rowGap
   const { rowAmount, columnAmount } = (container.rowAmount * container.columnAmount) >= amount
     // 如果container設定的rowAmount和columnAmount的乘積大於或等於amount，則使用目前設定
     ? container
     // 否則計算一個合適的預設值
     : calcGridDimensions(amount)
-
+  
   return new Array(amount).fill(null).map((_, index) => {
     const columnIndex = index % columnAmount
     const rowIndex = Math.floor(index / columnAmount)
     
-    const width = (layout.width - (gap * (columnAmount - 1))) / columnAmount
-    const height = (layout.height - (gap * (rowAmount - 1))) / rowAmount
-    const x = columnIndex * width + (columnIndex * gap)
-    const y = rowIndex * height + (rowIndex * gap)
+    const width = (layout.width - (columnGap * (columnAmount - 1))) / columnAmount
+    const height = (layout.height - (rowGap * (rowAmount - 1))) / rowAmount
+    const x = columnIndex * width + (columnIndex * columnGap)
+    const y = rowIndex * height + (rowIndex * rowGap)
     const translate: [number, number] = [x, y]
     const scale: [number, number] = [width / layout.width, height / layout.height]
 

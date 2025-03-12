@@ -471,14 +471,12 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
 
   const ordinalPosition$ = ordinalPositionObservable({
     rootSelection,
-    // fullDataFormatter$: observer.fullDataFormatter$,
     ordinalScaleDomain$: observer.ordinalScaleDomain$,
-    // ordinalPadding$: observer.ordinalPadding$,
+    ordinalScale$: observer.ordinalScale$,
+    ordinalPadding$: observer.ordinalPadding$,
     containerSize$: observer.containerSize$,
     containerPosition$: observer.containerPosition$,
     layout$: observer.layout$,
-    ordinalScale$: observer.ordinalScale$,
-    ordinalPadding$: observer.ordinalPadding$,
   })
 
   const valueLabelData$ = combineLatest({

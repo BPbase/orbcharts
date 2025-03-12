@@ -61,7 +61,6 @@ export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID_SIMPLE: PresetPartial<'multiG
     ],
     separateGrid: true,
     container: {
-      gap: 160
     }
   },
   pluginParams: {

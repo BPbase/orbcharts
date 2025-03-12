@@ -16,6 +16,7 @@ import type {
   ComputedDataTypeMap,
   ComputedDatumTypeMap,
   ContainerPositionScaled,
+  DataFormatterContainer,
   DataFormatterTypeMap,
   EventTypeMap,
   HighlightTarget,
@@ -238,9 +239,10 @@ export const textSizePxObservable = (chartParams$: Observable<ChartParams>) => {
   )
 }
 
-export const containerSizeObservable = ({ layout$, containerPosition$ }: {
+export const containerSizeObservable = ({ layout$, containerPosition$, container$ }: {
   layout$: Observable<Layout>
   containerPosition$: Observable<ContainerPositionScaled[]>
+  container$: Observable<DataFormatterContainer>
 }) => {
   const rowAmount$ = containerPosition$.pipe(
     map(containerPosition => {
@@ -265,12 +267,22 @@ export const containerSizeObservable = ({ layout$, containerPosition$ }: {
   return combineLatest({
     layout: layout$,
     rowAmount: rowAmount$,
-    columnAmount: columnAmount$
+    columnAmount: columnAmount$,
+    container: container$
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-      const width = (data.layout.rootWidth / data.columnAmount) - (data.layout.left + data.layout.right)
-      const height = (data.layout.rootHeight / data.rowAmount) - (data.layout.top + data.layout.bottom)
+      // const width = (data.layout.rootWidth / data.columnAmount) - (data.layout.left + data.layout.right)
+      // const height = (data.layout.rootHeight / data.rowAmount) - (data.layout.top + data.layout.bottom)
+      const columnGap = data.container.columnGap === 'auto'
+        ? data.layout.left + data.layout.right
+        : data.container.columnGap
+      const rowGap = data.container.rowGap === 'auto'
+        ? data.layout.top + data.layout.bottom
+        : data.container.rowGap
+      const width = (data.layout.rootWidth - data.layout.left - data.layout.right - (columnGap * (data.columnAmount - 1))) / data.columnAmount
+      const height = (data.layout.rootHeight - data.layout.top - data.layout.bottom - (rowGap * (data.rowAmount - 1))) / data.rowAmount
+      
       return {
         width,
         height

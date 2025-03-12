@@ -82,9 +82,11 @@ export type VisibleFilter<T extends ChartType> = (datum: ComputedDatumTypeMap<T>
 // export type TooltipContentFormat<T extends ChartType> = (datum: DatumTypeMap<T>, rowIndex: number, columnIndex: number, context: DataFormatterContext<T>) => string | null
 
 export interface DataFormatterContainer {
-  gap: number
-  rowAmount: number
+  // gap: number
   columnAmount: number
+  rowAmount: number
+  columnGap: number | 'auto'
+  rowGap: number | 'auto'
 }
 
 export type DataFormatterValidator<T extends ChartType> = (dataFormatter: DataFormatterPartialTypeMap<T>) => ValidatorResult
