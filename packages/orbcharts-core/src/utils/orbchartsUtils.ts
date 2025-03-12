@@ -42,11 +42,13 @@ export function createDefaultDatumId (chartTypeOrPrefix: string, levelOneIndex: 
 }
 
 export function createDefaultSeriesLabel (chartTypeOrPrefix: string, seriesIndex: number) {
-  return `${chartTypeOrPrefix}_series${seriesIndex}`
+  // return `${chartTypeOrPrefix}_series${seriesIndex}`
+  return `series${seriesIndex}`
 }
 
 export function createDefaultGroupLabel (chartTypeOrPrefix: string, groupIndex: number) {
-  return `${chartTypeOrPrefix}_group${groupIndex}`
+  // return `${chartTypeOrPrefix}_group${groupIndex}`
+  return `group${groupIndex}`
 }
 
 export function createDefaultCategoryLabel () {
@@ -55,7 +57,8 @@ export function createDefaultCategoryLabel () {
 }
 
 export function createDefaultValueLabel (chartTypeOrPrefix: string, valueIndex: number) {
-  return `${chartTypeOrPrefix}_value${valueIndex}`
+  // return `${chartTypeOrPrefix}_value${valueIndex}`
+  return `value${valueIndex}`
 }
 
 export function createGridSeriesLabels ({ transposedDataGrid, dataFormatterGrid, chartType = 'grid' }: {
