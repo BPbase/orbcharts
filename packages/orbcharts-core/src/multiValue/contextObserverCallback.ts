@@ -34,7 +34,7 @@ import {
   ordinalPaddingObservable,
   ordinalScaleObservable,
   // valueLabelsObservable
-} from '../utils/multiValueObservables'
+} from './multiValueObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({ subject, observer }) => {
 

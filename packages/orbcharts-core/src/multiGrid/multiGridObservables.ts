@@ -31,7 +31,7 @@ import type {
 import {
   highlightObservable,
   seriesDataMapObservable,
-  groupDataMapObservable } from './observables'
+  groupDataMapObservable } from '../utils/observables'
 import {
   gridComputedAxesDataObservable,
   gridAxesSizeObservable,
@@ -48,9 +48,9 @@ import {
   gridAxesReverseTransformObservable,
   gridGraphicTransformObservable,
   gridGraphicReverseScaleObservable,
-} from './gridObservables'
+} from '../grid/gridObservables'
 import { DEFAULT_DATA_FORMATTER_MULTI_GRID_GRID } from '../defaults'
-import { calcContainerPositionScaled } from './orbchartsUtils'
+import { calcContainerPositionScaled } from '../utils/orbchartsUtils'
 
 // 每一個grid計算出來的所有Observable
 export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData$, layout$, fullChartParams$, event$, containerSize$ }: {

@@ -12,7 +12,7 @@ import {
   seriesLabelsObservable,
   seriesContainerPositionObservable,
   seriesContainerPositionMapObservable
-} from '../utils/seriesObservables'
+} from './seriesObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'series'> = ({ subject, observer }) => {
 

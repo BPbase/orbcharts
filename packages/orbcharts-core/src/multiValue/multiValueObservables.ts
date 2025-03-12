@@ -29,9 +29,9 @@ import type {
   HighlightTarget,
   Layout,
   TransformData } from '../../lib/core-types'
-import { getMinMax, createDefaultValueLabel } from './orbchartsUtils'
-import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from './d3Scale'
-import { calcContainerPositionScaled } from './orbchartsUtils'
+import { getMinMax, createDefaultValueLabel } from '../utils/orbchartsUtils'
+import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from '../utils/d3Scale'
+import { calcContainerPositionScaled } from '../utils/orbchartsUtils'
 
 export const valueLabelsObservable = ({ computedData$, fullDataFormatter$ }: {
   computedData$: Observable<ComputedDataTypeMap<'multiValue'>>

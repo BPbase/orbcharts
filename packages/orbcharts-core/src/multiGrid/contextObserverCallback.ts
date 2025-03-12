@@ -2,7 +2,7 @@ import {
   map,
   shareReplay } from 'rxjs'
 import type { ContextObserverCallback, DataGridDatum } from '../../lib/core-types'
-import { multiGridEachDetailObservable, multiGridContainerObservable } from '../utils/multiGridObservables'
+import { multiGridEachDetailObservable, multiGridContainerObservable } from './multiGridObservables'
 import { textSizePxObservable, containerSizeObservable, highlightObservable } from '../utils/observables'
 // import { createMultiGridSeriesLabels } from '../utils/orbchartsUtils'
 import { combineLatest } from 'rxjs/internal/observable/combineLatest'

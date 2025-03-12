@@ -6,7 +6,7 @@ import {
   NodeMapObservable,
   EdgeMapObservable,
   relationshipVisibleComputedDataObservable
-} from '../utils/relationshipObservables'
+} from './relationshipObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'relationship'> = ({ subject, observer }) => {
 

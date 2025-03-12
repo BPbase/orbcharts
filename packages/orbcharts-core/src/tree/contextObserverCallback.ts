@@ -5,7 +5,7 @@ import {
   nodeListObservable,
   categoryLabelsObservable,
   treeVisibleComputedDataObservable
-} from '../utils/treeObservables'
+} from './treeObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'tree'> = ({ subject, observer }) => {
 

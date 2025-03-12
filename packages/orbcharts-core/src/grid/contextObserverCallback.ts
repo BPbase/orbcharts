@@ -4,7 +4,8 @@ import {
   highlightObservable,
   seriesDataMapObservable,
   groupDataMapObservable,
-  textSizePxObservable } from '../utils/observables'
+  textSizePxObservable,
+  containerSizeObservable } from '../utils/observables'
 import {
   gridComputedAxesDataObservable,
   gridAxesSizeObservable,
@@ -21,8 +22,7 @@ import {
   gridAxesReverseTransformObservable,
   gridGraphicTransformObservable,
   gridGraphicReverseScaleObservable,
-} from '../utils/gridObservables'
-import { containerSizeObservable } from '../utils/observables'
+} from './gridObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subject, observer }) => {
   

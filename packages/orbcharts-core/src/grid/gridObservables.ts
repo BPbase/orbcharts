@@ -31,10 +31,10 @@ import type {
   HighlightTarget,
   Layout,
   TransformData } from '../../lib/core-types'
-import { getMinMaxGrid } from './orbchartsUtils'
-import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from './d3Scale'
-import { calcContainerPositionScaled } from './orbchartsUtils'
-import { getMinMaxValue } from './orbchartsUtils'
+import { getMinMaxGrid } from '../utils/orbchartsUtils'
+import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from '../utils/d3Scale'
+import { calcContainerPositionScaled } from '../utils/orbchartsUtils'
+import { getMinMaxValue } from '../utils/orbchartsUtils'
 
 export const gridComputedAxesDataObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'grid'>>
