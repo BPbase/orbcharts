@@ -55,7 +55,7 @@ import type {
   ValidatorResult,
 } from '../../lib/core-types'
 import { mergeOptionsWithDefault, resizeObservable } from '../utils'
-import { createValidatorErrorMessage, createValidatorWarningMessage, createOrbChartsErrorMessage } from '../utils/errorMessage'
+import { createValidatorErrorMessage, createValidatorWarningMessage, createUnexpectedErrorMessage, createOrbChartsErrorMessage } from '../utils/errorMessage'
 import { chartOptionsValidator } from './validators/chartOptionsValidator'
 import { elementValidator } from './validators/elementValidator'
 import { chartParamsValidator } from './validators/chartParamsValidator'
@@ -221,7 +221,14 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
             // 驗證失敗仍繼續執行，才不會把 Observable 資料流給中斷掉
             console.error(createOrbChartsErrorMessage(e))
           }
-          return mergeDataFormatter(dataFormatter, mergedPresetWithDefault.dataFormatter, chartType)
+          try {
+            return mergeDataFormatter(dataFormatter, mergedPresetWithDefault.dataFormatter, chartType)
+          } catch (e) {
+            throw new Error(createUnexpectedErrorMessage({
+              from: 'Chart.dataFormatter$',
+              systemMessage: e
+            }))
+          }
         }),
         // catchError((e) => {
         //   console.error(createOrbChartsErrorMessage(e))
@@ -255,7 +262,14 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
             // 驗證失敗仍繼續執行，才不會把 Observable 資料流給中斷掉
             console.error(createOrbChartsErrorMessage(e))
           }
-          return mergeOptionsWithDefault(d, mergedPresetWithDefault.chartParams)
+          try {
+            return mergeOptionsWithDefault(d, mergedPresetWithDefault.chartParams)
+          } catch (e) {
+            throw new Error(createUnexpectedErrorMessage({
+              from: 'Chart.chartParams$',
+              systemMessage: e
+            }))
+          }
         }),
         // catchError((e) => {
         //   console.error(createOrbChartsErrorMessage(e))
@@ -392,7 +406,14 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
                 // 驗證失敗仍繼續執行，才不會把 Observable 資料流給中斷掉
                 console.error(createOrbChartsErrorMessage(e))
               }
-              return computedDataFn({ data: _d.data, dataFormatter: _d.dataFormatter, chartParams: _d.chartParams })
+              try {
+                return computedDataFn({ data: _d.data, dataFormatter: _d.dataFormatter, chartParams: _d.chartParams })
+              } catch (e) {
+                throw new Error(createUnexpectedErrorMessage({
+                  from: 'Chart.data$',
+                  systemMessage: e
+                }))
+              }
             }),
             // catchError((e) => {
             //   console.error(createOrbChartsErrorMessage(e))
@@ -426,9 +447,8 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
           }))
         }
       } catch (e) {
-        console.error(createOrbChartsErrorMessage(e))
-        return
-        // throw new Error(e)
+        // plugin驗證失敗就不執行
+        throw new Error(e)
       }
 
       selectionPlugins
