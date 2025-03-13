@@ -48,6 +48,7 @@ export const PRESET_RACING_BARS_SEPARATE_CATEGORY: PresetPartial<'multiValue', P
   dataFormatter: {
     separateCategory: true,
     container: {
+      rowGap: 60
     },
   },
   pluginParams: {

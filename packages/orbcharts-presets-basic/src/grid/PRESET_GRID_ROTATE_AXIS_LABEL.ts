@@ -41,7 +41,7 @@ export const PRESET_GRID_ROTATE_AXIS_LABEL: PresetPartial<'grid', Partial<Preset
     padding: {
       top: 40,
       right: 40,
-      bottom: 140,
+      bottom: 120,
       left: 80
     },
   },

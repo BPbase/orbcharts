@@ -45,7 +45,11 @@ export const PRESET_SCATTER_SEPARATE_CATEGORY: PresetPartial<'multiValue', Parti
     },
   },
   dataFormatter: {
-    separateCategory: true
+    separateCategory: true,
+    container: {
+      columnGap: 100,
+      rowGap: 70
+    }
   },
   pluginParams: {
     XYAxes: {

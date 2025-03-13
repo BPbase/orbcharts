@@ -42,7 +42,7 @@ export const PRESET_LINE_AREAS_SEPARATE_SERIES: PresetPartial<'grid', Partial<Pr
     padding: {
       top: 40,
       right: 40,
-      bottom: 140,
+      bottom: 120,
       left: 80
     },
     highlightTarget: 'series'
@@ -51,6 +51,10 @@ export const PRESET_LINE_AREAS_SEPARATE_SERIES: PresetPartial<'grid', Partial<Pr
     separateSeries: true,
     groupAxis: {
       scalePadding: 0
+    },
+    container: {
+      columnGap: 100,
+      rowGap: 80
     }
   },
   pluginParams: {

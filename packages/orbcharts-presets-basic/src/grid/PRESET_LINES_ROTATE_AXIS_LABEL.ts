@@ -42,7 +42,7 @@ export const PRESET_LINES_ROTATE_AXIS_LABEL: PresetPartial<'grid', Partial<Prese
     padding: {
       top: 40,
       right: 40,
-      bottom: 140,
+      bottom: 120,
       left: 80
     },
     highlightTarget: 'series'

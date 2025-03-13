@@ -46,6 +46,10 @@ export const PRESET_SCATTER_BUBBLES_SEPARATE_CATEGORY: PresetPartial<'multiValue
   },
   dataFormatter: {
     separateCategory: true,
+    container: {
+      columnGap: 100,
+      rowGap: 70
+    }
   },
   pluginParams: {
     MultiValueLegend: {

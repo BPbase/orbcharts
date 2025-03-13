@@ -42,9 +42,9 @@ export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID_SIMPLE: PresetPartial<'multiG
     },
     padding: {
       top: 40,
-      right: 80, // lineAre 的左右刻度靠邊，要避免太窄造成 label 超出
+      right: 60, // lineAre 的左右刻度靠邊，要避免太窄造成 label 超出
       bottom: 80,
-      left: 80 // lineAre 的左右刻度靠邊，要避免太窄造成 label 超出
+      left: 60 // lineAre 的左右刻度靠邊，要避免太窄造成 label 超出
     },
   },
   dataFormatter: {
@@ -61,6 +61,8 @@ export const PRESET_MULTI_LINE_AREAS_SEPARATE_GRID_SIMPLE: PresetPartial<'multiG
     ],
     separateGrid: true,
     container: {
+      columnGap: 60,
+      rowGap: 60
     }
   },
   pluginParams: {

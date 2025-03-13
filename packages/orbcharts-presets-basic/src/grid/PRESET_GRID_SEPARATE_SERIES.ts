@@ -40,12 +40,16 @@ export const PRESET_GRID_SEPARATE_SERIES: PresetPartial<'grid', Partial<PresetGr
     padding: {
       top: 40,
       right: 40,
-      bottom: 140,
+      bottom: 120,
       left: 80
     },
   },
   dataFormatter: {
     separateSeries: true,
+    container: {
+      columnGap: 100,
+      rowGap: 80
+    }
   },
   pluginParams: {
     GroupAux: {
