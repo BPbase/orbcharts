@@ -53,11 +53,13 @@ import * as orbcharts from 'https://cdn.jsdelivr.net/npm/orbcharts@3.0.1/+esm'
 This is an executable program to start creating your first pie chart:
 
 ```js
-import { SeriesChart, Pie } from 'orbcharts'
+import { SeriesChart, Pie, PRESET_PIE_BASIC } from 'orbcharts'
 
 const element = document.querySelector('#chart')
 
-const chart = new SeriesChart(element)
+const chart = new SeriesChart(element, {
+  preset: PRESET_PIE_BASIC
+})
 
 chart.plugins$.next([new Pie()])
 
