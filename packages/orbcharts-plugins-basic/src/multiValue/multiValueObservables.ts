@@ -191,7 +191,7 @@ export const multiValueContainerSelectionsObservable = ({ selection, pluginName,
     map((computedData, i) => {
       return selection
         .selectAll<SVGGElement, ComputedDatumMultiValue[]>(`g.${containerClassName}`)
-        .data(computedData, d => d[0] ? d[0].categoryIndex : i)
+        .data(computedData, d => (d && d[0]) ? d[0].categoryIndex : i)
         .join('g')
         .classed(containerClassName, true)
         .attr('clip-path', _ => clipPathID ? `url(#${clipPathID})` : 'none')
@@ -222,7 +222,7 @@ export const multiValueContainerSelectionsObservable = ({ selection, pluginName,
 }
 
 
-export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatter$, filteredXYMinMaxData$, containerPosition$, layout$ }: {
+export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatter$, filteredXYMinMaxData$, containerPosition$, containerSize$, layout$ }: {
   rootSelection: d3.Selection<any, unknown, any, unknown>
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   // computedData$: Observable<ComputedDataMultiValue>
@@ -234,33 +234,34 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
     maxYDatum: ComputedXYDatumMultiValue
   }>
   containerPosition$: Observable<ContainerPositionScaled[]>
+  containerSize$: Observable<ContainerSize>
   layout$: Observable<Layout>
 }) => {
   const rootMousemove$ = d3EventObservable(rootSelection, 'mousemove').pipe(
     debounceTime(2) // 避免過度頻繁觸發，實測時沒加電腦容易卡頓
   )
 
-  const columnAmount$ = containerPosition$.pipe(
-    map(containerPosition => {
-      const maxColumnIndex = containerPosition.reduce((acc, current) => {
-        return current.columnIndex > acc ? current.columnIndex : acc
-      }, 0)
-      return maxColumnIndex + 1
-    }),
-    distinctUntilChanged(),
-    shareReplay(1)
-  )
+  // const columnAmount$ = containerPosition$.pipe(
+  //   map(containerPosition => {
+  //     const maxColumnIndex = containerPosition.reduce((acc, current) => {
+  //       return current.columnIndex > acc ? current.columnIndex : acc
+  //     }, 0)
+  //     return maxColumnIndex + 1
+  //   }),
+  //   distinctUntilChanged(),
+  //   shareReplay(1)
+  // )
 
-  const rowAmount$ = containerPosition$.pipe(
-    map(containerPosition => {
-      const maxRowIndex = containerPosition.reduce((acc, current) => {
-        return current.rowIndex > acc ? current.rowIndex : acc
-      }, 0)
-      return maxRowIndex + 1
-    }),
-    distinctUntilChanged(),
-    shareReplay(1)
-  )
+  // const rowAmount$ = containerPosition$.pipe(
+  //   map(containerPosition => {
+  //     const maxRowIndex = containerPosition.reduce((acc, current) => {
+  //       return current.rowIndex > acc ? current.rowIndex : acc
+  //     }, 0)
+  //     return maxRowIndex + 1
+  //   }),
+  //   distinctUntilChanged(),
+  //   shareReplay(1)
+  // )
 
   // const xyScale$ = combineLatest({
   //   layout: layout$,
@@ -299,8 +300,8 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
       containerSize: containerSize$,
       filteredXYMinMaxData: filteredXYMinMaxData$,
       fullDataFormatter: fullDataFormatter$,
-      columnAmount: columnAmount$,
-      rowAmount: rowAmount$
+      // columnAmount: columnAmount$,
+      // rowAmount: rowAmount$
     }).pipe(
       switchMap(async d => d),
     ).subscribe(data => {
@@ -316,14 +317,14 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
       const xScale = createAxisToValueScale({
         maxValue: data.filteredXYMinMaxData.maxXDatum.value[xValueIndex],
         minValue: data.filteredXYMinMaxData.minXDatum.value[xValueIndex],
-        axisWidth: data.layout.width,
+        axisWidth: data.containerSize.width,
         scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.xAxis.scaleRange,
       })
       const yScale = createAxisToValueScale({
         maxValue: data.filteredXYMinMaxData.maxYDatum.value[yValueIndex],
         minValue: data.filteredXYMinMaxData.minYDatum.value[yValueIndex],
-        axisWidth: data.layout.height,
+        axisWidth: data.containerSize.height,
         scaleDomain: data.fullDataFormatter.yAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.yAxis.scaleRange,
         reverse: true
@@ -334,8 +335,8 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
 
   const axisValue$ = combineLatest({
     rootMousemove: rootMousemove$,
-    columnAmount: columnAmount$,
-    rowAmount: rowAmount$,
+    // columnAmount: columnAmount$,
+    // rowAmount: rowAmount$,
     layout: layout$,
     containerPosition: containerPosition$
   }).pipe(
@@ -378,13 +379,14 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
 
   return combineLatest({
     xyScale: xyScale$,
-    axisValue: axisValue$
+    axisValue: axisValue$,
+    containerPosition: containerPosition$
   }).pipe(
     switchMap(async d => d),
     map(data => {
       return {
-        x: data.axisValue.x,
-        y: data.axisValue.y,
+        x: data.axisValue.x / data.containerPosition[0].scale[0],
+        y: data.axisValue.y / data.containerPosition[0].scale[1],
         xValue: data.xyScale.xScale(data.axisValue.x),
         yValue: data.xyScale.yScale(data.axisValue.y)
       }

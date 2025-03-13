@@ -25,6 +25,9 @@ export const contextObserverCallback: ContextObserverCallback<'multiGrid'> = ({ 
     layout$: observer.layout$,
     containerPosition$: multiGridContainerPosition$.pipe(
       map(d => d.flat())
+    ),
+    container$: observer.fullDataFormatter$.pipe(
+      map(d => d.container)
     )
   }).pipe(
     shareReplay(1)

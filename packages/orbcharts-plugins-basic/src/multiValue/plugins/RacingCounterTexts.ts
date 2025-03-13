@@ -187,7 +187,7 @@ export const RacingCounterTexts = defineMultiValuePlugin(pluginConfig)(({ select
     map((computedData, i) => {
       return selection
         .selectAll<SVGGElement, ComputedDatumMultiValue[]>(`g.${containerClassName}`)
-        .data(computedData, d => d[0] ? d[0].categoryIndex : i)
+        .data(computedData, d => (d && d[0]) ? d[0].categoryIndex : i)
         .join('g')
         .classed(containerClassName, true)
     })

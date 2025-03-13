@@ -165,8 +165,8 @@ function createLabelData ({ valueLabelData, axisX, xValue, fullParams, textSizeP
   const xY = - fullParams.labelPadding * rowAmount // rowAmount 是為了把外部 container 的變形逆轉回來
   // const xText = fullParams.labelTextFormat(xValue)
   // const xTextArr = xText.split('\n')
-  const xText = valueLabelData[xValue].text
-  const xTextArr = valueLabelData[xValue].textArr
+  const xText = valueLabelData[xValue] ? valueLabelData[xValue].text : ''
+  const xTextArr = valueLabelData[xValue] ? valueLabelData[xValue].textArr : []
   const xMaxLengthText = xTextArr.reduce((acc, current) => current.length > acc.length ? current : acc, '')
   const xTextWidth = measureTextWidth(xMaxLengthText, textSizePx)
   const xTextHeight = textSizePx * xTextArr.length

@@ -515,6 +515,7 @@ export const XYAux = defineMultiValuePlugin(pluginConfig)(({ selection, rootSele
     fullDataFormatter$: observer.fullDataFormatter$,
     filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
     containerPosition$: observer.containerPosition$,
+    containerSize$: observer.containerSize$,
     layout$: observer.layout$
   }).pipe(
     takeUntil(destroy$)

@@ -185,7 +185,7 @@ export const gridContainerSelectionsObservable = ({ selection, pluginName, compu
     map((computedData, i) => {
       return selection
         .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${containerClassName}`)
-        .data(computedData, d => d[0] ? d[0].seriesIndex : i)
+        .data(computedData, d => (d && d[0]) ? d[0].seriesIndex : i)
         .join('g')
         .classed(containerClassName, true)
     }),

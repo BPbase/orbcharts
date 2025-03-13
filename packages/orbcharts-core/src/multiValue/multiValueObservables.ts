@@ -482,7 +482,19 @@ export const containerPositionObservable = ({ computedData$, fullDataFormatter$,
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-      
+      // 無資料時回傳預設container位置
+      if (data.computedData.length === 0) {
+        const defaultPositionArr: ContainerPositionScaled[] = [
+          {
+            "slotIndex": 0,
+            "rowIndex": 0,
+            "columnIndex": 0,
+            "translate": [0, 0],
+            "scale": [1, 1]
+          }
+        ]
+        return defaultPositionArr
+      }
       if (data.fullDataFormatter.separateCategory) {
         // -- 依slotIndexes計算 --
         return calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, data.computedData.length)
