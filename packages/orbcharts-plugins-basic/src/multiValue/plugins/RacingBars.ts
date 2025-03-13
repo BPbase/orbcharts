@@ -246,6 +246,7 @@ export const RacingBars = defineMultiValuePlugin(pluginConfig)(({ selection, nam
     fullParams$: observer.fullParams$,
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,
+    transitionEase$: of('easeLinear'),
     // layout$: observer.layout$,
     containerPosition$: observer.containerPosition$,
     containerSize$: observer.containerSize$,

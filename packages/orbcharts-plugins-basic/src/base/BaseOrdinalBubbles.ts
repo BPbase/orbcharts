@@ -62,6 +62,7 @@ interface RenderGraphicGParams {
   bubbleData: BubblesDatum[][]
   // rankingScaleList: d3.ScalePoint<string>[]
   transitionDuration: number
+  transitionEase: string
   ordinalPadding: number
 }
 
@@ -90,7 +91,7 @@ type ClipPathDatum = {
 }
 
 
-function renderGraphicG ({ containerSelection, paddingGClassName, itemGClassName, bubbleData, transitionDuration, ordinalPadding }: RenderGraphicGParams) {
+function renderGraphicG ({ containerSelection, paddingGClassName, itemGClassName, bubbleData, transitionDuration, transitionEase, ordinalPadding }: RenderGraphicGParams) {
   containerSelection
     .each((_, categoryIndex, g) => {
       const container = d3.select(g[categoryIndex])
@@ -124,7 +125,8 @@ function renderGraphicG ({ containerSelection, paddingGClassName, itemGClassName
                 return update
                   .transition()
                   .duration(transitionDuration)
-                  .ease(d3.easeLinear)
+                  // .ease(d3.easeLinear)
+                  .ease(getD3TransitionEase(transitionEase))
                   .attr('transform', d => {
                     return `translate(0, ${d.graphicValue[0] ? d.graphicValue[0].y : 0})`
                   })
@@ -510,11 +512,18 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
     distinctUntilChanged()
   )
 
+  const transitionEase$ = fullChartParams$.pipe(
+    takeUntil(destroy$),
+    map(d => d.transitionEase),
+    distinctUntilChanged()
+  )
+
   const graphicGSelection$ = combineLatest({
     containerSelection: containerSelection$,
     bubbleData: bubbleData$,
     rankingScaleList: rankingScaleList$,
     transitionDuration: transitionDuration$,
+    transitionEase: transitionEase$,
     ordinalPadding: ordinalPadding$
   }).pipe(
     takeUntil(destroy$),
@@ -528,6 +537,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
         bubbleData: data.bubbleData,
         // rankingScaleList: data.rankingScaleList,
         transitionDuration: data.transitionDuration,
+        transitionEase: data.transitionEase,
         ordinalPadding: data.ordinalPadding
       })
     })

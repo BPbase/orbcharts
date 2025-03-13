@@ -178,6 +178,10 @@ export const OrdinalBubbles = defineMultiValuePlugin(pluginConfig)(({ selection,
     fullParams$: baseRacingLabelsParams$,
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,
+    transitionEase$: observer.fullChartParams$.pipe(
+      map(p => p.transitionEase),
+      distinctUntilChanged()
+    ),
     // layout$: observer.layout$,
     containerPosition$: observer.containerPosition$,
     containerSize$: observer.containerSize$,
