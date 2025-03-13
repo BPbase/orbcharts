@@ -1,6 +1,5 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetTreePluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_TREE_MAP_BASIC: PresetPartial<'tree', Partial<PresetTreePluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
@@ -46,11 +45,8 @@ export const PRESET_TREE_MAP_BASIC: PresetPartial<'tree', Partial<PresetTreePlug
     },
   },
   pluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     TreeMap: {},
     TreeLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
     }

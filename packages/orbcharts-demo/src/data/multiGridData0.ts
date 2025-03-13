@@ -22,5 +22,5 @@ export default [
       75,
       35
     ],
-  ],
+  ]
 ]

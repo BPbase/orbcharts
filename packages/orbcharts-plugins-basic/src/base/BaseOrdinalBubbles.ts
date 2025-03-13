@@ -39,6 +39,7 @@ interface BaseRacingBarsContext {
   computedData$: Observable<ComputedDataMultiValue>
   visibleComputedRankingData$: Observable<ComputedDatumWithSumMultiValue[][]>
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
+  valueLabels$: Observable<string[]>
   fullParams$: Observable<BaseOrdinalBubblesParams >
   fullDataFormatter$: Observable<DataFormatterTypeMap<'multiValue'>>
   fullChartParams$: Observable<ChartParams>
@@ -61,12 +62,13 @@ interface RenderGraphicGParams {
   bubbleData: BubblesDatum[][]
   // rankingScaleList: d3.ScalePoint<string>[]
   transitionDuration: number
+  transitionEase: string
   ordinalPadding: number
 }
 
 // 對應到 value 裡的每個值
 interface BubbleValueDatum {
-  index: number
+  valueIndex: number
   x: number
   y: number
   r: number
@@ -77,7 +79,7 @@ interface BubbleValueDatum {
 
 interface BubblesDatum extends ComputedDatumWithSumMultiValue {
   graphicValue: Array<BubbleValueDatum>
-  _visibleValue: number[]
+  // _visibleValue: number[]
 }
 
 type ClipPathDatum = {
@@ -89,7 +91,7 @@ type ClipPathDatum = {
 }
 
 
-function renderGraphicG ({ containerSelection, paddingGClassName, itemGClassName, bubbleData, transitionDuration, ordinalPadding }: RenderGraphicGParams) {
+function renderGraphicG ({ containerSelection, paddingGClassName, itemGClassName, bubbleData, transitionDuration, transitionEase, ordinalPadding }: RenderGraphicGParams) {
   containerSelection
     .each((_, categoryIndex, g) => {
       const container = d3.select(g[categoryIndex])
@@ -123,7 +125,8 @@ function renderGraphicG ({ containerSelection, paddingGClassName, itemGClassName
                 return update
                   .transition()
                   .duration(transitionDuration)
-                  .ease(d3.easeLinear)
+                  // .ease(d3.easeLinear)
+                  .ease(getD3TransitionEase(transitionEase))
                   .attr('transform', d => {
                     return `translate(0, ${d.graphicValue[0] ? d.graphicValue[0].y : 0})`
                   })
@@ -282,6 +285,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
   // xyValueIndex$,
   // categoryLabels$,
   CategoryDataMap$,
+  valueLabels$,
   fullParams$,
   fullDataFormatter$,
   fullChartParams$,
@@ -485,7 +489,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
             }
 
             return {
-              index: vIndex,
+              valueIndex: vIndex,
               x,
               y: rankingScale(d.label),
               r: data.radiusScale(v),
@@ -495,7 +499,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
             }
           })
           d.graphicValue = graphicValue
-          d._visibleValue = [] // highlight的時候才寫入
+          // d._visibleValue = [] // highlight的時候才寫入
           return d
         })
       })
@@ -508,11 +512,18 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
     distinctUntilChanged()
   )
 
+  const transitionEase$ = fullChartParams$.pipe(
+    takeUntil(destroy$),
+    map(d => d.transitionEase),
+    distinctUntilChanged()
+  )
+
   const graphicGSelection$ = combineLatest({
     containerSelection: containerSelection$,
     bubbleData: bubbleData$,
     rankingScaleList: rankingScaleList$,
     transitionDuration: transitionDuration$,
+    transitionEase: transitionEase$,
     ordinalPadding: ordinalPadding$
   }).pipe(
     takeUntil(destroy$),
@@ -526,6 +537,7 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
         bubbleData: data.bubbleData,
         // rankingScaleList: data.rankingScaleList,
         transitionDuration: data.transitionDuration,
+        transitionEase: data.transitionEase,
         ordinalPadding: data.ordinalPadding
       })
     })
@@ -562,7 +574,9 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
     graphicSelection: graphicSelection$,
     computedData: computedData$,
     CategoryDataMap: CategoryDataMap$,
-    highlightTarget: highlightTarget$
+    valueLabels: valueLabels$,
+    highlightTarget: highlightTarget$,
+    fullDataFormatter: fullDataFormatter$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -574,17 +588,24 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
         
         // reference 到資料本身
         const datum = valueDatum._refDatum
-        
+
         // 只顯示目前的值
         // datum._visibleValue = [datum.value[valueDatum.index]]
         // 只顯示總數
-        datum._visibleValue = [datum.sum]
+        // datum._visibleValue = [datum.sum]
 
         event$.next({
           type: 'multiValue',
           eventName: 'mouseover',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[valueDatum.valueIndex],
+              valueIndex: valueDatum.valueIndex,
+              valueLabel: data.valueLabels[valueDatum.valueIndex]
+            },
+          ],
           datum: datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -602,13 +623,20 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
         // 只顯示目前的值
         // datum._visibleValue = [datum.value[valueDatum.index]]
         // 只顯示總數
-        datum._visibleValue = [datum.sum]
+        // datum._visibleValue = [datum.sum]
         
         event$.next({
           type: 'multiValue',
           eventName: 'mousemove',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[valueDatum.valueIndex],
+              valueIndex: valueDatum.valueIndex,
+              valueLabel: data.valueLabels[valueDatum.valueIndex]
+            },
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -628,6 +656,13 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
           eventName: 'mouseout',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[valueDatum.valueIndex],
+              valueIndex: valueDatum.valueIndex,
+              valueLabel: data.valueLabels[valueDatum.valueIndex]
+            },
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,
@@ -645,13 +680,20 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
         // 只顯示目前的值
         // datum._visibleValue = [datum.value[valueDatum.index]]
         // 只顯示總數
-        datum._visibleValue = [datum.sum]
+        // datum._visibleValue = [datum.sum]
 
         event$.next({
           type: 'multiValue',
           eventName: 'click',
           pluginName,
           highlightTarget: data.highlightTarget,
+          valueDetail: [
+            {
+              value: datum.value[valueDatum.valueIndex],
+              valueIndex: valueDatum.valueIndex,
+              valueLabel: data.valueLabels[valueDatum.valueIndex]
+            },
+          ],
           datum,
           category: data.CategoryDataMap.get(datum.categoryLabel)!,
           categoryIndex: datum.categoryIndex,

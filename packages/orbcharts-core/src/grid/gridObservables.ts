@@ -31,10 +31,10 @@ import type {
   HighlightTarget,
   Layout,
   TransformData } from '../../lib/core-types'
-import { getMinMaxGrid } from './orbchartsUtils'
-import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from './d3Scale'
-import { calcContainerPositionScaled } from './orbchartsUtils'
-import { getMinMaxValue } from './orbchartsUtils'
+import { getMinMaxGrid } from '../utils/orbchartsUtils'
+import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from '../utils/d3Scale'
+import { calcContainerPositionScaled } from '../utils/orbchartsUtils'
+import { getMinMaxValue } from '../utils/orbchartsUtils'
 
 export const gridComputedAxesDataObservable = ({ computedData$, fullDataFormatter$, layout$ }: {
   computedData$: Observable<ComputedDataTypeMap<'grid'>>
@@ -256,6 +256,19 @@ export const gridContainerPositionObservable = ({ computedData$, fullDataFormatt
     switchMap(async (d) => d),
     map(data => {
       
+      // 無資料時回傳預設container位置
+      if (data.computedData.length === 0) {
+        const defaultPositionArr: ContainerPositionScaled[] = [
+          {
+            "slotIndex": 0,
+            "rowIndex": 0,
+            "columnIndex": 0,
+            "translate": [0, 0],
+            "scale": [1, 1]
+          }
+        ]
+        return defaultPositionArr
+      }
       if (data.fullDataFormatter.separateSeries) {
         // -- 依slotIndexes計算 --
         return calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, data.computedData.length)

@@ -98,15 +98,20 @@ export const dataFormatterValidator: DataFormatterValidator<'multiGrid'> = (data
   }
   if (dataFormatter.container) {
     const containerResult = validateColumns(dataFormatter.container, {
-      gap: {
+      columnAmount: {
         toBeTypes: ['number']
       },
       rowAmount: {
         toBeTypes: ['number']
       },
-      columnAmount: {
-        toBeTypes: ['number']
-      }
+      columnGap: {
+        toBe: '"auto" | number',
+        test: (value: any) => value === 'auto' || typeof value === 'number'
+      },
+      rowGap: {
+        toBe: '"auto" | number',
+        test: (value: any) => value === 'auto' || typeof value === 'number'
+      },
     })
     if (containerResult.status === 'error') {
       return containerResult

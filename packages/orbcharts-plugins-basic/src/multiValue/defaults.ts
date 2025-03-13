@@ -43,8 +43,7 @@ export const DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS: MultiValueTooltipParams = {
   padding: 10,
   renderFn: (eventData, { styles, utils }) => {
     const hasCategoryLabel = eventData.categoryLabel === '' ? false : true
-    const hasDatumLabel = eventData.datum.label.slice(0, 11) === 'multiValue_' ? false : true
-    const valueText = eventData.datum._visibleValue.map(d => utils.toCurrency(d))
+    const hasDatumLabel = eventData.datum == null || eventData.datum.label.slice(0, 11) === 'multiValue_' ? false : true
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
     const categorySvg = hasCategoryLabel
@@ -53,42 +52,91 @@ export const DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS: MultiValueTooltipParams = {
     <tspan>${eventData.categoryLabel}</tspan>
   </text>`
       : ''
+
     const datumLabelSvg = hasDatumLabel
-      ? `<tspan>${eventData.datum.label}</tspan>  `
-      : ''
-    const datumSvg = `<text font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
-    ${datumLabelSvg}<tspan font-weight="bold">${valueText}</tspan>
+      ? `<text font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
+    <tspan>${eventData.datum.label}</tspan>
   </text>`
+      : ''
+
+    const maxTextWidth = (() => {
+      const categoryLabelTextWidth = utils.measureTextWidth(eventData.categoryLabel, styles.textSizePx)
+      const datumLabelTextWidth = hasDatumLabel ? utils.measureTextWidth(eventData.datum.label, styles.textSizePx) : 0
+      const valueDetailTextWidth = eventData.valueDetail.reduce((acc, detail) => {
+        const text = `${detail.valueLabel}${utils.toCurrency(detail.value)}`
+        const _maxTextWidth = utils.measureTextWidth(text, styles.textSizePx)
+        return _maxTextWidth > acc ? _maxTextWidth : acc
+      }, 0)
+      return Math.max(categoryLabelTextWidth, datumLabelTextWidth, valueDetailTextWidth)
+    })()
+
+    const valueDetailSvg = eventData.valueDetail.map((detail, i) => {
+      const y = (i * styles.textSizePx * 1.5) + (datumLabelSvg ? styles.textSizePx * 2 : 0)
+      const lineEndX = maxTextWidth + styles.textSizePx * 3
+      return `<text x="0" y="${y}" font-weight="bold" font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
+      <tspan>${detail.valueLabel}</tspan>
+      <tspan text-anchor="end" x="${lineEndX}">${utils.toCurrency(detail.value)}</tspan>
+    </text>`
+    }).join('')
+
+    const datumDetailSvg = datumLabelSvg || valueDetailSvg
+      ? `<g ${hasCategoryLabel ? `transform="translate(0, ${styles.textSizePx * 2})"` : ''}>
+    ${datumLabelSvg}
+    ${valueDetailSvg}
+  </g>`
+      : ''
 
     return `${categorySvg}
-  <g ${hasCategoryLabel ? `transform="translate(0, ${styles.textSizePx * 2})"` : ''}>
-    ${datumSvg}
-  </g>`
+${datumDetailSvg}`
   },
 }
 DEFAULT_MULTI_VALUE_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils }) => {
-    const hasCategoryLabel = eventData.categoryLabel === '' ? false : true
-    const hasDatumLabel = eventData.datum.label.slice(0, 11) === 'multiValue_' ? false : true
-    const valueText = eventData.datum._visibleValue.map(d => utils.toCurrency(d))
-    const bulletWidth = styles.textSizePx * 0.7
-    const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
-    const categorySvg = hasCategoryLabel
-      ? \`<rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${offset - 1}" rx="\${bulletWidth / 2}" fill="\${eventData.datum.color}"></rect>
-  <text x="\${styles.textSizePx * 1.5}" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
-    <tspan>\${eventData.categoryLabel}</tspan>
-  </text>\`
-      : ''
-    const datumLabelSvg = hasDatumLabel
-      ? \`<tspan>\${eventData.datum.label}</tspan>  \`
-      : ''
-    const datumSvg = \`<text font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
-    \${datumLabelSvg}<tspan font-weight="bold">\${valueText}</tspan>
-  </text>\`
+  const hasCategoryLabel = eventData.categoryLabel === '' ? false : true
+  const hasDatumLabel = eventData.datum == null || eventData.datum.label.slice(0, 11) === 'multiValue_' ? false : true
+  const bulletWidth = styles.textSizePx * 0.7
+  const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
+  const categorySvg = hasCategoryLabel
+    ? \`<rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${offset - 1}" rx="\${bulletWidth / 2}" fill="\${eventData.datum.color}"></rect>
+<text x="\${styles.textSizePx * 1.5}" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
+  <tspan>\${eventData.categoryLabel}</tspan>
+</text>\`
+    : ''
 
-    return \`\${categorySvg}
-  <g \${hasCategoryLabel ? \`transform="translate(0, \${styles.textSizePx * 2})"\` : ''}>
-    \${datumSvg}
-  </g>\`
+  const datumLabelSvg = hasDatumLabel
+    ? \`<text font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
+  <tspan>\${eventData.datum.label}</tspan>
+</text>\`
+    : ''
+
+  const maxTextWidth = (() => {
+    const categoryLabelTextWidth = utils.measureTextWidth(eventData.categoryLabel, styles.textSizePx)
+    const datumLabelTextWidth = hasDatumLabel ? utils.measureTextWidth(eventData.datum.label, styles.textSizePx) : 0
+    const valueDetailTextWidth = eventData.valueDetail.reduce((acc, detail) => {
+      const text = \`\${detail.valueLabel}\${utils.toCurrency(detail.value)}\`
+      const _maxTextWidth = utils.measureTextWidth(text, styles.textSizePx)
+      return _maxTextWidth > acc ? _maxTextWidth : acc
+    }, 0)
+    return Math.max(categoryLabelTextWidth, datumLabelTextWidth, valueDetailTextWidth)
+  })()
+
+  const valueDetailSvg = eventData.valueDetail.map((detail, i) => {
+    const y = (i * styles.textSizePx * 1.5) + (datumLabelSvg ? styles.textSizePx * 2 : 0)
+    const lineEndX = maxTextWidth + styles.textSizePx * 3
+    return \`<text x="0" y="\${y}" font-weight="bold" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
+    <tspan>\${detail.valueLabel}</tspan>
+    <tspan text-anchor="end" x="\${lineEndX}">\${utils.toCurrency(detail.value)}</tspan>
+  </text>\`
+  }).join('')
+
+  const datumDetailSvg = datumLabelSvg || valueDetailSvg
+    ? \`<g \${hasCategoryLabel ? \`transform="translate(0, \${styles.textSizePx * 2})"\` : ''}>
+  \${datumLabelSvg}
+  \${valueDetailSvg}
+</g>\`
+    : ''
+
+  return \`\${categorySvg}
+\${datumDetailSvg}\`
 }`
 
 export const DEFAULT_ORDINAL_BUBBLES_PARAMS: OrdinalBubblesParams = {

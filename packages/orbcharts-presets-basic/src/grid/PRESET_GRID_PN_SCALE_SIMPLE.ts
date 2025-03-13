@@ -51,11 +51,7 @@ export const PRESET_GRID_PN_SCALE_SIMPLE: PresetPartial<'grid', Partial<PresetGr
     },
   },
   pluginParams: {
-    // ...ALL_PLUGIN_PARAMS_GRID,
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     GridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 7,
     }

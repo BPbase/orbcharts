@@ -191,7 +191,7 @@ export const multiValueContainerSelectionsObservable = ({ selection, pluginName,
     map((computedData, i) => {
       return selection
         .selectAll<SVGGElement, ComputedDatumMultiValue[]>(`g.${containerClassName}`)
-        .data(computedData, d => d[0] ? d[0].categoryIndex : i)
+        .data(computedData, d => (d && d[0]) ? d[0].categoryIndex : i)
         .join('g')
         .classed(containerClassName, true)
         .attr('clip-path', _ => clipPathID ? `url(#${clipPathID})` : 'none')
@@ -222,7 +222,7 @@ export const multiValueContainerSelectionsObservable = ({ selection, pluginName,
 }
 
 
-export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatter$, filteredXYMinMaxData$, containerPosition$, layout$ }: {
+export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatter$, filteredXYMinMaxData$, containerPosition$, containerSize$, layout$ }: {
   rootSelection: d3.Selection<any, unknown, any, unknown>
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   // computedData$: Observable<ComputedDataMultiValue>
@@ -234,33 +234,34 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
     maxYDatum: ComputedXYDatumMultiValue
   }>
   containerPosition$: Observable<ContainerPositionScaled[]>
+  containerSize$: Observable<ContainerSize>
   layout$: Observable<Layout>
 }) => {
   const rootMousemove$ = d3EventObservable(rootSelection, 'mousemove').pipe(
     debounceTime(2) // 避免過度頻繁觸發，實測時沒加電腦容易卡頓
   )
 
-  const columnAmount$ = containerPosition$.pipe(
-    map(containerPosition => {
-      const maxColumnIndex = containerPosition.reduce((acc, current) => {
-        return current.columnIndex > acc ? current.columnIndex : acc
-      }, 0)
-      return maxColumnIndex + 1
-    }),
-    distinctUntilChanged(),
-    shareReplay(1)
-  )
+  // const columnAmount$ = containerPosition$.pipe(
+  //   map(containerPosition => {
+  //     const maxColumnIndex = containerPosition.reduce((acc, current) => {
+  //       return current.columnIndex > acc ? current.columnIndex : acc
+  //     }, 0)
+  //     return maxColumnIndex + 1
+  //   }),
+  //   distinctUntilChanged(),
+  //   shareReplay(1)
+  // )
 
-  const rowAmount$ = containerPosition$.pipe(
-    map(containerPosition => {
-      const maxRowIndex = containerPosition.reduce((acc, current) => {
-        return current.rowIndex > acc ? current.rowIndex : acc
-      }, 0)
-      return maxRowIndex + 1
-    }),
-    distinctUntilChanged(),
-    shareReplay(1)
-  )
+  // const rowAmount$ = containerPosition$.pipe(
+  //   map(containerPosition => {
+  //     const maxRowIndex = containerPosition.reduce((acc, current) => {
+  //       return current.rowIndex > acc ? current.rowIndex : acc
+  //     }, 0)
+  //     return maxRowIndex + 1
+  //   }),
+  //   distinctUntilChanged(),
+  //   shareReplay(1)
+  // )
 
   // const xyScale$ = combineLatest({
   //   layout: layout$,
@@ -295,11 +296,12 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
     yScale: d3.ScaleLinear<number, number, never>;
   }> = new Observable(subscriber => {
     combineLatest({
-      layout: layout$,
+      // layout: layout$,
+      containerSize: containerSize$,
       filteredXYMinMaxData: filteredXYMinMaxData$,
       fullDataFormatter: fullDataFormatter$,
-      columnAmount: columnAmount$,
-      rowAmount: rowAmount$
+      // columnAmount: columnAmount$,
+      // rowAmount: rowAmount$
     }).pipe(
       switchMap(async d => d),
     ).subscribe(data => {
@@ -315,14 +317,14 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
       const xScale = createAxisToValueScale({
         maxValue: data.filteredXYMinMaxData.maxXDatum.value[xValueIndex],
         minValue: data.filteredXYMinMaxData.minXDatum.value[xValueIndex],
-        axisWidth: data.layout.width,
+        axisWidth: data.containerSize.width,
         scaleDomain: data.fullDataFormatter.xAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.xAxis.scaleRange,
       })
       const yScale = createAxisToValueScale({
         maxValue: data.filteredXYMinMaxData.maxYDatum.value[yValueIndex],
         minValue: data.filteredXYMinMaxData.minYDatum.value[yValueIndex],
-        axisWidth: data.layout.height,
+        axisWidth: data.containerSize.height,
         scaleDomain: data.fullDataFormatter.yAxis.scaleDomain,
         scaleRange: data.fullDataFormatter.yAxis.scaleRange,
         reverse: true
@@ -333,32 +335,58 @@ export const multiValueXYPositionObservable = ({ rootSelection, fullDataFormatte
 
   const axisValue$ = combineLatest({
     rootMousemove: rootMousemove$,
-    columnAmount: columnAmount$,
-    rowAmount: rowAmount$,
+    // columnAmount: columnAmount$,
+    // rowAmount: rowAmount$,
     layout: layout$,
     containerPosition: containerPosition$
   }).pipe(
     switchMap(async d => d),
     map(data => {
       // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
-      return {
-        x: ((data.rootMousemove.offsetX - data.layout.left) / data.containerPosition[0].scale[0])
-          % (data.layout.rootWidth / data.columnAmount / data.containerPosition[0].scale[0]),
-        y: ((data.rootMousemove.offsetY - data.layout.top) / data.containerPosition[0].scale[1])
-          % (data.layout.rootHeight / data.rowAmount / data.containerPosition[0].scale[1])
-      }
+      // return {
+      //   x: ((data.rootMousemove.offsetX - data.layout.left) / data.containerPosition[0].scale[0])
+      //     % (data.layout.rootWidth / data.columnAmount / data.containerPosition[0].scale[0]),
+      //   y: ((data.rootMousemove.offsetY - data.layout.top) / data.containerPosition[0].scale[1])
+      //     % (data.layout.rootHeight / data.rowAmount / data.containerPosition[0].scale[1])
+      // }
+      const x = (() => {
+        let x = data.rootMousemove.offsetX
+        const rangeArr = data.containerPosition
+          .map((d, i) => [d.translate[0], data.containerPosition[i + 1]?.translate[0] ?? data.layout.rootWidth])
+          .filter(d => d[0] < d[1])
+        const range = rangeArr.find(d => x >= d[0] && x <= d[1])
+        if (range) {
+          x = x - range[0]
+        }
+        return x - data.layout.left
+      })()
+      
+      const y = (() => {
+        let y = data.rootMousemove.offsetY
+        const rangeArr = data.containerPosition
+          .map((d, i) => [d.translate[1], data.containerPosition[i + 1]?.translate[1] ?? data.layout.rootHeight])
+          .filter(d => d[0] < d[1])
+        const range = rangeArr.find(d => y >= d[0] && y <= d[1])
+        if (range) {
+          y = y - range[0]
+        }
+        return y - data.layout.top
+      })()
+
+      return { x, y }
     })
   )
 
   return combineLatest({
     xyScale: xyScale$,
-    axisValue: axisValue$
+    axisValue: axisValue$,
+    containerPosition: containerPosition$
   }).pipe(
     switchMap(async d => d),
     map(data => {
       return {
-        x: data.axisValue.x,
-        y: data.axisValue.y,
+        x: data.axisValue.x / data.containerPosition[0].scale[0],
+        y: data.axisValue.y / data.containerPosition[0].scale[1],
         xValue: data.xyScale.xScale(data.axisValue.x),
         yValue: data.xyScale.yScale(data.axisValue.y)
       }
@@ -379,28 +407,39 @@ export const ordinalPositionObservable = ({ rootSelection, ordinalScaleDomain$, 
     debounceTime(2) // 避免過度頻繁觸發，實測時沒加電腦容易卡頓
   )
 
-  const columnAmount$ = containerPosition$.pipe(
-    map(containerPosition => {
-      const maxColumnIndex = containerPosition.reduce((acc, current) => {
-        return current.columnIndex > acc ? current.columnIndex : acc
-      }, 0)
-      return maxColumnIndex + 1
-    }),
-    distinctUntilChanged(),
-    shareReplay(1)
-  )
+  // const columnAmount$ = containerPosition$.pipe(
+  //   map(containerPosition => {
+  //     const maxColumnIndex = containerPosition.reduce((acc, current) => {
+  //       return current.columnIndex > acc ? current.columnIndex : acc
+  //     }, 0)
+  //     return maxColumnIndex + 1
+  //   }),
+  //   distinctUntilChanged(),
+  //   shareReplay(1)
+  // )
 
   const axisX$ = combineLatest({
     rootMousemove: rootMousemove$,
-    columnAmount: columnAmount$,
+    // columnAmount: columnAmount$,
     layout: layout$,
-    containerPosition: containerPosition$
+    // containerSize: containerSize$,
+    containerPosition: containerPosition$,
   }).pipe(
     switchMap(async d => d),
     map(data => {
       // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
-      return ((data.rootMousemove.offsetX - data.layout.left) / data.containerPosition[0].scale[0])
-        % (data.layout.rootWidth / data.columnAmount / data.containerPosition[0].scale[0])
+      // return ((data.rootMousemove.offsetX - data.layout.left) / data.containerPosition[0].scale[0])
+      //   % (data.layout.rootWidth / data.columnAmount / data.containerPosition[0].scale[0])
+
+      let x = data.rootMousemove.offsetX
+      const rangeArr = data.containerPosition
+        .map((d, i) => [d.translate[0], data.containerPosition[i + 1]?.translate[0] ?? data.layout.rootWidth])
+        .filter(d => d[0] < d[1])
+      const range = rangeArr.find(d => x >= d[0] && x <= d[1])
+      if (range) {
+        x = x - range[0]
+      }
+      return x - data.layout.left
     })
   )
 
@@ -413,29 +452,30 @@ export const ordinalPositionObservable = ({ rootSelection, ordinalScaleDomain$, 
 
   return combineLatest({
     scaleRangeLabels: scaleRangeLabels$,
-    layout: layout$,
+    // layout: layout$,
     containerSize: containerSize$,
     axisX: axisX$,
     ordinalScale: ordinalScale$,
     ordinalPadding: ordinalPadding$,
-    ordinalScaleDomain: ordinalScaleDomain$
+    ordinalScaleDomain: ordinalScaleDomain$,
+    containerPosition: containerPosition$
   }).pipe(
     switchMap(async d => d),
     map(data => {
       // 比例尺座標對應非連續資料索引
       const xIndexScale = createAxisToLabelIndexScale({
         axisLabels: data.scaleRangeLabels,
-        axisWidth: data.layout.width,
+        axisWidth: data.containerSize.width,
         padding: 0.5,
         reverse: false
       })
 
       const seq = xIndexScale(data.axisX)
       const xIndex = seq + data.ordinalScaleDomain[0]
-      const x = data.ordinalScale(xIndex) + data.ordinalPadding
+      const x = (data.ordinalScale(xIndex) + data.ordinalPadding) / data.containerPosition[0].scale[0]
 
       return {
-        x,
+        x: x,
         xValue: xIndex,
       }
     })

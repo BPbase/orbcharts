@@ -52,6 +52,9 @@ interface LabelDatum {
 const pluginName = 'GroupAux'
 const labelClassName = getClassName(pluginName, 'label-box')
 
+const rectPaddingWidth = 6
+const rectPaddingHeight = 3
+
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_GROUP_AUX_PARAMS> = {
   name: pluginName,
   defaultParams: DEFAULT_GROUP_AUX_PARAMS,
@@ -219,9 +222,11 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
       exit => exit.remove()
     )
     .each((datum, i, n) => {
+      const gSelection = d3.select(n[i])
+
       // const rectWidth = measureTextWidth(datum.text, textSizePx) + 12
-      const rectWidth = datum.textWidth + 12
-      const rectHeight = datum.textHeight + 6
+      const rectWidth = datum.textWidth + (rectPaddingWidth * 2)
+      const rectHeight = datum.textHeight + (rectPaddingHeight * 2)
       // -- label偏移位置 --
       let rectX = - rectWidth / 2
       let rectY = -2
@@ -260,7 +265,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
       }
 
       // -- rect --
-      d3.select(n[i])
+      const rect = gSelection
         .selectAll<SVGRectElement, LabelDatum>('rect')
         .data([datum])
         .join(
@@ -278,27 +283,8 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
         .attr('y', y) // 奇怪的偏移修正
         .style('transform', textReverseTransformWithRotate)
 
-      // const rectUpdate = d3.select(n[i])
-      //   .selectAll<SVGRectElement, LabelDatum>('rect')
-      //   .data([datum])
-      // const rectEnter = rectUpdate
-      //   .enter()
-      //   .append('rect')
-      //   .attr('height', `${rectHeight}px`)
-      //   .attr('fill', d => getColor(fullParams.labelColorType, fullChartParams))
-      //   .attr('x', rectX)
-      //   .attr('y', rectY - 3) // 奇怪的偏移修正
-      //   .attr('rx', 5)
-      //   .attr('ry', 5)
-      //   .style('cursor', 'pointer')
-      //   // .style('pointer-events', 'none')
-      // const rect = rectUpdate.merge(rectEnter)
-      //   .attr('width', d => `${rectWidth}px`)
-      //   .style('transform', textReverseTransformWithRotate)
-      // rectUpdate.exit().remove()
-
       // -- text --
-      d3.select(n[i])
+      const text = gSelection
         .selectAll<SVGTextElement, LabelDatum>('text')
         .data([datum])
         .join(
@@ -311,8 +297,8 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
         .style('transform', textReverseTransformWithRotate)
         .attr('fill', d => getColor(fullParams.labelTextColorType, fullChartParams))
         .attr('font-size', fullChartParams.styles.textSize)
-        .attr('x', x + 6)
-        .attr('y', y + 3)
+        .attr('x', x + rectPaddingWidth)
+        .attr('y', y + rectPaddingHeight)
         .each((d, i, n) => {
           renderTspansOnAxis(d3.select(n[i]), {
             textArr: datum.textArr,
@@ -322,31 +308,20 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
           })
         })
 
-      // const textUpdate = d3.select(n[i])
-      //   .selectAll<SVGTextElement, LabelDatum>('text')
-      //   .data([datum])
-      // const textEnter = textUpdate
-      //   .enter()
-      //   .append('text')
-      //   .style('dominant-baseline', 'hanging')
-      //   .style('cursor', 'pointer')
-      //   // .style('pointer-events', 'none')
-      // const text = textUpdate.merge(textEnter)
-      //   // .text(d => d.text)
-      //   .style('transform', textReverseTransformWithRotate)
-      //   .attr('fill', d => getColor(fullParams.labelTextColorType, fullChartParams))
-      //   .attr('font-size', fullChartParams.styles.textSize)
-      //   .attr('x', rectX + 6)
-      //   .attr('y', rectY)
-      // textUpdate.exit().remove()
-
-      // text.each((d, i, n) => {
-      //   renderTspansOnAxis(d3.select(n[i]), {
-      //     textArr: datum.textArr,
-      //     textSizePx,
-      //     groupAxisPosition: fullDataFormatter.groupAxis.position
-      //   })
-      // })
+      // -- 第二次文字寬度（因為原本計算的文字寬度有可能因為字體差異會有誤差） --
+      // 取得文字寬度
+      let textWidthArr: number[] = []
+      text.selectAll('tspan')
+        .each((d, i, n) => {
+          const tspan = d3.select(n[i])
+          const textNode: SVGTextElement = tspan.node() as SVGTextElement
+          if (textNode && textNode.getBBox()) {
+            textWidthArr.push(textNode.getBBox().width)
+          }
+        })
+      const maxTextWidth = Math.max(...textWidthArr)
+      // 依文字寬度設定矩形寬度
+      rect.attr('width', maxTextWidth + rectPaddingWidth * 2)
     })
 
   return axisLabelSelection
@@ -781,9 +756,9 @@ export const GroupAux = defineGridPlugin(pluginConfig)(({ selection, rootSelecti
   const gridGroupPosition$ = gridGroupPositionObservable({
     rootSelection,
     fullDataFormatter$: observer.fullDataFormatter$,
-    gridAxesSize$: observer.gridAxesSize$,
+    containerSize$: observer.containerSize$,
+    gridAxesContainerSize$: observer.gridAxesContainerSize$,
     computedData$: observer.computedData$,
-    fullChartParams$: observer.fullChartParams$,
     gridContainerPosition$: observer.gridContainerPosition$,
     layout$: observer.layout$
   }).pipe(

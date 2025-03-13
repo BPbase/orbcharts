@@ -993,6 +993,62 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
         ]
       },
       {
+        title: 'OrdinalBubbles',
+        description: 'Ordinal Bubbles Chart',
+        descriptionZh: '序數泡泡圖',
+        mainPluginNames: ['OrdinalBubbles'],
+        list: [
+          {
+            title: 'PRESET_ORDINAL_BUBBLES_BASIC',
+            presetName: 'PRESET_ORDINAL_BUBBLES_BASIC',
+            description: 'Basic ordinal bubbles',
+            descriptionZh: '基本的序數泡泡圖',
+            allPluginNames: ['OrdinalBubbles', 'OrdinalAxis', 'OrdinalAux', 'OrdinalZoom', 'MultiValueLegend', 'MultiValueTooltip'],
+            getData: () => import('./data/multiValueData_channel')
+          },
+          {
+            title: 'PRESET_ORDINAL_BUBBLES_SIMPLE',
+            presetName: 'PRESET_ORDINAL_BUBBLES_SIMPLE',
+            description: 'Simple ordinal bubbles',
+            descriptionZh: '簡單的序數泡泡圖',
+            allPluginNames: ['OrdinalBubbles', 'OrdinalAxis', 'MultiValueLegend'],
+            getData: () => import('./data/multiValueData_channel_short')
+          },
+          {
+            title: 'PRESET_ORDINAL_BUBBLES_LINEAR_OPACITY',
+            presetName: 'PRESET_ORDINAL_BUBBLES_LINEAR_OPACITY',
+            description: 'Ordinal bubbles with linear opacity',
+            descriptionZh: '漸變透明度的序數泡泡圖',
+            allPluginNames: ['OrdinalBubbles', 'OrdinalAxis', 'OrdinalAux', 'OrdinalZoom', 'MultiValueLegend', 'MultiValueTooltip'],
+            getData: () => import('./data/multiValueData_channel')
+          },
+          {
+            title: 'PRESET_ORDINAL_BUBBLES_SCALING_BY_RADIUS',
+            presetName: 'PRESET_ORDINAL_BUBBLES_SCALING_BY_RADIUS',
+            description: 'Ordinal bubbles with radius scaling',
+            descriptionZh: '以半徑尺寸為比例的序數泡泡圖',
+            allPluginNames: ['OrdinalBubbles', 'OrdinalAxis', 'OrdinalAux', 'OrdinalZoom', 'MultiValueLegend', 'MultiValueTooltip'],
+            getData: () => import('./data/multiValueData_channel')
+          },
+          {
+            title: 'PRESET_ORDINAL_BUBBLES_ALL_ITEMS',
+            presetName: 'PRESET_ORDINAL_BUBBLES_ALL_ITEMS',
+            description: 'Ordinal bubbles for all items',
+            descriptionZh: '顯示全部項目的序數泡泡圖',
+            allPluginNames: ['OrdinalBubbles', 'OrdinalAxis', 'OrdinalAux', 'OrdinalZoom', 'MultiValueLegend', 'MultiValueTooltip'],
+            getData: () => import('./data/multiValueData_channel')
+          },
+          {
+            title: 'PRESET_ORDINAL_BUBBLES_SEPARATE_CATEGORY',
+            presetName: 'PRESET_ORDINAL_BUBBLES_SEPARATE_CATEGORY',
+            description: 'Ordinal bubbles with separate category',
+            descriptionZh: '分開顯示category的序數泡泡圖',
+            allPluginNames: ['OrdinalBubbles', 'OrdinalAxis', 'OrdinalAux', 'OrdinalZoom', 'MultiValueLegend', 'MultiValueTooltip'],
+            getData: () => import('./data/multiValueData_channel_short')
+          },
+        ]
+      },
+      {
         title: 'RacingBars',
         description: 'Racing Bars Chart',
         descriptionZh: '賽跑長條圖',

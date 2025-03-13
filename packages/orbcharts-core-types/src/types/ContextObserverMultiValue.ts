@@ -14,6 +14,7 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
   highlight$: Observable<ComputedDatumMultiValue[]>
   categoryLabels$: Observable<string[]>
   CategoryDataMap$: Observable<Map<string, ComputedDatumMultiValue[]>>
+  valueLabels$: Observable<string[]>
   xyMinMax$: Observable<{ // xy
     minX: number
     maxX: number
@@ -37,7 +38,7 @@ export interface ContextObserverMultiValue<PluginParams> extends ContextObserver
   // xSumScale$: Observable<d3.ScaleLinear<number, number>>
   yScale$: Observable<d3.ScaleLinear<number, number>>
   // -- ordinal --
-  ordinalScaleDomain$: Observable<[string, string]>
+  ordinalScaleDomain$: Observable<[number, number]>
   visibleComputedSumData$: Observable<ComputedDatumWithSumMultiValue[][]>
   visibleComputedRankingBySumData$: Observable<ComputedDatumWithSumMultiValue[][]> // ranking
   ordinalScale$: Observable<d3.ScaleLinear<number, number>>

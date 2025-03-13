@@ -71,6 +71,9 @@ interface ValueLabelData {
 const pluginName = 'OrdinalAux'
 const labelClassName = getClassName(pluginName, 'label-box')
 
+const rectPaddingWidth = 6
+const rectPaddingHeight = 3
+
 const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_ORDINAL_AUX_PARAMS> = {
   name: pluginName,
   defaultParams: DEFAULT_ORDINAL_AUX_PARAMS,
@@ -155,16 +158,15 @@ function createLabelData ({ valueLabelData, axisX, xValue, fullParams, textSizeP
   if ((axisX >= 0 && axisX <= layout.width) === false) {
     return []
   }
-  const rectPaddingWidth = 6
-  const rectPaddingHeight = 3
+
 
   // x
   const xX = axisX
   const xY = - fullParams.labelPadding * rowAmount // rowAmount 是為了把外部 container 的變形逆轉回來
   // const xText = fullParams.labelTextFormat(xValue)
   // const xTextArr = xText.split('\n')
-  const xText = valueLabelData[xValue].text
-  const xTextArr = valueLabelData[xValue].textArr
+  const xText = valueLabelData[xValue] ? valueLabelData[xValue].text : ''
+  const xTextArr = valueLabelData[xValue] ? valueLabelData[xValue].textArr : []
   const xMaxLengthText = xTextArr.reduce((acc, current) => current.length > acc.length ? current : acc, '')
   const xTextWidth = measureTextWidth(xMaxLengthText, textSizePx)
   const xTextHeight = textSizePx * xTextArr.length
@@ -282,15 +284,10 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
       exit => exit.remove()
     )
     .each((datum, i, n) => {
-      // // const rectWidth = measureTextWidth(datum.text, textSizePx) + 12
-      // const rectWidth = datum.textWidth + 12
-      // const rectHeight = datum.textHeight + 6
-      // // -- label偏移位置 --
-      // let rectX = - rectWidth / 2
-      // let rectY = 2
+      const gSelection = d3.select(n[i])
 
       // -- rect --
-      d3.select(n[i])
+      const rect = gSelection
         .selectAll<SVGRectElement, LabelDatum>('rect')
         .data([datum])
         .join(
@@ -309,7 +306,7 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
         .style('transform', textReverseTransform)
 
       // -- text --
-      d3.select(n[i])
+      const text = gSelection
         .selectAll<SVGTextElement, LabelDatum>('text')
         .data([datum])
         .join(
@@ -335,6 +332,22 @@ function renderLabel ({ selection, labelData, fullParams, fullDataFormatter, ful
             isContainerRotated: false
           })
         })
+      
+      // -- 第二次文字寬度（因為原本計算的文字寬度有可能因為字體差異會有誤差） --
+      // 取得文字寬度
+      let textWidthArr: number[] = []
+      text.selectAll('tspan')
+        .each((d, i, n) => {
+          const tspan = d3.select(n[i])
+          const textNode: SVGTextElement = tspan.node() as SVGTextElement
+          if (textNode && textNode.getBBox()) {
+            textWidthArr.push(textNode.getBBox().width)
+          }
+        })
+      const maxTextWidth = Math.max(...textWidthArr)
+      // 依文字寬度設定矩形寬度
+      rect.attr('width', maxTextWidth + rectPaddingWidth * 2)
+
     })
 
   return axisLabelSelection
@@ -395,11 +408,11 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
       .attr('height', d.rootHeight)
   })
 
-  // const highlightTarget$ = observer.fullChartParams$.pipe(
-  //   takeUntil(destroy$),
-  //   map(d => d.highlightTarget),
-  //   distinctUntilChanged()
-  // )
+  const highlightTarget$ = observer.fullChartParams$.pipe(
+    takeUntil(destroy$),
+    map(d => d.highlightTarget),
+    distinctUntilChanged()
+  )
 
   // const rootMousemove$: Observable<any> = d3EventObservable(rootSelection, 'mousemove')
   //   .pipe(
@@ -446,7 +459,7 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
     distinctUntilChanged()
   )
 
-  // const xyPosition$ = multiValueXYPositionObservable({
+  // const ordinalPosition$ = multiValueXYPositionObservable({
   //   rootSelection,
   //   fullDataFormatter$: observer.fullDataFormatter$,
   //   filteredXYMinMaxData$: observer.filteredXYMinMaxData$,
@@ -456,33 +469,25 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
   //   takeUntil(destroy$)
   // )
 
-  const xyPosition$ = ordinalPositionObservable({
+  const ordinalPosition$ = ordinalPositionObservable({
     rootSelection,
-    // fullDataFormatter$: observer.fullDataFormatter$,
     ordinalScaleDomain$: observer.ordinalScaleDomain$,
-    // ordinalPadding$: observer.ordinalPadding$,
+    ordinalScale$: observer.ordinalScale$,
+    ordinalPadding$: observer.ordinalPadding$,
     containerSize$: observer.containerSize$,
     containerPosition$: observer.containerPosition$,
     layout$: observer.layout$,
-    ordinalScale$: observer.ordinalScale$,
-    ordinalPadding$: observer.ordinalPadding$,
   })
 
   const valueLabelData$ = combineLatest({
-    // valueLabels: observer.valueLabels$,
-    computedData: observer.computedData$,
+    valueLabels: observer.valueLabels$,
     fullParams: observer.fullParams$,
-    fullDataFormatter: observer.fullDataFormatter$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      const valueLabels = data.computedData[0] && data.computedData[0][0] && data.computedData[0][0].value.length
-        ? data.computedData[0][0].value.map((d, i) => data.fullDataFormatter.valueLabels[i] ?? String(i))
-        : []
-      return createValueLabelData(valueLabels, data.fullParams.labelTextFormat)
+      return createValueLabelData(data.valueLabels, data.fullParams.labelTextFormat)
     }),
-    // distinctUntilChanged(),
     shareReplay(1)
   )
 
@@ -490,12 +495,12 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
     axesSelection: axesSelection$,
     // rootMousemove: rootMousemove$,
     layout: observer.layout$,
-    xyPosition: xyPosition$,
-    // computedData: observer.computedData$,
+    ordinalPosition: ordinalPosition$,
+    computedData: observer.computedData$,
     fullParams: observer.fullParams$,
     fullDataFormatter: observer.fullDataFormatter$,
     fullChartParams: observer.fullChartParams$,
-    // highlightTarget: highlightTarget$,
+    highlightTarget: highlightTarget$,
     textReverseTransform: textReverseTransform$,
     // CategoryDataMap: observer.CategoryDataMap$,
     textSizePx: observer.textSizePx$,
@@ -507,7 +512,7 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
     switchMap(async d => d),
   ).subscribe(data => {
     // 依event的座標取得group資料
-    const { x, xValue } = data.xyPosition
+    const { x, xValue } = data.ordinalPosition
     // console.log({ x, xValue })
 
     const lineData = createLineData({
@@ -546,79 +551,83 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
     })
 
     // label的事件
-    // labelSelection
-    //   .on('mouseover', (event, datum) => {
-    //     event.stopPropagation()
-    //     // const { groupIndex, groupLabel } = data.xyPositionFn(event)
+    labelSelection
+      .on('mouseover', (event, datum) => {
+        event.stopPropagation()
+        // const { groupIndex, groupLabel } = data.ordinalPositionFn(event)
 
-    //     isLabelMouseover = true
+        isLabelMouseover = true
 
-    //     subject.event$.next({
-    //       type: 'multiValue',
-    //       eventName: 'mouseover',
-    //       pluginName,
-    //       highlightTarget: data.highlightTarget,
-    //       datum,
-    //       category: [],
-    //       categoryIndex: -1,
-    //       categoryLabel: '',
-    //       data: data.computedData,
-    //       event,
-    //     })
-    //   })
-    //   .on('mousemove', (event, datum) => {
-    //     event.stopPropagation()
-    //     // const { groupIndex, groupLabel } = data.xyPositionFn(event)
+        subject.event$.next({
+          type: 'multiValue',
+          eventName: 'mouseover',
+          pluginName,
+          highlightTarget: data.highlightTarget,
+          valueDetail: [],
+          datum: null,
+          category: [],
+          categoryIndex: -1,
+          categoryLabel: '',
+          data: data.computedData,
+          event,
+        })
+      })
+      .on('mousemove', (event, datum) => {
+        event.stopPropagation()
+        // const { groupIndex, groupLabel } = data.ordinalPositionFn(event)
 
-    //     subject.event$.next({
-    //       type: 'multiValue',
-    //       eventName: 'mousemove',
-    //       pluginName,
-    //       highlightTarget: data.highlightTarget,
-    //       datum,
-    //       category: [],
-    //       categoryIndex: -1,
-    //       categoryLabel: '',
-    //       data: data.computedData,
-    //       event,
-    //     })
-    //   })
-    //   .on('mouseout', (event, datum) => {
-    //     event.stopPropagation()
-    //     // const { groupIndex, groupLabel } = data.xyPositionFn(event)
+        subject.event$.next({
+          type: 'multiValue',
+          eventName: 'mousemove',
+          pluginName,
+          highlightTarget: data.highlightTarget,
+          valueDetail: [],
+          datum: null,
+          category: [],
+          categoryIndex: -1,
+          categoryLabel: '',
+          data: data.computedData,
+          event,
+        })
+      })
+      .on('mouseout', (event, datum) => {
+        event.stopPropagation()
+        // const { groupIndex, groupLabel } = data.ordinalPositionFn(event)
 
-    //     isLabelMouseover = false
+        isLabelMouseover = false
 
-    //     subject.event$.next({
-    //       type: 'multiValue',
-    //       eventName: 'mouseout',
-    //       pluginName,
-    //       highlightTarget: data.highlightTarget,
-    //       datum,
-    //       category: [],
-    //       categoryIndex: -1,
-    //       categoryLabel: '',
-    //       data: data.computedData,
-    //       event,
-    //     })
-    //   })
-    //   .on('click', (event, datum) => {
-    //     event.stopPropagation()
-    //     // const { groupIndex, groupLabel } = data.xyPositionFn(event)
+        subject.event$.next({
+          type: 'multiValue',
+          eventName: 'mouseout',
+          pluginName,
+          highlightTarget: data.highlightTarget,
+          valueDetail: [],
+          datum: null,
+          category: [],
+          categoryIndex: -1,
+          categoryLabel: '',
+          data: data.computedData,
+          event,
+        })
+      })
+      .on('click', (event, datum) => {
+        event.stopPropagation()
+        // const { groupIndex, groupLabel } = data.ordinalPositionFn(event)
 
-    //     subject.event$.next({
-    //       type: 'multiValue',
-    //       eventName: 'click',
-    //       pluginName,
-    //       highlightTarget: data.highlightTarget,
-    //       datum,
-    //       category: [],
-    //       categoryIndex: -1,
-    //       categoryLabel: '',
-    //       data: data.computedData,
-    //       event,
-    //     })
-    //   })
+        subject.event$.next({
+          type: 'multiValue',
+          eventName: 'click',
+          pluginName,
+          highlightTarget: data.highlightTarget,
+          valueDetail: [],
+          datum: null,
+          category: [],
+          categoryIndex: -1,
+          categoryLabel: '',
+          data: data.computedData,
+          event,
+        })
+      })
 
   })
 
@@ -635,10 +644,10 @@ export const OrdinalAux = defineMultiValuePlugin(pluginConfig)(({ selection, roo
     switchMap(async d => d)
   ).subscribe(data => {
     setTimeout(() => {
-      // // @Q@ workaround - 不知為何和 label 會有衝突，當滑鼠移動到 label 上時，會觸發 mouseout 事件
-      // if (isLabelMouseover == true) {
-      //   return
-      // }
+      // @Q@ workaround - 不知為何和 label 會有衝突，當滑鼠移動到 label 上時，會觸發 mouseout 事件
+      if (isLabelMouseover == true) {
+        return
+      }
       
       removeLine(data.axesSelection)
       removeLabel(data.axesSelection)

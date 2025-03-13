@@ -22,6 +22,7 @@ import {
   containerPositionObservable,
   // containerSizeObservable,
   xyMinMaxObservable,
+  valueLabelsObservable,
   filteredXYMinMaxDataObservable,
   // visibleComputedRankingDataObservable,
   // rankingAmountLimitObservable,
@@ -33,7 +34,7 @@ import {
   ordinalPaddingObservable,
   ordinalScaleObservable,
   // valueLabelsObservable
-} from '../utils/multiValueObservables'
+} from './multiValueObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({ subject, observer }) => {
 
@@ -57,7 +58,10 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
 
   const containerSize$ = containerSizeObservable({
     layout$: observer.layout$,
-    containerPosition$
+    containerPosition$,
+    container$: observer.fullDataFormatter$.pipe( 
+      map(d => d.container)
+    )
   }).pipe(
     shareReplay(1)
   )
@@ -99,6 +103,13 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
 
   const CategoryDataMap$ = categoryDataMapObservable({
     datumList$: datumList$
+  }).pipe(
+    shareReplay(1)
+  )
+
+  const valueLabels$ = valueLabelsObservable({
+    fullDataFormatter$: observer.fullDataFormatter$,
+    computedData$: observer.computedData$,
   }).pipe(
     shareReplay(1)
   )
@@ -290,6 +301,7 @@ export const contextObserverCallback: ContextObserverCallback<'multiValue'> = ({
     highlight$,
     categoryLabels$,
     CategoryDataMap$,
+    valueLabels$,
     xyMinMax$,
     xyValueIndex$,
     // computedXYData$,

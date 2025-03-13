@@ -4,7 +4,8 @@ import {
   highlightObservable,
   seriesDataMapObservable,
   groupDataMapObservable,
-  textSizePxObservable } from '../utils/observables'
+  textSizePxObservable,
+  containerSizeObservable } from '../utils/observables'
 import {
   gridComputedAxesDataObservable,
   gridAxesSizeObservable,
@@ -21,8 +22,7 @@ import {
   gridAxesReverseTransformObservable,
   gridGraphicTransformObservable,
   gridGraphicReverseScaleObservable,
-} from '../utils/gridObservables'
-import { containerSizeObservable } from '../utils/observables'
+} from './gridObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subject, observer }) => {
   
@@ -46,7 +46,10 @@ export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subje
 
   const containerSize$ = containerSizeObservable({
     layout$: observer.layout$,
-    containerPosition$: gridContainerPosition$
+    containerPosition$: gridContainerPosition$,
+    container$: observer.fullDataFormatter$.pipe(
+      map(d => d.container)
+    )
   }).pipe(
     shareReplay(1)
   )
@@ -60,7 +63,7 @@ export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subje
 
   const gridAxesContainerSize$ = gridAxesContainerSizeObservable({
     fullDataFormatter$: observer.fullDataFormatter$,
-    containerSize$: containerSize$
+    containerSize$
   }).pipe(
     shareReplay(1)
   )

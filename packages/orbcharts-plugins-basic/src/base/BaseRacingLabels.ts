@@ -24,6 +24,7 @@ import type {
 import type { BaseRacingLabelsParams } from '../../lib/plugins-basic-types'
 import type { BasePluginFn } from './types'
 import { getColor, getDatumColor, getClassName, getUniID } from '../utils/orbchartsUtils'
+import { getD3TransitionEase } from '../utils/d3Utils'
 import { multiValueContainerSelectionsObservable } from '../multiValue/multiValueObservables'
 
 interface BaseRacingAxisContext {
@@ -35,6 +36,7 @@ interface BaseRacingAxisContext {
   fullParams$: Observable<BaseRacingLabelsParams>
   fullDataFormatter$: Observable<DataFormatterMultiValue>
   fullChartParams$: Observable<ChartParams>
+  transitionEase$: Observable<string>
   // layout$: Observable<Layout>
   containerPosition$: Observable<ContainerPositionScaled[]>
   containerSize$: Observable<ContainerSize>
@@ -97,10 +99,11 @@ function renderRacingAxisLabel ({ selection, textClassName, fullParams, containe
     .text(d => fullDataFormatter.yAxis.label)
 }
 
-function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingScale, valueScale, categoryData }: {
+function renderRacingLabels ({ selection, fullParams, fullChartParams, transitionEase, rankingScale, valueScale, categoryData }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   fullParams: BaseRacingLabelsParams
   fullChartParams: ChartParams
+  transitionEase: string
   rankingScale: d3.ScalePoint<string>
   valueScale: ((n: number) => number)
   categoryData: ComputedDatumMultiValue[]
@@ -127,7 +130,8 @@ function renderRacingLabels ({ selection, fullParams, fullChartParams, rankingSc
         return update
           .transition()
           .duration(fullChartParams.transitionDuration)
-          .ease(d3.easeLinear)
+          // .ease(d3.easeLinear)
+          .ease(getD3TransitionEase(transitionEase))
           // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
           .attr('x', d => valueScale(d.value[d.xValueIndex] ?? 0) - fullParams.barLabel.padding)
           .attr('y', d => rankingScale(d.label)!)
@@ -195,6 +199,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
   fullParams$,
   fullDataFormatter$,
   fullChartParams$,
+  transitionEase$,
   // layout$,
   containerPosition$,
   containerSize$,
@@ -334,6 +339,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
     containerSize: containerSize$,
     fullDataFormatter: fullDataFormatter$,
     fullChartParams: fullChartParams$,
+    transitionEase: transitionEase$,
     visibleComputedRankingData: visibleComputedRankingData$,
     // rankingLabelList: rankingLabelList$,
     rankingScaleList: rankingScaleList$,
@@ -371,6 +377,7 @@ export const createBaseRacingLabels: BasePluginFn<BaseRacingAxisContext> = (plug
         selection: axisSelection,
         fullParams: data.fullParams,
         fullChartParams: data.fullChartParams,
+        transitionEase: data.transitionEase,
         rankingScale: rankingScale,
         categoryData: data.visibleComputedRankingData[i],
         // textReverseTransformWithRotate: data.textReverseTransformWithRotate,

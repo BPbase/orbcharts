@@ -1,6 +1,5 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetGridPluginParams, PresetNoneDataPluginParams } from '../types'
-// import { ALL_PLUGIN_PARAMS_GRID, ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_GRID_ROTATE_AXIS_LABEL: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
@@ -42,13 +41,11 @@ export const PRESET_GRID_ROTATE_AXIS_LABEL: PresetPartial<'grid', Partial<Preset
     padding: {
       top: 40,
       right: 40,
-      bottom: 140,
+      bottom: 120,
       left: 80
     },
   },
   pluginParams: {
-    // ...ALL_PLUGIN_PARAMS_GRID,
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     GroupAux: {
       labelRotate: -30
     },
@@ -57,8 +54,6 @@ export const PRESET_GRID_ROTATE_AXIS_LABEL: PresetPartial<'grid', Partial<Preset
       tickTextRotate: -30
     },
     GridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
     }

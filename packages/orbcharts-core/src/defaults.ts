@@ -158,9 +158,10 @@ export const DEFAULT_DATA_FORMATTER_X_Y_AXIS: DataFormatterXYAxis = {
 }
 
 export const DEFAULT_DATA_FORMATTER_CONTAINER: DataFormatterContainer = {
-  gap: 120,
+  columnAmount: 1,
   rowAmount: 1,
-  columnAmount: 1
+  columnGap: 'auto',
+  rowGap: 'auto'
 }
 
 export const DEFAULT_DATA_FORMATTER_SERIES: DataFormatterSeries = {

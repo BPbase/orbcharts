@@ -64,11 +64,11 @@ export const computedDataFn: ComputedDataFn<'multiValue'> = (context) => {
     )
 
   
-    let index = 0
+    // let index = 0
   
     dataMultiValue.forEach((d, i) => {
-      const currentIndex = index
-      index++
+      // const currentIndex = index
+      // index++
 
       const defaultId = createDefaultDatumId(dataFormatter.type, i)
 
@@ -78,12 +78,12 @@ export const computedDataFn: ComputedDataFn<'multiValue'> = (context) => {
 
       const computedDatum: ComputedDatumMultiValue = {
         id: d.id ? d.id : defaultId,
-        index: currentIndex,
+        index: i,
         label: d.label ? d.label : defaultId,
         description: d.description ?? '',
         // tooltipContent: _d.tooltipContent ? _d.tooltipContent : dataFormatter.tooltipContentFormat(_d, i, _i, context),
         data: d.data,
-        datumIndex: i,
+        // datumIndex: i,
         value: d.value,
         categoryIndex,
         categoryLabel: d.categoryLabel,
@@ -93,7 +93,7 @@ export const computedDataFn: ComputedDataFn<'multiValue'> = (context) => {
         // axis: _i == 0 ? xScale(_d.value) : yScale(_d.value),
         visible: true, // 先給預設值
         color,
-        _visibleValue: d.value // 預設和value相同
+        // _visibleValue: d.value // 預設和value相同
       }
 
       computedDatum.visible = dataFormatter.visibleFilter(computedDatum, context)

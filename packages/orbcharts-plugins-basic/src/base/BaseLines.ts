@@ -565,7 +565,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
     data.pathSelectionArr.forEach(pathSelection => {
       pathSelection
         .on('mouseover', (event, datum) => {
-          event.stopPropagation()
+          // event.stopPropagation()
 
           const seriesLabel = datum[0] ? datum[0].seriesLabel : ''
           const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)
@@ -592,7 +592,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
           })
         })
         .on('mousemove', (event, datum) => {
-          event.stopPropagation()
+          // event.stopPropagation()
 
           const seriesLabel = datum[0] ? datum[0].seriesLabel : ''
           const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)
@@ -618,7 +618,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
           })
         })
         .on('mouseout', (event, datum) => {
-          event.stopPropagation()
+          // event.stopPropagation()
 
           const seriesLabel = datum[0] ? datum[0].seriesLabel : ''
           const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)
@@ -644,7 +644,7 @@ export const createBaseLines: BasePluginFn<BaseLinesContext> = (pluginName: stri
           })
         })
         .on('click', (event, datum) => {
-          event.stopPropagation()
+          // event.stopPropagation()
 
           const seriesLabel = datum[0] ? datum[0].seriesLabel : ''
           const { groupIndex, groupLabel } = data.gridGroupPositionFn(event)

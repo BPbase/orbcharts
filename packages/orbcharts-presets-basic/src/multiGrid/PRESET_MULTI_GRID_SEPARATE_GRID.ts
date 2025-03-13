@@ -43,12 +43,16 @@ export const PRESET_MULTI_GRID_SEPARATE_GRID: PresetPartial<'multiGrid', Partial
     padding: {
       top: 40,
       right: 40,
-      bottom: 140,
+      bottom: 120,
       left: 80
     },
   },
   dataFormatter: {
     separateGrid: true,
+    container: {
+      columnGap: 100,
+      rowGap: 80
+    }
   },
   pluginParams: {
     MultiGroupAxis: {

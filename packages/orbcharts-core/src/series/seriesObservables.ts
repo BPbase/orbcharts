@@ -16,7 +16,7 @@ import type {
   DataFormatterTypeMap,
   ContainerPosition,
   Layout } from '../../lib/core-types'
-import { calcContainerPosition } from './orbchartsUtils'
+import { calcContainerPosition } from '../utils/orbchartsUtils'
 
 export const separateSeriesObservable = ({ fullDataFormatter$ }: { fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>> }) => {
   return fullDataFormatter$.pipe(

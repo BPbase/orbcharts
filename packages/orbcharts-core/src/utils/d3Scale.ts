@@ -183,16 +183,15 @@ export const createAxisToLabelIndexScale = ({ axisLabels, axisWidth, padding = 0
   if (reverse) {
     range.reverse()
   }
-  // if (reverse) {
-  //   range = axisLabels.map((d: string | Date, i: number) => axisLabels.length - 1 - i)
-  // } else {
-  //   range = axisLabels.map((d: string | Date, i: number) => i)
-  // }
+  if (!range.length) {
+    // 至少要有一個值否則scale會出錯
+    range = [0]
+  }
+
   const step = range.length - 1 + (padding * 2) // 圖軸刻度分段數量
   const stepWidth = axisWidth / step
   const rangePadding = stepWidth * padding - (stepWidth * 0.5) // 實際要計算的範圍是圖軸左右那邊增加0.5
 
-  // console.log('rangePadding', rangePadding)
   return d3.scaleQuantize<number>()
     .domain([rangePadding, axisWidth - rangePadding])
     .range(range)

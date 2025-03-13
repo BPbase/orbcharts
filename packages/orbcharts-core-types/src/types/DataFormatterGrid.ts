@@ -46,11 +46,6 @@ export interface DataFormatterGridGridPartial {
   separateSeries?: boolean
 }
 
-export interface DataFormatterGridContainer {
-  gap: number
-  rowAmount: number
-  columnAmount: number
-}
 
 // grid欄位
 // export interface DataFormatterGridGridData {

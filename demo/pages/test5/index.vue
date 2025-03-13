@@ -20,6 +20,10 @@ onMounted(() => {
     },
     yAxis: {
       label: 'yyyyyyy'
+    },
+    separateCategory: true,
+    container: {
+      rowGap: 80
     }
   })
 
@@ -52,6 +56,9 @@ onMounted(() => {
 
   chart.chartParams$.next({
     // highlightTarget: 'category'
+    padding: {
+      bottom: 120
+    }
   })
 
   chart!.data$.next(multiValue1)

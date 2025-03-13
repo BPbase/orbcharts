@@ -2,7 +2,6 @@ import type { PresetPartial } from '../../lib/core-types'
 import type { PresetGridPluginParams,
   PresetNoneDataPluginParams
 } from '../types'
-// import { ALL_PLUGIN_PARAMS_NONE_DATA } from '../params'
 
 export const PRESET_LINE_AREAS_CURVE: PresetPartial<'grid', Partial<PresetGridPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
@@ -42,21 +41,18 @@ export const PRESET_LINE_AREAS_CURVE: PresetPartial<'grid', Partial<PresetGridPl
     },
     padding: {
       top: 40,
-      right: 80, // lineAre 的左右刻度靠邊，要避免太窄造成 label 超出
+      right: 60, // lineAre 的左右刻度靠邊，要避免太窄造成 label 超出
       bottom: 100,
-      left: 80
+      left: 60
     },
     highlightTarget: 'series'
   },
   dataFormatter: {
-    // grid: {
-      groupAxis: {
-        scalePadding: 0
-      }
-    // }
+    groupAxis: {
+      scalePadding: 0
+    }
   },
   pluginParams: {
-    // ...ALL_PLUGIN_PARAMS_NONE_DATA,
     Lines: {
       lineCurve: 'curveMonotoneX',
       lineWidth: 3
@@ -69,8 +65,6 @@ export const PRESET_LINE_AREAS_CURVE: PresetPartial<'grid', Partial<PresetGridPl
     ValueAxis: {},
     GroupAux: {},
     GridLegend: {
-      // position: 'bottom',
-      // justify: 'center',
       placement: 'bottom',
       padding: 14,
       listRectHeight: 2

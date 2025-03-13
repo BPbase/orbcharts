@@ -82,12 +82,12 @@ onMounted(() => {
 
   chart.dataFormatter$.next({
     groupAxis: {
-      // position: 'right',
+      // position: 'top',
       scalePadding: 0,
       label: 'xxx'
     },
     valueAxis: {
-      // position: 'bottom',
+      // position: 'left',
       label: 'yyy'
     },
     rowLabels: ['a'],
@@ -99,6 +99,7 @@ onMounted(() => {
       }
       return true
     },
+    separateSeries: true,
     // grid: {
     //   groupAxis: {
     //     position: 'left',

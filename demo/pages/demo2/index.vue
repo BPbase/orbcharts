@@ -364,7 +364,7 @@ onMounted(() => {
         container: {
           rowAmount: 2,
           columnAmount: 3,
-          gap: 120
+          // columnGap: 120
         },
         gridList: [
           {

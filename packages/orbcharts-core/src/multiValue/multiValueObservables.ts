@@ -29,9 +29,25 @@ import type {
   HighlightTarget,
   Layout,
   TransformData } from '../../lib/core-types'
-import { getMinMax, getMinMaxMultiValue } from './orbchartsUtils'
-import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from './d3Scale'
-import { calcContainerPositionScaled } from './orbchartsUtils'
+import { getMinMax, createDefaultValueLabel } from '../utils/orbchartsUtils'
+import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from '../utils/d3Scale'
+import { calcContainerPositionScaled } from '../utils/orbchartsUtils'
+
+export const valueLabelsObservable = ({ computedData$, fullDataFormatter$ }: {
+  computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
+  fullDataFormatter$: Observable<DataFormatterTypeMap<'multiValue'>>
+}) => {
+  return combineLatest({
+    computedData: computedData$,
+    fullDataFormatter: fullDataFormatter$,
+  }).pipe(
+    map(data => {
+      return data.computedData[0] && data.computedData[0][0] && data.computedData[0][0].value.length
+        ? data.computedData[0][0].value.map((d, i) => data.fullDataFormatter.valueLabels[i] ?? createDefaultValueLabel('multiValue', i))
+        : []
+    }),
+  )
+}
 
 export const xyMinMaxObservable = ({ computedData$, xyValueIndex$ }: {
   computedData$: Observable<ComputedDataTypeMap<'multiValue'>>
@@ -466,7 +482,19 @@ export const containerPositionObservable = ({ computedData$, fullDataFormatter$,
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-      
+      // 無資料時回傳預設container位置
+      if (data.computedData.length === 0) {
+        const defaultPositionArr: ContainerPositionScaled[] = [
+          {
+            "slotIndex": 0,
+            "rowIndex": 0,
+            "columnIndex": 0,
+            "translate": [0, 0],
+            "scale": [1, 1]
+          }
+        ]
+        return defaultPositionArr
+      }
       if (data.fullDataFormatter.separateCategory) {
         // -- 依slotIndexes計算 --
         return calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, data.computedData.length)
