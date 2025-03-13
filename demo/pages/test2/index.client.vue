@@ -1,5 +1,5 @@
 <template>
-  <div id="chart" style="width:100%;height:100%"></div>
+  <div id="chart" style="width:100%;height:100vh"></div>
 </template>
 
 <script setup lang="ts">
@@ -126,11 +126,6 @@ onMounted(() => {
   chart.plugins$.next([groupAxis, valueAxis, groupAux, lines, lineAreas, dots, new GroupZoom(), new GridTooltip()])
   
   chart.data$.next(gridData5)
-  
-  // setTimeout(() => {
-  //   chart.plugins$.next([groupAxis, valueAxis, new GroupAux(), lines, lineAreas, dots, new Tooltip()])
-
-  // }, 2000)
 
   
 })

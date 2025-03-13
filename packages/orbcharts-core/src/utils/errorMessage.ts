@@ -4,10 +4,7 @@ export function createMessagePrefix (status: 'warning' | 'error'): string {
 }
 
 // throw到最外層的錯誤訊息
-export function createOrbChartsErrorMessage (e: {
-  message: string // e.message
-  stack: string // e.stack
-}): string {
+export function createOrbChartsErrorMessage (e: Error): string {
   return `${createMessagePrefix('error')} ${e.message}`
 }
 

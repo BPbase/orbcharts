@@ -498,9 +498,12 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
               _refDatum: d // reference到資料本身
             }
           })
-          d.graphicValue = graphicValue
+
           // d._visibleValue = [] // highlight的時候才寫入
-          return d
+          return {
+            ...d,
+            graphicValue
+          }
         })
       })
     })
@@ -624,7 +627,6 @@ export const createBaseOrdinalBubbles: BasePluginFn<BaseRacingBarsContext> = (pl
         // datum._visibleValue = [datum.value[valueDatum.index]]
         // 只顯示總數
         // datum._visibleValue = [datum.sum]
-        
         event$.next({
           type: 'multiValue',
           eventName: 'mousemove',

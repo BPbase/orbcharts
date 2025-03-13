@@ -217,8 +217,7 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
               }))
             }
           } catch (e) {
-            // throw new Error(e)
-            // 驗證失敗仍繼續執行，才不會把 Observable 資料流給中斷掉
+            // 不中斷資料流
             console.error(createOrbChartsErrorMessage(e))
           }
           try {
@@ -230,10 +229,10 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
             }))
           }
         }),
-        // catchError((e) => {
-        //   console.error(createOrbChartsErrorMessage(e))
-        //   return EMPTY
-        // }),
+        catchError((e) => {
+          console.error(createOrbChartsErrorMessage(e))
+          return EMPTY
+        }),
         shareReplay(1)
       )
     const shareAndMergedChartParams$ = chartSubject.chartParams$
@@ -258,8 +257,7 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
               }))
             }
           } catch (e) {
-            // throw new Error(e)
-            // 驗證失敗仍繼續執行，才不會把 Observable 資料流給中斷掉
+            // 不中斷資料流
             console.error(createOrbChartsErrorMessage(e))
           }
           try {
@@ -271,10 +269,10 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
             }))
           }
         }),
-        // catchError((e) => {
-        //   console.error(createOrbChartsErrorMessage(e))
-        //   return EMPTY
-        // }),
+        catchError((e) => {
+          console.error(createOrbChartsErrorMessage(e))
+          return EMPTY
+        }),
         shareReplay(1)
       )
 
@@ -402,8 +400,7 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
                   }))
                 }
               } catch (e) {
-                // throw new Error(e)
-                // 驗證失敗仍繼續執行，才不會把 Observable 資料流給中斷掉
+                // 不中斷資料流
                 console.error(createOrbChartsErrorMessage(e))
               }
               try {
@@ -415,10 +412,10 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
                 }))
               }
             }),
-            // catchError((e) => {
-            //   console.error(createOrbChartsErrorMessage(e))
-            //   return EMPTY
-            // })
+            catchError((e) => {
+              console.error(createOrbChartsErrorMessage(e))
+              return EMPTY
+            })
           )  
       }),
       shareReplay(1)
@@ -448,7 +445,8 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
         }
       } catch (e) {
         // plugin驗證失敗就不執行
-        throw new Error(e)
+        console.error(createOrbChartsErrorMessage(e))
+        return
       }
 
       selectionPlugins
