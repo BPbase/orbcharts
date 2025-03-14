@@ -47,12 +47,12 @@ export const PRESET_BARS_HORIZONTAL_AND_THIN: PresetPartial<'grid', Partial<Pres
     },
   },
   dataFormatter: {
-      valueAxis: {
-        position: 'bottom'
-      },
-      groupAxis: {
-        position: 'left'
-      },
+    valueAxis: {
+      position: 'bottom'
+    },
+    groupAxis: {
+      position: 'left'
+    },
   },
   pluginParams: {
     Bars: {
