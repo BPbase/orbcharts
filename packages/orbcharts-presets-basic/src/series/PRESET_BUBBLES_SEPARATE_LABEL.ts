@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetSeriesPluginParams, PresetNoneDataPluginParams } from '../types'
 
-export const PRESET_BUBBLES_SEPARATE_SERIES: PresetPartial<'series', Partial<PresetSeriesPluginParams>
+export const PRESET_BUBBLES_SEPARATE_LABEL: PresetPartial<'series', Partial<PresetSeriesPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
-  name: 'PRESET_BUBBLES_SEPARATE_SERIES',
-  description: 'Bubble chart showing series separately',
-  descriptionZh: '分開顯示Series的泡泡圖',
+  name: 'PRESET_BUBBLES_SEPARATE_LABEL',
+  description: 'Bubble chart showing label separately',
+  descriptionZh: '分開顯示Label的泡泡圖',
   chartParams: {
     colors: {
       light: {
@@ -46,7 +46,7 @@ export const PRESET_BUBBLES_SEPARATE_SERIES: PresetPartial<'series', Partial<Pre
     },
   },
   dataFormatter: {
-    separateSeries: true,
+    separateLabel: true,
     container: {
       columnGap: 0,
       rowGap: 0

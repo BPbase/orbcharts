@@ -45,6 +45,22 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             getData: () => import('./data/seriesData3')
           },
           {
+            title: 'PRESET_BUBBLES_SEPARATE_LABEL',
+            presetName: 'PRESET_BUBBLES_SEPARATE_LABEL',
+            description: 'Bubble chart showing all data separately',
+            descriptionZh: '全部資料分開顯示的泡泡圖',
+            allPluginNames: ['Bubbles', 'SeriesLegend', 'SeriesTooltip'],
+            getData: () => import('./data/seriesData4')
+          },
+          {
+            title: 'PRESET_BUBBLES_SEPARATE_ALL',
+            presetName: 'PRESET_BUBBLES_SEPARATE_ALL',
+            description: 'Bubble chart showing all data separately',
+            descriptionZh: '全部資料分開顯示的泡泡圖',
+            allPluginNames: ['Bubbles', 'SeriesLegend', 'SeriesTooltip'],
+            getData: () => import('./data/seriesData3')
+          },
+          {
             title: 'PRESET_BUBBLES_SUM_SERIES',
             presetName: 'PRESET_BUBBLES_SUM_SERIES',
             description: 'Bubble chart of combined Series data',

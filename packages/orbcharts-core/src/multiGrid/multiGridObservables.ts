@@ -351,50 +351,6 @@ export const multiGridContainerObservable = ({ computedData$, fullDataFormatter$
         }
         return seriesContainerArr
       })
-      // console.log('gridContainerPositionArr', gridContainerPositionArr)
-
-      // let accGridSlotIndex = 0
-
-      // const gridContainerPositionArr = data.computedData.map((gridData, gridIndex) => {
-      //   const grid = data.fullDataFormatter.gridList[gridIndex] ?? defaultGrid
-        
-      //   if (grid.separateSeries) {
-      //     // -- 依seriesSlotIndexes計算 --
-      //     const seriesContainerArr = gridData.map((seriesData, seriesIndex) => {
-      //       const currentSlotIndex = accGridSlotIndex + seriesIndex
-      //       const columnIndex = currentSlotIndex % data.fullDataFormatter.container.columnAmount
-      //       const rowIndex = Math.floor(currentSlotIndex / data.fullDataFormatter.container.columnAmount)
-      //       const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
-      //       return {
-      //         slotIndex: currentSlotIndex,
-      //         rowIndex,
-      //         columnIndex,
-      //         translate,
-      //         scale,
-      //       }
-      //     })
-      //     accGridSlotIndex += seriesContainerArr.length
-      //     return seriesContainerArr
-      //   } else {
-      //     // -- 依grid的slotIndex計算 --
-      //     const columnIndex = accGridSlotIndex % data.fullDataFormatter.container.columnAmount
-      //     const rowIndex = Math.floor(accGridSlotIndex / data.fullDataFormatter.container.columnAmount)
-      //     const seriesContainerArr = gridData.map((seriesData, seriesIndex) => {
-      //       const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
-      //       return {
-      //         slotIndex: accGridSlotIndex,
-      //         rowIndex,
-      //         columnIndex,
-      //         translate,
-      //         scale,
-      //       }
-      //     })
-      //     if (data.fullDataFormatter.separateGrid) {
-      //       accGridSlotIndex += 1
-      //     }
-      //     return seriesContainerArr
-      //   }
-      // })
 
       return gridContainerPositionArr
     }),

@@ -233,8 +233,7 @@ export const PieEventTexts = defineSeriesPlugin(pluginConfig)(({ selection, name
   const { seriesCenterSelection$ } = seriesCenterSelectionObservable({
     selection: selection,
     pluginName,
-    separateSeries$: observer.separateSeries$,
-    seriesLabels$: observer.seriesLabels$,
+    visibleComputedSortedData$: observer.visibleComputedSortedData$,
     seriesContainerPosition$: observer.seriesContainerPosition$
   })
 

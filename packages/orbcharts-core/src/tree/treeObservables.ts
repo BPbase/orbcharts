@@ -42,7 +42,7 @@ export const nodeListObservable = ({ computedData$ }: { computedData$: Observabl
 //   const categoryLabels$ = fullDataFormatter$.pipe(
 //     map(d => d.categoryLabels),
 //     distinctUntilChanged((a, b) => {
-//       return JSON.stringify(a).length === JSON.stringify(b).length
+//       return JSON.stringify(a) === JSON.stringify(b)
 //     }),
 //   )
 
@@ -72,7 +72,7 @@ export const nodeListObservable = ({ computedData$ }: { computedData$: Observabl
 //       return Array.from(CurrentLabelSet)
 //     }),
 //     distinctUntilChanged((a, b) => {
-//       return JSON.stringify(a).length === JSON.stringify(b).length
+//       return JSON.stringify(a) === JSON.stringify(b)
 //     }),
 //   )
 // }
@@ -83,7 +83,7 @@ export const categoryLabelsObservable = (CategoryDataMap$: Observable<Map<string
       return Array.from(data.keys())
     }),
     distinctUntilChanged((a, b) => {
-      return JSON.stringify(a).length === JSON.stringify(b).length
+      return JSON.stringify(a) === JSON.stringify(b)
     }),
   )
 }

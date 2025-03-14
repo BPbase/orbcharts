@@ -6,17 +6,26 @@ import {
 import { highlightObservable, textSizePxObservable } from '../utils/observables'
 
 import {
+  datumLabelsObservable,
   separateSeriesObservable,
+  separateLabelObservable,
+  sumSeriesObservable,
   seriesVisibleComputedDataObservable,
   seriesComputedSortedDataObservable,
   seriesLabelsObservable,
   seriesContainerPositionObservable,
-  seriesContainerPositionMapObservable
+  datumContainerPositionMapObservable
 } from './seriesObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'series'> = ({ subject, observer }) => {
 
   const textSizePx$ = textSizePxObservable(observer.fullChartParams$).pipe(
+    shareReplay(1)
+  )
+
+  const datumLabels$ = datumLabelsObservable({
+    computedData$: observer.computedData$
+  }).pipe(
     shareReplay(1)
   )
 
@@ -26,15 +35,30 @@ export const contextObserverCallback: ContextObserverCallback<'series'> = ({ sub
     shareReplay(1)
   )
 
-  const visibleComputedData$ = seriesVisibleComputedDataObservable({
-    computedData$: observer.computedData$,
+  const separateLabel$ = separateLabelObservable({
+    fullDataFormatter$: observer.fullDataFormatter$
   }).pipe(
     shareReplay(1)
   )
 
+  const sumSeries$ = sumSeriesObservable({
+    fullDataFormatter$: observer.fullDataFormatter$
+  }).pipe(
+    shareReplay(1)
+  )
+
+  // const visibleComputedData$ = seriesVisibleComputedDataObservable({
+  //   computedData$: observer.computedData$,
+  // }).pipe(
+  //   shareReplay(1)
+  // )
+
   const computedSortedData$ = seriesComputedSortedDataObservable({
     computedData$: observer.computedData$,
-    fullDataFormatter$: observer.fullDataFormatter$
+    separateSeries$: separateSeries$,
+    separateLabel$: separateLabel$,
+    sumSeries$: sumSeries$,
+    datumLabels$: datumLabels$,
   }).pipe(
     shareReplay(1)
   )
@@ -72,17 +96,16 @@ export const contextObserverCallback: ContextObserverCallback<'series'> = ({ sub
   )
 
   const seriesContainerPosition$ = seriesContainerPositionObservable({
-    computedData$: observer.computedData$,
+    computedSortedData$: computedSortedData$,
     fullDataFormatter$: observer.fullDataFormatter$,
     layout$: observer.layout$,
   }).pipe(
     shareReplay(1)
   )
 
-  const SeriesContainerPositionMap$ = seriesContainerPositionMapObservable({
+  const DatumContainerPositionMap$ = datumContainerPositionMapObservable({
     seriesContainerPosition$: seriesContainerPosition$,
-    seriesLabels$: seriesLabels$,
-    separateSeries$: separateSeries$,
+    computedSortedData$: computedSortedData$,
   }).pipe(
     shareReplay(1)
   )
@@ -94,14 +117,16 @@ export const contextObserverCallback: ContextObserverCallback<'series'> = ({ sub
     computedData$: observer.computedData$,
     layout$: observer.layout$,
     textSizePx$,
-    visibleComputedData$,
+    // visibleComputedData$,
     visibleComputedSortedData$,
     separateSeries$,
+    separateLabel$,
+    sumSeries$,
     computedSortedData$,
     seriesHighlight$,
     seriesLabels$,
     SeriesDataMap$,
     seriesContainerPosition$,
-    SeriesContainerPositionMap$,
+    DatumContainerPositionMap$,
   }
 }

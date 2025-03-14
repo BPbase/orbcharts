@@ -31,7 +31,7 @@ export const categoryLabelsObservable = (
       return [...Array.from(data.CategoryNodeMap.keys()), ...Array.from(data.CategoryEdgeMap.keys())]
     }),
     distinctUntilChanged((a, b) => {
-      return JSON.stringify(a).length === JSON.stringify(b).length
+      return JSON.stringify(a) === JSON.stringify(b)
     }),
   )
 }

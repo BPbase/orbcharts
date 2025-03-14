@@ -7,6 +7,7 @@ export interface DataFormatterSeries extends DataFormatterBase<'series'> {
   seriesLabels: string[]
   container: DataFormatterContainer
   separateSeries: boolean
+  separateLabel: boolean
   sumSeries: boolean
 }
 
@@ -16,5 +17,6 @@ export interface DataFormatterSeriesPartial extends DataFormatterBasePartial<'se
   seriesLabels?: string[]
   container?: Partial<DataFormatterContainer>
   separateSeries?: boolean
+  separateLabel?: boolean
   sumSeries?: boolean
 }

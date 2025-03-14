@@ -67,46 +67,60 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
   // 預設的highlight
   const highlightDefault$: Observable<HighlightTargetValue> = fullChartParams$.pipe(
     takeUntil(destroy$),
-    map(d => {
+    map(d => d.highlightDefault),
+    distinctUntilChanged(),
+    map(highlightDefault => {
       return {
         id: null,
         label: null,
         seriesLabel: null,
         groupLabel: null,
         categoryLabel: null,
-        highlightDefault: d.highlightDefault
+        highlightDefault
       } as HighlightTargetValue
     }),
-    distinctUntilChanged()
+    shareReplay(1)
+  )
+
+  const highlightTarget$: Observable<HighlightTarget> = fullChartParams$.pipe(
+    takeUntil(destroy$),
+    map(d => d.highlightTarget),
+    distinctUntilChanged(),
+    shareReplay(1)
   )
 
   // 事件觸發的highlight
-  const highlightMouseover$: Observable<HighlightTargetValue> = event$.pipe(
-    takeUntil(destroy$),
-    // filter(d => d.eventName === 'mouseover' || d.eventName === 'mousemove'),
-    filter(d => d.eventName === 'mouseover'),
-    // distinctUntilChanged((prev, current) => prev.eventName === current.eventName)
-    map(_d => {
-      const d = _d as any
-      return d.datum
-        ? {
-          id: d.datum.id,
-          label: d.datum.label,
-          seriesLabel: d.datum.seriesLabel,
-          groupLabel: d.datum.groupLabel,
-          categoryLabel: d.datum.categoryLabel,
-          highlightDefault: null
-        } as HighlightTargetValue
-        : {
-          id: null,
-          label: null,
-          seriesLabel: null,
-          groupLabel: null,
-          categoryLabel: null,
-          highlightDefault: null
-        } as HighlightTargetValue
+  const highlightMouseover$: Observable<HighlightTargetValue> = highlightTarget$.pipe(
+    switchMap(highlightTarget => {
+      return event$.pipe(
+        takeUntil(destroy$),
+        // filter(d => d.eventName === 'mouseover' || d.eventName === 'mousemove'),
+        filter(d => d.eventName === 'mouseover'),
+        // distinctUntilChanged((prev, current) => prev.eventName === current.eventName)
+        map(_d => {
+          const d = _d as any
+          return d.datum
+            ? {
+              id: d.datum.id,
+              label: null, // label有可能重覆所以不做判斷
+              seriesLabel: highlightTarget === 'series' ? d.datum.seriesLabel : null,
+              groupLabel: highlightTarget === 'group' ? d.datum.groupLabel : null,
+              categoryLabel: highlightTarget === 'category' ? d.datum.categoryLabel : null,
+              highlightDefault: null
+            } as HighlightTargetValue
+            : {
+              id: null,
+              label: null,
+              seriesLabel: null,
+              groupLabel: null,
+              categoryLabel: null,
+              highlightDefault: null
+            } as HighlightTargetValue
+        })
+      )
     })
   )
+
   const highlightMouseout$ = event$.pipe(
     takeUntil(destroy$),
     filter(d => d.eventName === 'mouseout'),
@@ -164,6 +178,7 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
       } else if (data.fullChartParams.highlightTarget === 'category') {
         datumList = getCategoryIds(data.datumList as ComputedDatumTypeMap<T>[], data.target.categoryLabel)
       }
+      
       subscriber.next(datumList as D[])
     })
 

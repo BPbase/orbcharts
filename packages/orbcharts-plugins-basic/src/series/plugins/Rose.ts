@@ -212,7 +212,7 @@ function highlight ({ pathSelection, ids, fullParams, fullChartParams, tweenArc 
 function createEachRose (pluginName: string, context: {
   containerSelection: d3.Selection<SVGGElement, any, any, unknown>
   computedData$: Observable<ComputedDatumSeries[][]>
-  visibleComputedData$: Observable<ComputedDatumSeries[][]>
+  // visibleComputedData$: Observable<ComputedDatumSeries[][]>
   visibleComputedSortedData$: Observable<ComputedDatumSeries[][]>
   containerVisibleComputedSortedData$: Observable<ComputedDatumSeries[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
@@ -465,8 +465,7 @@ export const Rose = defineSeriesPlugin(pluginConfig)(({ selection, name, subject
   const { seriesCenterSelection$ } = seriesCenterSelectionObservable({
     selection: selection,
     pluginName,
-    separateSeries$: observer.separateSeries$,
-    seriesLabels$: observer.seriesLabels$,
+    visibleComputedSortedData$: observer.visibleComputedSortedData$,
     seriesContainerPosition$: observer.seriesContainerPosition$
   })
 
@@ -496,7 +495,7 @@ export const Rose = defineSeriesPlugin(pluginConfig)(({ selection, name, subject
         unsubscribeFnArr[containerIndex] = createEachRose(pluginName, {
           containerSelection: containerSelection,
           computedData$: observer.computedData$,
-          visibleComputedData$: observer.visibleComputedData$,
+          // visibleComputedData$: observer.visibleComputedData$,
           visibleComputedSortedData$: observer.visibleComputedSortedData$,
           containerVisibleComputedSortedData$: containerVisibleComputedSortedData$,
           SeriesDataMap$: observer.SeriesDataMap$,

@@ -156,12 +156,12 @@ function createSimulation (bubblesSelection: d3.Selection<SVGGElement, BubblesDa
 //   return maxR * modifier
 // }
 
-function createBubblesData ({ visibleComputedSortedData, LastBubbleDataMap, graphicWidth, graphicHeight, SeriesContainerPositionMap, scaleType }: {
+function createBubblesData ({ visibleComputedSortedData, LastBubbleDataMap, graphicWidth, graphicHeight, DatumContainerPositionMap, scaleType }: {
   visibleComputedSortedData: ComputedDataSeries
   LastBubbleDataMap: Map<string, BubblesDatum>
   graphicWidth: number
   graphicHeight: number
-  SeriesContainerPositionMap: Map<string, ContainerPosition>
+  DatumContainerPositionMap: Map<string, ContainerPosition>
   scaleType: ArcScaleType
   // highlightIds: string[]
 }): BubblesDatum[] {
@@ -203,7 +203,7 @@ function createBubblesData ({ visibleComputedSortedData, LastBubbleDataMap, grap
       d.x = existDatum.x
       d.y = existDatum.y
     } else {
-      const seriesContainerPosition = SeriesContainerPositionMap.get(d.seriesLabel)!
+      const seriesContainerPosition = DatumContainerPositionMap.get(d.id)!
       d.x = Math.random() * seriesContainerPosition.width
       d.y = Math.random() * seriesContainerPosition.height
     }
@@ -349,22 +349,22 @@ function drag (_simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>): d
 //   return typeCenter ? typeCenter.x : 0
 // }
 
-function groupBubbles ({ _simulation, fullParams, SeriesContainerPositionMap }: {
+function groupBubbles ({ _simulation, fullParams, DatumContainerPositionMap }: {
   _simulation: d3.Simulation<d3.SimulationNodeDatum, undefined>
   fullParams: BubblesParams
   // graphicWidth: number
   // graphicHeight: number
-  SeriesContainerPositionMap: Map<string, ContainerPosition>
+  DatumContainerPositionMap: Map<string, ContainerPosition>
 }) {
   // console.log('groupBubbles')
   _simulation!
     // .force('x', d3.forceX().strength(fullParams.force.strength).x(graphicWidth / 2))
     // .force('y', d3.forceY().strength(fullParams.force.strength).y(graphicHeight / 2))
     .force('x', d3.forceX().strength(fullParams.force.strength).x((data: BubblesSimulationDatum) => {
-      return SeriesContainerPositionMap.get(data.seriesLabel)!.centerX
+      return DatumContainerPositionMap.get(data.id)!.centerX
     }))
     .force('y', d3.forceY().strength(fullParams.force.strength).y((data: BubblesSimulationDatum) => {
-      return SeriesContainerPositionMap.get(data.seriesLabel)!.centerY
+      return DatumContainerPositionMap.get(data.id)!.centerY
     }))
 
   // force!.alpha(1).restart()
@@ -425,7 +425,7 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
 
   const bubblesData$ = combineLatest({
     layout: observer.layout$,
-    SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
+    DatumContainerPositionMap: observer.DatumContainerPositionMap$,
     visibleComputedSortedData: observer.visibleComputedSortedData$,
     scaleType: scaleType$
   }).pipe(
@@ -438,7 +438,7 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
         LastBubbleDataMap,
         graphicWidth: data.layout.width,
         graphicHeight: data.layout.height,
-        SeriesContainerPositionMap: data.SeriesContainerPositionMap,
+        DatumContainerPositionMap: data.DatumContainerPositionMap,
         scaleType: data.scaleType
       })
     }),
@@ -460,7 +460,7 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
     bubblesData: bubblesData$,
     fullParams: observer.fullParams$,
     fullChartParams: observer.fullChartParams$,
-    SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
+    DatumContainerPositionMap: observer.DatumContainerPositionMap$,
     sumSeries: sumSeries$
   }).pipe(
     takeUntil(destroy$),
@@ -486,7 +486,7 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
       groupBubbles({
         _simulation: simulation,
         fullParams: data.fullParams,
-        SeriesContainerPositionMap: data.SeriesContainerPositionMap
+        DatumContainerPositionMap: data.DatumContainerPositionMap
         // graphicWidth: data.layout.width,
         // graphicHeight: data.layout.height
       })
@@ -594,7 +594,7 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
     // fullParams: observer.fullParams$,
     // sumSeries: sumSeries$,
     // // layout: observer.layout$,
-    // SeriesContainerPositionMap: observer.SeriesContainerPositionMap$,
+    // DatumContainerPositionMap: observer.DatumContainerPositionMap$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d)
@@ -620,7 +620,7 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
     
     //     groupBubbles({
     //       fullParams: data.fullParams,
-    //       SeriesContainerPositionMap: data.SeriesContainerPositionMap
+    //       DatumContainerPositionMap: data.DatumContainerPositionMap
     //     })
     // }
 

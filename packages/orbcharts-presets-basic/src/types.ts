@@ -86,7 +86,7 @@ export type PresetSeriesPluginParams = PresetBubblesParams
   & PresetSeriesTooltipParams
 
 export interface PresetBubblesParams {
-  Bubbles: Partial<BubblesParams>
+  Bubbles: DeepPartial<BubblesParams>
 }
 
 export interface PresetPieParams {
