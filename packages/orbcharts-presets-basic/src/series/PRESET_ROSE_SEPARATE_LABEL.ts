@@ -50,7 +50,6 @@ export const PRESET_ROSE_SEPARATE_LABEL: PresetPartial<'series', Partial<PresetS
   },
   pluginParams: {
     RoseLabels: {
-      labelFn: d => d.seriesLabel,
     }
   }
 }
