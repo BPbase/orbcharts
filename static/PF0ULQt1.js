@@ -1,1 +1,0 @@
-function a(t,e=10){var n;const r=document.createElement("canvas").getContext("2d");return(((n=r==null?void 0:r.measureText(t))==null?void 0:n.width)??0)*e/10}function s(t){if(t===null||Number.isNaN(t)==!0)return String(t||0);const e=t.toString().split(".");return e[0]=e[0].replace(/\B(?=(\d{3})+(?!\d))/g,","),e.join(".")}export{a as m,s as t};
