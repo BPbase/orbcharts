@@ -48,4 +48,3 @@ export const PRESET_PIE_SEPARATE_LABEL: PresetPartial<'series', Partial<PresetSe
   }
 }
 PRESET_PIE_SEPARATE_LABEL.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`
-PRESET_PIE_SEPARATE_LABEL.pluginParams.PieLabels.labelFn.toString = () => `d => d.seriesLabel`

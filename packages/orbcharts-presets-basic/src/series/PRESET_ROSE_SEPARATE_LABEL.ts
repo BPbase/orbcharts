@@ -54,4 +54,4 @@ export const PRESET_ROSE_SEPARATE_LABEL: PresetPartial<'series', Partial<PresetS
   }
 }
 PRESET_ROSE_SEPARATE_LABEL.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`
-PRESET_ROSE_SEPARATE_LABEL.pluginParams.RoseLabels.labelFn.toString = () => `d => d.seriesLabel`
+

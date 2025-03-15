@@ -1,6 +1,6 @@
 {
   "name": "@orbcharts/demo",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "demo files for OrbCharts",
   "author": "Blue Planet Inc.",
   "license": "Apache-2.0",
@@ -36,6 +36,6 @@
   "dependencies": {
     "@orbcharts/core-types": "^3.0.3",
     "@orbcharts/plugins-basic-types": "^3.0.3",
-    "@orbcharts/presets-basic": "^3.0.4"
+    "@orbcharts/presets-basic": "^3.0.5"
   }
 }

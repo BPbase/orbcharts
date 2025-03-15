@@ -46,4 +46,3 @@ export const PRESET_SERIES_SEPARATE_SERIES_AND_SUM_SERIES: PresetPartial<'series
   pluginParams: {
   }
 }
-PRESET_SERIES_SEPARATE_SERIES_AND_SUM_SERIES.dataFormatter.sort.toString = () => `(a, b) => b.value - a.value`
