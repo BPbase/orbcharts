@@ -44,7 +44,6 @@ export const PRESET_PIE_SEPARATE_LABEL: PresetPartial<'series', Partial<PresetSe
   },
   pluginParams: {
     PieLabels: {
-      labelFn: d => d.seriesLabel
     }
   }
 }
