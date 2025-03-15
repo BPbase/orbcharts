@@ -1,11 +1,11 @@
 import type { PresetPartial } from '../../lib/core-types'
 import type { PresetSeriesPluginParams, PresetNoneDataPluginParams } from '../types'
 
-export const PRESET_BUBBLES_SEPARATE_SERIES: PresetPartial<'series', Partial<PresetSeriesPluginParams>
+export const PRESET_BUBBLES_SEPARATE_ALL: PresetPartial<'series', Partial<PresetSeriesPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
-  name: 'PRESET_BUBBLES_SEPARATE_SERIES',
-  description: 'Bubble chart showing series separately',
-  descriptionZh: '分開顯示Series的泡泡圖',
+  name: 'PRESET_BUBBLES_SEPARATE_ALL',
+  description: 'Bubble chart showing all data separately',
+  descriptionZh: '全部資料分開顯示的泡泡圖',
   chartParams: {
     colors: {
       light: {
@@ -40,13 +40,15 @@ export const PRESET_BUBBLES_SEPARATE_SERIES: PresetPartial<'series', Partial<Pre
     // 加長留空
     padding: {
       top: 100,
-      right: 140,
+      right: 160,
       bottom: 100,
-      left: 140
+      left: 160
     },
   },
   dataFormatter: {
     separateSeries: true,
+    separateLabel: true,
+    sort: (a, b) => b.value - a.value,
     container: {
       columnGap: 0,
       rowGap: 0
@@ -55,11 +57,12 @@ export const PRESET_BUBBLES_SEPARATE_SERIES: PresetPartial<'series', Partial<Pre
   pluginParams: {
     Bubbles: {
       force: {
-        strength: 0.1,
+        strength: 0.12,
       }
     },
     SeriesLegend: {
-      listRectRadius: 7 // 圓型圖例列點
+      listRectRadius: 7, // 圓型圖例列點
+      padding: 7
     },
     SeriesTooltip: {}
   }

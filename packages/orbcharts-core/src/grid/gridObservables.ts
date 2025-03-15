@@ -206,7 +206,7 @@ export const gridSeriesLabelsObservable = ({ computedData$ }: { computedData$: O
         })
     }),
     distinctUntilChanged((a, b) => {
-      return JSON.stringify(a).length === JSON.stringify(b).length
+      return JSON.stringify(a) === JSON.stringify(b)
     }),
   )
 }
@@ -272,34 +272,10 @@ export const gridContainerPositionObservable = ({ computedData$, fullDataFormatt
       if (data.fullDataFormatter.separateSeries) {
         // -- 依slotIndexes計算 --
         return calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, data.computedData.length)
-        // return data.computedData.map((seriesData, seriesIndex) => {
-        //   const columnIndex = seriesIndex % data.fullDataFormatter.container.columnAmount
-        //   const rowIndex = Math.floor(seriesIndex / data.fullDataFormatter.container.columnAmount)
-        //   const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
-        //   return {
-        //     slotIndex: seriesIndex,
-        //     rowIndex,
-        //     columnIndex,
-        //     translate,
-        //     scale,
-        //   }
-        // })
       } else {
         // -- 無拆分 --
         const gridContainerPositionArr = calcContainerPositionScaled(data.layout, data.fullDataFormatter.container, 1)
         return data.computedData.map((d, i) => gridContainerPositionArr[0]) // 每個series相同位置
-        // const columnIndex = 0
-        // const rowIndex = 0
-        // return data.computedData.map((seriesData, seriesIndex) => {
-        //   const { translate, scale } = calcGridContainerPosition(data.layout, data.fullDataFormatter.container, rowIndex, columnIndex)
-        //   return {
-        //     slotIndex: 0,
-        //     rowIndex,
-        //     columnIndex,
-        //     translate,
-        //     scale,
-        //   }
-        // })
       }
     })
   )

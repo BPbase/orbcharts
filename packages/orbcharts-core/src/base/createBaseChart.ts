@@ -306,24 +306,24 @@ export const createBaseChart: CreateBaseChart = <T extends ChartType>({
       width: options?.width ?? DEFAULT_CHART_OPTIONS.width,
       height: options?.height ?? DEFAULT_CHART_OPTIONS.height
     }).pipe(
-        switchMap(size => {
-          return iif(
-            () => size.width === 'auto' || size.height === 'auto',
-            // 有 'auto' 的話就監聽element的尺寸
-            resizeObservable(element).pipe(
-              map((d) => {
-                return {
-                  width: size.width === 'auto' ? d.width : size.width,
-                  height: size.height === 'auto' ? d.height : size.height
-                }
-              })
-            ),
-            of(size as { width: number; height: number })
-          )
-        }),
-        takeUntil(destroy$),
-        share()
-      )
+      switchMap(size => {
+        return iif(
+          () => size.width === 'auto' || size.height === 'auto',
+          // 有 'auto' 的話就監聽element的尺寸
+          resizeObservable(element).pipe(
+            map((d) => {
+              return {
+                width: size.width === 'auto' ? d.width : size.width,
+                height: size.height === 'auto' ? d.height : size.height
+              }
+            })
+          ),
+          of(size as { width: number; height: number })
+        )
+      }),
+      takeUntil(destroy$),
+      share()
+    )
     const rootSizeFiltered$ = of().pipe(
       mergeWith(
         rootSize$.pipe(

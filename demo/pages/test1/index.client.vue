@@ -6,7 +6,7 @@
 import { SeriesChart } from '../../../packages/orbcharts-core/src'
 import { Rose, RoseLabels, Pie, PieLabels, Bubbles, SeriesTooltip, SeriesLegend } from '../../../packages/orbcharts-plugins-basic/src'
 import { PRESET_GRID_HORIZONTAL } from '../../../packages/orbcharts-presets-basic/src/index'
-import seriesData2 from '../../../packages/orbcharts-demo/src/data/seriesData2'
+import seriesData4 from '../../../packages/orbcharts-demo/src/data/seriesData4'
 
 // import { GridChart, PRESET_GRID_HORIZONTAL, MultiBars } from 'orbcharts'
 
@@ -72,46 +72,49 @@ onMounted(() => {
     //   }
     //   return true
     // }
+    seriesLabels: ['已婚', '未婚'],
+    // separateSeries: true,
+    separateLabel: true
   })
 
-  seriesLegend.params$.next({
-    position: 'bottom'
-  })
+  // seriesLegend.params$.next({
+  //   position: 'bottom'
+  // })
 
-  setTimeout(() => {
-    chart.dataFormatter$.next({
-      sumSeries: true,
-      separateSeries: false
-    })
-    // chart.dataFormatter$.next({
-    //   sumSeries: false,
-    //   separateSeries: true
-    // })
-    // setTimeout(() => {
-    //   chart.dataFormatter$.next({
-    //     sumSeries: true,
-    //     separateSeries: true
-    //   })
-    //   setTimeout(() => {
-    //     chart.dataFormatter$.next({
-    //       sumSeries: true,
-    //       separateSeries: false
-    //     })
-    //     setTimeout(() => {
-    //       chart.dataFormatter$.next({
-    //         sumSeries: false,
-    //         separateSeries: false
-    //       })
-    //     }, 2000)
-    //   }, 2000)
-    // }, 2000)
-    chart.plugins$.next([rose, roseLabels, new SeriesTooltip()])
+  // setTimeout(() => {
+  //   chart.dataFormatter$.next({
+  //     sumSeries: true,
+  //     separateSeries: false
+  //   })
+  //   // chart.dataFormatter$.next({
+  //   //   sumSeries: false,
+  //   //   separateSeries: true
+  //   // })
+  //   // setTimeout(() => {
+  //   //   chart.dataFormatter$.next({
+  //   //     sumSeries: true,
+  //   //     separateSeries: true
+  //   //   })
+  //   //   setTimeout(() => {
+  //   //     chart.dataFormatter$.next({
+  //   //       sumSeries: true,
+  //   //       separateSeries: false
+  //   //     })
+  //   //     setTimeout(() => {
+  //   //       chart.dataFormatter$.next({
+  //   //         sumSeries: false,
+  //   //         separateSeries: false
+  //   //       })
+  //   //     }, 2000)
+  //   //   }, 2000)
+  //   // }, 2000)
+  //   chart.plugins$.next([rose, roseLabels, new SeriesTooltip()])
 
-    setTimeout(() => {
-      chart.plugins$.next([rose, roseLabels, new SeriesLegend(), new SeriesTooltip()])
-    }, 2000)
+  //   setTimeout(() => {
+  //     chart.plugins$.next([rose, roseLabels, new SeriesLegend(), new SeriesTooltip()])
+  //   }, 2000)
 
-  }, 2000)
+  // }, 2000)
 
   chart.chartParams$.subscribe(data => {
     console.log(data)
@@ -122,7 +125,7 @@ onMounted(() => {
     // highlightTarget: 'series'
   })
   
-  chart.plugins$.next([rose, roseLabels, seriesLegend, new SeriesTooltip()])
+  chart.plugins$.next([pie, pieLabels, seriesLegend, new SeriesTooltip()])
 
   // setTimeout(() => {
     pie.params$.next({
@@ -130,7 +133,7 @@ onMounted(() => {
     })
   // })
   
-  chart.data$.next(seriesData2)
+  chart.data$.next(seriesData4)
   
   
 

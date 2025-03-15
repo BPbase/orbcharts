@@ -59,6 +59,10 @@ export const PRESET_MULTI_GRID_ROUND_STYLE_SIMPLE: PresetPartial<'multiGrid', Pa
         },
       },
     ],
+    container: {
+      columnGap: 40,
+      rowGap: 60
+    }
   },
   pluginParams: {
     MultiBars: {

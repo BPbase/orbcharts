@@ -173,6 +173,7 @@ export const DEFAULT_DATA_FORMATTER_SERIES: DataFormatterSeries = {
     ...DEFAULT_DATA_FORMATTER_CONTAINER
   },
   separateSeries: false,
+  separateLabel: false,
   sumSeries: false
   // mapSeries: (datum, rowIndex, columnIndex, { data, dataFormatter }) => {
   //   const seriesIndex = rowIndex >= dataFormatter.seriesLabels.length
