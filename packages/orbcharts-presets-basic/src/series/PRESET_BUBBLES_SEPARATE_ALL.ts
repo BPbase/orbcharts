@@ -48,6 +48,7 @@ export const PRESET_BUBBLES_SEPARATE_ALL: PresetPartial<'series', Partial<Preset
   dataFormatter: {
     separateSeries: true,
     separateLabel: true,
+    sort: (a, b) => b.value - a.value,
     container: {
       columnGap: 0,
       rowGap: 0
@@ -56,7 +57,7 @@ export const PRESET_BUBBLES_SEPARATE_ALL: PresetPartial<'series', Partial<Preset
   pluginParams: {
     Bubbles: {
       force: {
-        strength: 0.11,
+        strength: 0.12,
       }
     },
     SeriesLegend: {

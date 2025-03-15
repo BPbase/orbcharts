@@ -1,4 +1,4 @@
-import { map, shareReplay } from 'rxjs'
+import { map, share, shareReplay } from 'rxjs'
 import type { ContextObserverCallback } from '../../lib/core-types'
 import {
   seriesDataMapObservable,

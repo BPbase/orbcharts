@@ -18,6 +18,7 @@ export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
     collisionSpacing: 2 // 泡泡間距
   },
   bubbleLabel: {
+    labelFn: d => String(d.label),
     colorType: 'labelContrast',
     fillRate: 0.6,
     lineHeight: 1,
@@ -27,6 +28,7 @@ export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
   // highlightRIncrease: 0,
   arcScaleType: 'area'
 }
+DEFAULT_BUBBLES_PARAMS.bubbleLabel.labelFn.toString = () => `d => String(d.label)`
 
 export const DEFAULT_PIE_PARAMS: PieParams = {
   outerRadius: 0.85,

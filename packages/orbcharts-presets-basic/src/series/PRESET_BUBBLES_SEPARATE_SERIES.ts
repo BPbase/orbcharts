@@ -40,9 +40,9 @@ export const PRESET_BUBBLES_SEPARATE_SERIES: PresetPartial<'series', Partial<Pre
     // 加長留空
     padding: {
       top: 100,
-      right: 100,
+      right: 140,
       bottom: 100,
-      left: 100
+      left: 140
     },
   },
   dataFormatter: {

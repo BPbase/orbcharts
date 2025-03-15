@@ -94,15 +94,18 @@ export const seriesComputedSortedDataObservable = ({ computedData$, separateSeri
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-      // separate series
+
+      // sum series
       const sumData: ComputedDatumSeries[][] = data.sumSeries == true
         ? data.computedData.map(d => {
             return [
               // 加總為一筆資料
               d.reduce((acc, current) => {
                 if (acc == null) {
-                  return current // 取得第一筆資料
+                  // * 取得第一筆資料
+                  return current
                 }
+                // 加總 value
                 acc.value = acc.value + current.value
                 return acc
               }, null)
@@ -114,21 +117,15 @@ export const seriesComputedSortedDataObservable = ({ computedData$, separateSeri
       const separateSeriesData: ComputedDatumSeries[][] = data.separateSeries == true
         // 有拆分的話每個series為一組
         ? sumData
-          .map(series => {
-            return series.sort((a, b) => a.seq - b.seq)
-          })
         // 無拆分的話所有資料為一組
-        : [
-          sumData
-            .flat()
-            .sort((a, b) => a.seq - b.seq)
-        ]
+        : [sumData.flat()]
 
       // separate label
       const separateLabelData: ComputedDatumSeries[][] = data.separateLabel == true
         // 有拆分的話每個label為一組
         ? (() => {
-          const datumIndexMap = data.datumLabels.reduce((acc, datumLabel, index) => {
+          // datumLabel 的 index 對應
+          const datumLabelIndexMap = data.datumLabels.reduce((acc, datumLabel, index) => {
             acc[datumLabel] = index
             return acc
           }, {} as { [key: string]: number })
@@ -136,7 +133,7 @@ export const seriesComputedSortedDataObservable = ({ computedData$, separateSeri
           return separateSeriesData
             .map(series => {
               return series.reduce((acc, current) => {
-                const index = datumIndexMap[current.label]
+                const index = datumLabelIndexMap[current.label]
                 if (acc[index] == null) {
                   acc[index] = []
                 }
@@ -149,7 +146,15 @@ export const seriesComputedSortedDataObservable = ({ computedData$, separateSeri
         // 無拆分
         : separateSeriesData
       
-      return separateLabelData
+      return data.separateSeries == true && data.separateLabel == true
+        // 全部拆分時全部一起排序
+        ? separateLabelData
+            .sort((a, b) => a[0].seq - b[0].seq)
+        // 依各個 container 排序
+        : separateLabelData
+            .map(series => {
+              return series.sort((a, b) => a.seq - b.seq)
+            })
     })
   )
 }

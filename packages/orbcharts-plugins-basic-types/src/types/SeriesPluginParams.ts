@@ -9,6 +9,7 @@ export interface BubblesParams {
     collisionSpacing: number // 泡泡間距
   }
   bubbleLabel: {
+    labelFn: ((d: ComputedDatumSeries) => string)
     colorType: ColorType
     fillRate: number
     lineHeight: number

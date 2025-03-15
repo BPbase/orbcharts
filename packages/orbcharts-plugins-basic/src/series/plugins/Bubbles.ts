@@ -6,6 +6,8 @@ import {
   first,
   takeUntil,
   debounceTime,
+  of,
+  iif,
   Subject, 
   Observable,
   distinctUntilChanged,
@@ -31,6 +33,7 @@ interface BubblesDatum extends ComputedDatumSeries {
   x: number
   y: number
   r: number
+  renderLabel: string
   _originR: number // 紀錄變化前的r
 }
 
@@ -75,6 +78,9 @@ const pluginConfig: DefinePluginConfig<typeof pluginName, typeof DEFAULT_BUBBLES
     }
     if (params.bubbleLabel) {
       const bubbleLabelResult = validateColumns(params.bubbleLabel, {
+        labelFn: {
+          toBeTypes: ['Function'],
+        },
         colorType: {
           toBeOption: 'ColorType'
         },
@@ -156,71 +162,73 @@ function createSimulation (bubblesSelection: d3.Selection<SVGGElement, BubblesDa
 //   return maxR * modifier
 // }
 
-function createBubblesData ({ visibleComputedSortedData, LastBubbleDataMap, graphicWidth, graphicHeight, DatumContainerPositionMap, scaleType }: {
-  visibleComputedSortedData: ComputedDataSeries
-  LastBubbleDataMap: Map<string, BubblesDatum>
-  graphicWidth: number
-  graphicHeight: number
-  DatumContainerPositionMap: Map<string, ContainerPosition>
-  scaleType: ArcScaleType
-  // highlightIds: string[]
-}): BubblesDatum[] {
-  // 虛擬大圓（所有小圓聚合起來的大圓）的半徑
-  const totalR = Math.min(...[graphicWidth, graphicHeight]) / 2
+// function createBubblesData ({ visibleComputedSortedData, LastBubbleDataMap, fullParams, graphicWidth, graphicHeight, DatumContainerPositionMap, scaleType }: {
+//   visibleComputedSortedData: ComputedDataSeries
+//   LastBubbleDataMap: Map<string, BubblesDatum>
+//   fullParams: BubblesParams
+//   graphicWidth: number
+//   graphicHeight: number
+//   DatumContainerPositionMap: Map<string, ContainerPosition>
+//   scaleType: ArcScaleType
+//   // highlightIds: string[]
+// }): BubblesDatum[] {
+//   // 虛擬大圓（所有小圓聚合起來的大圓）的半徑
+//   const totalR = Math.min(...[graphicWidth, graphicHeight]) / 2
 
-  const data = visibleComputedSortedData.flat()
+//   const data = visibleComputedSortedData.flat()
 
-  const totalValue = data.reduce((acc, current) => acc + current.value, 0)
+//   const totalValue = data.reduce((acc, current) => acc + current.value, 0)
 
-  // 半徑比例尺
-  const radiusScale = d3.scalePow()
-    .domain([0, totalValue])
-    .range([0, totalR])
-    .exponent(scaleType === 'area'
-      ? 0.5 // 數值映射面積（0.5為取平方根）
-      : 1 // 數值映射半徑
-    )
+//   // 半徑比例尺
+//   const radiusScale = d3.scalePow()
+//     .domain([0, totalValue])
+//     .range([0, totalR])
+//     .exponent(scaleType === 'area'
+//       ? 0.5 // 數值映射面積（0.5為取平方根）
+//       : 1 // 數值映射半徑
+//     )
 
-  // 縮放比例 - 確保多個小圓的總面積等於大圓的面積
-  const scaleFactor = scaleType === 'area'
-    ? 1
-    // 當數值映射半徑時，多個小圓的總面積會小於大圓的面積，所以要計算縮放比例
-    : (() => {
-      const totalArea = totalR * totalR * Math.PI
-      return Math.sqrt(totalArea / d3.sum(data, d => Math.PI * Math.pow(radiusScale(d.value), 2)))
-    })()
+//   // 縮放比例 - 確保多個小圓的總面積等於大圓的面積
+//   const scaleFactor = scaleType === 'area'
+//     ? 1
+//     // 當數值映射半徑時，多個小圓的總面積會小於大圓的面積，所以要計算縮放比例
+//     : (() => {
+//       const totalArea = totalR * totalR * Math.PI
+//       return Math.sqrt(totalArea / d3.sum(data, d => Math.PI * Math.pow(radiusScale(d.value), 2)))
+//     })()
 
-  // 調整係數 - 因為圓和圓之間的空隙造成聚合起來的大圓會略大，所以稍作微調
-  const adjustmentFactor = 0.9
+//   // 調整係數 - 因為圓和圓之間的空隙造成聚合起來的大圓會略大，所以稍作微調
+//   const adjustmentFactor = 0.9
 
-  return data.map((_d) => {
-    const d: BubblesDatum = _d as BubblesDatum
+//   return data.map((_d) => {
+//     const d: BubblesDatum = _d as BubblesDatum
 
-    const existDatum = LastBubbleDataMap.get(d.id)
+//     d.renderLabel = fullParams.bubbleLabel.labelFn(d)
 
-    if (existDatum) {
-      // 使用現有的座標
-      d.x = existDatum.x
-      d.y = existDatum.y
-    } else {
-      const seriesContainerPosition = DatumContainerPositionMap.get(d.id)!
-      d.x = Math.random() * seriesContainerPosition.width
-      d.y = Math.random() * seriesContainerPosition.height
-    }
-    const r = radiusScale!(d.value ?? 0)! * scaleFactor * adjustmentFactor
-    d.r = r
-    d._originR = r
+//     const existDatum = LastBubbleDataMap.get(d.id)
+
+//     if (existDatum) {
+//       // 使用現有的座標
+//       d.x = existDatum.x
+//       d.y = existDatum.y
+//     } else {
+//       const seriesContainerPosition = DatumContainerPositionMap.get(d.id)!
+//       d.x = Math.random() * seriesContainerPosition.width
+//       d.y = Math.random() * seriesContainerPosition.height
+//     }
+//     const r = radiusScale!(d.value ?? 0)! * scaleFactor * adjustmentFactor
+//     d.r = r
+//     d._originR = r
     
-    return d
-  })
-}
+//     return d
+//   })
+// }
 
-function renderBubbles ({ selection, bubblesData, fullParams, fullChartParams, sumSeries }: {
+function renderBubbles ({ selection, bubblesData, fullParams, fullChartParams }: {
   selection: d3.Selection<SVGGElement, any, any, any>
   bubblesData: BubblesDatum[]
   fullParams: BubblesParams
   fullChartParams: ChartParams
-  sumSeries: boolean
 }) {
   const bubblesSelection = selection.selectAll<SVGGElement, BubblesDatum>("g")
     .data(bubblesData, (d) => d.id)
@@ -262,18 +270,16 @@ function renderBubbles ({ selection, bubblesData, fullParams, fullChartParams, s
       return `translate(${d.x},${d.y})`
     })
 
-  // 泡泡文字要使用的的資料欄位
-  const textDataColumn = sumSeries ? 'seriesLabel' : 'label'// 如果有合併series則使用seriesLabel
-    
   bubblesSelection.select('circle')
     .transition()
     .duration(200)
+    // .ease(d3.easeLinear)
     .attr("r", (d) => d.r)
     .attr('fill', (d) => d.color)
   bubblesSelection
     .each((d,i,g) => {
       const gSelection = d3.select(g[i])
-      const text = d[textDataColumn] ?? ''
+      const text = d.renderLabel
       
       gSelection.call(renderCircleText, {
         text,
@@ -412,43 +418,169 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
   let LastBubbleDataMap: Map<string, BubblesDatum> = new Map()
 
   
-  const sumSeries$ = observer.fullDataFormatter$.pipe(
-    map(d => d.sumSeries),
-    distinctUntilChanged()
-  )
-
   const scaleType$ = observer.fullParams$.pipe(
     takeUntil(destroy$),
     map(d => d.arcScaleType),
-    distinctUntilChanged()
+    distinctUntilChanged(),
+    shareReplay(1)
   )
 
-  const bubblesData$ = combineLatest({
-    layout: observer.layout$,
-    DatumContainerPositionMap: observer.DatumContainerPositionMap$,
-    visibleComputedSortedData: observer.visibleComputedSortedData$,
+  // 虛擬大圓（所有小圓聚合起來的大圓）的半徑
+  const totalR$ = observer.layout$.pipe(
+    takeUntil(destroy$),
+    map(d => Math.min(d.width, d.height) / 2),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
+
+  const totalValue$ = observer.visibleComputedSortedData$.pipe(
+    takeUntil(destroy$),
+    map(d => d.flat().reduce((acc, current) => acc + current.value, 0)),
+    distinctUntilChanged(),
+    shareReplay(1)
+  )
+
+  // 半徑比例尺
+  const radiusScale$ = combineLatest({
+    totalR: totalR$,
+    totalValue: totalValue$,
     scaleType: scaleType$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
-      // console.log(data.visibleComputedSortedData)
-      return createBubblesData({
-        visibleComputedSortedData: data.visibleComputedSortedData,
-        LastBubbleDataMap,
-        graphicWidth: data.layout.width,
-        graphicHeight: data.layout.height,
-        DatumContainerPositionMap: data.DatumContainerPositionMap,
-        scaleType: data.scaleType
-      })
+      return d3.scalePow()
+        .domain([0, data.totalValue])
+        .range([0, data.totalR])
+        .exponent(data.scaleType === 'area'
+          ? 0.5 // 數值映射面積（0.5為取平方根）
+          : 1 // 數值映射半徑
+        )
     }),
     shareReplay(1)
   )
 
-  // 紀錄前一次bubble data
-  bubblesData$.subscribe(d => {
-    LastBubbleDataMap = new Map(d.map(_d => [_d.id, _d])) // key: id, value: datum
-  })
+  // 縮放比例 - 確保多個小圓的總面積等於大圓的面積
+  const scaleFactor$ = scaleType$.pipe(
+    takeUntil(destroy$),
+    switchMap(scaleType => {
+      return iif(
+        () => scaleType === 'area',
+        of(1),
+        combineLatest({
+          totalR: totalR$,
+          radiusScale: radiusScale$,
+          visibleComputedSortedData: observer.visibleComputedSortedData$
+        }).pipe(
+          switchMap(async (d) => d),
+          map(data => {
+            // 當數值映射半徑時，多個小圓的總面積會小於大圓的面積，所以要計算縮放比例
+            const totalArea = data.totalR * data.totalR * Math.PI
+            return Math.sqrt(totalArea / d3.sum(data.visibleComputedSortedData.flat(), d => Math.PI * Math.pow(data.radiusScale(d.value), 2)))
+          })
+        )
+      )
+    })
+  )
+
+  const DatumRMap$ = combineLatest({
+    visibleComputedSortedData: observer.visibleComputedSortedData$,
+    radiusScale: radiusScale$,
+    scaleFactor: scaleFactor$
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      // 調整係數 - 因為圓和圓之間的空隙造成聚合起來的大圓會略大，所以稍作微調
+      const adjustmentFactor = 0.9
+
+      return new Map<string, number>(
+        data.visibleComputedSortedData
+          .flat()
+          .map(d => [d.id, data.radiusScale(d.value ?? 0) * data.scaleFactor * adjustmentFactor])
+      )
+    }),
+    shareReplay(1)
+  )
+
+  // 初始座標
+  const DatumInitXYMap$ = observer.DatumContainerPositionMap$.pipe(
+    takeUntil(destroy$),
+    map(data => {
+      return new Map<string, { x: number, y: number }>(
+        Array.from(data).map(([id, position]) => {
+          return [
+            id,
+            {
+              x: position.startX + (position.width * Math.random()),
+              y: position.startY + (position.height * Math.random())
+            }
+          ]
+        })
+      )
+    }),
+    first(), // 只算一次
+    shareReplay(1)
+  )
+
+  const bubblesData$ = combineLatest({
+    visibleComputedSortedData: observer.visibleComputedSortedData$,
+    DatumRMap: DatumRMap$,
+    DatumInitXYMap: DatumInitXYMap$,
+    fullParams: observer.fullParams$,
+  }).pipe(
+    takeUntil(destroy$),
+    switchMap(async (d) => d),
+    map(data => {
+      return data.visibleComputedSortedData
+        .flat()
+        .map(_d => {
+          // 傳址，附加計算的欄位資料會 reference 到始資料上
+          const d: BubblesDatum = _d as BubblesDatum
+
+          // 第一次計算時沒有 x, y 座標，取得預設座標。第二次之後計算使用原有的座標
+          if (d.x === undefined || d.y === undefined) {
+            const { x, y } = data.DatumInitXYMap.get(d.id)!
+            d.x = x
+            d.y = y
+          }
+          d.r = data.DatumRMap.get(d.id)!
+          d._originR = d.r
+          d.renderLabel = data.fullParams.bubbleLabel.labelFn(d)
+          return d
+        })
+    }),
+    shareReplay(1)
+  )
+
+  // const bubblesData$ = combineLatest({
+  //   layout: observer.layout$,
+  //   fullParams: observer.fullParams$,
+  //   DatumContainerPositionMap: observer.DatumContainerPositionMap$,
+  //   visibleComputedSortedData: observer.visibleComputedSortedData$,
+  //   scaleType: scaleType$,
+  // }).pipe(
+  //   takeUntil(destroy$),
+  //   switchMap(async (d) => d),
+  //   map(data => {
+  //     // console.log(data.visibleComputedSortedData)
+  //     return createBubblesData({
+  //       visibleComputedSortedData: data.visibleComputedSortedData,
+  //       LastBubbleDataMap,
+  //       fullParams: data.fullParams,
+  //       graphicWidth: data.layout.width,
+  //       graphicHeight: data.layout.height,
+  //       DatumContainerPositionMap: data.DatumContainerPositionMap,
+  //       scaleType: data.scaleType
+  //     })
+  //   }),
+  //   shareReplay(1)
+  // )
+
+  // // 紀錄前一次bubble data
+  // bubblesData$.subscribe(d => {
+  //   LastBubbleDataMap = new Map(d.map(_d => [_d.id, _d])) // key: id, value: datum
+  // })
 
   const highlightTarget$ = observer.fullChartParams$.pipe(
     takeUntil(destroy$),
@@ -461,7 +593,6 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
     fullParams: observer.fullParams$,
     fullChartParams: observer.fullChartParams$,
     DatumContainerPositionMap: observer.DatumContainerPositionMap$,
-    sumSeries: sumSeries$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -476,7 +607,6 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
         bubblesData: data.bubblesData,
         fullParams: data.fullParams,
         fullChartParams: data.fullChartParams,
-        sumSeries: data.sumSeries
       })
       
       simulation = createSimulation(bubblesSelection, data.fullParams)

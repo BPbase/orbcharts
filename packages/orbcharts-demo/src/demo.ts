@@ -131,6 +131,14 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             getData: () => import('./data/seriesData2')
           },
           {
+            title: 'PRESET_PIE_SEPARATE_LABEL',
+            presetName: 'PRESET_PIE_SEPARATE_LABEL',
+            description: 'Separate pie chart of Label',
+            descriptionZh: '分開顯示Label的圓餅圖',
+            allPluginNames: ['Pie', 'PieLabels', 'SeriesLegend', 'SeriesTooltip'],
+            getData: () => import('./data/seriesData4')
+          },
+          {
             title: 'PRESET_PIE_SUM_SERIES',
             presetName: 'PRESET_PIE_SUM_SERIES',
             description: 'Pie chart of combined Series data',
@@ -185,6 +193,22 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             getData: () => import('./data/seriesData2')
           },
           {
+            title: 'PRESET_ROSE_SEPARATE_LABEL',
+            presetName: 'PRESET_ROSE_SEPARATE_LABEL',
+            description: 'Separate rose chart of Label',
+            descriptionZh: '分開顯示Label的玫瑰圖',
+            allPluginNames: ['Rose', 'RoseLabels', 'SeriesLegend', 'SeriesTooltip'],
+            getData: () => import('./data/seriesData4')
+          },
+          {
+            title: 'PRESET_ROSE_SEPARATE_ALL',
+            presetName: 'PRESET_ROSE_SEPARATE_ALL',
+            description: 'Separate rose chart of all data',
+            descriptionZh: '全部資料分開顯示的玫瑰圖',
+            allPluginNames: ['Rose', 'RoseLabels', 'SeriesLegend', 'SeriesTooltip'],
+            getData: () => import('./data/seriesData2')
+          },
+          {
             title: 'PRESET_ROSE_SUM_SERIES',
             presetName: 'PRESET_ROSE_SUM_SERIES',
             description: 'Rose chart of combined Series data',
@@ -192,14 +216,14 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             allPluginNames: ['Rose', 'RoseLabels', 'SeriesLegend', 'SeriesTooltip'],
             getData: () => import('./data/seriesData2')
           },
-          {
-            title: 'PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES',
-            presetName: 'PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES',
-            description: 'Separate and sum Series data',
-            descriptionZh: '分開顯示Series並合併Series資料',
-            allPluginNames: ['Rose', 'RoseLabels', 'SeriesLegend', 'SeriesTooltip'],
-            getData: () => import('./data/seriesData2')
-          },
+          // {
+          //   title: 'PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES',
+          //   presetName: 'PRESET_ROSE_SEPARATE_SERIES_AND_SUM_SERIES',
+          //   description: 'Separate and sum Series data',
+          //   descriptionZh: '分開顯示Series並合併Series資料',
+          //   allPluginNames: ['Rose', 'RoseLabels', 'SeriesLegend', 'SeriesTooltip'],
+          //   getData: () => import('./data/seriesData2')
+          // },
         ]
       }
     ]
