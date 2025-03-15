@@ -363,14 +363,26 @@ function groupBubbles ({ _simulation, fullParams, DatumContainerPositionMap }: {
   DatumContainerPositionMap: Map<string, ContainerPosition>
 }) {
   // console.log('groupBubbles')
+  
   _simulation!
     // .force('x', d3.forceX().strength(fullParams.force.strength).x(graphicWidth / 2))
     // .force('y', d3.forceY().strength(fullParams.force.strength).y(graphicHeight / 2))
     .force('x', d3.forceX().strength(fullParams.force.strength).x((data: BubblesSimulationDatum) => {
-      return DatumContainerPositionMap.get(data.id)!.centerX
+      let position = DatumContainerPositionMap.get(data.id)!
+      if (!position) {
+        // 有時候可能會因為時間差而找不到，這時候取第一筆
+        position = DatumContainerPositionMap.get(Array.from(DatumContainerPositionMap.keys())[0])
+      }
+      
+      return position?.centerX ?? null
     }))
     .force('y', d3.forceY().strength(fullParams.force.strength).y((data: BubblesSimulationDatum) => {
-      return DatumContainerPositionMap.get(data.id)!.centerY
+      let position = DatumContainerPositionMap.get(data.id)!
+      if (!position) {
+        position = DatumContainerPositionMap.get(Array.from(DatumContainerPositionMap.keys())[0])
+      }
+      
+      return position?.centerY ?? null
     }))
 
   // force!.alpha(1).restart()
@@ -540,9 +552,12 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
 
           // 第一次計算時沒有 x, y 座標，取得預設座標。第二次之後計算使用原有的座標
           if (d.x === undefined || d.y === undefined) {
-            const { x, y } = data.DatumInitXYMap.get(d.id)!
-            d.x = x
-            d.y = y
+            let xy = data.DatumInitXYMap.get(d.id)!
+            if (!xy) {
+              xy = data.DatumInitXYMap.get(Array.from(data.DatumInitXYMap.keys())[0])
+            }
+            d.x = xy.x
+            d.y = xy.y
           }
           d.r = data.DatumRMap.get(d.id)!
           d._originR = d.r

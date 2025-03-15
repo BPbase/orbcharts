@@ -52,7 +52,7 @@ onMounted(() => {
 
   chart.chartParams$.next({
     padding: {
-      bottom: 120
+      bottom: 100
     },
     highlightTarget: 'series'
   })
@@ -194,7 +194,7 @@ onMounted(() => {
     if (i == 0) {
       chart.chartParams$.next({
         padding: {
-          bottom: 120
+          bottom: 100
         },
         highlightTarget: 'series'
       })
@@ -202,7 +202,9 @@ onMounted(() => {
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 1,
-          columnAmount: 2
+          columnAmount: 2,
+          columnGap: 80,
+          rowGap: 60
         },
         gridList: [
           {
@@ -227,7 +229,7 @@ onMounted(() => {
     } else if (i == 1) {
       chart.chartParams$.next({
         padding: {
-          bottom: 120
+          bottom: 100
         },
         highlightTarget: 'series'
       })
@@ -261,7 +263,7 @@ onMounted(() => {
     } else if (i == 2)  {
       chart.chartParams$.next({
         padding: {
-          bottom: 120
+          bottom: 100
         },
         highlightTarget: 'series'
       })
@@ -269,7 +271,9 @@ onMounted(() => {
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 2,
-          columnAmount: 2
+          columnAmount: 2,
+          columnGap: 80,
+          rowGap: 60
         },
         gridList: [
           {
@@ -295,7 +299,7 @@ onMounted(() => {
     } else if (i == 3)  {
       chart.chartParams$.next({
         padding: {
-          bottom: 120
+          bottom: 100
         },
         highlightTarget: 'series'
       })
@@ -303,7 +307,9 @@ onMounted(() => {
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 2,
-          columnAmount: 1
+          columnAmount: 1,
+          columnGap: 80,
+          rowGap: 60
         },
         gridList: [
           {
@@ -329,7 +335,9 @@ onMounted(() => {
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 2,
-          columnAmount: 3
+          columnAmount: 3,
+          columnGap: 80,
+          rowGap: 60
         },
         gridList: [
           {
@@ -357,14 +365,15 @@ onMounted(() => {
       chart.chartParams$.next({
         padding: {
           left: 60,
-          bottom: 120
+          bottom: 100
         }
       })
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 2,
           columnAmount: 3,
-          // columnGap: 120
+          columnGap: 80,
+          rowGap: 60
         },
         gridList: [
           {
@@ -405,13 +414,15 @@ onMounted(() => {
       chart.chartParams$.next({
         padding: {
           left: 60,
-          bottom: 120
+          bottom: 100
         }
       })
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 1,
-          columnAmount: 2
+          columnAmount: 2,
+          columnGap: 80,
+          rowGap: 60
         },
         gridList: [
           {
@@ -445,13 +456,15 @@ onMounted(() => {
       chart.chartParams$.next({
         padding: {
           left: 60,
-          bottom: 120
+          bottom: 100
         }
       })
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 1,
-          columnAmount: 2
+          columnAmount: 2,
+          columnGap: 80,
+          rowGap: 60
         },
         gridList: [
           {
@@ -505,13 +518,13 @@ onMounted(() => {
       chart.chartParams$.next({
         padding: {
           left: 60,
-          bottom: 120
+          bottom: 100
         }
       })
       chart!.dataFormatter$.next({
         container: {
           rowAmount: 1,
-          columnAmount: 1
+          columnAmount: 1,
         },
         gridList: [
           {

@@ -1,6 +1,6 @@
 {
   "name": "orbcharts",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "OrbCharts is a data-driven Javascript chart library",
   "author": "Blue Planet Inc.",
   "license": "Apache-2.0",
@@ -41,7 +41,7 @@
   "dependencies": {
     "@orbcharts/core": "^3.0.5",
     "@orbcharts/core-types": "^3.0.3",
-    "@orbcharts/plugins-basic": "^3.0.5",
+    "@orbcharts/plugins-basic": "^3.0.6",
     "@orbcharts/plugins-basic-types": "^3.0.3",
     "@orbcharts/presets-basic": "^3.0.3",
     "d3": "^7.8.5",
