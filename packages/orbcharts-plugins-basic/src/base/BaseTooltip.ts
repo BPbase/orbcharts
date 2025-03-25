@@ -87,7 +87,7 @@ function renderTooltip ({ rootSelection, pluginName, gClassName, boxClassName, r
   //   return
   // }
   // const rootSelection = d3.select('svg.bpcharts__root')
-  // console.log('tooltip', { selection, rootWidth, rootHeight, svgString, event  })
+  // console.log('tooltip', { rootSelection, pluginName, gClassName, boxClassName, rootWidth, rootHeight, svgString, tooltipStyle, event  })
   rootSelection.interrupt('fadeout')
   const radius = 5
 
@@ -211,6 +211,12 @@ function renderTooltip ({ rootSelection, pluginName, gClassName, boxClassName, r
     // })
     // .html((d) => d.contentHtml)
   
+}
+
+function removeTooltip (gClassName: string) {
+  d3.selectAll(`g.${gClassName}`)
+    .remove()
+
 }
 
 export const createBaseTooltip: BasePluginFn<BaseTooltipContext> = (pluginName: string, {
@@ -342,18 +348,34 @@ export const createBaseTooltip: BasePluginFn<BaseTooltipContext> = (pluginName: 
       //   return (d.eventName === 'mouseover' || d.eventName === 'mousemove' || d.eventName === 'mouseout')
       //     && d.event != undefined
       // }),
-      map(d => d.event!),
+      // map(d => d.event!),
     )
 
   combineLatest({
     svgString: svgString$,
-    eventTooltip: eventTooltip$,
     layout: layout$,
     tooltipStyle: tooltipStyle$,
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
+    switchMap(data => {
+      // 只當有event時才產生資料流
+      return eventTooltip$.pipe(
+        map(eventTooltip => {
+          return {
+            svgString: data.svgString,
+            layout: data.layout,
+            tooltipStyle: data.tooltipStyle,
+            eventTooltip: eventTooltip
+          }
+        })
+      )
+    })
   ).subscribe(data => {
+    if (data.eventTooltip.eventName === 'mouseout') {
+      removeTooltip(gClassName)
+      return
+    }
     renderTooltip({
       rootSelection,
       pluginName,
@@ -363,7 +385,7 @@ export const createBaseTooltip: BasePluginFn<BaseTooltipContext> = (pluginName: 
       rootHeight: data.layout.rootHeight,
       svgString: data.svgString,
       tooltipStyle: data.tooltipStyle,
-      event: data.eventTooltip
+      event: data.eventTooltip.event
     })
   })
 

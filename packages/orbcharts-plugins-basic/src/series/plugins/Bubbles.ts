@@ -2,9 +2,11 @@ import * as d3 from 'd3'
 import {
   combineLatest,
   map,
+  filter,
   switchMap,
   first,
   takeUntil,
+  takeWhile,
   debounceTime,
   of,
   iif,
@@ -518,6 +520,7 @@ export const Bubbles = defineSeriesPlugin(pluginConfig)(({ selection, name, obse
   // 初始座標
   const DatumInitXYMap$ = observer.DatumContainerPositionMap$.pipe(
     takeUntil(destroy$),
+    filter(data => data.size > 0), // 至少要有一筆資料
     map(data => {
       return new Map<string, { x: number, y: number }>(
         Array.from(data).map(([id, position]) => {
