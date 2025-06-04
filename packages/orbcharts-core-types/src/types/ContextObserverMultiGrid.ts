@@ -12,6 +12,8 @@ export interface ContextObserverMultiGrid<PluginParams> extends ContextObserverB
   multiGridHighlight$: Observable<ComputedDatumGrid[]>
   // seriesLabels$: Observable<string[]>
   multiGridContainerPosition$: Observable<ContainerPositionScaled[][]>
+  filteredMinMaxValue$: Observable<[number, number]>
+  filteredStackedMinMaxValue$: Observable<[number, number]>
   // -- each grid --
   multiGridEachDetail$: Observable<ContextObserverMultiGridDetail[]>
 }

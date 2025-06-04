@@ -247,6 +247,14 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           shareReplay(1)
         )
 
+        const filteredStackedMinMaxValue$ = filteredMinMaxValueObservable({
+          computedData$: computedStackedData$,
+          groupScaleDomainValue$: groupScaleDomainValue$,
+        }).pipe(
+          takeUntil(destroy$),
+          shareReplay(1)
+        )
+
         const gridAxesTransform$ = gridAxesTransformObservable({
           fullDataFormatter$: gridDataFormatter$,
           layout$: layout$
@@ -297,6 +305,7 @@ export const multiGridEachDetailObservable = ({ fullDataFormatter$, computedData
           computedStackedData$,
           groupScaleDomainValue$,
           filteredMinMaxValue$,
+          filteredStackedMinMaxValue$,
           gridAxesTransform$,
           gridAxesReverseTransform$,
           gridGraphicTransform$,

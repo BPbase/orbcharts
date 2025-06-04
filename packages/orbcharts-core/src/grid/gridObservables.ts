@@ -586,9 +586,11 @@ export const gridGraphicTransformObservable = ({ computedData$, groupScaleDomain
     // })
   
     // const filteredMinMax = getMinMaxGrid(filteredData)
-    if (filteredMinMaxValue[0] === filteredMinMaxValue[1] && filteredMinMaxValue[1] === 0) {
+    const filteredMin = filteredMinMaxValue[0]
+    let filteredMax = filteredMinMaxValue[1]
+    if (filteredMin === filteredMax && filteredMax === 0) {
       // filteredMinMaxValue[0] = filteredMinMaxValue[1] - 1 // 避免最大及最小值相同造成無法計算scale
-      filteredMinMaxValue[1] = 1 // 避免最大及最小值同等於 0 造成無法計算scale
+      filteredMax = 1 // 避免最大及最小值同等於 0 造成無法計算scale
     }
   
     const valueAxisWidth = (valueAxis.position === 'left' || valueAxis.position === 'right')
@@ -596,8 +598,8 @@ export const gridGraphicTransformObservable = ({ computedData$, groupScaleDomain
       : width
   
     const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-      maxValue: filteredMinMaxValue[1],
-      minValue: filteredMinMaxValue[0],
+      maxValue: filteredMax,
+      minValue: filteredMin,
       axisWidth: valueAxisWidth,
       scaleDomain: valueAxis.scaleDomain,
       scaleRange: valueAxis.scaleRange
@@ -611,9 +613,11 @@ export const gridGraphicTransformObservable = ({ computedData$, groupScaleDomain
   // })
     // -- translateY, scaleY --
     const minMax = getMinMaxGrid(data)
-    if (minMax[0] === minMax[1] && minMax[1] === 0) {
+    const min = minMax[0]
+    let max = minMax[1]
+    if (min === max && max === 0) {
       // minMax[0] = minMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
-      minMax[1] = 1 // 避免最大及最小值同等於 0 造成無法計算scale
+      max = 1 // 避免最大及最小值同等於 0 造成無法計算scale
     }
     // const rangeMinY = valueScale(minMax[0])
     const rangeMinY = valueScale(minMax[0] > 0 ? 0 : minMax[0]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
