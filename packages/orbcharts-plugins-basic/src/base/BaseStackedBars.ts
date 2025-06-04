@@ -38,6 +38,8 @@ interface BaseStackedBarsContext {
   computedAxesData$: Observable<ComputedAxesDataGrid>
   visibleComputedData$: Observable<ComputedDatumGrid[][]>
   visibleComputedAxesData$: Observable<ComputedAxesDataGrid>
+  filteredMinMaxValue$: Observable<[number, number]>
+  filteredStackedMinMaxValue$: Observable<[number, number]>
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
@@ -162,8 +164,9 @@ function renderRectBars ({ graphicGSelection, rectClassName, barData, zeroY, gro
         .ease(getD3TransitionEase(chartParams.transitionEase))
         .delay((d, i) => d.groupIndex * delayGroup)
         .attr('y', d => d._barStartY)
-        .attr('height', d => Math.abs(d._barHeight) || 1) // 無值還是給一個 1 的高度
+        .attr('height', d => d._barHeight > 0 ? Math.abs(d._barHeight) : 1) // 無值還是給一個 1 的高度
     })
+  
 
   // const barGroup = graphicGSelection
   //   .selectAll<SVGGElement, ComputedDatumGrid[]>(`g.${gClassName}`)
@@ -298,6 +301,8 @@ export const createBaseStackedBars: BasePluginFn<BaseStackedBarsContext> = (plug
   computedAxesData$,
   visibleComputedData$,
   visibleComputedAxesData$,
+  filteredMinMaxValue$,
+  filteredStackedMinMaxValue$,
   seriesLabels$,
   SeriesDataMap$,
   GroupDataMap$,
@@ -502,37 +507,40 @@ export const createBaseStackedBars: BasePluginFn<BaseStackedBarsContext> = (plug
 
   // 堆疊後的高度對應圖軸的比例（最大值/最大值所在group的總和）
   const yRatio$ = combineLatest({
-    visibleComputedAxesData: visibleComputedAxesData$,
-    groupScaleDomain: groupScaleDomain$
+    // visibleComputedAxesData: visibleComputedAxesData$,
+    // groupScaleDomain: groupScaleDomain$
+    filteredMinMaxValue: filteredMinMaxValue$,
+    filteredStackedMinMaxValue: filteredStackedMinMaxValue$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
     map(data => {
-      const groupScaleDomainMin = data.groupScaleDomain[0]
-      const groupScaleDomainMax = data.groupScaleDomain[1]
-      // 只選取group篩選範圍內的資料
-      const filteredData = data.visibleComputedAxesData
-        .map(d => {
-          return d.filter((_d, i) => {
-            return _d.groupIndex >= groupScaleDomainMin && _d.groupIndex <= groupScaleDomainMax
-          })
-        })
+      // const groupScaleDomainMin = data.groupScaleDomain[0]
+      // const groupScaleDomainMax = data.groupScaleDomain[1]
+      // // 只選取group篩選範圍內的資料
+      // const filteredData = data.visibleComputedAxesData
+      //   .map(d => {
+      //     return d.filter((_d, i) => {
+      //       return _d.groupIndex >= groupScaleDomainMin && _d.groupIndex <= groupScaleDomainMax
+      //     })
+      //   })
       
-      const filteredDataList = filteredData.flat()
-      if (filteredDataList.length <= 1) {
-        return 1
-      }
+      // const filteredDataList = filteredData.flat()
+      // if (filteredDataList.length <= 1) {
+      //   return 1
+      // }
       
-      const maxValueDatum = filteredDataList.reduce((max, current) => {
-        return current.value > max.value ? current : max;
-      }, filteredDataList[0])
-      const maxValueGroupIndex = maxValueDatum.groupIndex
-      const maxValueGroupSum = filteredDataList
-        .filter(d => d.groupIndex === maxValueGroupIndex)
-        .reduce((sum, current) => {
-          return sum + current.value
-        }, 0)
-      return maxValueDatum.value / maxValueGroupSum
+      // const maxValueDatum = filteredDataList.reduce((max, current) => {
+      //   return current.value > max.value ? current : max;
+      // }, filteredDataList[0])
+      // const maxValueGroupIndex = maxValueDatum.groupIndex
+      // const maxValueGroupSum = filteredDataList
+      //   .filter(d => d.groupIndex === maxValueGroupIndex)
+      //   .reduce((sum, current) => {
+      //     return sum + current.value
+      //   }, 0)
+      // return maxValueDatum.value / maxValueGroupSum
+      return data.filteredMinMaxValue[1] / data.filteredStackedMinMaxValue[1]
     })
   )
 
@@ -548,6 +556,9 @@ export const createBaseStackedBars: BasePluginFn<BaseStackedBarsContext> = (plug
         : []
       return data.computedAxesData.map((series, seriesIndex) => {
         return series.map((datum, groupIndex) => {
+          if (!accYArr[groupIndex]) {
+            accYArr[groupIndex] = 0
+          }
           const _barStartY = accYArr[groupIndex] // 前一次的累加高度
           let _barHeight = 0
           if (datum.visible) {

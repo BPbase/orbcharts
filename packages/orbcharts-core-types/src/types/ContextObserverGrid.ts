@@ -26,6 +26,7 @@ export interface ContextObserverGridDetail {
   computedStackedData$: Observable<ComputedDataGrid>
   groupScaleDomainValue$: Observable<[number, number]>
   filteredMinMaxValue$: Observable<[number, number]>
+  filteredStackedMinMaxValue$: Observable<[number, number]>
   gridAxesTransform$: Observable<TransformData>
   gridAxesReverseTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>

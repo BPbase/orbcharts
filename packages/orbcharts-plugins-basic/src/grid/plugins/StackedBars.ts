@@ -42,6 +42,8 @@ export const StackedBars = defineGridPlugin(pluginConfig)(({ selection, name, su
     computedAxesData$: observer.computedAxesData$,
     visibleComputedData$: observer.visibleComputedData$,
     visibleComputedAxesData$: observer.visibleComputedAxesData$,
+    filteredMinMaxValue$: observer.filteredMinMaxValue$,
+    filteredStackedMinMaxValue$: observer.filteredStackedMinMaxValue$,
     seriesLabels$: observer.seriesLabels$,
     SeriesDataMap$: observer.SeriesDataMap$,
     GroupDataMap$: observer.GroupDataMap$,

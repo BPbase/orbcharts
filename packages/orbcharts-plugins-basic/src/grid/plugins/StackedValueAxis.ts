@@ -1,4 +1,5 @@
 import {
+  of,
   takeUntil,
   map,
   distinctUntilChanged,
@@ -79,7 +80,7 @@ export const StackedValueAxis = defineGridPlugin(pluginConfig)(({ selection, nam
   const unsubscribeBaseValueAxis = createBaseValueAxis(pluginName, {
     selection,
     computedData$: observer.computedStackedData$, // 計算疊加value的資料
-    filteredMinMaxValue$: observer.filteredMinMaxValue$,
+    filteredMinMaxValue$: observer.filteredStackedMinMaxValue$,
     fullParams$: observer.fullParams$,
     fullDataFormatter$: observer.fullDataFormatter$,
     fullChartParams$: observer.fullChartParams$,  

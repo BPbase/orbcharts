@@ -139,6 +139,13 @@ export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subje
     shareReplay(1)
   )
 
+  const filteredStackedMinMaxValue$ = filteredMinMaxValueObservable({
+    computedData$: computedStackedData$,
+    groupScaleDomainValue$: groupScaleDomainValue$,
+  }).pipe(
+    shareReplay(1)
+  )
+
   const gridAxesTransform$ = gridAxesTransformObservable({
     fullDataFormatter$: observer.fullDataFormatter$,
     layout$: observer.layout$
@@ -193,6 +200,7 @@ export const contextObserverCallback: ContextObserverCallback<'grid'> = ({ subje
     computedStackedData$,
     groupScaleDomainValue$,
     filteredMinMaxValue$,
+    filteredStackedMinMaxValue$,
     gridAxesTransform$,
     gridAxesReverseTransform$,
     gridGraphicTransform$,

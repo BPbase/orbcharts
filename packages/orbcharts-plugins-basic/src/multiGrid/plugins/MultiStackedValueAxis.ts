@@ -114,7 +114,8 @@ export const MultiStackedValueAxis = defineMultiGridPlugin(pluginConfig)(({ sele
           unsubscribeFnArr[i] = createBaseValueAxis(pluginName, {
             selection: gridSelection,
             computedData$: d.computedStackedData$, // 計算疊加value的資料
-            filteredMinMaxValue$: d.filteredMinMaxValue$,
+            // filteredMinMaxValue$: observer.filteredStackedMinMaxValue$, // 使用全部資料當比例尺
+            filteredMinMaxValue$: d.filteredStackedMinMaxValue$,
             fullParams$: observer.fullParams$,
             fullDataFormatter$: d.dataFormatter$,
             fullChartParams$: observer.fullChartParams$,  

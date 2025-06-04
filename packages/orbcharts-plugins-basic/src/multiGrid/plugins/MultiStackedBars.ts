@@ -81,6 +81,9 @@ export const MultiStackedBars = defineMultiGridPlugin(pluginConfig)(({ selection
             visibleComputedData$: d.visibleComputedData$,
             computedAxesData$: d.computedAxesData$,
             visibleComputedAxesData$: d.visibleComputedAxesData$,
+            filteredMinMaxValue$: d.filteredMinMaxValue$, // 目前grid的資料
+            // filteredStackedMinMaxValue$: observer.filteredStackedMinMaxValue$, // 計算比例用的，使用全部資料當基底
+            filteredStackedMinMaxValue$: d.filteredStackedMinMaxValue$,
             seriesLabels$: d.seriesLabels$,
             SeriesDataMap$: d.SeriesDataMap$,
             GroupDataMap$: d.GroupDataMap$,

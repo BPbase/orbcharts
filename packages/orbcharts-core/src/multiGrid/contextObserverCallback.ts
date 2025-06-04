@@ -1,11 +1,15 @@
 import {
   map,
-  shareReplay } from 'rxjs'
+  switchMap,
+  merge,
+  forkJoin,
+  shareReplay,
+  Observable } from 'rxjs'
 import type { ContextObserverCallback, DataGridDatum } from '../../lib/core-types'
 import { multiGridEachDetailObservable, multiGridContainerObservable } from './multiGridObservables'
 import { textSizePxObservable, containerSizeObservable, highlightObservable } from '../utils/observables'
 // import { createMultiGridSeriesLabels } from '../utils/orbchartsUtils'
-import { combineLatest } from 'rxjs/internal/observable/combineLatest'
+import { filteredMinMaxValueObservable } from '../grid/gridObservables'
 
 export const contextObserverCallback: ContextObserverCallback<'multiGrid'> = ({ subject, observer }) => {
 
@@ -59,6 +63,34 @@ export const contextObserverCallback: ContextObserverCallback<'multiGrid'> = ({ 
   //   console.log('multiGridContainerPosition$', d)
   // })
 
+  const filteredMinMaxValue$: Observable<[number, number]> = multiGridEachDetail$.pipe(
+    switchMap(details => {
+      return forkJoin(details.map((detail, index) => {
+        return detail.filteredMinMaxValue$
+      }))
+    }),
+    map(filteredMinMaxValue => {
+      return [
+        Math.min(...filteredMinMaxValue.map(d => d[0])),
+        Math.max(...filteredMinMaxValue.map(d => d[1]))
+      ]
+    })
+  )
+
+  const filteredStackedMinMaxValue$: Observable<[number, number]> = multiGridEachDetail$.pipe(
+    switchMap(details => {
+      return forkJoin(details.map((detail, index) => {
+        return detail.filteredStackedMinMaxValue$
+      }))
+    }),
+    map(filteredMinMaxValue => {
+      return [
+        Math.min(...filteredMinMaxValue.map(d => d[0])),
+        Math.max(...filteredMinMaxValue.map(d => d[1]))
+      ]
+    })
+  )
+
   return {
     fullParams$: observer.fullParams$,
     fullChartParams$: observer.fullChartParams$,
@@ -69,6 +101,8 @@ export const contextObserverCallback: ContextObserverCallback<'multiGrid'> = ({ 
     containerSize$,
     multiGridHighlight$,
     multiGridContainerPosition$,
+    filteredMinMaxValue$,
+    filteredStackedMinMaxValue$,
     multiGridEachDetail$,
     // multiGridContainer$
   }
