@@ -1,76 +1,35 @@
-# OrbCharts
+# OrbCharts（開發分支）
 
 ![logo - light mode](https://orbcharts.blueplanet.com.tw/images/logo_light_temp2.png)
 
-OrbCharts is a "data-driven JavaScript chart library" that currently supports 6 data types, 23 chart types, 51 plugins, and 101 preset style combinations.
+> ⚠️ 本專案為 [OrbCharts 原始專案](https://github.com/bpbase/orbcharts/) 的開發 fork，由原始主要開發者 [@upstairs0102](https://github.com/upstairs0102) 在個人帳號下持續維護與開發。
 
-[Official Website](https://orbcharts.blueplanet.com.tw)
+本專案建立的目的，是為了在個人 GitHub 帳號下持續推進 OrbCharts 的開發與維護工作，並方便進行測試、功能實驗與貢獻。所有改進會透過 Pull Request 的方式提交回原始專案，與 main branch 保持同步。
 
-## Features
+**原始專案**：[github.com/bpbase/orbcharts](https://github.com/bpbase/orbcharts)  
+**維護者**：[upstairs0102](https://github.com/upstairs0102)
 
-### (1) 6 Major Data Formats
+---
 
-OrbCharts is centered around 6 "data formats", each corresponding to unique visualizations. You can manipulate the data through parameters - filtering, axis transformation, scaling, etc., dynamically mapping to the chart's visual presentation.
+## 本 fork 的用途
 
-### (2) Modular Plugins
+此分支主要用途為：
 
-All chart elements are embedded plugins that can be dynamically extended or replaced within the same data category, stacking or expanding functionality like building blocks.
+- 作為個人開發與測試的工作空間
+- 嘗試實驗性功能或架構調整
+- 提交改進至原始專案，維持與主線同步
 
-### (3) Based on D3.js and RxJS
+⚠️ **本 repo 並非替代版本，也不會與原始 API 分歧，請以原始專案為主要使用來源。**
 
-To create the most "data-driven" chart design framework, D3.js and RxJS are used as the main development technologies. Both are very popular libraries in the front-end development field, with high application and expansion potential.
+---
 
-## Get Started!
+## 貢獻與交流
 
-### Installation
+若您希望參與開發、測試功能，或有建議與回饋，歡迎開 issue 或提出 Pull Request。  
+穩定的功能與修正將會定期貢獻至主專案。
 
-OrbCharts supports CDN downloads and npm installation, is not limited to specific front-end frameworks, and supports both JavaScript and TypeScript development environments.
+---
 
-Here are several installation methods:
+## 授權條款
 
-1. npm installation
-
-```sh
-npm i orbcharts
-```
-
-2. ESM format CDN download
-
-```html
-<script type="module">
-import * as orbcharts from 'https://cdn.jsdelivr.net/npm/orbcharts@3.0.8/+esm'
-</script>
-```
-
-3. UMD format CDN download
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/orbcharts@3.0.8/dist/orbcharts.umd.min.js"></script>
-```
-
-### Execution
-
-This is an executable program to start creating your first pie chart:
-
-```js
-import { SeriesChart, Pie, PRESET_PIE_BASIC } from 'orbcharts'
-
-const element = document.querySelector('#chart')
-
-const chart = new SeriesChart(element, {
-  preset: PRESET_PIE_BASIC
-})
-
-chart.plugins$.next([new Pie()])
-
-chart.data$.next([
-  [80,120,45],
-  [50,30,15,28],
-  [55,13,38,10,5]
-])
-
-```
-
-## License
-
-OrbCharts is released under the [Apache License 2.0](https://github.com/BPbase/orbcharts/blob/main/LICENSE).
+本專案繼承原始 OrbCharts 專案的授權條款 [Apache License 2.0](https://github.com/BPbase/orbcharts/blob/main/LICENSE)。
