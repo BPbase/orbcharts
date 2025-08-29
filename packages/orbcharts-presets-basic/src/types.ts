@@ -1,6 +1,7 @@
 import type {
   // -- series --
   BubblesParams,
+  IndicatorParams,
   PieParams,
   PieEventTextsParams,
   PieLabelsParams,
@@ -77,6 +78,7 @@ import type { DeepPartial } from '../lib/core-types'
 // -- series --
 // series的全部plugin參數
 export type PresetSeriesPluginParams = PresetBubblesParams
+  & PresetIndicatorParams
   & PresetPieParams
   & PresetPieEventTextsParams
   & PresetPieLabelsParams
@@ -87,6 +89,10 @@ export type PresetSeriesPluginParams = PresetBubblesParams
 
 export interface PresetBubblesParams {
   Bubbles: DeepPartial<BubblesParams>
+}
+
+export interface PresetIndicatorParams {
+  Indicator: DeepPartial<IndicatorParams>
 }
 
 export interface PresetPieParams {

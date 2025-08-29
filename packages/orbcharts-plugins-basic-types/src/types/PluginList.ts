@@ -8,6 +8,7 @@ export type PluginListSeries = 'Bubbles'
   | 'RoseLabels'
   | 'SeriesLegend'
   | 'SeriesTooltip'
+  | 'Indicator'
 
 export type PluginListGrid = 'Bars'
   | 'BarsPN'
