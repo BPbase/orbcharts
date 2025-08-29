@@ -2,7 +2,7 @@
 
 ![logo - light mode](https://orbcharts.blueplanet.com.tw/images/logo_light_temp2.png)
 
-OrbCharts is a "data-driven JavaScript chart library" that currently supports 6 data types, 23 chart types, 50 plugins, and 100 preset style combinations.
+OrbCharts is a "data-driven JavaScript chart library" that currently supports 6 data types, 23 chart types, 51 plugins, and 101 preset style combinations.
 
 [Official Website](https://orbcharts.blueplanet.com.tw)
 

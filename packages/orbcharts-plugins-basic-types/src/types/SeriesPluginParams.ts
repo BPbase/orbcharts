@@ -108,3 +108,13 @@ export interface SeriesTooltipParams {
     ) => string[] | string
   )
 }
+
+export interface IndicatorParams {
+  startAngle: number
+  endAngle: number
+  radius: number
+  // indicatorType: 'line' | 'needle' | 'pin' | 'triangle'
+  size: number
+  colorType: ColorType
+  value: number
+}

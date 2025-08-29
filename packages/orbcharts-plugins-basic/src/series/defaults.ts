@@ -7,7 +7,8 @@ import type {
   RoseParams,
   RoseLabelsParams,
   SeriesLegendParams,
-  SeriesTooltipParams
+  SeriesTooltipParams,
+  IndicatorParams
 } from '../../lib/plugins-basic-types'
 
   
@@ -222,3 +223,14 @@ DEFAULT_SERIES_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, u
   \${datumSvg}
 </g>\`
 }`
+
+export const DEFAULT_INDICATOR_PARAMS: IndicatorParams = {
+  // startAngle: 0,
+  // endAngle: Math.PI * 2,
+  startAngle: - Math.PI / 2,
+  endAngle: Math.PI / 2,
+  radius: 0.6,
+  size: 20,
+  colorType: 'label',
+  value: 0
+}

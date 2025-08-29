@@ -1,6 +1,7 @@
 export * from './defaults'
 // export * from './types'
 export { Bubbles } from './plugins/Bubbles'
+export { Indicator } from './plugins/Indicator'
 export { Pie } from './plugins/Pie'
 export { PieEventTexts } from './plugins/PieEventTexts'
 export { PieLabels } from './plugins/PieLabels'

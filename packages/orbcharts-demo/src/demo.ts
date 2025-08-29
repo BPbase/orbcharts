@@ -116,6 +116,14 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             allPluginNames: ['Pie', 'PieLabels', 'SeriesLegend', 'SeriesTooltip'],
             getData: () => import('./data/seriesData2')
           },
+          {
+            title: 'PRESET_PIE_GAUGE',
+            presetName: 'PRESET_PIE_GAUGE',
+            description: 'Gauge chart',
+            descriptionZh: '儀表圖',
+            allPluginNames: ['Pie', 'Indicator', 'PieEventTexts', 'SeriesLegend', 'SeriesTooltip'],
+            getData: () => import('./data/seriesData4')
+          },
           // {
           //   title: 'PRESET_SERIES_DESC',
           //   presetName: 'PRESET_SERIES_DESC',
