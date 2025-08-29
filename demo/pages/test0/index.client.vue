@@ -51,17 +51,6 @@ onMounted(() => {
     }
   })
 
-  // chart.dataFormatter$.next({
-  //   grid: {
-  //     groupAxis: {
-  //       position: 'left'
-  //     },
-  //     valueAxis: {
-  //       position: 'bottom'
-  //     }
-  //   }
-  // })
-
   const pie = new Pie()
 
   const seriesLegend = new SeriesLegend()
@@ -82,26 +71,28 @@ onMounted(() => {
     //   return true
     // }
     seriesLabels: ['0-10%', '10-20%', '20-30%', '30-40%', '40-50%'],
-    separateLabel: false
+    // separateSeries: true
   })
 
   const indicator = new Indicator()
-  
+  // indicator.params$.next({
+  //   value: 1950
+  // })
   setTimeout(() => {
     indicator.params$.next({
-      value: 70
+      value: 970
     })
 
     setTimeout(() => {
       indicator.params$.next({
-        value: 85
+        value: 1550
       })
     }, 1000)
   }, 1000)
   
   chart.plugins$.next([indicator, pie, seriesLegend, new SeriesTooltip()])
   
-  chart.data$.next([20, 20, 20, 20, 20])
+  chart.data$.next(seriesData4)
   
   
 

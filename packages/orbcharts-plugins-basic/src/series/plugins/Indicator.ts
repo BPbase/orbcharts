@@ -139,10 +139,13 @@ function createEachGraphic (pluginName: string, context: {
   const angle$ = combineLatest({
     value: value$,
     valueToAngle: valueToAngle$,
+    containerValueSum: containerValueSum$,
   }).pipe(
     switchMap(async d => d),
-    map(({ value, valueToAngle }) => {
-      return valueToAngle(value)
+    map(({ value, valueToAngle, containerValueSum }) => {
+      // value 限制在 0 ~ containerValueSum 之間
+      const validValue = Math.max(Math.min(value, containerValueSum), 0)
+      return valueToAngle(validValue)
     }),
     distinctUntilChanged()
   )
@@ -162,30 +165,33 @@ function createEachGraphic (pluginName: string, context: {
   )
 
   // indicator 的 value 對應到 data 區間
-  const valueStackedIndex$ = combineLatest({
+  const valueSeriesIndex$ = combineLatest({
     value: value$,
     containerVisibleComputedSortedData: context.containerVisibleComputedSortedData$,
   }).pipe(
     switchMap(async d => d),
     map(({ value, containerVisibleComputedSortedData }) => {
-      let valueIndex = 0
+      let seriesIndex = 0
       let stackedValue = 0
       for (let i = 0; i < containerVisibleComputedSortedData.length; i++) {
         const datumValue = containerVisibleComputedSortedData[i].value ?? 0
         stackedValue += datumValue
         if (stackedValue >= value) {
-          valueIndex = i
+          seriesIndex = containerVisibleComputedSortedData[i].seriesIndex
           break
         }
+        if (i === containerVisibleComputedSortedData.length - 1) {
+          seriesIndex = containerVisibleComputedSortedData[i].seriesIndex
+        }
       }
-      return valueIndex
+      return seriesIndex
     }),
     distinctUntilChanged()
   )
 
   const graphicColor$ = combineLatest({
     value: value$,
-    valueStackedIndex: valueStackedIndex$,
+    valueSeriesIndex: valueSeriesIndex$,
     // containerVisibleComputedSortedData: context.containerVisibleComputedSortedData$,
     fullParams: context.fullParams$,
     fullChartParams: context.fullChartParams$,
@@ -193,7 +199,7 @@ function createEachGraphic (pluginName: string, context: {
     switchMap(async d => d),
     map(data => {
       const labelColor = data.fullParams.colorType === 'label'
-        ? data.fullChartParams.colors[data.fullChartParams.colorScheme].label[data.valueStackedIndex]
+        ? data.fullChartParams.colors[data.fullChartParams.colorScheme].label[data.valueSeriesIndex]
         : '' // 忽略
 
       const datum: ComputedDatumBaseSeries = {
