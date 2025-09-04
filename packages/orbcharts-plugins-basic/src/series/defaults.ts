@@ -230,7 +230,9 @@ export const DEFAULT_INDICATOR_PARAMS: IndicatorParams = {
   startAngle: - Math.PI / 2,
   endAngle: Math.PI / 2,
   radius: 0.6,
-  size: 20,
+  indicatorType: 'needle',
+  size: 10,
   colorType: 'label',
-  value: 0
+  // autoHighlight: false,
+  value: 0,
 }

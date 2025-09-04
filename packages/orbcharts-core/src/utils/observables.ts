@@ -53,7 +53,7 @@ interface HighlightTargetValue {
   seriesLabel: string | null
   groupLabel: string | null
   categoryLabel: string | null
-  highlightDefault: string | null
+  // highlightDefault: string | null
 }
 
 // 通用 highlight Observable
@@ -67,16 +67,16 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
   // 預設的highlight
   const highlightDefault$: Observable<HighlightTargetValue> = fullChartParams$.pipe(
     takeUntil(destroy$),
-    map(d => d.highlightDefault),
+    map(d => d.highlightDefault || null),
     distinctUntilChanged(),
     map(highlightDefault => {
       return {
-        id: null,
-        label: null,
-        seriesLabel: null,
-        groupLabel: null,
-        categoryLabel: null,
-        highlightDefault
+        id: highlightDefault,
+        label: highlightDefault,
+        seriesLabel: highlightDefault,
+        groupLabel: highlightDefault,
+        categoryLabel: highlightDefault,
+        // highlightDefault
       } as HighlightTargetValue
     }),
     shareReplay(1)
@@ -106,7 +106,7 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
               seriesLabel: highlightTarget === 'series' ? d.datum.seriesLabel : null,
               groupLabel: highlightTarget === 'group' ? d.datum.groupLabel : null,
               categoryLabel: highlightTarget === 'category' ? d.datum.categoryLabel : null,
-              highlightDefault: null
+              // highlightDefault: null
             } as HighlightTargetValue
             : {
               id: null,
@@ -114,7 +114,7 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
               seriesLabel: null,
               groupLabel: null,
               categoryLabel: null,
-              highlightDefault: null
+              // highlightDefault: null
             } as HighlightTargetValue
         })
       )
@@ -178,7 +178,6 @@ export const highlightObservable = <T extends ChartType, D>({ datumList$, fullCh
       } else if (data.fullChartParams.highlightTarget === 'category') {
         datumList = getCategoryIds(data.datumList as ComputedDatumTypeMap<T>[], data.target.categoryLabel)
       }
-      
       subscriber.next(datumList as D[])
     })
 

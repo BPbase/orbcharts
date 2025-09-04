@@ -37,7 +37,7 @@ export interface PieParams {
 }
 
 export interface PieEventTextsParams {
-  renderFn: (d: EventSeries) => string[] | string
+  renderFn: (d: EventSeries) => string[] | string | null
   textAttrs: Array<{ [key:string]: string | number }>
   textStyles: Array<{ [key:string]: string | number }>
 }
@@ -113,8 +113,9 @@ export interface IndicatorParams {
   startAngle: number
   endAngle: number
   radius: number
-  // indicatorType: 'line' | 'needle' | 'pin' | 'triangle'
+  indicatorType: 'line' | 'needle' | 'pin' | 'triangle'
   size: number
   colorType: ColorType
+  // autoHighlight: boolean
   value: number
 }
