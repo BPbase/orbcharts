@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { SeriesChart } from '../../../packages/orbcharts-core/src'
-import { Indicator, Pie, SeriesTooltip, SeriesLegend } from '../../../packages/orbcharts-plugins-basic/src'
+import { Indicator, Pie, SeriesTooltip, SeriesLegend, PieEventTexts } from '../../../packages/orbcharts-plugins-basic/src'
 import seriesData4 from '../../../packages/orbcharts-demo/src/data/seriesData4'
 
 onMounted(() => {
@@ -29,7 +29,9 @@ onMounted(() => {
               "#7E7D7D"
             ]
           }
-        }
+        },
+        // highlightTarget: 'series',
+        // highlightDefault: '0-10%'
       },
       dataFormatter: {
         // separateSeries: true,
@@ -53,6 +55,8 @@ onMounted(() => {
 
   const pie = new Pie()
 
+  const pieEventTexts = new PieEventTexts()
+
   const seriesLegend = new SeriesLegend()
 
   
@@ -75,22 +79,23 @@ onMounted(() => {
   })
 
   const indicator = new Indicator()
-  // indicator.params$.next({
-  //   value: 1950
-  // })
-  setTimeout(() => {
-    indicator.params$.next({
-      value: 970
-    })
+  indicator.params$.next({
+    // autoHighlight: true,
+    value: 1950
+  })
+  // setTimeout(() => {
+  //   indicator.params$.next({
+  //     value: 970
+  //   })
 
-    setTimeout(() => {
-      indicator.params$.next({
-        value: 1550
-      })
-    }, 1000)
-  }, 1000)
+  //   setTimeout(() => {
+  //     indicator.params$.next({
+  //       value: 1550
+  //     })
+  //   }, 1000)
+  // }, 1000)
   
-  chart.plugins$.next([indicator, pie, seriesLegend, new SeriesTooltip()])
+  chart.plugins$.next([indicator, pie, pieEventTexts, seriesLegend, new SeriesTooltip()])
   
   chart.data$.next(seriesData4)
   

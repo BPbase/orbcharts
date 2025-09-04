@@ -1,11 +1,11 @@
-import type { PresetPartial } from '../../lib/core-types'
+import type { PresetPartial, EventSeries } from '../../lib/core-types'
 import type { PresetSeriesPluginParams, PresetNoneDataPluginParams } from '../types'
 
-export const PRESET_PIE_GAUGE: PresetPartial<'series', Partial<PresetSeriesPluginParams>
+export const PRESET_PIE_INDICATOR_TRIANGLE: PresetPartial<'series', Partial<PresetSeriesPluginParams>
 & Partial<PresetNoneDataPluginParams>> = {
-  name: 'PRESET_PIE_GAUGE',
-  description: 'Gauge chart',
-  descriptionZh: '儀表圖',
+  name: 'PRESET_PIE_INDICATOR_TRIANGLE',
+  description: 'Triangle indicator chart',
+  descriptionZh: '三角指針圖',
   chartParams: {
     // 和 Rose 一樣的配色
     colors: {
@@ -44,6 +44,10 @@ export const PRESET_PIE_GAUGE: PresetPartial<'series', Partial<PresetSeriesPlugi
       bottom: 0,
       left: 60
     },
+    styles: {
+      // unhighlightedOpacity: 1
+    },
+    highlightTarget: 'datum',
   },
   pluginParams: {
     Pie: {
@@ -57,7 +61,7 @@ export const PRESET_PIE_GAUGE: PresetPartial<'series', Partial<PresetSeriesPlugi
     PieEventTexts: {
       textAttrs: [
         {
-          "transform": "translate(0, -24)"
+          "transform": "translate(0, -36)"
         }
       ],
       textStyles: [
@@ -69,12 +73,18 @@ export const PRESET_PIE_GAUGE: PresetPartial<'series', Partial<PresetSeriesPlugi
           "font-size": 24,
           "fill": "#000"
         }
-      ]
+      ],
+      renderFn: (eventData: EventSeries) => {
+        return eventData.mark ?? null
+      },
     },
     Indicator: {
       startAngle: - Math.PI / 2,
       endAngle: Math.PI / 2,
       radius: 0.65,
+      indicatorType: 'triangle',
+      size: 20,
+      // autoHighlight: true,
       value: 0
     },
     SeriesLegend: {

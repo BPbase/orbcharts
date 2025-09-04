@@ -151,6 +151,93 @@ function renderPie ({ selection, data, arc, pathClassName, fullParams, fullChart
   return pathSelection
 }
 
+// function renderGauge ({ selection, data, arc, pathClassName, fullParams, fullChartParams, axisWidth }: {
+//   selection: d3.Selection<SVGGElement, unknown, any, unknown>
+//   data: PieDatum[]
+//   arc: d3.Arc<any, d3.DefaultArcObject>
+//   pathClassName: string
+//   fullParams: PieParams
+//   fullChartParams: ChartParams
+//   axisWidth: number
+// }) {
+//   const gaugeClassName = getClassName('Gauge', 'tick')
+//   const gaugeLabelClassName = getClassName('Gauge', 'label')
+  
+//   // 計算總角度範圍
+//   const totalAngle = fullParams.endAngle - fullParams.startAngle
+//   const totalTicks = 20 // 總刻度數量
+//   const tickInterval = totalAngle / totalTicks
+  
+//   // 計算刻度資料
+//   const tickData = Array.from({ length: totalTicks + 1 }, (_, i) => {
+//     const angle = fullParams.startAngle + (i * tickInterval)
+//     const isLongTick = i % 5 === 0 // 每5格一個長線
+//     return {
+//       angle,
+//       isLongTick,
+//       value: Math.round((i / totalTicks) * 100) // 0-100的數值
+//     }
+//   })
+  
+//   // 計算實際像素半徑
+//   const arcScale = d3.scaleLinear()
+//     .domain([0, 1])
+//     .range([0, axisWidth / 2])
+  
+//   const outerRadius = arcScale(fullParams.outerRadius)
+//   const innerRadius = arcScale(fullParams.innerRadius)
+//   const longTickLength = (outerRadius - innerRadius) * 0.3
+//   const shortTickLength = (outerRadius - innerRadius) * 0.15
+  
+//   // 繪製刻度線
+//   const tickSelection = selection
+//     .selectAll(`line.${gaugeClassName}`)
+//     .data(tickData)
+//     .join('line')
+//     .classed(gaugeClassName, true)
+//     .attr('x1', d => {
+//       const radius = outerRadius
+//       return Math.cos(d.angle - Math.PI / 2) * radius
+//     })
+//     .attr('y1', d => {
+//       const radius = outerRadius
+//       return Math.sin(d.angle - Math.PI / 2) * radius
+//     })
+//     .attr('x2', d => {
+//       const radius = outerRadius - (d.isLongTick ? longTickLength : shortTickLength)
+//       return Math.cos(d.angle - Math.PI / 2) * radius
+//     })
+//     .attr('y2', d => {
+//       const radius = outerRadius - (d.isLongTick ? longTickLength : shortTickLength)
+//       return Math.sin(d.angle - Math.PI / 2) * radius
+//     })
+//     .attr('stroke', fullChartParams.colors[fullChartParams.colorScheme].primary)
+//     .attr('stroke-width', d => d.isLongTick ? 2 : 1)
+//     .attr('stroke-linecap', 'round')
+  
+//   // 繪製數字標籤（只在長線上）
+//   const labelSelection = selection
+//     .selectAll(`text.${gaugeLabelClassName}`)
+//     .data(tickData.filter(d => d.isLongTick))
+//     .join('text')
+//     .classed(gaugeLabelClassName, true)
+//     .attr('x', d => {
+//       const radius = outerRadius + 15 // 稍微往外一點
+//       return Math.cos(d.angle - Math.PI / 2) * radius
+//     })
+//     .attr('y', d => {
+//       const radius = outerRadius + 15
+//       return Math.sin(d.angle - Math.PI / 2) * radius
+//     })
+//     .attr('text-anchor', 'middle')
+//     .attr('dominant-baseline', 'middle')
+//     .attr('fill', fullChartParams.colors[fullChartParams.colorScheme].primary)
+//     .attr('font-size', '12px')
+//     .text(d => d.value)
+  
+//   return { tickSelection, labelSelection }
+// }
+
 function highlight ({ pathSelection, ids, fullChartParams, arc, arcHighlight }: {
   pathSelection: d3.Selection<SVGPathElement, PieDatum, any, any>
   ids: string[]
@@ -314,6 +401,14 @@ function createEachPie (pluginName: string, context: {
     distinctUntilChanged()
   )
 
+  // highlight的對象（不做成observable是因為要避免觸發監聽）
+  let seriesHighlight: ComputedDatumSeries[] = []
+  context.seriesHighlight$
+    .pipe(
+      takeUntil(destroy$)
+    )
+    .subscribe(d => seriesHighlight = d)
+
   const pathSelection$ = new Observable<d3.Selection<SVGPathElement, PieDatum, any, any>>(subscriber => {
     combineLatest({
       pieData: pieData$,
@@ -359,6 +454,16 @@ function createEachPie (pluginName: string, context: {
               fullParams: data.fullParams,
               fullChartParams: data.fullChartParams,
             })
+
+            // renderGauge({
+            //   selection: context.containerSelection,
+            //   data: tweenData,
+            //   arc: data.arc,
+            //   pathClassName,
+            //   fullParams: data.fullParams,
+            //   fullChartParams: data.fullChartParams,
+            //   axisWidth: 500
+            // })
   
             // @Q@ 想盡量減清效能負擔所以取消掉
             // context.event$.next({
@@ -422,13 +527,12 @@ function createEachPie (pluginName: string, context: {
             eventName: 'transitionEnd',
             event: undefined,
             highlightTarget: data.highlightTarget,
-            datum: null,
+            data: data.computedData,
             series: [],
             seriesIndex: -1,
             seriesLabel: '',
-            data: data.computedData
+            datum: null
           })
-  
           
         })
 

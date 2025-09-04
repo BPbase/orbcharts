@@ -52,8 +52,9 @@ export interface EventBase<T extends ChartType> {
   datum: ComputedDatumTypeMap<T> | null
   data: ComputedDataTypeMap<T>
   tween?: number
+  mark?: any // for custom use (work arround)
 }
-
+  
 export interface EventBaseSeriesValue {
   // data: ComputedDataTypeMap<T>
   series: ComputedDatumTypeMap<'series'>[]

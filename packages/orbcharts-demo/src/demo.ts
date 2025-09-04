@@ -117,10 +117,34 @@ export const DEMO_LIST: DemoChartTypeItem<any>[] = [
             getData: () => import('./data/seriesData2')
           },
           {
-            title: 'PRESET_PIE_GAUGE',
-            presetName: 'PRESET_PIE_GAUGE',
-            description: 'Gauge chart',
-            descriptionZh: '儀表圖',
+            title: 'PRESET_PIE_INDICATOR_LINE',
+            presetName: 'PRESET_PIE_INDICATOR_LINE',
+            description: 'Line indicator chart',
+            descriptionZh: '線條指針圖',
+            allPluginNames: ['Pie', 'Indicator', 'PieEventTexts', 'SeriesLegend', 'SeriesTooltip'],
+            getData: () => import('./data/seriesData4')
+          },
+          {
+            title: 'PRESET_PIE_INDICATOR_NEEDLE',
+            presetName: 'PRESET_PIE_INDICATOR_NEEDLE',
+            description: 'Needle indicator chart',
+            descriptionZh: '指針圖',
+            allPluginNames: ['Pie', 'Indicator', 'PieEventTexts', 'SeriesLegend', 'SeriesTooltip'],
+            getData: () => import('./data/seriesData4')
+          },
+          {
+            title: 'PRESET_PIE_INDICATOR_PIN',
+            presetName: 'PRESET_PIE_INDICATOR_PIN',
+            description: 'Pin indicator chart',
+            descriptionZh: '大頭指針圖',
+            allPluginNames: ['Pie', 'Indicator', 'PieEventTexts', 'SeriesLegend', 'SeriesTooltip'],
+            getData: () => import('./data/seriesData4')
+          },
+          {
+            title: 'PRESET_PIE_INDICATOR_TRIANGLE',
+            presetName: 'PRESET_PIE_INDICATOR_TRIANGLE',
+            description: 'Triangle indicator chart',
+            descriptionZh: '三角指針圖',
             allPluginNames: ['Pie', 'Indicator', 'PieEventTexts', 'SeriesLegend', 'SeriesTooltip'],
             getData: () => import('./data/seriesData4')
           },

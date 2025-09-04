@@ -87,11 +87,14 @@ function renderText (
 function createTextData ({ eventData, renderFn, textAttrs, textStyles }: {
   eventData: EventSeries,
   // t: number,
-  renderFn: (d: EventSeries) => string[] | string
+  renderFn: (d: EventSeries) => string[] | string | null
   textAttrs: Array<{ [key:string]: string | number }>
   textStyles: Array<{ [key:string]: string | number }>
-}): TextDatum[] {
-  const callbackText = renderFn(eventData)
+}): TextDatum[] | null {
+  const callbackText: string[] | string | null = renderFn(eventData)
+  if (callbackText === null) {
+    return null
+  }
   const textArr = Array.isArray(callbackText) ? callbackText : [callbackText]
   return textArr.map((d, i) => {
     return {
@@ -142,6 +145,14 @@ function createEachPieEventTexts (pluginName: string, context: {
     map(d => d.highlightTarget),
     distinctUntilChanged()
   )
+  
+  // highlight的對象（不做成observable是因為要避免觸發監聽）
+  let seriesHighlight: ComputedDatumSeries[] = []
+  context.seriesHighlight$
+    .pipe(
+      takeUntil(destroy$)
+    )
+    .subscribe(d => seriesHighlight = d)
 
   combineLatest({
     computedData: context.computedData$,
@@ -151,7 +162,10 @@ function createEachPieEventTexts (pluginName: string, context: {
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
+    // first()
   ).subscribe(data => {
+
+    // console.log('PieEventTexts data', data)
 
     context.containerSelection
       .transition('move')
@@ -168,10 +182,10 @@ function createEachPieEventTexts (pluginName: string, context: {
               tween: t,
               highlightTarget: data.highlightTarget,
               data: data.computedData,
-              series: [],
-              seriesIndex: -1,
-              seriesLabel: '',
-              datum: null
+              series: seriesHighlight,
+              seriesIndex: seriesHighlight[0] ? seriesHighlight[0].seriesIndex : -1,
+              seriesLabel: seriesHighlight[0] ? seriesHighlight[0].seriesLabel : '',
+              datum: seriesHighlight[0] || null
             },
             // eventName: 'transitionMove',
             // t,
@@ -179,7 +193,9 @@ function createEachPieEventTexts (pluginName: string, context: {
             textAttrs: data.fullParams.textAttrs!,
             textStyles: data.fullParams.textStyles!
           })
-          centerTextSelection = renderText(context.containerSelection, renderData)
+          if (renderData != null) {
+            centerTextSelection = renderText(context.containerSelection, renderData)
+          }
         }
       })
       .on('end', (event, datum) => {
@@ -192,10 +208,10 @@ function createEachPieEventTexts (pluginName: string, context: {
             tween: 1,
             highlightTarget: data.highlightTarget,
             data: data.computedData,
-            series: [],
-            seriesIndex: -1,
-            seriesLabel: '',
-            datum: null
+            series: seriesHighlight,
+            seriesIndex: seriesHighlight[0] ? seriesHighlight[0].seriesIndex : -1,
+            seriesLabel: seriesHighlight[0] ? seriesHighlight[0].seriesLabel : '',
+            datum: seriesHighlight[0] || null
           },
           // eventName: 'transitionMove',
           // t: 1,
@@ -203,8 +219,11 @@ function createEachPieEventTexts (pluginName: string, context: {
           textAttrs: data.fullParams.textAttrs!,
           textStyles: data.fullParams.textStyles!
         })
-        centerTextSelection = renderText(context.containerSelection, renderData)
+        if (renderData != null) {
+          centerTextSelection = renderText(context.containerSelection, renderData)
+        }
 
+        // 監聽 highlight
         if (storeEventSubscription) {
           storeEventSubscription.unsubscribe()
         }
@@ -217,7 +236,9 @@ function createEachPieEventTexts (pluginName: string, context: {
               textAttrs: data.fullParams.textAttrs!,
               textStyles: data.fullParams.textStyles!
             })
-            centerTextSelection = renderText(context.containerSelection, renderData)
+            if (renderData != null) {
+              centerTextSelection = renderText(context.containerSelection, renderData)
+            }
           })
       })
   })
