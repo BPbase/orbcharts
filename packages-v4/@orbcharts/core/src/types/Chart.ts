@@ -16,21 +16,14 @@ export interface ChartDefaults {
   dataEncoding: Partial<DataEncoding>
 }
 
-// // 定義可擴展的 context 類型
-// export interface ExtendableContextValue {
-//   // 可以是 Observable, Subject, 或其他任何值
-//   [key: string]: Observable<any> | Subject<any> | Function | any
-// }
-
 export interface ChartOptions {
   width: number | 'auto'
   height: number | 'auto'
   defaults: ChartDefaults
-  // extendContext?: (context: Readonly<ChartContext>) => ExtendableContextValue
 }
 
 export interface CreateChart {
-  (element: HTMLElement | Element, options?: DeepPartial<ChartOptions> | undefined): ChartEntity
+  (element: HTMLElement | Element, options?: DeepPartial<ChartOptions>): ChartEntity
 }
 
 export interface ChartEntity {

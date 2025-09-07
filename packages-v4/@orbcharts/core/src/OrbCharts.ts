@@ -27,20 +27,6 @@ export class OrbCharts implements ChartEntity {
   context: ChartContext
 
   constructor(element: HTMLElement | Element, options?: DeepPartial<ChartOptions>) {
-    const chart = createChart(element, options)
-    this.svgSelection = chart.svgSelection
-    this.canvasSelection = chart.canvasSelection
-    this.setData = chart.setData
-    this.setDataEncoding = chart.setDataEncoding
-    this.updateDataEncoding = chart.updateDataEncoding
-    this.replaceDataEncoding = chart.replaceDataEncoding
-    this.setPlugins = chart.setPlugins
-    this.addPlugin = chart.addPlugin
-    this.removePlugin = chart.removePlugin
-    this.setTheme = chart.setTheme
-    this.updateTheme = chart.updateTheme
-    this.replaceTheme = chart.replaceTheme
-    this.destroy = chart.destroy
-    this.context = chart.context
+    return createChart(element, options)
   }
 }

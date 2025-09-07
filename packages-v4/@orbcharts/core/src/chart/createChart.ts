@@ -28,61 +28,6 @@ import {
   createValidatorWarningMessage
 } from '../utils'
 
-function elementValidator (element: HTMLElement | Element): ValidatorResult {
-  const result = validateObject({ element }, {
-    element: {
-      toBe: 'Dom',
-      test: (value: any) => isDom(value)
-    },
-  })
-  
-  return result
-}
-
-function chartOptionsValidator (chartOptionsPartial: DeepPartial<ChartOptions>): ValidatorResult {
-  if (!chartOptionsPartial) {
-    // chartOptions 可為空值
-    return { status: 'success', columnName: '', expectToBe: '' }
-  }
-  const result = validateObject(chartOptionsPartial, {
-    width: {
-      toBe: '"auto" | number',
-      test: (value: any) => value === 'auto' || typeof value === 'number'
-    },
-    height: {
-      toBe: '"auto" | number',
-      test: (value: any) => value === 'auto' || typeof value === 'number'
-    },
-    defaults: {
-      toBeTypes: ['object']
-    }
-  })
-  
-  return result
-}
-
-function createSvgSelection (element: HTMLElement | Element) {
-  d3.select(element).selectAll('svg').remove()
-  const svgSelection = d3.select(element)
-    .append('svg')
-    .attr('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-    .attr('xmls', 'http://www.w3.org/2000/svg')
-    .attr('version', '1.1')
-    .style('position', 'absolute')
-    .classed('orbcharts__svg-root', true)
-
-  return svgSelection
-}
-
-function createCanvasSelection (element: HTMLElement | Element) {
-  d3.select(element).selectAll('canvas').remove()
-  const canvasSelection = d3.select(element)
-    .append('canvas')
-    .style('position', 'absolute')
-    .classed('orbcharts__canvas-root', true)
-
-  return canvasSelection
-}
 
 const DEFAULT_DATA_ENCODING: DataEncoding = {
   dataset: {
@@ -178,6 +123,63 @@ const DEFAULT_THEME: Theme = {
   },
   fontSize: '0.875rem'
 }
+
+function elementValidator (element: HTMLElement | Element): ValidatorResult {
+  const result = validateObject({ element }, {
+    element: {
+      toBe: 'Dom',
+      test: (value: any) => isDom(value)
+    },
+  })
+  
+  return result
+}
+
+function chartOptionsValidator (chartOptionsPartial: DeepPartial<ChartOptions>): ValidatorResult {
+  if (!chartOptionsPartial) {
+    // chartOptions 可為空值
+    return { status: 'success', columnName: '', expectToBe: '' }
+  }
+  const result = validateObject(chartOptionsPartial, {
+    width: {
+      toBe: '"auto" | number',
+      test: (value: any) => value === 'auto' || typeof value === 'number'
+    },
+    height: {
+      toBe: '"auto" | number',
+      test: (value: any) => value === 'auto' || typeof value === 'number'
+    },
+    defaults: {
+      toBeTypes: ['object']
+    }
+  })
+  
+  return result
+}
+
+function createSvgSelection (element: HTMLElement | Element) {
+  d3.select(element).selectAll('svg').remove()
+  const svgSelection = d3.select(element)
+    .append('svg')
+    .attr('xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    .attr('xmls', 'http://www.w3.org/2000/svg')
+    .attr('version', '1.1')
+    .style('position', 'absolute')
+    .classed('orbcharts__svg-root', true)
+
+  return svgSelection
+}
+
+function createCanvasSelection (element: HTMLElement | Element) {
+  d3.select(element).selectAll('canvas').remove()
+  const canvasSelection = d3.select(element)
+    .append('canvas')
+    .style('position', 'absolute')
+    .classed('orbcharts__canvas-root', true)
+
+  return canvasSelection
+}
+
 
 export const createChart: CreateChart = (element, options) => {
   try {
@@ -309,9 +311,9 @@ export const createChart: CreateChart = (element, options) => {
       // add one
       pluginsInstance$.next([...pluginsInstance$.getValue(), plugin])
     }
-    function removePlugin (id: string) {
-      // remove one by id
-      pluginsInstance$.next(pluginsInstance$.getValue().filter(plugin => plugin.id !== id))
+    function removePlugin (name: string) {
+      // remove one by name
+      pluginsInstance$.next(pluginsInstance$.getValue().filter(plugin => plugin.name !== name))
     }
     function setTheme (theme: DeepPartial<Theme>) {
       // replace all
