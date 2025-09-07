@@ -28,7 +28,7 @@ export type DataEncodingMultiValue = Array<{
 }>
 
 export interface DataEncodingColor {
-  from: 'auto' | 'series' | 'category' | 'value' | 'dataset' | string // string可自由定義欄位名稱
+  from: 'index' | 'series' | 'category' | 'dataset'
 }
 
 export interface DataEncoding {

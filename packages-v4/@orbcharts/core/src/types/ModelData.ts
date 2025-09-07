@@ -38,11 +38,6 @@ export interface ModelDatumGraphEdge extends ModelDatumBase {
   targetIndex: number // 目標節點在所有節點中的索引
 }
 
-export interface ModelDatumGraph {
-  nodes: ModelDatumGraphNode[]
-  edges: ModelDatumGraphEdge[]
-}
-
 export interface ModelDatumTree extends ModelDatumBase {
   parent: string | null // 父節點名稱
   parentIndex: number | null // 父節點在所有節點中的索引
@@ -54,8 +49,26 @@ export interface ModelDatumTree extends ModelDatumBase {
 export type ModelDatum<T extends ModelType> = T extends 'series' ? ModelDatumSeries
   : T extends 'grid' ? ModelDatumGrid
   : T extends 'multiValue' ? ModelDatumMultivariate
-  : T extends 'graph' ? ModelDatumGraph
+  : T extends 'graph' ? ModelDatumGraphNode
   : T extends 'tree' ? ModelDatumTree
   : unknown
 
-export type ModelData = ModelDatum<ModelType>[][]
+export type ModelDataSeries = ModelDatum<'series'>[][]
+
+export type ModelDataGrid = ModelDatum<'grid'>[][]
+
+export type ModelDataMultivariate = ModelDatum<'multivariate'>[][]
+
+export interface ModelDataGraph {
+  nodes: ModelDatumGraphNode[]
+  edges: ModelDatumGraphEdge[]
+}
+
+export type ModelDataTree = ModelDatum<'tree'>
+
+export type ModelData<T extends ModelType = ModelType> = T extends 'series' ? ModelDataSeries
+  : T extends 'grid' ? ModelDataGrid
+  : T extends 'multivariate' ? ModelDataMultivariate
+  : T extends 'graph' ? ModelDataGraph
+  : T extends 'tree' ? ModelDataTree
+  : unknown

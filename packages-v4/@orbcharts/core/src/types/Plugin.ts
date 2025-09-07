@@ -22,6 +22,8 @@ export interface CreatePlugin {
 }
 
 export interface PluginEntity<LayersConfig = Record<string, any>> {
+  id: string
+  
   // layer visibility controls (指令)
   show(ids: string[]): void
   hide(ids: string[]): void

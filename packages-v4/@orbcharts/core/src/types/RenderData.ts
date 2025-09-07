@@ -1,4 +1,4 @@
-import {
+import type {
   ModelType,
   ModelDatum
 } from './index'

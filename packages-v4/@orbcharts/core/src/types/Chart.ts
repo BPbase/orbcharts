@@ -1,6 +1,7 @@
-import type { Observable } from 'rxjs'
-import {
+import type { Observable, Subject } from 'rxjs'
+import type {
   DeepPartial,
+  ChartContext,
   DataEncoding,
   EventData,
   ModelData,
@@ -10,23 +11,32 @@ import {
   Theme
 } from './index'
 
-
 export interface ChartDefaults {
   theme: Theme
   dataEncoding: Partial<DataEncoding>
 }
 
+// // 定義可擴展的 context 類型
+// export interface ExtendableContextValue {
+//   // 可以是 Observable, Subject, 或其他任何值
+//   [key: string]: Observable<any> | Subject<any> | Function | any
+// }
+
 export interface ChartOptions {
   width: number | 'auto'
   height: number | 'auto'
   defaults: ChartDefaults
+  // extendContext?: (context: Readonly<ChartContext>) => ExtendableContextValue
 }
 
 export interface CreateChart {
-  (element: HTMLElement | Element, options?: DeepPartial<ChartOptions>): ChartEntity
+  (element: HTMLElement | Element, options?: DeepPartial<ChartOptions> | undefined): ChartEntity
 }
 
 export interface ChartEntity {
+  svgSelection: d3.Selection<SVGGElement, unknown, HTMLElement, any>
+  canvasSelection: d3.Selection<HTMLCanvasElement, unknown, HTMLElement, any>
+
   // Commands
   setData(data: RawData): void // replace
   setDataEncoding(partial: Partial<DataEncoding>): void // deep-merge with default
@@ -40,12 +50,7 @@ export interface ChartEntity {
   replaceTheme(full: Theme): void // replace all
   destroy(): void;
 
-  // Streams (read-only)
-  data$: Observable<RawData>
-  dataEncoding$: Observable<DataEncoding>
-  modelData$: Observable<ModelData>
-  plugins$: Observable<readonly PluginInfo[]> // 可觀察目前掛了哪些插件
-  theme$: Observable<Theme>
-  event$: Observable<{ data: EventData; event: Event }> // 互動事件
+  // context
+  context: ChartContext
 }
 

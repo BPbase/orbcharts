@@ -1,4 +1,5 @@
 export * from './Chart'
+export * from './ChartContext'
 export * from './DataEncoding'
 export * from './Event'
 export * from './Layers'

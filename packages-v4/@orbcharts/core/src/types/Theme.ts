@@ -13,5 +13,7 @@ export interface Theme {
     light: ThemeColorScheme,
     dark: ThemeColorScheme
   },
-  fontSize: string
+  fontSize: string | number
 }
+
+export type ColorType = 'none' | keyof ThemeColorScheme
