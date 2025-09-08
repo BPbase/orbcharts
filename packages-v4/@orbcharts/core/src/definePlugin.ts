@@ -3,10 +3,10 @@ import { createPlugin } from './plugin/createPlugin'
 export const definePlugin = <DefaultParams extends Record<string, any>>(config: DefinePluginConfig<DefaultParams>) => {
   return class Plugin implements PluginEntity<DefaultParams> {
     name: string
-    show: (ids: string[]) => void
-    hide: (ids: string[]) => void
-    toggle: (ids: string[]) => void
-    showOnly: (ids: string[]) => void
+    show: (names: (keyof DefaultParams)[]) => void
+    hide: (names: (keyof DefaultParams)[]) => void
+    toggle: (names: (keyof DefaultParams)[]) => void
+    showOnly: (name: keyof DefaultParams) => void
     setLayers: (partial: DeepPartial<DefaultParams>) => void
     updateLayers: (patch: DeepPartial<DefaultParams>) => void
     replaceLayers: (full: DefaultParams) => void

@@ -1,15 +1,15 @@
 import type {
-  DeepPartial,
-  ChartContext,
-  PluginInfo,
   PluginEntity,
 } from '../types'
-import { Observable } from 'rxjs'
-import type { DefinePluginConfig, ExtendableContextValue } from '../types/Plugin'
+import type { DefinePluginConfig, ExtendableContext } from '../types/Plugin'
 
 
 export const createPlugin = <DefaultParams>(config: DefinePluginConfig<DefaultParams>): PluginEntity<DefaultParams> => {
-  let params = { ...config.defaultParams } as DefaultParams
+  // let params = { ...config.defaultParams } as DefaultParams
+  let params: DefaultParams = config.layers.reduce((acc, layer) => {
+    acc[layer.name as keyof DefaultParams] = layer.defaultParams
+    return acc
+  }, {} as DefaultParams)
   // if (config.validator) {
   //   const validation = config.validator(params)
   //   if (!validation.valid) {
@@ -17,7 +17,7 @@ export const createPlugin = <DefaultParams>(config: DefinePluginConfig<DefaultPa
   //   }
   // }
 
-  // let contextExtension: ExtendableContextValue = {}
+  // let contextExtension: ExtendableContext = {}
   // if (config.extendContext) {
   //   contextExtension = config.extendContext
   // }
@@ -36,16 +36,16 @@ export const createPlugin = <DefaultParams>(config: DefinePluginConfig<DefaultPa
     // layerIndex: config.layerIndex,
     // contextExtension,
     // layer visibility controls
-    show: (ids: string[]) => {
+    show: (names: (keyof DefaultParams)[]) => {
       // implementation for showing layers
     },
-    hide: (ids: string[]) => {
+    hide: (names: (keyof DefaultParams)[]) => {
       // implementation for hiding layers
     },
-    toggle: (ids: string[]) => {
+    toggle: (names: (keyof DefaultParams)[]) => {
       // implementation for toggling layers
     },
-    showOnly: (ids: string[]) => {
+    showOnly: (name: (keyof DefaultParams)) => {
       // implementation for showing only specified layers
     },
     // layer params

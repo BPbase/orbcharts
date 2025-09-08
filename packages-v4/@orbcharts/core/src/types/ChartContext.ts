@@ -8,7 +8,7 @@ import type {
   EventData,
 } from './index'
 
-export interface ChartContext {
+export type ChartContext<ExtendContext extends Record<string, any> = {}> = {
   // rawData$: Observable<RawData>
   fullDataEncoding$: Observable<DataEncoding>
   seriesData$: Observable<ModelData<'series'>>
@@ -20,4 +20,4 @@ export interface ChartContext {
   fullTheme$: Observable<Theme>
   event$: Observable<{ data: EventData; event: Event }>
   eventTrigger$: Subject<{ data: EventData; event: Event }>
-}
+} & ExtendContext
