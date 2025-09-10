@@ -1,7 +1,11 @@
-import type { DeepPartial, DefinePluginConfig, PluginEntity } from './types'
+import type { DeepPartial, DefinePluginConfig, PluginEntity, ChartContext, ExtendableContext } from './types'
 import { createPlugin } from './plugin/createPlugin'
-export const definePlugin = <DefaultParams extends Record<string, any>>(config: DefinePluginConfig<DefaultParams>) => {
-  return class Plugin implements PluginEntity<DefaultParams> {
+
+export const definePlugin = <
+  DefaultParams extends Record<string, any>,
+  ExtendContext extends ExtendableContext
+>(config: DefinePluginConfig<DefaultParams, ExtendContext>) => {
+  return class Plugin implements PluginEntity<DefaultParams, ExtendContext> {
     name: string
     show: (names: (keyof DefaultParams)[]) => void
     hide: (names: (keyof DefaultParams)[]) => void
@@ -11,13 +15,15 @@ export const definePlugin = <DefaultParams extends Record<string, any>>(config: 
     updateLayers: (patch: DeepPartial<DefaultParams>) => void
     replaceLayers: (full: DefaultParams) => void
     layer: <LayerName extends keyof DefaultParams>(name: LayerName) => {
-      set: (partial: Pick<DefaultParams, LayerName>) => void
-      update: (patch: Pick<DefaultParams, LayerName>) => void
-      replace: (partial: Pick<DefaultParams, LayerName>) => void
+      set: (partial: DeepPartial<DefaultParams[LayerName]>) => void
+      update: (patch: DeepPartial<DefaultParams[LayerName]>) => void
+      replace: (partial: DeepPartial<DefaultParams[LayerName]>) => void
       show: () => void
       hide: () => void
       toggle: () => void
     }
+    init: (context: ChartContext<ExtendContext>) => void
+    destroy: () => void
     constructor () {
       return createPlugin(config)
     }

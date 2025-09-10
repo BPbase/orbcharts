@@ -27,16 +27,13 @@ export interface CreateChart {
 }
 
 export interface ChartEntity {
-  svgSelection: d3.Selection<SVGGElement, unknown, HTMLElement, any>
-  canvasSelection: d3.Selection<HTMLCanvasElement, unknown, HTMLElement, any>
-
   // Commands
   setData(data: RawData): void // replace
   setDataEncoding(partial: Partial<DataEncoding>): void // deep-merge with default
   updateDataEncoding(patch: Partial<DataEncoding>): void // deep-merge with previous
   replaceDataEncoding(full: DataEncoding): void // replace
-  setPlugins(plugins: PluginEntity[]): void // replace all
-  addPlugin(plugin: PluginEntity): void
+  setPlugins(plugins: PluginEntity<unknown, unknown>[]): void // replace all
+  addPlugin(plugin: PluginEntity<unknown, unknown>): void
   removePlugin(id: string): void 
   setTheme(theme: Theme): void // replace all
   updateTheme(patch: Partial<Theme>): void // deep-merge with previous

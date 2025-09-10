@@ -141,11 +141,13 @@ export const createChart: CreateChart = (element, options) => {
   const previousTheme$ = new BehaviorSubject<Theme>(defaultTheme)
   const currentTheme$ = new BehaviorSubject<Theme>(defaultTheme)
   // plugins
-  const pluginsInstance$ = new BehaviorSubject<PluginEntity[]>([])
+  const pluginsInstance$ = new BehaviorSubject<PluginEntity<unknown, unknown>[]>([])
 
   // chart context
   const context: ChartContext = (() => {
-    const fullDataEncoding$ = new Observable<DataEncoding>(subscriber => {
+    const svgSelection = createSvgSelection(element)
+    const canvasSelection = createCanvasSelection(element)
+    const dataEncoding$ = new Observable<DataEncoding>(subscriber => {
       currentDataEncoding$.subscribe(data => {
         subscriber.next(data)
       })
@@ -158,7 +160,7 @@ export const createChart: CreateChart = (element, options) => {
     const graphData$ = new Observable<ModelData<'graph'>>()
     const treeData$ = new Observable<ModelData<'tree'>>()
     const plugins$ = new Observable<readonly PluginInfo[]>()
-    const fullTheme$ = new Observable<Theme>(subscriber => {
+    const theme$ = new Observable<Theme>(subscriber => {
       currentTheme$.subscribe(data => {
         subscriber.next(data)
       })
@@ -171,14 +173,16 @@ export const createChart: CreateChart = (element, options) => {
       })
     })
     return {
-      fullDataEncoding$,
+      svgSelection,
+      canvasSelection,
+      dataEncoding$,
       seriesData$,
       gridData$,
       multivariateData$,
       graphData$,
       treeData$,
       plugins$,
-      fullTheme$,
+      theme$,
       event$,
       eventTrigger$
     }
@@ -186,9 +190,6 @@ export const createChart: CreateChart = (element, options) => {
 
   // create chart instance
   return (() => {
-    const svgSelection = createSvgSelection(element)
-    const canvasSelection = createCanvasSelection(element)
-
     function setData (data: RawData) {
       rawData$.next(data)
     }
@@ -209,11 +210,11 @@ export const createChart: CreateChart = (element, options) => {
       previousDataEncoding$.next(full)
       currentDataEncoding$.next(full)
     }
-    function setPlugins (plugins: PluginEntity[]) {
+    function setPlugins (plugins: PluginEntity<unknown, unknown>[]) {
       // replace all
       pluginsInstance$.next(plugins)
     }
-    function addPlugin (plugin: PluginEntity) {
+    function addPlugin (plugin: PluginEntity<unknown, unknown>) {
       // add one
       pluginsInstance$.next([...pluginsInstance$.getValue(), plugin])
     }
@@ -239,14 +240,12 @@ export const createChart: CreateChart = (element, options) => {
       currentTheme$.next(full)
     }
     function destroy() {
-      svgSelection.remove()
-      canvasSelection.remove()
+      context.svgSelection.remove()
+      context.canvasSelection.remove()
       destroy$.next(undefined)
     }
 
     return {
-      svgSelection,
-      canvasSelection,
       setData,
       setDataEncoding,
       updateDataEncoding,
