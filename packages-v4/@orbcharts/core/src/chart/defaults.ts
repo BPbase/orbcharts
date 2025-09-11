@@ -1,6 +1,6 @@
-import type { DataEncoding, Theme } from '../types'
+import type { Encoding, Theme } from '../types'
 
-export const DEFAULT_DATA_ENCODING: DataEncoding = {
+export const DEFAULT_DATA_ENCODING: Encoding = {
   dataset: {
     from: 'dataset',
     sort: 'natural'

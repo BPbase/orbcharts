@@ -5,10 +5,13 @@ export const defineLayer = <DefaultParams, ExtendContext extends ExtendableConte
   return class Layer implements LayerEntity<DefaultParams, ExtendContext> {
     name: string
     defaultParams: DefaultParams
-    init: (context: ChartContext<ExtendContext>) => void
-    setParams: (params: Partial<DefaultParams>) => void
-    updateParams: (params: Partial<DefaultParams>) => void
-    replaceParams: (params: DefaultParams) => void
+    layerIndex: number
+    enable: (el: { svg?: SVGSVGElement; canvas?: HTMLCanvasElement }, context: ChartContext<ExtendContext>) => void
+    disable: () => void
+    // setParams: (params: Partial<DefaultParams>) => void
+    update: (params: Partial<DefaultParams>) => void
+    forceReplace: (params: DefaultParams) => void
+    // injectContext: (context: ChartContext<ExtendContext>) => void
     destroy: () => void
     constructor () {
       return createLayer<DefaultParams, ExtendContext>(config)

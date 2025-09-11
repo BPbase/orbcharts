@@ -2,7 +2,7 @@ import type { Observable, Subject } from 'rxjs'
 import type {
   DeepPartial,
   ChartContext,
-  DataEncoding,
+  Encoding,
   EventData,
   ModelData,
   PluginInfo,
@@ -13,7 +13,7 @@ import type {
 
 export interface ChartDefaults {
   theme: Theme
-  dataEncoding: Partial<DataEncoding>
+  encoding: Partial<Encoding>
 }
 
 export interface ChartOptions {
@@ -29,15 +29,15 @@ export interface CreateChart {
 export interface ChartEntity {
   // Commands
   setData(data: RawData): void // replace
-  setDataEncoding(partial: Partial<DataEncoding>): void // deep-merge with default
-  updateDataEncoding(patch: Partial<DataEncoding>): void // deep-merge with previous
-  replaceDataEncoding(full: DataEncoding): void // replace
+  // setEncoding(partial: Partial<Encoding>): void // deep-merge with default
+  updateEncoding(patch: DeepPartial<Encoding>): void // deep-merge with previous
+  replaceEncoding(full: Encoding): void // replace
   setPlugins(plugins: PluginEntity<unknown, unknown>[]): void // replace all
   addPlugin(plugin: PluginEntity<unknown, unknown>): void
   removePlugin(id: string): void 
-  setTheme(theme: Theme): void // replace all
-  updateTheme(patch: Partial<Theme>): void // deep-merge with previous
-  replaceTheme(full: Theme): void // replace all
+  // setTheme(theme: Theme): void // replace all
+  updateTheme(patch: DeepPartial<Theme>): void // deep-merge with previous
+  forceReplaceTheme(full: Theme): void // replace all
   destroy(): void;
 
   // context

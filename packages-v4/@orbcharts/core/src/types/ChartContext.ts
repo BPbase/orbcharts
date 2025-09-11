@@ -1,7 +1,7 @@
 import type { Observable, Subject } from 'rxjs'
 import type {
   RawData,
-  DataEncoding,
+  Encoding,
   ModelData,
   PluginInfo,
   Theme,
@@ -15,10 +15,11 @@ export interface ExtendableContext {
 }
 
 export type ChartContext<ExtendContext extends ExtendableContext = {}> = {
-  svgSelection: d3.Selection<SVGGElement, unknown, HTMLElement, any>
-  canvasSelection: d3.Selection<HTMLCanvasElement, unknown, HTMLElement, any>
+  // svgSelection: d3.Selection<SVGGElement, unknown, HTMLElement, any>
+  // canvasSelection: d3.Selection<HTMLCanvasElement, unknown, HTMLElement, any>
+  root: HTMLElement | Element
   // rawData$: Observable<RawData>
-  dataEncoding$: Observable<DataEncoding>
+  encoding$: Observable<Encoding>
   seriesData$: Observable<ModelData<'series'>>
   gridData$: Observable<ModelData<'grid'>>
   multivariateData$: Observable<ModelData<'multivariate'>>

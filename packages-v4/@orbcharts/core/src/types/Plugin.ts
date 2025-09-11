@@ -28,28 +28,27 @@ export interface DefinePluginConfig<DefaultParams extends Record<string, any>, E
 
 export interface PluginEntity<DefaultParams extends Record<string, any>, ExtendContext extends ExtendableContext> {
   name: string
-  
   // layer visibility controls
-  show(names: (keyof DefaultParams)[]): void
-  hide(names: (keyof DefaultParams)[]): void
-  toggle(name: keyof DefaultParams): void
-  showOnly(names: (keyof DefaultParams)[]): void
-
+  show(names: (keyof DefaultParams) | (keyof DefaultParams)[]): void
+  showOnly(names: (keyof DefaultParams) | (keyof DefaultParams)[]): void
+  // showAll(): void
+  hide(names: (keyof DefaultParams) | (keyof DefaultParams)[]): void
+  // hideAll(): void
+  toggle(names: (keyof DefaultParams) | (keyof DefaultParams)[]): void
   // layer params
-  setLayers(partial: DeepPartial<DefaultParams>): void // deep-merge with default
-  updateLayers(patch: DeepPartial<DefaultParams>): void // deep-merge with previous
-  replaceLayers(full: DefaultParams): void // replace（特殊需求，可節省效能）
-  layer<LayerName extends keyof DefaultParams>(name: LayerName): {
-    set(partial: DeepPartial<DefaultParams[LayerName]>): void // deep-merge with default 該 layer 的 params
-    update(patch: DeepPartial<DefaultParams[LayerName]>): void // deep-merge with previous 該 layer 的 params
-    replace(full: DefaultParams[LayerName]): void // replace（特殊需求，可節省效能）
-    show(): void
-    hide(): void
-    toggle(): void
-  }
+  // setLayers(partial: DeepPartial<DefaultParams>): void // deep-merge with default
+  update(patch: DeepPartial<DefaultParams>): void // deep-merge with previous
+  forceReplace(full: DefaultParams): void // replace（特殊需求，可節省效能）
+  // layer<LayerName extends keyof DefaultParams>(name: LayerName): {
+  //   // set(partial: DeepPartial<DefaultParams[LayerName]>): void // deep-merge with default 該 layer 的 params
+  //   update(patch: DeepPartial<DefaultParams[LayerName]>): void // deep-merge with previous 該 layer 的 params
+  //   replace(full: DefaultParams[LayerName]): void // replace（特殊需求，可節省效能）
+  //   show(): void
+  //   hide(): void
+  //   toggle(): void
+  // }
 
-  // constructor
-  init(context: ChartContext<ExtendContext>): void
+  injectContext(context: ChartContext<ExtendContext>): void
   destroy(): void
 
   // outputs (observables)

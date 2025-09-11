@@ -1,4 +1,3 @@
-import * as d3 from 'd3'
 import {
   Subject,
   BehaviorSubject,
@@ -12,7 +11,7 @@ import type {
   ChartOptions,
   ChartContext,
   RawData,
-  DataEncoding,
+  Encoding,
   ModelData,
   PluginInfo,
   PluginEntity,
@@ -63,30 +62,6 @@ function chartOptionsValidator (chartOptionsPartial: DeepPartial<ChartOptions>):
   return result
 }
 
-function createSvgSelection (element: HTMLElement | Element) {
-  d3.select(element).selectAll('svg').remove()
-  const svgSelection = d3.select(element)
-    .append('svg')
-    .attr('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-    .attr('xmls', 'http://www.w3.org/2000/svg')
-    .attr('version', '1.1')
-    .style('position', 'absolute')
-    .classed('orbcharts__svg-root', true)
-
-  return svgSelection
-}
-
-function createCanvasSelection (element: HTMLElement | Element) {
-  d3.select(element).selectAll('canvas').remove()
-  const canvasSelection = d3.select(element)
-    .append('canvas')
-    .style('position', 'absolute')
-    .classed('orbcharts__canvas-root', true)
-
-  return canvasSelection
-}
-
-
 export const createChart: CreateChart = (element, options) => {
   try {
     const { status, columnName, expectToBe } = chartOptionsValidator(options)
@@ -127,12 +102,10 @@ export const createChart: CreateChart = (element, options) => {
   // data
   const rawData$ = new Subject<RawData>()
   // data encoding
-  const defaultDataEncoding = options && options.defaults && options.defaults.dataEncoding
-    ? deepMerge(options.defaults.dataEncoding, DEFAULT_DATA_ENCODING)
+  const defaultEncoding = options && options.defaults && options.defaults.encoding
+    ? deepMerge(options.defaults.encoding, DEFAULT_DATA_ENCODING)
     : DEFAULT_DATA_ENCODING
-  const defaultDataEncoding$ = new BehaviorSubject<DataEncoding>(defaultDataEncoding)
-  const previousDataEncoding$ = new BehaviorSubject<DataEncoding>(defaultDataEncoding)
-  const currentDataEncoding$ = new BehaviorSubject<DataEncoding>(defaultDataEncoding)
+  const currentEncoding$ = new BehaviorSubject<Encoding>(defaultEncoding)
   // theme
   const defaultTheme = options && options.defaults && options.defaults.theme
     ? deepMerge(options.defaults.theme, DEFAULT_THEME)
@@ -142,13 +115,18 @@ export const createChart: CreateChart = (element, options) => {
   const currentTheme$ = new BehaviorSubject<Theme>(defaultTheme)
   // plugins
   const pluginsInstance$ = new BehaviorSubject<PluginEntity<unknown, unknown>[]>([])
+  pluginsInstance$.subscribe(plugins => {
+    plugins.forEach(plugin => {
+      plugin.injectContext(context)
+    })
+  })
 
   // chart context
   const context: ChartContext = (() => {
-    const svgSelection = createSvgSelection(element)
-    const canvasSelection = createCanvasSelection(element)
-    const dataEncoding$ = new Observable<DataEncoding>(subscriber => {
-      currentDataEncoding$.subscribe(data => {
+    // const svgSelection = createSvgSelection(element)
+    // const canvasSelection = createCanvasSelection(element)
+    const encoding$ = new Observable<Encoding>(subscriber => {
+      currentEncoding$.subscribe(data => {
         subscriber.next(data)
       })
     }).pipe(
@@ -173,9 +151,10 @@ export const createChart: CreateChart = (element, options) => {
       })
     })
     return {
-      svgSelection,
-      canvasSelection,
-      dataEncoding$,
+      root: element,
+      // svgSelection,
+      // canvasSelection,
+      encoding$,
       seriesData$,
       gridData$,
       multivariateData$,
@@ -193,22 +172,19 @@ export const createChart: CreateChart = (element, options) => {
     function setData (data: RawData) {
       rawData$.next(data)
     }
-    function setDataEncoding (partial: DeepPartial<DataEncoding>) {
-      // deep-merge with default
-      const currentDataEncoding = deepMerge(partial, defaultDataEncoding$.getValue())
-      previousDataEncoding$.next(currentDataEncoding)
-      currentDataEncoding$.next(currentDataEncoding)
-    }
-    function updateDataEncoding (patch: DeepPartial<DataEncoding>) {
+    // function setEncoding (partial: DeepPartial<Encoding>) {
+    //   // deep-merge with default
+    //   const currentEncoding = deepMerge(partial, defaultEncoding$.getValue())
+    //   currentEncoding$.next(currentEncoding)
+    // }
+    function updateEncoding (patch: DeepPartial<Encoding>) {
       // deep-merge with previous
-      const currentDataEncoding = deepMerge(patch, previousDataEncoding$.getValue())
-      previousDataEncoding$.next(currentDataEncoding)
-      currentDataEncoding$.next(currentDataEncoding)
+      const currentEncoding = deepMerge(patch, currentEncoding$.getValue())
+      currentEncoding$.next(currentEncoding)
     }
-    function replaceDataEncoding (full: DataEncoding) {
+    function replaceEncoding (full: Encoding) {
       // replace
-      previousDataEncoding$.next(full)
-      currentDataEncoding$.next(full)
+      currentEncoding$.next(full)
     }
     function setPlugins (plugins: PluginEntity<unknown, unknown>[]) {
       // replace all
@@ -234,28 +210,28 @@ export const createChart: CreateChart = (element, options) => {
       previousTheme$.next(currentTheme)
       currentTheme$.next(currentTheme)
     }
-    function replaceTheme (full: Theme) {
+    function forceReplaceTheme (full: Theme) {
       // replace all
       previousTheme$.next(full)
       currentTheme$.next(full)
     }
     function destroy() {
-      context.svgSelection.remove()
-      context.canvasSelection.remove()
+      // context.svgSelection.remove()
+      // context.canvasSelection.remove()
       destroy$.next(undefined)
     }
 
     return {
       setData,
-      setDataEncoding,
-      updateDataEncoding,
-      replaceDataEncoding,
+      // setEncoding,
+      updateEncoding,
+      replaceEncoding,
       setPlugins,
       addPlugin,
       removePlugin,
       setTheme,
       updateTheme,
-      replaceTheme,
+      forceReplaceTheme,
       destroy,
       context
     }

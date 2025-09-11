@@ -1,6 +1,6 @@
 export * from './Chart'
 export * from './ChartContext'
-export * from './DataEncoding'
+export * from './Encoding'
 export * from './Event'
 export * from './Layers'
 export * from './ModelData'

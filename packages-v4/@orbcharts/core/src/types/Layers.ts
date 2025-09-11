@@ -19,23 +19,32 @@ import type { ChartContext, ExtendableContext } from './index'
 //   layerParams$: Observable<DefaultLayerParams>
 // }
 
+interface SetupProps<DefaultLayerParams, ExtendContext extends ExtendableContext> {
+  context: ChartContext<ExtendContext>
+  svg: SVGSVGElement
+  canvas: HTMLCanvasElement
+  params$: Observable<DefaultLayerParams>
+}
+
 export interface DefineLayerConfig<DefaultLayerParams extends Record<string, any>, ExtendContext extends ExtendableContext> {
   name: string
   defaultParams: DefaultLayerParams
   layerIndex: number
   validator?: (params: DefaultLayerParams) => { valid: boolean; errors?: string[] }
-  init: ({ context, params$ }: { context: ChartContext<ExtendContext>, params$: Observable<DefaultLayerParams> }) => () => void
+  setup: (setupProps: SetupProps<DefaultLayerParams, ExtendContext>) => () => void
 }
 
 export interface LayerEntity<LayerParams, ExtendContext extends ExtendableContext> {
-  name: string
-  defaultParams: LayerParams
-
-  // constructor
-  init(context: ChartContext<ExtendContext>): void
-  setParams(params: Partial<LayerParams>): void
-  updateParams(params: Partial<LayerParams>): void
-  replaceParams(params: LayerParams): void
+  name: Readonly<string>
+  defaultParams: Readonly<LayerParams>
+  layerIndex: Readonly<number>
+  enable(el: { svg?: SVGSVGElement; canvas?: HTMLCanvasElement }, context: ChartContext<ExtendContext>): void
+  disable(): void
+  // setParams(params: Partial<LayerParams>): void
+  update(params: Partial<LayerParams>): void
+  forceReplace(params: LayerParams): void
   // getParams(): LayerParams
+
+  // injectContext(): void
   destroy(): void
 }
