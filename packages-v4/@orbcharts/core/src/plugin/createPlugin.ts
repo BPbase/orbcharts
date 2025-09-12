@@ -3,27 +3,12 @@ import {
   BehaviorSubject,
   combineLatest,
   switchMap,
+  map,
   filter
 } from 'rxjs'
+import { handleElementLifecycle } from '../utils/dom-lifecycle'
+import { createSvg, createCanvasElement, createSVGGroup, createCanvas } from '../utils/dom'
 
-function createSvg (element: HTMLElement | Element): SVGSVGElement {
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-  svg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
-  svg.setAttribute('xmls', 'http://www.w3.org/2000/svg')
-  svg.setAttribute('version', '1.1')
-  svg.style.position = 'absolute'
-  svg.classList.add('orbcharts__svg-root')
-  element.appendChild(svg)
-  return svg
-}
-
-function createCanvas (element: HTMLElement | Element): HTMLCanvasElement {
-  const canvas = document.createElement('canvas')
-  canvas.style.position = 'absolute'
-  canvas.classList.add('orbcharts__canvas-root')
-  element.appendChild(canvas)
-  return canvas
-}
 
 export const createPlugin = <
   DefaultParams,
@@ -42,6 +27,8 @@ export const createPlugin = <
     }, {} as Record<keyof DefaultParams, typeof config.layers[number]>)
   }
 
+  // 前一次顯示的 layers
+  // const previousShowedLayerNames$ = new BehaviorSubject<Set<keyof DefaultParams>>(new Set())
   // 要顯示的 layers
   const showedLayerNames$ = new BehaviorSubject<Set<keyof DefaultParams>>(new Set()) // 一開始先不顯示
 
@@ -60,22 +47,93 @@ export const createPlugin = <
 
   // const showedLayerParams$ = 
 
-  const subscription = combineLatest({
-    context: context$,
-    showedLayerNames: showedLayerNames$
-  }).pipe(
-    switchMap(async d => d),
-    filter(({ context }) => context !== null)
-  ).subscribe(({ context, showedLayerNames }) => {
+  // element 全部保存起來避免重複創建
+  const layerSVGElementsRef: Record<string, SVGElement> = {}
+  const layerCanvasElementsRef: Record<string, HTMLCanvasElement> = {}
+  
+  // 儲存主要的 svg 和 canvas 元素引用
+  let mainSvgElement: SVGSVGElement | null = null
+  let mainCanvasElement: HTMLCanvasElement | null = null
+
+  // context
+  const subscription = context$.pipe(
+    switchMap(context => {
+      // showedLayerNames
+      return showedLayerNames$.pipe(
+        map(showedLayerNames => {
+          // 依照 layerIndex 排序
+          const showedLayerNamesSeq: string[] = Array.from(showedLayerNames)
+            .map(name => [
+              name,
+              config.layers.find(l => l.name === name)?.layerIndex ?? -1
+            ])
+            .filter(([, index]) => index !== -1)
+            .sort((a, b) => (a[1] as number) - (b[1] as number))
+            .map(([name]) => name as string)
+
+          return { context, showedLayerNames, showedLayerNamesSeq }
+        })
+      )
+    })
+  ).subscribe(({ context, showedLayerNames, showedLayerNamesSeq }) => {
+
+    // 在context.root元素底下建立 svg 和 canvas 元素
+    let svgElement = context.root.querySelector('.orbcharts__svg-root') as SVGSVGElement | null
+    if (!svgElement) {
+      svgElement = createSvg('orbcharts__svg-root')
+      context.root.appendChild(svgElement)
+    }
+    mainSvgElement = svgElement
+    
+    let canvasElement = context.root.querySelector('.orbcharts__canvas-root') as HTMLCanvasElement | null
+    if (!canvasElement) {
+      canvasElement = createCanvasElement('orbcharts__canvas-root')
+      context.root.appendChild(canvasElement)
+    }
+    mainCanvasElement = canvasElement
+
+    // 處理 SVG 元素的 enter/update/exit
+    handleElementLifecycle(
+      svgElement!, 
+      showedLayerNamesSeq, // 依照 showedLayerNamesSeq
+      layerSVGElementsRef,
+      (layerName) => createSVGGroup(`orbcharts__${layerName}`)
+    )
+    
+    // 處理 Canvas 元素的 enter/update/exit
+    handleElementLifecycle(
+      canvasElement!, 
+      showedLayerNamesSeq, // 依照 showedLayerNamesSeq
+      layerCanvasElementsRef,
+      (layerName) => createCanvas(`orbcharts__${layerName}`)
+    )
+
     // init layers
     config.layers.forEach((layer) => {
       if (showedLayerNames.has(layer.name as keyof DefaultParams)) {
-        layer.enable({ svg: svgElement, canvas: canvasElement }, context)
+        layer.enable({ svg: mainSvgElement, canvas: mainCanvasElement }, context)
       } else {
         layer.destroy()
       }
     })
   })
+
+  // const subscription = combineLatest({
+  //   context: context$,
+  //   showedLayerNames: showedLayerNames$
+  // }).pipe(
+  //   switchMap(async d => d),
+  //   filter(({ context }) => context !== null)
+  // ).subscribe(({ context, showedLayerNames }) => {
+  //   // init layers
+  //   config.layers.forEach((layer) => {
+  //     if (showedLayerNames.has(layer.name as keyof DefaultParams)) {
+  //       layer.enable({ svg: mainSvgElement, canvas: mainCanvasElement }, context)
+  //     } else {
+  //       layer.destroy()
+  //     }
+  //   })
+  // })
 
   // if (config.validator) {
   //   const validation = config.validator(params)
@@ -178,6 +236,7 @@ export const createPlugin = <
     // }),
     injectContext: (context) => {
       // initialization logic using context
+      context$.next(context)
       if (config.extendContext) {
         const extension = config.extendContext(context)
         Object.assign(context, extension)
