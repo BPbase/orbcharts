@@ -3,22 +3,22 @@
 
 export interface EncodingDataset {
   from: string
-  sort: 'natural' | string[]
+  sort: 'original' | 'alphabetical' | string[]
 }
 
 export interface EncodingSeries {
   from: string
-  sort: 'natural' | string[]
+  sort: 'original' | 'alphabetical' | string[]
 }
 
 export interface EncodingCategory {
   from: string
-  sort: 'natural' | string[]
+  sort: 'original' | 'alphabetical' | string[]
 }
 
 export interface EncodingValue {
   from: string
-  sort: 'natural' | 'asc' | 'desc'
+  sort: 'original' | 'asc' | 'desc'
   aggregate: 'sum' | 'mean' | 'median' | 'min' | 'max' | 'count' | 'none'
 }
 
@@ -36,6 +36,6 @@ export interface Encoding {
   series: EncodingSeries
   category: EncodingCategory
   value: EncodingValue
-  multiValue: EncodingMultiValue
+  multivariate: EncodingMultiValue
   color: EncodingColor
 }

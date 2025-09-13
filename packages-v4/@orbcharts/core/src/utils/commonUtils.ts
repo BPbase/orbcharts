@@ -1,3 +1,4 @@
+import { DeepPartial } from "../types/utils";
 
 // 是否為原始物件
 export function isPlainObject(variable: any) {
@@ -16,12 +17,12 @@ export function isDom(obj: any) {
 }
 
 // 將可選的參數和預設值合併
-export function deepMerge<Options extends { [key: string]: any; }> (options: {[key: string]: any}, full: Options): Options {
+export function deepOverwrite<DeepRecord extends Record<string, any>>(full: DeepRecord, options: DeepPartial<DeepRecord>): DeepRecord {
   if (isPlainObject(options) === false || isPlainObject(full) === false) {
     return Object.assign({}, full)
   }
-  const mergeObject = (_options: {[key: string]: any}, _full: {[key: string]: any}) => {
-    const obj: Options = (Object.assign({}, _full) as any)
+  const mergeObject = (_full: DeepRecord, _options: DeepPartial<DeepRecord>) => {
+    const obj: DeepRecord = (Object.assign({}, _full) as any)
     for (let key of Object.keys(_options)) {
       if ((key in _full) == false) {
         continue
@@ -29,18 +30,18 @@ export function deepMerge<Options extends { [key: string]: any; }> (options: {[k
       let objValue: any = undefined
       // 下一層的plain object
       if (isPlainObject(_options[key]) && isPlainObject(_full[key])) {
-        objValue = mergeObject(_options[key], _full[key])
-        obj[key as keyof Options] = objValue
+        objValue = mergeObject(_full[key], _options[key])
+        obj[key as keyof DeepRecord] = objValue
       }
       // 不是plain object直接賦值
       else {
-        obj[key as keyof Options] = _options[key]
+        obj[key as keyof DeepRecord] = _options[key] as DeepRecord[typeof key]
       }
     }
     return obj
   }
   
-  return mergeObject(options, full)
+  return mergeObject(full, options)
 }
 
 // 加上千分位 ,

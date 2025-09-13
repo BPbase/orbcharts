@@ -21,7 +21,7 @@ import type {
 import type { ValidatorResult } from '../utils'
 import {
   isDom,
-  deepMerge,
+  deepOverwrite,
   validateObject,
   createValidatorErrorMessage,
   createValidatorWarningMessage
@@ -103,12 +103,12 @@ export const createChart: CreateChart = (element, options) => {
   const rawData$ = new Subject<RawData>()
   // data encoding
   const defaultEncoding = options && options.defaults && options.defaults.encoding
-    ? deepMerge(options.defaults.encoding, DEFAULT_DATA_ENCODING)
+    ? deepOverwrite(DEFAULT_DATA_ENCODING, options.defaults.encoding)
     : DEFAULT_DATA_ENCODING
   const currentEncoding$ = new BehaviorSubject<Encoding>(defaultEncoding)
   // theme
   const defaultTheme = options && options.defaults && options.defaults.theme
-    ? deepMerge(options.defaults.theme, DEFAULT_THEME)
+    ? deepOverwrite(DEFAULT_THEME, options.defaults.theme)
     : DEFAULT_THEME
   const defaultTheme$ = new BehaviorSubject<Theme>(defaultTheme)
   const previousTheme$ = new BehaviorSubject<Theme>(defaultTheme)
@@ -174,12 +174,12 @@ export const createChart: CreateChart = (element, options) => {
     }
     // function setEncoding (partial: DeepPartial<Encoding>) {
     //   // deep-merge with default
-    //   const currentEncoding = deepMerge(partial, defaultEncoding$.getValue())
+    //   const currentEncoding = deepOverwrite(partial, defaultEncoding$.getValue())
     //   currentEncoding$.next(currentEncoding)
     // }
     function updateEncoding (patch: DeepPartial<Encoding>) {
       // deep-merge with previous
-      const currentEncoding = deepMerge(patch, currentEncoding$.getValue())
+      const currentEncoding = deepOverwrite(currentEncoding$.getValue(), patch)
       currentEncoding$.next(currentEncoding)
     }
     function replaceEncoding (full: Encoding) {
@@ -200,13 +200,13 @@ export const createChart: CreateChart = (element, options) => {
     }
     function setTheme (theme: DeepPartial<Theme>) {
       // replace all
-      const currentTheme = deepMerge(theme, defaultTheme$.getValue())
+      const currentTheme = deepOverwrite(defaultTheme$.getValue(), theme)
       previousTheme$.next(currentTheme)
       currentTheme$.next(currentTheme)
     }
     function updateTheme (patch: DeepPartial<Theme>) {
       // deep-merge with previous
-      const currentTheme = deepMerge(patch, previousTheme$.getValue())
+      const currentTheme = deepOverwrite(previousTheme$.getValue(), patch)
       previousTheme$.next(currentTheme)
       currentTheme$.next(currentTheme)
     }

@@ -23,9 +23,10 @@ export interface ModelDatumGrid extends ModelDatumBase {
 }
 
 export interface ModelDatumMultivariate extends ModelDatumBase {
-  values: Array<{
-    label: string // multiValue 的 label
-    value: number | null // 經過 aggregate 後的數值
+  multivariate: Array<{
+    index: number // 維度
+    label: string // multivariate 的 label
+    value: number | null
   }>
 }
 
@@ -48,7 +49,7 @@ export interface ModelDatumTree extends ModelDatumBase {
 
 export type ModelDatum<T extends ModelType> = T extends 'series' ? ModelDatumSeries
   : T extends 'grid' ? ModelDatumGrid
-  : T extends 'multiValue' ? ModelDatumMultivariate
+  : T extends 'multivariate' ? ModelDatumMultivariate
   : T extends 'graph' ? ModelDatumGraphNode
   : T extends 'tree' ? ModelDatumTree
   : unknown

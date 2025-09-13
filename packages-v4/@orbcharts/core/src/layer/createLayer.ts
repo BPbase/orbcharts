@@ -5,34 +5,38 @@ import {
   takeUntil
 } from "rxjs"
 import type { DeepPartial, ChartContext, DefineLayerConfig, LayerEntity, ExtendableContext } from "../types"
-import { deepMerge } from "../utils/commonUtils"
+import { deepOverwrite } from "../utils/commonUtils"
 
 export const createLayer = <
   DefaultLayerParams extends Record<string, any>,
   ExtendContext extends ExtendableContext
 >(config: DefineLayerConfig<DefaultLayerParams, ExtendContext>): LayerEntity<DefaultLayerParams, ExtendContext> => {
 
-  let svgElement: SVGSVGElement | null = null
-  let canvasElement: HTMLCanvasElement | null = null
+  // let svgElement: SVGSVGElement | null = null
+  // let canvasElement: HTMLCanvasElement | null = null
 
   const currentParams$ = new BehaviorSubject<DefaultLayerParams>(Object.assign({}, config.defaultParams))
 
-  let _context: ChartContext<ExtendContext> = {} as ChartContext<ExtendContext>
+  // let _context: ChartContext<ExtendContext> = {} as ChartContext<ExtendContext>
   let destroyInstance = () => {}
 
-  const isShow$ = new BehaviorSubject<boolean>(false)
+  const enableSetup$ = new BehaviorSubject<{
+    svg: SVGSVGElement
+    canvas: HTMLCanvasElement
+    context: ChartContext<ExtendContext>
+  } | null>(null)
   // show
-  isShow$.pipe(filter(isShow => isShow === true)).subscribe(() => {
+  enableSetup$.pipe(filter(enableSetup => enableSetup !== null)).subscribe(({ svg, canvas, context }) => {
     destroyInstance()
     destroyInstance = config.setup({
-      svg: _context.svg.node() as SVGElement,
-      canvas: _context.canvas.node() as HTMLCanvasElement,
-      context: _context,
+      svg,
+      canvas,
+      context: Object.assign({}, context),
       params$: currentParams$
     })
   })
   // hide
-  isShow$.pipe(filter(isShow => isShow === false)).subscribe(() => {
+  enableSetup$.pipe(filter(enableSetup => enableSetup === null)).subscribe(() => {
     destroyInstance()
   })
 
@@ -40,30 +44,30 @@ export const createLayer = <
     name: config.name,
     defaultParams: config.defaultParams,
     layerIndex: config.layerIndex,
-    show: () => {
-      isShow$.next(true)
+    enable: (el, context) => {
+      enableSetup$.next({ svg: el.svg, canvas: el.canvas, context })
     },
-    hide: () => {
-      isShow$.next(false)
+    disable: () => {
+      enableSetup$.next(null)
     },
     // setParams: (partial) => {
-    //   previousParams$.next(deepMerge(partial, defaultParams$.getValue()))
+    //   previousParams$.next(deepOverwrite(defaultParams$.getValue(), partial))
     // },
     update: (patch) => {
-      const currentParams = deepMerge(patch, currentParams$.getValue())
+      const currentParams = deepOverwrite(currentParams$.getValue(), patch)
       currentParams$.next(currentParams)
     },
     forceReplace: (full) => {
       currentParams$.next(full)
     },
-    injectContext: (context) => {
-      _context = Object.assign({}, context)
-      // re-setup layer with new context
-      isShow$.next(true)
-    },
+    // injectContext: (context) => {
+    //   _context = Object.assign({}, context)
+    //   // re-setup layer with new context
+    //   enableSetup$.next(true)
+    // },
     destroy: () => {
-      isShow$.next(false)
-      isShow$.complete()
+      enableSetup$.next(null)
+      enableSetup$.complete()
       currentParams$.complete()
     }
   }

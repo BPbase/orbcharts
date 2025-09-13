@@ -3,31 +3,25 @@ import type { Encoding, Theme } from '../types'
 export const DEFAULT_DATA_ENCODING: Encoding = {
   dataset: {
     from: 'dataset',
-    sort: 'natural'
+    sort: 'original'
   },
   series: {
     from: 'series',
-    sort: 'natural'
+    sort: 'original'
   },
   category: {
     from: 'category',
-    sort: 'natural'
+    sort: 'original'
   },
   value: {
     from: 'value',
-    sort: 'natural',
+    sort: 'original',
     aggregate: 'sum'
   },
-  multiValue: [
-    { from: 'value1', label: 'x' },
-    { from: 'value2', label: 'y' },
-    { from: 'value3', label: 'z' },
-    { from: 'value4', label: 'value4' },
-    { from: 'value5', label: 'value5' },
-    { from: 'value6', label: 'value6' },
-    { from: 'value7', label: 'value7' },
-    { from: 'value8', label: 'value8' },
-    { from: 'value9', label: 'value9' }
+  multivariate: [
+    { from: 'x', label: 'x' },
+    { from: 'y', label: 'y' },
+    { from: 'z', label: 'z' },
   ],
   color: {
     from: 'series',

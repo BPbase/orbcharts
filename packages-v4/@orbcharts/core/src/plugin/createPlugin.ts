@@ -241,6 +241,7 @@ export const createPlugin = <
         const extension = config.extendContext(context)
         Object.assign(context, extension)
       }
+      context$.next(Object.assign({}, context))
       // config.layers.forEach((layer) => {
       //   layer.injectContext(Object.assign({}, context))
       // })

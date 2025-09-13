@@ -38,7 +38,7 @@ export interface LayerEntity<LayerParams, ExtendContext extends ExtendableContex
   name: Readonly<string>
   defaultParams: Readonly<LayerParams>
   layerIndex: Readonly<number>
-  enable(el: { svg?: SVGSVGElement; canvas?: HTMLCanvasElement }, context: ChartContext<ExtendContext>): void
+  enable(el: { svg: SVGSVGElement; canvas: HTMLCanvasElement }, context: ChartContext<ExtendContext>): void
   disable(): void
   // setParams(params: Partial<LayerParams>): void
   update(params: Partial<LayerParams>): void
