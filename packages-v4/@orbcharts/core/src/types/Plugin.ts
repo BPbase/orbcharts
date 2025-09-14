@@ -31,9 +31,9 @@ export interface PluginEntity<DefaultParams extends Record<string, any>, ExtendC
   // layer visibility controls
   show(names: (keyof DefaultParams) | (keyof DefaultParams)[]): void
   showOnly(names: (keyof DefaultParams) | (keyof DefaultParams)[]): void
-  // showAll(): void
+  showAll(): void
   hide(names: (keyof DefaultParams) | (keyof DefaultParams)[]): void
-  // hideAll(): void
+  hideAll(): void
   toggle(names: (keyof DefaultParams) | (keyof DefaultParams)[]): void
   // layer params
   // setLayers(partial: DeepPartial<DefaultParams>): void // deep-merge with default

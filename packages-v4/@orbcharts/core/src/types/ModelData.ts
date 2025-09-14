@@ -11,15 +11,15 @@ export interface ModelDatumBase {
 }
 
 export interface ModelDatumSeries extends ModelDatumBase {
-  series: string // 經過 sort 後的系列名稱
-  seriesIndex: number // 系列在所有系列中的索引
+  category: string
+  categoryIndex: number
 }
 
 export interface ModelDatumGrid extends ModelDatumBase {
-  series: string // 經過 sort 後的系列名稱
-  seriesIndex: number // 系列在所有系列中的索引
-  category: string // 經過 sort 後的類別名稱
-  categoryIndex: number // 類別在所有類別中的索引
+  series: string
+  seriesIndex: number
+  category: string
+  categoryIndex: number
 }
 
 export interface ModelDatumMultivariate extends ModelDatumBase {
@@ -30,7 +30,12 @@ export interface ModelDatumMultivariate extends ModelDatumBase {
   }>
 }
 
-export interface ModelDatumGraphNode extends ModelDatumBase {}
+export interface ModelDatumGraphNode extends ModelDatumBase {
+  series: string
+  seriesIndex: number
+  category: string
+  categoryIndex: number
+}
 
 export interface ModelDatumGraphEdge extends ModelDatumBase {
   source: string // 來源節點名稱
@@ -45,6 +50,10 @@ export interface ModelDatumTree extends ModelDatumBase {
   depth: number // 節點深度（根節點為 0）
   seq: number // 同一層級中的順序
   children: ModelDatumTree[] // 子節點
+  series: string
+  seriesIndex: number
+  category: string
+  categoryIndex: number
 }
 
 export type ModelDatum<T extends ModelType> = T extends 'series' ? ModelDatumSeries

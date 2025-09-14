@@ -2,7 +2,10 @@ import {
   Subject,
   BehaviorSubject,
   filter,
-  takeUntil
+  takeUntil,
+  switchMap,
+  combineLatest,
+  of
 } from "rxjs"
 import type { DeepPartial, ChartContext, DefineLayerConfig, LayerEntity, ExtendableContext } from "../types"
 import { deepOverwrite } from "../utils/commonUtils"
@@ -25,16 +28,24 @@ export const createLayer = <
     canvas: HTMLCanvasElement
     context: ChartContext<ExtendContext>
   } | null>(null)
+
   // show
-  enableSetup$.pipe(filter(enableSetup => enableSetup !== null)).subscribe(({ svg, canvas, context }) => {
+  combineLatest({
+    currentParams: currentParams$,
+    enableSetup: enableSetup$
+  }).pipe(
+    switchMap(async d => d),
+    filter(enableSetup => enableSetup !== null)
+  ).subscribe(({ currentParams, enableSetup }) => {
     destroyInstance()
     destroyInstance = config.setup({
-      svg,
-      canvas,
-      context: Object.assign({}, context),
-      params$: currentParams$
+      svg: enableSetup.svg,
+      canvas: enableSetup.canvas,
+      context: Object.assign({}, enableSetup.context),
+      params$: of(currentParams)
     })
   })
+  
   // hide
   enableSetup$.pipe(filter(enableSetup => enableSetup === null)).subscribe(() => {
     destroyInstance()

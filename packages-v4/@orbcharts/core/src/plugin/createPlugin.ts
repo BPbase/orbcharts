@@ -34,10 +34,10 @@ export const createPlugin = <
 
   const context$ = new BehaviorSubject<ChartContext<ExtendContext> | null>(null)
 
-  // const showAllLayers = () => {
-  //   const AllLayerNamesSet = new Set(Object.keys(config.layers) as (keyof DefaultParams)[])
-  //   showedLayerNames$.next(AllLayerNamesSet)
-  // }
+  const showAllLayers = () => {
+    const AllLayerNamesSet = new Set(Object.keys(config.layers) as (keyof DefaultParams)[])
+    showedLayerNames$.next(AllLayerNamesSet)
+  }
 
   // const defulatAllLayerParams = config.layers.reduce((acc, layer) => {
   //   acc[layer.name as keyof DefaultParams as string] = layer.defaultParams
@@ -55,25 +55,25 @@ export const createPlugin = <
   let mainSvgElement: SVGSVGElement | null = null
   let mainCanvasElement: HTMLCanvasElement | null = null
 
-  // context
-  const subscription = context$.pipe(
-    switchMap(context => {
-      // showedLayerNames
-      return showedLayerNames$.pipe(
-        map(showedLayerNames => {
-          // 依照 layerIndex 排序
-          const showedLayerNamesSeq: string[] = Array.from(showedLayerNames)
-            .map(name => [
-              name,
-              config.layers.find(l => l.name === name)?.layerIndex ?? -1
-            ])
-            .filter(([, index]) => index !== -1)
-            .sort((a, b) => (a[1] as number) - (b[1] as number))
-            .map(([name]) => name as string)
+  // 當 context 或 showedLayerNames 改變時，重新初始化 layers
+  const subscription = combineLatest({
+    context: context$,
+    showedLayerNames: showedLayerNames$
+  }).pipe(
+    switchMap(async d => d), // 消除同時間的資料流
+    filter(({ context }) => context !== null),
+    map(({ context, showedLayerNames }) => {
+      // 依照 layerIndex 排序
+      const showedLayerNamesSeq: string[] = Array.from(showedLayerNames)
+        .map(name => [
+          name,
+          config.layers.find(l => l.name === name)?.layerIndex ?? -1
+        ])
+        .filter(([, index]) => index !== -1)
+        .sort((a, b) => (a[1] as number) - (b[1] as number))
+        .map(([name]) => name as string)
 
-          return { context, showedLayerNames, showedLayerNamesSeq }
-        })
-      )
+      return { context, showedLayerNames, showedLayerNamesSeq }
     })
   ).subscribe(({ context, showedLayerNames, showedLayerNamesSeq }) => {
 
@@ -169,16 +169,16 @@ export const createPlugin = <
       names = Array.isArray(names) ? names : [names]
       showedLayerNames$.next(new Set([...names]))
     },
-    // showAll: () => {
-    //   showAllLayers()
-    // },
+    showAll: () => {
+      showAllLayers()
+    },
     hide: (names: (keyof DefaultParams) | (keyof DefaultParams)[]) => {
       names = Array.isArray(names) ? names : [names]
       showedLayerNames$.next(new Set([...Array.from(showedLayerNames$.getValue()).filter(name => !names.includes(name))]))
     },
-    // hideAll: () => {
-    //   showedLayerNames$.next(new Set())
-    // },
+    hideAll: () => {
+      showedLayerNames$.next(new Set())
+    },
     toggle: (names: (keyof DefaultParams) | (keyof DefaultParams)[]) => {
       names = Array.isArray(names) ? names : [names]
       Array.from(showedLayerNames$.getValue()).forEach(shown => {
@@ -247,7 +247,7 @@ export const createPlugin = <
       // })
 
       // 顯示
-      // showAllLayers()
+      showAllLayers()
     },
     destroy: () => {
       subscription.unsubscribe()
