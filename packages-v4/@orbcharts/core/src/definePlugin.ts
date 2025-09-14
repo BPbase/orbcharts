@@ -9,9 +9,9 @@ export const definePlugin = <
     name: string
     show: (names: (keyof DefaultParams) | (keyof DefaultParams)[]) => void
     showOnly: (name: (keyof DefaultParams) | (keyof DefaultParams)[]) => void
-    // showAll: () => void
+    showAll: () => void
     hide: (names: (keyof DefaultParams) | (keyof DefaultParams)[]) => void
-    // hideAll: () => void
+    hideAll: () => void
     toggle: (names: (keyof DefaultParams) | (keyof DefaultParams)[]) => void
     // setLayers: (partial: DeepPartial<DefaultParams>) => void
     update: (patch: DeepPartial<DefaultParams>) => void
