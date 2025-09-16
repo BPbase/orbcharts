@@ -1,3 +1,4 @@
+import { isDom } from "./commonUtils";
 
 export function createSvg (className?: string): SVGSVGElement {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
@@ -42,4 +43,13 @@ export function createDiv(className?: string): HTMLDivElement {
     div.classList.add(className)
   }
   return div
+}
+
+// 清空 element 底下所有元素
+export function removeElementChildren(el: HTMLElement | Element) {
+  if (isDom(el)) {
+    while (el.firstChild) {
+      el.removeChild(el.firstChild)
+    }
+  }
 }

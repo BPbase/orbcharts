@@ -1,3 +1,7 @@
+export * from './aggregateUtils'
+export * from './colorUtils'
 export * from './commonUtils'
+export * from './dom'
 export * from './errorMessage'
+export * from './observables'
 export * from './validator'

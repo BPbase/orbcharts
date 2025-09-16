@@ -1,5 +1,5 @@
 import type { Observable } from 'rxjs'
-import type { ChartContext, ExtendableContext } from './index'
+import type { DeepPartial, ChartContext, ExtendableContext, PluginSetupProps } from './index'
 
 // export type LayerParamsBase<LayerName extends string> = {
 //   [K in LayerName]: unknown
@@ -15,35 +15,36 @@ import type { ChartContext, ExtendableContext } from './index'
 //   context: ChartContext<ExtendContext>
 // }
 
-// export type LayerContext<ExtendContext, DefaultLayerParams extends Record<string, any> = Record<string, any>> = ChartContext<ExtendContext> & {
-//   layerParams$: Observable<DefaultLayerParams>
+// export type LayerContext<ExtendContext, LayerParams extends Record<string, any> = Record<string, any>> = ChartContext<ExtendContext> & {
+//   layerParams$: Observable<LayerParams>
 // }
 
-interface SetupProps<DefaultLayerParams, ExtendContext extends ExtendableContext> {
-  context: ChartContext<ExtendContext>
-  svg: SVGSVGElement
-  canvas: HTMLCanvasElement
-  params$: Observable<DefaultLayerParams>
+interface LayerSetupProps<ExtendContext extends ExtendableContext, PluginParams, LayerParams> extends PluginSetupProps<ExtendContext, PluginParams> {
+  // context: ChartContext<ExtendContext>
+  // svg: SVGSVGElement
+  // canvas: HTMLCanvasElement
+  layerParams$: Observable<LayerParams>
 }
 
-export interface DefineLayerConfig<DefaultLayerParams extends Record<string, any>, ExtendContext extends ExtendableContext> {
+export interface DefineLayerConfig<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>, LayerParams extends Record<string, any>> {
   name: string
-  defaultParams: DefaultLayerParams
+  defaultParams: LayerParams
   layerIndex: number
-  validator?: (params: DefaultLayerParams) => { valid: boolean; errors?: string[] }
-  setup: (setupProps: SetupProps<DefaultLayerParams, ExtendContext>) => () => void
+  validator?: (params: LayerParams) => { valid: boolean; errors?: string[] }
+  setup: (setupProps: LayerSetupProps<ExtendContext, PluginParams, LayerParams>) => () => void
 }
 
-export interface LayerEntity<LayerParams, ExtendContext extends ExtendableContext> {
+export interface LayerEntity<ExtendContext extends ExtendableContext, PluginParams, LayerParams> {
   name: Readonly<string>
   defaultParams: Readonly<LayerParams>
   layerIndex: Readonly<number>
-  enable(el: { svg: SVGSVGElement; canvas: HTMLCanvasElement }, context: ChartContext<ExtendContext>): void
+  // enable(el: { svg: SVGSVGElement; canvas: HTMLCanvasElement }, context: ChartContext<ExtendContext>): void
+  enable(setupProps: PluginSetupProps<ExtendContext, PluginParams>): void
   disable(): void
-  // setParams(params: Partial<LayerParams>): void
-  update(params: Partial<LayerParams>): void
-  forceReplace(params: LayerParams): void
-  // getParams(): LayerParams
+  // setParams(params: DeepPartial<LayerParams>): void
+  updateParams(params: DeepPartial<LayerParams>): void
+  forceReplaceParams(params: LayerParams): void
+  getParams: () => Readonly<LayerParams>
 
   // injectContext(): void
   destroy(): void

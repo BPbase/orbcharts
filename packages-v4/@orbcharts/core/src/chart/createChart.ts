@@ -3,9 +3,20 @@ import {
   BehaviorSubject,
   Observable,
   shareReplay,
-  takeUntil
+  takeUntil,
+  filter,
+  switchMap,
+  of,
+  iif,
+  map,
+  debounceTime,
+  throttleTime,
+  distinctUntilChanged,
+  mergeWith,
+  share
 } from 'rxjs'
 import type {
+  ChartResize,
   DeepPartial,
   CreateChart,
   ChartOptions,
@@ -17,14 +28,17 @@ import type {
   PluginEntity,
   Theme,
   EventData,
+  ChartSize
 } from '../types'
 import type { ValidatorResult } from '../utils'
 import {
   isDom,
+  removeElementChildren,
   deepOverwrite,
   validateObject,
   createValidatorErrorMessage,
-  createValidatorWarningMessage
+  createValidatorWarningMessage,
+  resizeObservable
 } from '../utils'
 import { DEFAULT_DATA_ENCODING, DEFAULT_THEME } from './defaults'
 
@@ -46,17 +60,18 @@ function chartOptionsValidator (chartOptionsPartial: DeepPartial<ChartOptions>):
     return { status: 'success', columnName: '', expectToBe: '' }
   }
   const result = validateObject(chartOptionsPartial, {
-    width: {
-      toBe: '"auto" | number',
-      test: (value: any) => value === 'auto' || typeof value === 'number'
-    },
-    height: {
-      toBe: '"auto" | number',
-      test: (value: any) => value === 'auto' || typeof value === 'number'
-    },
-    defaults: {
-      toBeTypes: ['object']
-    }
+    // width: {
+    //   toBe: '"auto" | number',
+    //   test: (value: any) => value === 'auto' || typeof value === 'number'
+    // },
+    // height: {
+    //   toBe: '"auto" | number',
+    //   test: (value: any) => value === 'auto' || typeof value === 'number'
+    // },
+    // defaults: {
+    //   toBeTypes: ['object']
+    // }
+    
   })
   
   return result
@@ -102,13 +117,13 @@ export const createChart: CreateChart = (element, options) => {
   // data
   const rawData$ = new Subject<RawData>()
   // data encoding
-  const defaultEncoding = options && options.defaults && options.defaults.encoding
-    ? deepOverwrite(DEFAULT_DATA_ENCODING, options.defaults.encoding)
+  const defaultEncoding = options && options.encoding
+    ? deepOverwrite(DEFAULT_DATA_ENCODING, options.encoding)
     : DEFAULT_DATA_ENCODING
   const currentEncoding$ = new BehaviorSubject<Encoding>(defaultEncoding)
   // theme
-  const defaultTheme = options && options.defaults && options.defaults.theme
-    ? deepOverwrite(DEFAULT_THEME, options.defaults.theme)
+  const defaultTheme = options && options.theme
+    ? deepOverwrite(DEFAULT_THEME, options.theme)
     : DEFAULT_THEME
   const defaultTheme$ = new BehaviorSubject<Theme>(defaultTheme)
   const previousTheme$ = new BehaviorSubject<Theme>(defaultTheme)
@@ -122,9 +137,44 @@ export const createChart: CreateChart = (element, options) => {
   })
 
   // chart context
-  const context: ChartContext = (() => {
-    // const svgSelection = createSvgSelection(element)
-    // const canvasSelection = createCanvasSelection(element)
+  const context: ChartContext<{}> = (() => {
+    // 監聽外層的element尺寸
+    const rootSize$: Observable<ChartSize> = of({
+      width: options?.size?.width ?? 'auto',
+      height: options?.size?.height ?? 'auto'
+    }).pipe(
+      switchMap(size => {
+        return iif(
+          () => size.width === 'auto' || size.height === 'auto',
+          // 有 'auto' 的話就監聽element的尺寸
+          resizeObservable(element).pipe(
+            map((d) => {
+              return {
+                width: size.width === 'auto' ? d.width : size.width,
+                height: size.height === 'auto' ? d.height : size.height
+              }
+            })
+          ),
+          of(size as ChartSize)
+        )
+      }),
+      takeUntil(destroy$),
+      shareReplay(1)
+    )
+    const rootSizeFiltered$ = of().pipe(
+      mergeWith(
+        rootSize$.pipe(
+          debounceTime(250)
+        ),
+        rootSize$.pipe(
+          throttleTime(250)
+        )
+      ),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+      shareReplay(1)
+    )
+    // rootSizeFiltered$.subscribe()
+
     const encoding$ = new Observable<Encoding>(subscriber => {
       currentEncoding$.subscribe(data => {
         subscriber.next(data)
@@ -152,8 +202,7 @@ export const createChart: CreateChart = (element, options) => {
     })
     return {
       root: element,
-      // svgSelection,
-      // canvasSelection,
+      size$: rootSizeFiltered$,
       encoding$,
       seriesData$,
       gridData$,
@@ -169,6 +218,9 @@ export const createChart: CreateChart = (element, options) => {
 
   // create chart instance
   return (() => {
+    function resize ({ width, height }: ChartResize) {
+      
+    }
     function setData (data: RawData) {
       rawData$.next(data)
     }
@@ -182,9 +234,12 @@ export const createChart: CreateChart = (element, options) => {
       const currentEncoding = deepOverwrite(currentEncoding$.getValue(), patch)
       currentEncoding$.next(currentEncoding)
     }
-    function replaceEncoding (full: Encoding) {
+    function forceReplaceEncoding (full: Encoding) {
       // replace
       currentEncoding$.next(full)
+    }
+    function getEncoding () {
+      return currentEncoding$.getValue()
     }
     function setPlugins (plugins: PluginEntity<unknown, unknown>[]) {
       // replace all
@@ -215,23 +270,31 @@ export const createChart: CreateChart = (element, options) => {
       previousTheme$.next(full)
       currentTheme$.next(full)
     }
+    function getTheme () {
+      return currentTheme$.getValue()
+    }
     function destroy() {
       // context.svgSelection.remove()
       // context.canvasSelection.remove()
       destroy$.next(undefined)
+      // 清空 element 底下所有元素
+      removeElementChildren(element)
     }
 
     return {
+      resize,
       setData,
       // setEncoding,
       updateEncoding,
-      replaceEncoding,
+      forceReplaceEncoding,
+      getEncoding,
       setPlugins,
       addPlugin,
       removePlugin,
       setTheme,
       updateTheme,
       forceReplaceTheme,
+      getTheme,
       destroy,
       context
     }

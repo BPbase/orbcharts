@@ -8,13 +8,18 @@ import type {
   EventData,
 } from './index'
 
+export interface ChartSize {
+  width: number
+  height: number
+}
+
 // 定義可擴展的 context 類型 - 只包含新增的欄位
 export interface ExtendableContext {
   // 只能添加新的欄位，不能修改現有的 ChartContext
   [key: string]: Observable<any> | Subject<any> | Function | any
 }
 
-export type ChartContext<ExtendContext extends ExtendableContext = {}> = {
+export type ChartContext<ExtendContext extends ExtendableContext> = {
   // svgSelection: d3.Selection<SVGGElement, unknown, HTMLElement, any>
   // canvasSelection: d3.Selection<HTMLCanvasElement, unknown, HTMLElement, any>
   root: HTMLElement | Element
@@ -29,4 +34,5 @@ export type ChartContext<ExtendContext extends ExtendableContext = {}> = {
   theme$: Observable<Theme>
   event$: Observable<{ data: EventData; event: Event }>
   eventTrigger$: Subject<{ data: EventData; event: Event }>
+  size$: Observable<ChartSize>
 } & ExtendContext

@@ -1,20 +1,21 @@
-import type { ChartContext, DefineLayerConfig, LayerEntity, ExtendableContext } from "./types"
+import type { ChartContext, DefineLayerConfig, LayerEntity, ExtendableContext, PluginSetupProps } from "./types"
 import { createLayer } from "./layer/createLayer"
 
-export const defineLayer = <DefaultParams, ExtendContext extends ExtendableContext>(config: DefineLayerConfig<DefaultParams, ExtendContext>) => {
-  return class Layer implements LayerEntity<DefaultParams, ExtendContext> {
+export const defineLayer = <ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>, LayerParams extends Record<string, any>>(config: DefineLayerConfig<ExtendContext, PluginParams, LayerParams>) => {
+  return class Layer implements LayerEntity<ExtendContext, PluginParams, LayerParams> {
     name: string
-    defaultParams: DefaultParams
+    defaultParams: LayerParams
     layerIndex: number
-    enable: (el: { svg?: SVGSVGElement; canvas?: HTMLCanvasElement }, context: ChartContext<ExtendContext>) => void
+    enable: (setupProps: PluginSetupProps<ExtendContext, PluginParams>) => void
     disable: () => void
-    // setParams: (params: Partial<DefaultParams>) => void
-    update: (params: Partial<DefaultParams>) => void
-    forceReplace: (params: DefaultParams) => void
+    // setParams: (params: Partial<LayerParams>) => void
+    updateParams: (params: Partial<LayerParams>) => void
+    forceReplaceParams: (params: LayerParams) => void
+    getParams: () => Readonly<LayerParams>
     // injectContext: (context: ChartContext<ExtendContext>) => void
     destroy: () => void
     constructor () {
-      return createLayer<DefaultParams, ExtendContext>(config)
+      return createLayer<ExtendContext, PluginParams, LayerParams>(config)
     }
   }
 }

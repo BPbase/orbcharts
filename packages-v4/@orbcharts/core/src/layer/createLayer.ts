@@ -5,58 +5,57 @@ import {
   takeUntil,
   switchMap,
   combineLatest,
-  of
+  of,
+  shareReplay,
 } from "rxjs"
-import type { DeepPartial, ChartContext, DefineLayerConfig, LayerEntity, ExtendableContext } from "../types"
+import type { DeepPartial, ChartContext, DefineLayerConfig, LayerEntity, ExtendableContext, PluginSetupProps } from "../types"
 import { deepOverwrite } from "../utils/commonUtils"
 
 export const createLayer = <
-  DefaultLayerParams extends Record<string, any>,
-  ExtendContext extends ExtendableContext
->(config: DefineLayerConfig<DefaultLayerParams, ExtendContext>): LayerEntity<DefaultLayerParams, ExtendContext> => {
+  ExtendContext extends ExtendableContext,
+  PluginParams extends Record<string, any>,
+  LayerParams extends Record<string, any>
+>(config: DefineLayerConfig<ExtendContext, PluginParams, LayerParams>): LayerEntity<ExtendContext, PluginParams, LayerParams> => {
 
   // let svgElement: SVGSVGElement | null = null
   // let canvasElement: HTMLCanvasElement | null = null
 
-  const currentParams$ = new BehaviorSubject<DefaultLayerParams>(Object.assign({}, config.defaultParams))
+  const layerParams$ = new BehaviorSubject<LayerParams>(Object.assign({}, config.defaultParams))
 
   // let _context: ChartContext<ExtendContext> = {} as ChartContext<ExtendContext>
-  let destroyInstance = () => {}
+  let destroySetup = () => {}
 
-  const enableSetup$ = new BehaviorSubject<{
-    svg: SVGSVGElement
-    canvas: HTMLCanvasElement
-    context: ChartContext<ExtendContext>
-  } | null>(null)
+  const enableSetup$ = new BehaviorSubject<PluginSetupProps<ExtendContext, PluginParams> | null>(null)
 
   // show
   combineLatest({
-    currentParams: currentParams$,
+    layerParams: layerParams$,
     enableSetup: enableSetup$
   }).pipe(
     switchMap(async d => d),
     filter(enableSetup => enableSetup !== null)
-  ).subscribe(({ currentParams, enableSetup }) => {
-    destroyInstance()
-    destroyInstance = config.setup({
+  ).subscribe(({ layerParams, enableSetup }) => {
+    destroySetup()
+    destroySetup = config.setup({
       svg: enableSetup.svg,
       canvas: enableSetup.canvas,
       context: Object.assign({}, enableSetup.context),
-      params$: of(currentParams)
+      pluginParams$: enableSetup.pluginParams$,
+      layerParams$: of(layerParams).pipe(shareReplay(1))
     })
   })
   
   // hide
   enableSetup$.pipe(filter(enableSetup => enableSetup === null)).subscribe(() => {
-    destroyInstance()
+    destroySetup()
   })
 
   return {
     name: config.name,
     defaultParams: config.defaultParams,
     layerIndex: config.layerIndex,
-    enable: (el, context) => {
-      enableSetup$.next({ svg: el.svg, canvas: el.canvas, context })
+    enable: (setupProps) => {
+      enableSetup$.next(setupProps)
     },
     disable: () => {
       enableSetup$.next(null)
@@ -64,12 +63,15 @@ export const createLayer = <
     // setParams: (partial) => {
     //   previousParams$.next(deepOverwrite(defaultParams$.getValue(), partial))
     // },
-    update: (patch) => {
-      const currentParams = deepOverwrite(currentParams$.getValue(), patch)
-      currentParams$.next(currentParams)
+    updateParams: (patch) => {
+      const layerParams = deepOverwrite(layerParams$.getValue(), patch)
+      layerParams$.next(layerParams)
     },
-    forceReplace: (full) => {
-      currentParams$.next(full)
+    forceReplaceParams: (full) => {
+      layerParams$.next(full)
+    },
+    getParams: () => {
+      return layerParams$.getValue()
     },
     // injectContext: (context) => {
     //   _context = Object.assign({}, context)
@@ -79,7 +81,7 @@ export const createLayer = <
     destroy: () => {
       enableSetup$.next(null)
       enableSetup$.complete()
-      currentParams$.complete()
+      layerParams$.complete()
     }
   }
 }

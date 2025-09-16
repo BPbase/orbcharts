@@ -2,29 +2,31 @@ import type { DeepPartial, DefinePluginConfig, PluginEntity, ChartContext, Exten
 import { createPlugin } from './plugin/createPlugin'
 
 export const definePlugin = <
-  DefaultParams extends Record<string, any>,
-  ExtendContext extends ExtendableContext
->(config: DefinePluginConfig<DefaultParams, ExtendContext>) => {
-  return class Plugin implements PluginEntity<DefaultParams, ExtendContext> {
+  ExtendContext extends ExtendableContext,
+  PluginParams extends Record<string, any>,
+  AllLayerParams extends Record<string, any>
+>(config: DefinePluginConfig<ExtendContext, PluginParams, AllLayerParams>) => {
+  return class Plugin implements PluginEntity<PluginParams, AllLayerParams> {
     name: string
-    show: (names: (keyof DefaultParams) | (keyof DefaultParams)[]) => void
-    showOnly: (name: (keyof DefaultParams) | (keyof DefaultParams)[]) => void
+    show: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => void
+    showOnly: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => void
     showAll: () => void
-    hide: (names: (keyof DefaultParams) | (keyof DefaultParams)[]) => void
+    hide: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => void
     hideAll: () => void
-    toggle: (names: (keyof DefaultParams) | (keyof DefaultParams)[]) => void
-    // setLayers: (partial: DeepPartial<DefaultParams>) => void
-    update: (patch: DeepPartial<DefaultParams>) => void
-    forceReplace: (full: DefaultParams) => void
-    // layer: <LayerName extends keyof DefaultParams>(name: LayerName) => {
-    //   // set: (partial: DeepPartial<DefaultParams[LayerName]>) => void
-    //   update: (patch: DeepPartial<DefaultParams[LayerName]>) => void
-    //   replace: (full: DefaultParams[LayerName]) => void
+    toggle: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => void
+    // setLayers: (partial: DeepPartial<PluginParams>) => void
+    updateParams: (patch: DeepPartial<PluginParams | AllLayerParams>) => void
+    forceReplaceParams: (full: PluginParams | AllLayerParams) => void
+    getParams: () => Readonly<PluginParams | AllLayerParams>
+    // layer: <LayerName extends keyof PluginParams>(name: LayerName) => {
+    //   // set: (partial: DeepPartial<PluginParams[LayerName]>) => void
+    //   update: (patch: DeepPartial<PluginParams[LayerName]>) => void
+    //   replace: (full: PluginParams[LayerName]) => void
     //   show: () => void
     //   hide: () => void
     //   toggle: () => void
     // }
-    injectContext: (context: ChartContext<ExtendContext>) => void
+    injectContext: (context: ChartContext<{}>) => void
     destroy: () => void
     constructor () {
       return createPlugin(config)

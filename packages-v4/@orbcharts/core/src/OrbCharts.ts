@@ -1,5 +1,6 @@
 import type {
   DeepPartial,
+  ChartResize,
   ChartEntity,
   ChartContext,
   ChartOptions,
@@ -11,16 +12,19 @@ import type {
 import { createChart } from './chart/createChart'
 
 export class OrbCharts implements ChartEntity {
+  resize: ({ width, height }: ChartResize) => void
   setData: (data: RawData) => void
   // setEncoding: (partial: DeepPartial<Encoding>) => void
   updateEncoding: (patch: DeepPartial<Encoding>) => void
-  replaceEncoding: (full: Encoding) => void
+  forceReplaceEncoding: (full: Encoding) => void
+  getEncoding: () => Readonly<Encoding>
   setPlugins: (plugins: PluginEntity<unknown, unknown>[]) => void
   addPlugin: (plugin: PluginEntity<unknown, unknown>) => void
   removePlugin: (id: string) => void
   // setTheme: (theme: Theme) => void
   updateTheme: (patch: DeepPartial<Theme>) => void
   forceReplaceTheme: (full: Theme) => void
+  getTheme: () => Readonly<Theme>
   destroy: () => void;
   context: ChartContext<unknown>
 

@@ -13,42 +13,51 @@ export interface PluginInfo {
   layers: string[]
 }
 
-export interface DefinePluginConfig<DefaultParams extends Record<string, any>, ExtendContext extends ExtendableContext> {
-  name: string
-  // defaultParams: DefaultParams
-  // validator?: (params: DefaultParams) => { valid: boolean; errors?: string[] }
-  layers: LayerEntity<Extract<keyof DefaultParams, string>, ExtendContext>[]
-  extendContext?: (context: Readonly<ChartContext>) => ExtendContext
+export interface PluginSetupProps<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> {
+  context: ChartContext<ExtendContext>
+  svg: SVGSVGElement
+  canvas: HTMLCanvasElement
+  pluginParams$: Observable<PluginParams>
 }
 
-// export interface CreatePlugin<DefaultParams> {
-//   (config: DefinePluginConfig<DefaultParams>): PluginEntity<DefaultParams>
+export interface DefinePluginConfig<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>, AllLayerParams extends Record<string, any>>{
+  name: string
+  defaultParams?: PluginParams
+  validator?: (params: PluginParams) => { valid: boolean; errors?: string[] }
+  layers?: LayerEntity<ExtendContext, PluginParams, Extract<AllLayerParams, string>>[]
+  // extendContext?: (context: Readonly<ChartContext>) => ExtendContext
+  setup?: (props: PluginSetupProps<ExtendContext, PluginParams>) => () => void
+}
+
+// export interface CreatePlugin<PluginParams> {
+//   (config: DefinePluginConfig<PluginParams>): PluginEntity<PluginParams>
 // }
 
 
-export interface PluginEntity<DefaultParams extends Record<string, any>, ExtendContext extends ExtendableContext> {
+export interface PluginEntity<PluginParams extends Record<string, any>, AllLayerParams extends Record<string, any>> {
   name: string
   // layer visibility controls
-  show(names: (keyof DefaultParams) | (keyof DefaultParams)[]): void
-  showOnly(names: (keyof DefaultParams) | (keyof DefaultParams)[]): void
+  show(names: (keyof AllLayerParams) | (keyof AllLayerParams)[]): void
+  showOnly(names: (keyof AllLayerParams) | (keyof AllLayerParams)[]): void
   showAll(): void
-  hide(names: (keyof DefaultParams) | (keyof DefaultParams)[]): void
+  hide(names: (keyof AllLayerParams) | (keyof AllLayerParams)[]): void
   hideAll(): void
-  toggle(names: (keyof DefaultParams) | (keyof DefaultParams)[]): void
+  toggle(names: (keyof AllLayerParams) | (keyof AllLayerParams)[]): void
   // layer params
-  // setLayers(partial: DeepPartial<DefaultParams>): void // deep-merge with default
-  update(patch: DeepPartial<DefaultParams>): void // deep-merge with previous
-  forceReplace(full: DefaultParams): void // replace（特殊需求，可節省效能）
-  // layer<LayerName extends keyof DefaultParams>(name: LayerName): {
-  //   // set(partial: DeepPartial<DefaultParams[LayerName]>): void // deep-merge with default 該 layer 的 params
-  //   update(patch: DeepPartial<DefaultParams[LayerName]>): void // deep-merge with previous 該 layer 的 params
-  //   replace(full: DefaultParams[LayerName]): void // replace（特殊需求，可節省效能）
+  // setLayers(partial: DeepPartial<PluginParams>): void // deep-merge with default
+  updateParams(patch: DeepPartial<PluginParams | AllLayerParams>): void // deep-merge with previous
+  forceReplaceParams(full: PluginParams | AllLayerParams): void // replace（特殊需求，可節省效能）
+  getParams(): Readonly<PluginParams | AllLayerParams>
+  // layer<LayerName extends keyof PluginParams>(name: LayerName): {
+  //   // set(partial: DeepPartial<PluginParams[LayerName]>): void // deep-merge with default 該 layer 的 params
+  //   update(patch: DeepPartial<PluginParams[LayerName]>): void // deep-merge with previous 該 layer 的 params
+  //   replace(full: PluginParams[LayerName]): void // replace（特殊需求，可節省效能）
   //   show(): void
   //   hide(): void
   //   toggle(): void
   // }
 
-  injectContext(context: ChartContext<ExtendContext>): void
+  injectContext(context: ChartContext<{}>): void
   destroy(): void
 
   // outputs (observables)
