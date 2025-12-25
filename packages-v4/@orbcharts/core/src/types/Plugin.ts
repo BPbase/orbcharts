@@ -24,7 +24,7 @@ export interface DefinePluginConfig<ExtendContext extends ExtendableContext, Plu
   name: string
   defaultParams?: PluginParams
   validator?: (params: PluginParams) => { valid: boolean; errors?: string[] }
-  layers?: LayerEntity<ExtendContext, PluginParams, Extract<AllLayerParams, string>>[]
+  layers?: LayerEntity<ExtendContext, PluginParams, AllLayerParams[keyof AllLayerParams]>[]
   // extendContext?: (context: Readonly<ChartContext>) => ExtendContext
   setup?: (props: PluginSetupProps<ExtendContext, PluginParams>) => () => void
 }

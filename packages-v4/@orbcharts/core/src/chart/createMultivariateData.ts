@@ -1,16 +1,34 @@
-import type { RawDataColumn, Encoding, ModelDataMultivariate, ModelDatumMultivariate, Theme } from '../types'
+import type { RawData, RawDataColumn, Encoding, ModelDataMultivariate, ModelDatumMultivariate, Theme } from '../types'
 import { getColorByFrom } from '../utils/colorUtils'
 
-export const createMultivariateData = (rawData: RawDataColumn[], encoding: Encoding, theme: Theme): ModelDataMultivariate[] => {
+export const createMultivariateData = (rawData: RawData, encoding: Encoding, theme: Theme): ModelDataMultivariate[] => {
   // 依據 dataset 欄位將資料分組
   const datasetMap = new Map<string, RawDataColumn[]>()
-  rawData.forEach((d) => {
-    const datasetKey = (d as any)[encoding.dataset.from] || 'default'
-    if (!datasetMap.has(datasetKey)) {
-      datasetMap.set(datasetKey, [])
-    }
-    datasetMap.get(datasetKey)!.push(d)
-  })
+  
+  // 判斷是一維陣列還是二維陣列
+  const is2DArray = Array.isArray(rawData[0])
+  
+  if (is2DArray) {
+    // 二維陣列：每個子陣列代表一個 dataset
+    (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
+      datasetArray.forEach((d) => {
+        const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+        if (!datasetMap.has(datasetKey)) {
+          datasetMap.set(datasetKey, [])
+        }
+        datasetMap.get(datasetKey)!.push(d)
+      })
+    })
+  } else {
+    // 一維陣列：依據 dataset 欄位分組
+    (rawData as RawDataColumn[]).forEach((d) => {
+      const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+      if (!datasetMap.has(datasetKey)) {
+        datasetMap.set(datasetKey, [])
+      }
+      datasetMap.get(datasetKey)!.push(d)
+    })
+  }
 
   // 建立排序後的 dataset 名稱陣列
   let sortedDatasetNames: string[] = Array.from(datasetMap.keys())
@@ -20,12 +38,23 @@ export const createMultivariateData = (rawData: RawDataColumn[], encoding: Encod
   } else if (encoding.dataset.sort === 'original') {
     // original 排序：依照原始資料中 dataset 名稱出現的順序
     const datasetOrder: string[] = []
-    rawData.forEach((d) => {
-      const datasetKey = (d as any)[encoding.dataset.from] || 'default'
-      if (!datasetOrder.includes(datasetKey)) {
-        datasetOrder.push(datasetKey)
-      }
-    })
+    if (is2DArray) {
+      (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
+        datasetArray.forEach((d) => {
+          const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+          if (!datasetOrder.includes(datasetKey)) {
+            datasetOrder.push(datasetKey)
+          }
+        })
+      })
+    } else {
+      (rawData as RawDataColumn[]).forEach((d) => {
+        const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+        if (!datasetOrder.includes(datasetKey)) {
+          datasetOrder.push(datasetKey)
+        }
+      })
+    }
     sortedDatasetNames = datasetOrder
   } else if (encoding.dataset.sort === 'alphabetical') {
     // alphabetical 排序：依照字母順序

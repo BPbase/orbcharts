@@ -1,31 +1,60 @@
-import type { RawDataColumn, Encoding, ModelDataGraph, ModelDatumGraphNode, ModelDatumGraphEdge, Theme } from '../types'
+import type { RawData, RawDataColumn, Encoding, ModelDataGraph, ModelDatumGraphNode, ModelDatumGraphEdge, Theme } from '../types'
 import { aggregate } from '../utils/aggregateUtils'
 import { getColorByFrom } from '../utils/colorUtils'
 
-export const createGraphData = (rawData: RawDataColumn[], encoding: Encoding, theme: Theme): ModelDataGraph[] => {
+export const createGraphData = (rawData: RawData, encoding: Encoding, theme: Theme): ModelDataGraph[] => {
+  // 判斷是一維陣列還是二維陣列
+  const is2DArray = Array.isArray(rawData[0])
+  
   // 分離 nodes 和 edges 資料
   const nodeData: RawDataColumn[] = []
   const edgeData: RawDataColumn[] = []
   
-  rawData.forEach(d => {
-    if (d.source && d.target) {
-      // 如果有 source 和 target 欄位，視為 edge
-      edgeData.push(d)
-    } else {
-      // 否則視為 node
-      nodeData.push(d)
-    }
-  })
+  if (is2DArray) {
+    (rawData as RawDataColumn[][]).forEach(datasetArray => {
+      datasetArray.forEach(d => {
+        if (d.source && d.target) {
+          edgeData.push(d)
+        } else {
+          nodeData.push(d)
+        }
+      })
+    })
+  } else {
+    (rawData as RawDataColumn[]).forEach(d => {
+      if (d.source && d.target) {
+        edgeData.push(d)
+      } else {
+        nodeData.push(d)
+      }
+    })
+  }
 
   // 依據 dataset 欄位將 node 資料分組
   const datasetMap = new Map<string, RawDataColumn[]>()
-  nodeData.forEach((d) => {
-    const datasetKey = (d as any)[encoding.dataset.from] || 'default'
-    if (!datasetMap.has(datasetKey)) {
-      datasetMap.set(datasetKey, [])
-    }
-    datasetMap.get(datasetKey)!.push(d)
-  })
+  
+  if (is2DArray) {
+    // 二維陣列：需要追蹤每個 node 來自哪個子陣列
+    (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
+      datasetArray.forEach((d) => {
+        if (!d.source || !d.target) {
+          const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+          if (!datasetMap.has(datasetKey)) {
+            datasetMap.set(datasetKey, [])
+          }
+          datasetMap.get(datasetKey)!.push(d)
+        }
+      })
+    })
+  } else {
+    nodeData.forEach((d) => {
+      const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+      if (!datasetMap.has(datasetKey)) {
+        datasetMap.set(datasetKey, [])
+      }
+      datasetMap.get(datasetKey)!.push(d)
+    })
+  }
 
   // 建立排序後的 dataset 名稱陣列
   let sortedDatasetNames: string[] = Array.from(datasetMap.keys())
@@ -34,12 +63,25 @@ export const createGraphData = (rawData: RawDataColumn[], encoding: Encoding, th
       .concat(sortedDatasetNames.filter(name => !encoding.dataset.sort.includes(name)))
   } else if (encoding.dataset.sort === 'original') {
     const datasetOrder: string[] = []
-    nodeData.forEach((d) => {
-      const datasetKey = (d as any)[encoding.dataset.from] || 'default'
-      if (!datasetOrder.includes(datasetKey)) {
-        datasetOrder.push(datasetKey)
-      }
-    })
+    if (is2DArray) {
+      (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
+        datasetArray.forEach((d) => {
+          if (!d.source || !d.target) {
+            const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+            if (!datasetOrder.includes(datasetKey)) {
+              datasetOrder.push(datasetKey)
+            }
+          }
+        })
+      })
+    } else {
+      nodeData.forEach((d) => {
+        const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+        if (!datasetOrder.includes(datasetKey)) {
+          datasetOrder.push(datasetKey)
+        }
+      })
+    }
     sortedDatasetNames = datasetOrder
   } else if (encoding.dataset.sort === 'alphabetical') {
     sortedDatasetNames.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))

@@ -1,17 +1,35 @@
-import type { RawDataColumn, Encoding, ModelDataTree, ModelDatumTree, Theme } from '../types'
+import type { RawData, RawDataColumn, Encoding, ModelDataTree, ModelDatumTree, Theme } from '../types'
 import { aggregate } from '../utils/aggregateUtils'
 import { getColorByFrom } from '../utils/colorUtils'
 
-export const createTreeData = (rawData: RawDataColumn[], encoding: Encoding, theme: Theme): ModelDataTree[] => {
+export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Theme): ModelDataTree[] => {
   // 依據 dataset 欄位將資料分組
   const datasetMap = new Map<string, RawDataColumn[]>()
-  rawData.forEach((d) => {
-    const datasetKey = (d as any)[encoding.dataset.from] || 'default'
-    if (!datasetMap.has(datasetKey)) {
-      datasetMap.set(datasetKey, [])
-    }
-    datasetMap.get(datasetKey)!.push(d)
-  })
+  
+  // 判斷是一維陣列還是二維陣列
+  const is2DArray = Array.isArray(rawData[0])
+  
+  if (is2DArray) {
+    // 二維陣列：每個子陣列代表一個 dataset
+    (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
+      datasetArray.forEach((d) => {
+        const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+        if (!datasetMap.has(datasetKey)) {
+          datasetMap.set(datasetKey, [])
+        }
+        datasetMap.get(datasetKey)!.push(d)
+      })
+    })
+  } else {
+    // 一維陣列：依據 dataset 欄位分組
+    (rawData as RawDataColumn[]).forEach((d) => {
+      const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+      if (!datasetMap.has(datasetKey)) {
+        datasetMap.set(datasetKey, [])
+      }
+      datasetMap.get(datasetKey)!.push(d)
+    })
+  }
 
   // 建立排序後的 dataset 名稱陣列
   let sortedDatasetNames: string[] = Array.from(datasetMap.keys())
@@ -20,12 +38,23 @@ export const createTreeData = (rawData: RawDataColumn[], encoding: Encoding, the
       .concat(sortedDatasetNames.filter(name => !encoding.dataset.sort.includes(name)))
   } else if (encoding.dataset.sort === 'original') {
     const datasetOrder: string[] = []
-    rawData.forEach((d) => {
-      const datasetKey = (d as any)[encoding.dataset.from] || 'default'
-      if (!datasetOrder.includes(datasetKey)) {
-        datasetOrder.push(datasetKey)
-      }
-    })
+    if (is2DArray) {
+      (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
+        datasetArray.forEach((d) => {
+          const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+          if (!datasetOrder.includes(datasetKey)) {
+            datasetOrder.push(datasetKey)
+          }
+        })
+      })
+    } else {
+      (rawData as RawDataColumn[]).forEach((d) => {
+        const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+        if (!datasetOrder.includes(datasetKey)) {
+          datasetOrder.push(datasetKey)
+        }
+      })
+    }
     sortedDatasetNames = datasetOrder
   } else if (encoding.dataset.sort === 'alphabetical') {
     sortedDatasetNames.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))

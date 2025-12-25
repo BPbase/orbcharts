@@ -33,7 +33,7 @@ export const createLayer = <
     enableSetup: enableSetup$
   }).pipe(
     switchMap(async d => d),
-    filter(enableSetup => enableSetup !== null)
+    filter(d => d.enableSetup !== null)
   ).subscribe(({ layerParams, enableSetup }) => {
     destroySetup()
     destroySetup = config.setup({

@@ -1,5 +1,5 @@
 {
-  "name": "@orbcharts/core",
+  "name": "@orbcharts/plugins-basic",
   "version": "4.0.0-pre-alpha.0",
   "description": "Core codes for OrbCharts",
   "author": "Blue Planet Inc.",
@@ -49,12 +49,14 @@
     "build": "vite build --mode production"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.3",
     "ts-loader": "^9.4.2",
     "typescript": "^5.9.2",
     "vite": "^5.3.5",
     "vite-plugin-dts": "^3.7.3"
   },
   "dependencies": {
+    "d3": "^7.9.0",
     "rxjs": "^7.8.2"
   }
 }

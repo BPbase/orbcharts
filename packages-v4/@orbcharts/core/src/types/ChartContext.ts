@@ -25,11 +25,11 @@ export type ChartContext<ExtendContext extends ExtendableContext> = {
   root: HTMLElement | Element
   // rawData$: Observable<RawData>
   encoding$: Observable<Encoding>
-  seriesData$: Observable<ModelData<'series'>>
-  gridData$: Observable<ModelData<'grid'>>
-  multivariateData$: Observable<ModelData<'multivariate'>>
-  graphData$: Observable<ModelData<'graph'>>
-  treeData$: Observable<ModelData<'tree'>>
+  seriesData$: Observable<ModelData<'series'>[]>
+  gridData$: Observable<ModelData<'grid'>[]>
+  multivariateData$: Observable<ModelData<'multivariate'>[]>
+  graphData$: Observable<ModelData<'graph'>[]>
+  treeData$: Observable<ModelData<'tree'>[]>
   plugins$: Observable<readonly PluginInfo[]>
   theme$: Observable<Theme>
   event$: Observable<{ data: EventData; event: Event }>

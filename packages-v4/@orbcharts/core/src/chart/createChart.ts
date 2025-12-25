@@ -13,7 +13,8 @@ import {
   throttleTime,
   distinctUntilChanged,
   mergeWith,
-  share
+  share,
+  combineLatest
 } from 'rxjs'
 import type {
   ChartResize,
@@ -41,6 +42,11 @@ import {
   resizeObservable
 } from '../utils'
 import { DEFAULT_DATA_ENCODING, DEFAULT_THEME } from './defaults'
+import { createSeriesData } from './createSeriesData'
+import { createGridData } from './createGridData'
+import { createMultivariateData } from './createMultivariateData'
+import { createGraphData } from './createGraphData'
+import { createTreeData } from './createTreeData'
 
 
 function elementValidator (element: HTMLElement | Element): ValidatorResult {
@@ -115,7 +121,7 @@ export const createChart: CreateChart = (element, options) => {
   const destroy$ = new Subject()
 
   // data
-  const rawData$ = new Subject<RawData>()
+  const rawData$ = new BehaviorSubject<RawData>([])
   // data encoding
   const defaultEncoding = options && options.encoding
     ? deepOverwrite(DEFAULT_DATA_ENCODING, options.encoding)
@@ -174,7 +180,6 @@ export const createChart: CreateChart = (element, options) => {
       shareReplay(1)
     )
     // rootSizeFiltered$.subscribe()
-
     const encoding$ = new Observable<Encoding>(subscriber => {
       currentEncoding$.subscribe(data => {
         subscriber.next(data)
@@ -182,11 +187,61 @@ export const createChart: CreateChart = (element, options) => {
     }).pipe(
       shareReplay(1)
     )
-    const seriesData$ = new Observable<ModelData<'series'>>()
-    const gridData$ = new Observable<ModelData<'grid'>>()
-    const multivariateData$ = new Observable<ModelData<'multivariate'>>()
-    const graphData$ = new Observable<ModelData<'graph'>>()
-    const treeData$ = new Observable<ModelData<'tree'>>()
+    const seriesData$ = combineLatest([
+      rawData$,
+      currentEncoding$,
+      currentTheme$
+    ]).pipe(
+      debounceTime(0),
+      map(([rawData, encoding, theme]) => {
+        return createSeriesData(rawData, encoding, theme)
+      }),
+      shareReplay(1)
+    )
+    const gridData$ = combineLatest([
+      rawData$,
+      currentEncoding$,
+      currentTheme$
+    ]).pipe(
+      debounceTime(0),
+      map(([rawData, encoding, theme]) => {
+        return createGridData(rawData, encoding, theme)
+      }),
+      shareReplay(1)
+    )
+    const multivariateData$ = combineLatest([
+      rawData$,
+      currentEncoding$,
+      currentTheme$
+    ]).pipe(
+      debounceTime(0),
+      map(([rawData, encoding, theme]) => {
+        return createMultivariateData(rawData, encoding, theme)
+      }),
+      shareReplay(1)
+    )
+    const graphData$ = combineLatest([
+      rawData$,
+      currentEncoding$,
+      currentTheme$
+    ]).pipe(
+      debounceTime(0),
+      map(([rawData, encoding, theme]) => {
+        return createGraphData(rawData, encoding, theme)
+      }),
+      shareReplay(1)
+    )
+    const treeData$ = combineLatest([
+      rawData$,
+      currentEncoding$,
+      currentTheme$
+    ]).pipe(
+      debounceTime(0),
+      map(([rawData, encoding, theme]) => {
+        return createTreeData(rawData, encoding, theme)
+      }),
+      shareReplay(1)
+    )
     const plugins$ = new Observable<readonly PluginInfo[]>()
     const theme$ = new Observable<Theme>(subscriber => {
       currentTheme$.subscribe(data => {
