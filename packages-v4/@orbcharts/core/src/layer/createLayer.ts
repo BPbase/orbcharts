@@ -7,6 +7,7 @@ import {
   combineLatest,
   of,
   shareReplay,
+  debounceTime,
 } from "rxjs"
 import type { DeepPartial, ChartContext, DefineLayerConfig, LayerEntity, ExtendableContext, PluginSetupProps } from "../types"
 import { deepOverwrite } from "../utils/commonUtils"
@@ -32,7 +33,7 @@ export const createLayer = <
     layerParams: layerParams$,
     enableSetup: enableSetup$
   }).pipe(
-    switchMap(async d => d),
+    debounceTime(0),
     filter(d => d.enableSetup !== null)
   ).subscribe(({ layerParams, enableSetup }) => {
     destroySetup()

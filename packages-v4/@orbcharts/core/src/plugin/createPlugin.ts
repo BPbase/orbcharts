@@ -7,6 +7,7 @@ import {
   filter,
   of,
   shareReplay,
+  debounceTime,
   Observable,
 } from 'rxjs'
 import { handleElementLifecycle } from '../utils/dom-lifecycle'
@@ -17,7 +18,7 @@ export const createPlugin = <
   ExtendContext extends ExtendableContext,
   PluginParams,
   AllLayerParams
->(config: DefinePluginConfig<ExtendContext, PluginParams, AllLayerParams>): PluginEntity<PluginParams, AllLayerParams> => {
+>(config: DefinePluginConfig<ExtendContext, PluginParams, AllLayerParams>, initPluginParams?: DeepPartial<PluginParams | AllLayerParams>): PluginEntity<PluginParams, AllLayerParams> => {
 
   // const pluginParams$ = new BehaviorSubject<PluginParams>(Object.assign({}, config.defaultParams))
 
@@ -31,18 +32,29 @@ export const createPlugin = <
     }, {} as Record<keyof AllLayerParams, typeof config.layers[number]>)
   }
 
+  
   const getAllLayerNamesSet = () => new Set(config.layers.map(l => l.name as keyof AllLayerParams))
+  const getDefaultLayerNamesSet = (params: DeepPartial<PluginParams | AllLayerParams>): Set<keyof AllLayerParams> => {
+    if (params) {
+      const AllLayerNamesSet = getAllLayerNamesSet()
+      const keysOfParams = Object.keys(params) as (keyof AllLayerParams)[]
+      return new Set(keysOfParams.filter(key => AllLayerNamesSet.has(key)))
+    }
+    return new Set()
+  }
 
+  // 預設顯示的 layers
+  const defaultShowedLayerNames$ = new BehaviorSubject<Set<keyof AllLayerParams>>(getDefaultLayerNamesSet(initPluginParams))
   // 前一次顯示的 layers
   // const previousShowedLayerNames$ = new BehaviorSubject<Set<keyof PluginParams>>(new Set())
-  // 要顯示的 layers
-  const showedLayerNames$ = new BehaviorSubject<Set<keyof AllLayerParams>>(getAllLayerNamesSet())
+  // 設定要顯示的 layers
+  const settingShowedLayerNames$ = new BehaviorSubject<Set<keyof AllLayerParams> | null>(null)
 
   const context$ = new BehaviorSubject<ChartContext<ExtendContext> | null>(null)
 
   // const showAllLayers = () => {
   //   const AllLayerNamesSet = new Set(config.layers.map(l => l.name as keyof AllLayerParams))
-  //   showedLayerNames$.next(AllLayerNamesSet)
+  //   settingShowedLayerNames$.next(AllLayerNamesSet)
   // }
 
   // const defulatAllLayerParams = config.layers.reduce((acc, layer) => {
@@ -61,14 +73,16 @@ export const createPlugin = <
   // let mainSvgElement: SVGSVGElement | null = null
   // let mainCanvasElement: HTMLCanvasElement | null = null
 
-  // 當 context 或 showedLayerNames 改變時，重新初始化 layers
+  // 當 context 或 settingShowedLayerNames 改變時，重新初始化 layers
   const subscription = combineLatest({
     context: context$,
-    showedLayerNames: showedLayerNames$
+    defaultShowedLayerNames: defaultShowedLayerNames$,
+    settingShowedLayerNames: settingShowedLayerNames$
   }).pipe(
-    switchMap(async d => d), // 消除同時間的資料流
+    debounceTime(0),
     filter(({ context }) => context !== null),
-    map(({ context, showedLayerNames }) => {
+    map(({ context, defaultShowedLayerNames, settingShowedLayerNames }) => {
+      const showedLayerNames = settingShowedLayerNames ?? defaultShowedLayerNames
       // 依照 layerIndex 排序
       const showedLayerNamesSeq: string[] = Array.from(showedLayerNames)
         .map(name => [
@@ -188,32 +202,32 @@ export const createPlugin = <
     // layer visibility controls
     show: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => {
       names = Array.isArray(names) ? names : [names]
-      showedLayerNames$.next(new Set([...Array.from(showedLayerNames$.getValue()), ...names]))
+      settingShowedLayerNames$.next(new Set([...Array.from(settingShowedLayerNames$.getValue()), ...names]))
     },
     showOnly: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => {
       names = Array.isArray(names) ? names : [names]
-      showedLayerNames$.next(new Set([...names]))
+      settingShowedLayerNames$.next(new Set([...names]))
     },
     showAll: () => {
-      showedLayerNames$.next(getAllLayerNamesSet())
+      settingShowedLayerNames$.next(getAllLayerNamesSet())
     },
     hide: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => {
       names = Array.isArray(names) ? names : [names]
-      showedLayerNames$.next(new Set([...Array.from(showedLayerNames$.getValue()).filter(name => !names.includes(name))]))
+      settingShowedLayerNames$.next(new Set([...Array.from(settingShowedLayerNames$.getValue()).filter(name => !names.includes(name))]))
     },
     hideAll: () => {
-      showedLayerNames$.next(new Set())
+      settingShowedLayerNames$.next(new Set())
     },
     toggle: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => {
       names = Array.isArray(names) ? names : [names]
-      Array.from(showedLayerNames$.getValue()).forEach(shown => {
+      Array.from(settingShowedLayerNames$.getValue()).forEach(shown => {
         if (names.includes(shown)) {
           names.splice(names.indexOf(shown), 1)
         } else {
           names.push(shown)
         }
       })
-      showedLayerNames$.next(new Set(names))
+      settingShowedLayerNames$.next(new Set(names))
     },
     // layer params
     // setLayers: (partial: DeepPartial<PluginParams>) => {
@@ -226,6 +240,7 @@ export const createPlugin = <
           layer.updateParams((patch as Record<string, any>)[key])
         }
       })
+      defaultShowedLayerNames$.next(getDefaultLayerNamesSet(patch))
     },
     forceReplaceParams: (full: PluginParams | AllLayerParams) => {
       Object.keys(full).forEach((key) => {
@@ -234,6 +249,7 @@ export const createPlugin = <
           layer.forceReplaceParams((full as Record<string, any>)[key])
         }
       })
+      defaultShowedLayerNames$.next(getDefaultLayerNamesSet(full))
     },
     getParams: () => {
       return config.layers.reduce((acc, layer) => {
@@ -281,13 +297,13 @@ export const createPlugin = <
       // }
       
       // 顯示全部 layers
-      showedLayerNames$.next(getAllLayerNamesSet())
+      // settingShowedLayerNames$.next(getAllLayerNamesSet())
     },
     destroy: () => {
       destroySetup()
       subscription.unsubscribe()
       context$.complete()
-      showedLayerNames$.complete()
+      settingShowedLayerNames$.complete()
       
       config.layers.forEach((layer) => {
         layer.destroy()

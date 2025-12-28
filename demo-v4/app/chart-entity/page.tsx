@@ -25,9 +25,16 @@ export default function ChartEntity() {
 
     const seriesPlugin = new SeriesPlugin()
 
-    const chart = new OrbCharts(domRef.current!)
-    chart.setPlugins([seriesPlugin])
-    chart.setData(pieData)
+    const chart = new OrbCharts(domRef.current!, {
+      data: [],
+      encoding: {},
+      // plugins: [],
+      theme: {
+        
+      }
+    })
+    // chart.setPlugins([seriesPlugin])
+    // chart.setData(pieData)
     
     chart.context.seriesData$.subscribe(data => {
       console.log('Series Data Updated:', data)

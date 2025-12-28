@@ -28,8 +28,8 @@ export const definePlugin = <
     // }
     injectContext: (context: ChartContext<{}>) => void
     destroy: () => void
-    constructor () {
-      return createPlugin(config)
+    constructor (params: DeepPartial<PluginParams | AllLayerParams>) {
+      return createPlugin(config, params)
     }
   }
 }
