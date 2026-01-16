@@ -1,5 +1,5 @@
 import type { LayerEntity } from "../../../../core/src/types"
-import type { SeriesExtendContext, SeriesPluginParams, PieParams } from "../types"
+import type { SeriesSeparableGraphicExtendContext, SeriesSeparableGraphicPluginParams, PieParams } from "../types"
 import { defineLayer } from "../../../../core/src"
 
 export const Pie = defineLayer({

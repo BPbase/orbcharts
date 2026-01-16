@@ -1,2 +1,2 @@
 
-export { SeriesPlugin } from './series/SeriesPlugin'
+export { SeriesSeparableGraphic } from './SeriesSeparableGraphic/SeriesSeparableGraphic'

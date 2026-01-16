@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import type { RawData } from '@orbcharts/core/types'
 import { OrbCharts } from '@orbcharts/core/index'
-import { SeriesPlugin } from '@orbcharts/plugins-basic/index'
+import { SeriesSeparableGraphic } from '@orbcharts/plugins-basic/index'
 
 const pieData: RawData = [
   { category: 'A', value: 30 },
@@ -23,22 +23,28 @@ export default function ChartEntity() {
     
     // console.log(domRef.current)
 
-    const seriesPlugin = new SeriesPlugin()
+    const seriesPlugin = new SeriesSeparableGraphic({
+      Pie: {}
+    })
 
     const chart = new OrbCharts(domRef.current!, {
-      data: [],
+      data: pieData,
       encoding: {},
       // plugins: [],
       theme: {
         
-      }
+      },
+      plugins: [seriesPlugin]
     })
+    
+    // chart.updateEncoding({})
+    // chart.updateTheme({})
     // chart.setPlugins([seriesPlugin])
     // chart.setData(pieData)
-    
     chart.context.seriesData$.subscribe(data => {
       console.log('Series Data Updated:', data)
     })
+    
     console.log(chart)
 
   }, [])

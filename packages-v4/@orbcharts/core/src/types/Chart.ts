@@ -25,11 +25,21 @@ export interface ChartOptions {
   size: ChartResize
   // defaults: ChartDefaults
   theme: Theme
+  data: RawData
   encoding: Encoding
+  plugins: PluginEntity<unknown, unknown>[]
+}
+
+export interface PartialChartOptions {
+  size?: Partial<ChartResize>
+  theme?: DeepPartial<Theme>
+  data?: RawData
+  encoding?: DeepPartial<Encoding>
+  plugins?: PluginEntity<unknown, unknown>[]
 }
 
 export interface CreateChart {
-  (element: HTMLElement | Element, options?: DeepPartial<ChartOptions>): ChartEntity
+  (element: HTMLElement | Element, options?: PartialChartOptions): ChartEntity
 }
 
 export interface ChartEntity {

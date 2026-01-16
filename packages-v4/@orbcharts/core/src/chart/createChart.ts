@@ -121,7 +121,7 @@ export const createChart: CreateChart = (element, options) => {
   const destroy$ = new Subject()
 
   // data
-  const rawData$ = new BehaviorSubject<RawData>([])
+  const rawData$ = new BehaviorSubject<RawData>(options?.data || [])
   // data encoding
   const defaultEncoding = options && options.encoding
     ? deepOverwrite(DEFAULT_DATA_ENCODING, options.encoding)
@@ -135,13 +135,8 @@ export const createChart: CreateChart = (element, options) => {
   const previousTheme$ = new BehaviorSubject<Theme>(defaultTheme)
   const currentTheme$ = new BehaviorSubject<Theme>(defaultTheme)
   // plugins
-  const pluginsInstance$ = new BehaviorSubject<PluginEntity<unknown, unknown>[]>([])
-  pluginsInstance$.subscribe(plugins => {
-    plugins.forEach(plugin => {
-      plugin.injectContext(context)
-    })
-  })
-
+  const pluginsInstance$ = new BehaviorSubject<PluginEntity<unknown, unknown>[]>(options?.plugins || [])
+  
   // chart context
   const context: ChartContext<{}> = (() => {
     // 監聽外層的element尺寸
@@ -270,6 +265,13 @@ export const createChart: CreateChart = (element, options) => {
       eventTrigger$
     }
   })()
+
+  // inject context into plugins
+  pluginsInstance$.subscribe(plugins => {
+    plugins.forEach(plugin => {
+      plugin.injectContext(context)
+    })
+  })
 
   // create chart instance
   return (() => {
