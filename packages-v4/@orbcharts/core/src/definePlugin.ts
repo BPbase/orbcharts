@@ -4,7 +4,7 @@ import { createPlugin } from './plugin/createPlugin'
 export const definePlugin = <
   ExtendContext extends ExtendableContext,
   PluginParams extends Record<string, any>,
-  AllLayerParams extends Record<string, any>
+  AllLayerParams extends Record<string, any>,
 >(config: DefinePluginConfig<ExtendContext, PluginParams, AllLayerParams>) => {
   return class Plugin implements PluginEntity<PluginParams, AllLayerParams> {
     name: string

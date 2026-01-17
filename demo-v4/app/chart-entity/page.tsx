@@ -6,12 +6,12 @@ import { OrbCharts } from '@orbcharts/core/index'
 import { SeriesSeparableGraphic } from '@orbcharts/plugins-basic/index'
 
 const pieData: RawData = [
-  { category: 'A', value: 30 },
-  { category: 'A', value: 50 },
-  { category: 'A', value: 20 },
-  { category: 'B', value: 70 },
-  { category: 'C', value: 45 },
-  { category: 'D', value: 85 },
+  { series: 'A', value: 30 },
+  { series: 'A', value: 50 },
+  { series: 'A', value: 20 },
+  { series: 'B', value: 70 },
+  { series: 'C', value: 45 },
+  { series: 'D', value: 85 },
 ]
 
 export default function ChartEntity() {
@@ -36,6 +36,8 @@ export default function ChartEntity() {
       },
       plugins: [seriesPlugin]
     })
+
+    seriesPlugin.showOnly(['Pie'])
     
     // chart.updateEncoding({})
     // chart.updateTheme({})

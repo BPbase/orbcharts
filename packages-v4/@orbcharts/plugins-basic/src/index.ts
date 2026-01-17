@@ -1,2 +1,2 @@
 
-export { SeriesSeparableGraphic } from './SeriesSeparableGraphic/SeriesSeparableGraphic'
+export { SeriesSeparableGraphic } from './series/SeriesSeparableGraphic/SeriesSeparableGraphic'

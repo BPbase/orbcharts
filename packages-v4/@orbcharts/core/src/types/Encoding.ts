@@ -22,10 +22,10 @@ export interface EncodingValue {
   aggregate: 'sum' | 'mean' | 'median' | 'min' | 'max' | 'count' | 'none'
 }
 
-export type EncodingMultiValue = Array<{
+export type EncodingMultivariate = {
   from: string
   label: string
-}>
+}[]
 
 export interface EncodingColor {
   from: 'index' | 'series' | 'category' | 'dataset'
@@ -36,6 +36,6 @@ export interface Encoding {
   series: EncodingSeries
   category: EncodingCategory
   value: EncodingValue
-  multivariate: EncodingMultiValue
+  multivariate: EncodingMultivariate
   color: EncodingColor
 }

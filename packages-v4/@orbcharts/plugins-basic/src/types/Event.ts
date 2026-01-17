@@ -1,7 +1,7 @@
 import type {
   ModelType,
   RenderDatumBase
-} from './index'
+} from '../../../core/src/types/index'
 
 export type EventType = 'click'
   | 'mouseover'

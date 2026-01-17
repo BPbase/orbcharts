@@ -4,7 +4,7 @@ import { createLayer } from "./layer/createLayer"
 export const defineLayer = <
   ExtendContext extends ExtendableContext,
   PluginParams extends Record<string, any>,
-  LayerParams extends Record<string, any>
+  LayerParams extends Record<string, any>,
 >(config: DefineLayerConfig<ExtendContext, PluginParams, LayerParams>) => {
   return class Layer implements LayerEntity<ExtendContext, PluginParams, LayerParams> {
     name: string

@@ -1,10 +1,11 @@
-import type { LayerEntity } from "../../../../core/src/types"
+import type { LayerEntity } from "../../../../../core/src/types"
 import type { SeriesSeparableGraphicExtendContext, SeriesSeparableGraphicPluginParams, PieParams } from "../types"
-import { defineLayer } from "../../../../core/src"
+import { defineLayer } from "../../../../../core/src"
+import { DEFAULT_PIE_PARAMS } from "../defaults"
 
 export const Pie = defineLayer({
-  name: 'pie',
-  defaultParams: {},
+  name: 'Pie',
+  defaultParams: DEFAULT_PIE_PARAMS,
   layerIndex: 0,
   // validator: (params) => ({ valid: true }),
   setup: ({ layerParams$, context }) => {

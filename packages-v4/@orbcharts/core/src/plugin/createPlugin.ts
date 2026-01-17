@@ -152,7 +152,6 @@ export const createPlugin = <
       } else {
         layer.destroy()
       }
-      layer.enable
     })
     
   })

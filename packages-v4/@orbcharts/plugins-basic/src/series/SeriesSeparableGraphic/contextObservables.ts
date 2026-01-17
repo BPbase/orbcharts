@@ -1,6 +1,7 @@
 import {
   combineLatest,
   distinctUntilChanged,
+  debounceTime,
   filter,
   map,
   merge,
@@ -8,23 +9,64 @@ import {
   shareReplay,
   switchMap,
   Subject,
-  Observable } from 'rxjs'
+  Observable
+} from 'rxjs'
 import type {
-  ChartParams,
-  ComputedDatumSeries,
-  ComputedDataTypeMap,
-  DataFormatterTypeMap,
-  ContainerPosition,
-  Layout } from '../../lib/core-types'
-import { calcContainerPosition } from '../utils/orbchartsUtils'
+  ModelDatumSeries,
+  ModelData,
+  // DataFormatterTypeMap,
+  // ContainerPosition,
+  // Layout
+} from '../../../../core/src/types'
+import type { SeriesSeparableGraphicPluginParams } from './types'
+import type { Layout, ContainerPosition } from '../../types/PluginParams'
+import type { ComputedDatumSeries } from '../../types/ComputedData'
+import { calcContainerPosition } from '../../utils/orbchartsUtils'
 
-export const datumLabelsObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'series'>> }) => {
+export const seriesComputedDataObservable = ({ modelData$, pluginParams$ }: {
+  modelData$: Observable<ModelData<'series'>>
+  pluginParams$: Observable<SeriesSeparableGraphicPluginParams>
+}) => {
+  return combineLatest({
+    modelData: modelData$,
+    pluginParams: pluginParams$
+  }).pipe(
+    debounceTime(0),
+    map(data => {
+      return data.modelData
+        // 攤為一維陣列
+        .flat()
+        // 排序後給 seq
+        .sort(data.pluginParams.sort ?? undefined)
+        .map((datum, index) => {
+          const visibleFilter = data.pluginParams.visibleFilter
+          return {
+            ...datum,
+            visible: visibleFilter ? visibleFilter(datum) : true,
+            seq: index
+          }
+        })
+        // 恢復原排序
+        .sort((a, b) => a.index - b.index)
+        // 依seriesIndex分組（二維陣列）
+        .reduce((acc, datum) => {
+          if (!acc[datum.seriesIndex]) {
+            acc[datum.seriesIndex] = []
+          }
+          acc[datum.seriesIndex].push(datum)
+          return acc
+        }, [])
+    })
+  )
+}
+
+export const datumLabelsObservable = ({ modelData$ }: { modelData$: Observable<ModelData<'series'>> }) => {
   const DatumLabels = new Set<string>()
-  return computedData$.pipe(
+  return modelData$.pipe(
     map(data => {
       data.forEach(series => {
         series.forEach(datum => {
-          DatumLabels.add(datum.label)
+          DatumLabels.add(datum.name)
         })
       })
       return Array.from(DatumLabels)
@@ -32,34 +74,34 @@ export const datumLabelsObservable = ({ computedData$ }: { computedData$: Observ
   )
 }
 
-export const separateSeriesObservable = ({ fullDataFormatter$ }: { fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>> }) => {
-  return fullDataFormatter$.pipe(
+export const separateSeriesObservable = ({ pluginParams$ }: { pluginParams$: Observable<SeriesSeparableGraphicPluginParams> }) => {
+  return pluginParams$.pipe(
     map(data => data.separateSeries),
     distinctUntilChanged(),
   )
 }
 
-export const separateLabelObservable = ({ fullDataFormatter$ }: { fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>> }) => {
-  return fullDataFormatter$.pipe(
-    map(data => data.separateLabel),
+export const separateNameObservable = ({ pluginParams$ }: { pluginParams$: Observable<SeriesSeparableGraphicPluginParams> }) => {
+  return pluginParams$.pipe(
+    map(data => data.separateName),
     distinctUntilChanged(),
   )
 }
 
-export const sumSeriesObservable = ({ fullDataFormatter$ }: { fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>> }) => {
-  return fullDataFormatter$.pipe(
-    map(data => data.sumSeries),
-    distinctUntilChanged(),
-  )
-}
+// export const sumSeriesObservable = ({ pluginParams$ }: { pluginParams$: Observable<SeriesSeparableGraphicPluginParams> }) => {
+//   return pluginParams$.pipe(
+//     map(data => data.sumSeries),
+//     distinctUntilChanged(),
+//   )
+// }
 
-export const seriesLabelsObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'series'>> }) => {
-  return computedData$.pipe(
+export const seriesLabelsObservable = ({ modelData$ }: { modelData$: Observable<ModelData<'series'>> }) => {
+  return modelData$.pipe(
     map(data => {
       return data
         .filter(series => series.length)
         .map(series => {
-          return series[0].seriesLabel
+          return series[0].series
         })
     }),
     distinctUntilChanged((a, b) => {
@@ -68,8 +110,8 @@ export const seriesLabelsObservable = ({ computedData$ }: { computedData$: Obser
   )
 }
 
-export const seriesVisibleComputedDataObservable = ({ computedData$ }: { computedData$: Observable<ComputedDataTypeMap<'series'>> }) => {
-  return computedData$.pipe(
+export const seriesVisibleComputedDataObservable = ({ seriesComputedData$ }: { seriesComputedData$: Observable<ComputedDatumSeries[][]> }) => {
+  return seriesComputedData$.pipe(
     map(data => {
       return data.map(series => {
         return series.filter(datum => datum.visible != false)
@@ -78,17 +120,17 @@ export const seriesVisibleComputedDataObservable = ({ computedData$ }: { compute
   )
 }
 
-export const seriesComputedSortedDataObservable = ({ computedData$, separateSeries$, separateLabel$, sumSeries$, datumLabels$ }: {
-  computedData$: Observable<ComputedDataTypeMap<'series'>>,
+export const seriesComputedSortedDataObservable = ({ seriesComputedData$, separateSeries$, separateName$, sumSeries$, datumLabels$ }: {
+  seriesComputedData$: Observable<ComputedDatumSeries[][]>,
   separateSeries$: Observable<boolean>,
-  separateLabel$: Observable<boolean>,
+  separateName$: Observable<boolean>,
   sumSeries$: Observable<boolean>,
   datumLabels$: Observable<string[]>
 }) => {
   return combineLatest({
-    computedData: computedData$,
+    seriesComputedData: seriesComputedData$,
     separateSeries: separateSeries$,
-    separateLabel: separateLabel$,
+    separateName: separateName$,
     sumSeries: sumSeries$,
     datumLabels: datumLabels$,
   }).pipe(
@@ -97,7 +139,7 @@ export const seriesComputedSortedDataObservable = ({ computedData$, separateSeri
 
       // sum series
       const sumData: ComputedDatumSeries[][] = data.sumSeries == true
-        ? data.computedData.map(d => {
+        ? data.seriesComputedData.map(d => {
             return [
               // 加總為一筆資料
               d.reduce((acc, current) => {
@@ -111,7 +153,7 @@ export const seriesComputedSortedDataObservable = ({ computedData$, separateSeri
               }, null)
             ]
           })
-        : data.computedData
+        : data.seriesComputedData
       
       // separate series
       const separateSeriesData: ComputedDatumSeries[][] = data.separateSeries == true
@@ -121,7 +163,7 @@ export const seriesComputedSortedDataObservable = ({ computedData$, separateSeri
         : [sumData.flat()]
 
       // separate label
-      const separateLabelData: ComputedDatumSeries[][] = data.separateLabel == true
+      const separateNameData: ComputedDatumSeries[][] = data.separateName == true
         // 有拆分的話每個label為一組
         ? (() => {
           // datumLabel 的 index 對應
@@ -133,7 +175,7 @@ export const seriesComputedSortedDataObservable = ({ computedData$, separateSeri
           return separateSeriesData
             .map(series => {
               return series.reduce((acc, current) => {
-                const index = datumLabelIndexMap[current.label]
+                const index = datumLabelIndexMap[current.name]
                 if (acc[index] == null) {
                   acc[index] = []
                 }
@@ -146,12 +188,12 @@ export const seriesComputedSortedDataObservable = ({ computedData$, separateSeri
         // 無拆分
         : separateSeriesData
       
-      return data.separateSeries == true && data.separateLabel == true
+      return data.separateSeries == true && data.separateName == true
         // 全部拆分時全部一起排序
-        ? separateLabelData
+        ? separateNameData
             .sort((a, b) => a[0].seq - b[0].seq)
         // 依各個 container 排序
-        : separateLabelData
+        : separateNameData
             .map(series => {
               return series.sort((a, b) => a.seq - b.seq)
             })
@@ -161,15 +203,15 @@ export const seriesComputedSortedDataObservable = ({ computedData$, separateSeri
 
 
 // 所有container位置（對應series）
-export const seriesContainerPositionObservable = ({ computedSortedData$, fullDataFormatter$, layout$ }: {
-  computedSortedData$: Observable<ComputedDatumSeries[][]>
-  fullDataFormatter$: Observable<DataFormatterTypeMap<'series'>>
+export const seriesContainerPositionObservable = ({ computedSortedData$, pluginParams$, layout$ }: {
+  computedSortedData$: Observable<ModelDatumSeries[][]>
+  pluginParams$: Observable<SeriesSeparableGraphicPluginParams>
   layout$: Observable<Layout>
 }): Observable<ContainerPosition[]> => {
 
   const gridContainerPosition$ = combineLatest({
     computedSortedData: computedSortedData$,
-    fullDataFormatter: fullDataFormatter$,
+    pluginParams: pluginParams$,
     layout: layout$,
   }).pipe(
     switchMap(async (d) => d),
@@ -178,7 +220,7 @@ export const seriesContainerPositionObservable = ({ computedSortedData$, fullDat
       // 已分類資料的分類數量
       const amount = data.computedSortedData.length
 
-      return calcContainerPosition(data.layout, data.fullDataFormatter.container, amount)
+      return calcContainerPosition(data.layout, data.pluginParams.container, amount)
     })
   )
 
@@ -187,7 +229,7 @@ export const seriesContainerPositionObservable = ({ computedSortedData$, fullDat
 
 export const datumContainerPositionMapObservable = ({ seriesContainerPosition$, computedSortedData$ }: {
   seriesContainerPosition$: Observable<ContainerPosition[]>
-  computedSortedData$: Observable<ComputedDatumSeries[][]>
+  computedSortedData$: Observable<ModelDatumSeries[][]>
 }) => {
   return combineLatest({
     seriesContainerPosition: seriesContainerPosition$,

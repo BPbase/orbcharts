@@ -1,11 +1,24 @@
 import type { SeriesSeparableGraphicPluginParams } from './types'
-import type { ModelDatumSeries } from '../../../core/src/types'
+import type { ModelDatumSeries } from '../../../../core/src/types'
 import type { PieParams } from './types'
 
 export const DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS: SeriesSeparableGraphicPluginParams = {
+  styles: {
+    padding: {
+      top: 60,
+      right: 60,
+      bottom: 60,
+      left: 60
+    },
+    highlightTarget: 'datum',
+    highlightDefault: null,
+    unhighlightedOpacity: 0.3,
+    transitionDuration: 800,
+    transitionEase: 'easeCubic'
+  },
   visibleFilter: (datum: ModelDatumSeries) => true,
   sort: null,
-  seriesLabels: [],
+  // seriesLabels: [],
   container: {
     columnAmount: 1,
     rowAmount: 1,
@@ -13,8 +26,8 @@ export const DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS: SeriesSeparableGraphicPlug
     rowGap: 'auto',
   },
   separateSeries: false,
-  separateLabel: false,
-  sumSeries: false,
+  separateName: false,
+  // sumSeries: false,
 }
 DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS.visibleFilter.toString = () => '(datum) => true'
 

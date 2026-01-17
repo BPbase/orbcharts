@@ -1,27 +1,21 @@
-import type { ColorType, ModelDatumSeries } from '../../../core/src/types'
+import type { ColorType, ModelDatumSeries } from '../../../../core/src/types'
+import type { GraphicContainer, GraphicStyles } from '../../types/PluginParams'
 
 // context
 export interface SeriesSeparableGraphicExtendContext {
 
 }
 
-export interface GraphicContainer {
-  // gap: number
-  columnAmount: number
-  rowAmount: number
-  columnGap: number | 'auto'
-  rowGap: number | 'auto'
-}
-
 // plugin params
 export interface SeriesSeparableGraphicPluginParams {
+  styles: GraphicStyles
   visibleFilter: (datum: ModelDatumSeries) => boolean | null
   sort: ((a: ModelDatumSeries, b: ModelDatumSeries) => number) | null
-  seriesLabels: string[]
+  // seriesLabels: string[]
   container: GraphicContainer
   separateSeries: boolean
-  separateLabel: boolean
-  sumSeries: boolean
+  separateName: boolean
+  // sumSeries: boolean
 }
 
 // all layer params

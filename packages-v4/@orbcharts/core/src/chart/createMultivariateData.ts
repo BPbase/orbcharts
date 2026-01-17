@@ -150,17 +150,21 @@ export const createMultivariateData = (rawData: RawData, encoding: Encoding, the
 
           const modelData: ModelDatumMultivariate = {
             id: d.id || `${datasetName}-${seriesName}-${categoryName}-${index}`,
-            index: categoryIndex, // Multivariate 模式下 index 對應 categoryIndex
+            index,
             name: d.name || '',
             data: d.data,
             value: null, // MultivariateData 的主要值在 values 陣列中，這裡設為 null
             color: getColorByFrom(encoding.color.from, { 
-              index: categoryIndex, 
+              index, 
               seriesIndex,
               categoryIndex,
               datasetIndex
             }, theme),
-            multivariate
+            multivariate,
+            series: seriesName,
+            seriesIndex: seriesIndex,
+            category: categoryName,
+            categoryIndex: categoryIndex
           }
           seriesData.push(modelData)
         })
