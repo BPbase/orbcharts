@@ -20,4 +20,5 @@ export interface EventData<T extends ModelType = ModelType, ExtendTypes extends 
   layerName: string
   target: RenderDatumBase<T, ExtendTypes>[] | null // 互動的目標資料（若有）
   tween?: number
+  event?: Event
 }

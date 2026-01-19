@@ -13,7 +13,7 @@ import {
 } from 'rxjs'
 import type {
   ModelDatumSeries,
-  ModelData,
+  ModelDataSeries,
   // DataFormatterTypeMap,
   // ContainerPosition,
   // Layout
@@ -23,48 +23,50 @@ import type { Layout, ContainerPosition } from '../../types/PluginParams'
 import type { ComputedDatumSeries } from '../../types/ComputedData'
 import { calcContainerPosition } from '../../utils/orbchartsUtils'
 
-export const seriesComputedDataObservable = ({ modelData$, pluginParams$ }: {
-  modelData$: Observable<ModelData<'series'>>
+export const seriesComputedDataObservable = ({ seriesData$, pluginParams$ }: {
+  seriesData$: Observable<ModelDataSeries[]>
   pluginParams$: Observable<SeriesSeparableGraphicPluginParams>
 }) => {
   return combineLatest({
-    modelData: modelData$,
+    seriesData: seriesData$,
     pluginParams: pluginParams$
   }).pipe(
     debounceTime(0),
-    map(data => {
-      return data.modelData
-        // 攤為一維陣列
-        .flat()
-        // 排序後給 seq
-        .sort(data.pluginParams.sort ?? undefined)
-        .map((datum, index) => {
-          const visibleFilter = data.pluginParams.visibleFilter
-          return {
-            ...datum,
-            visible: visibleFilter ? visibleFilter(datum) : true,
-            seq: index
-          }
-        })
-        // 恢復原排序
-        .sort((a, b) => a.index - b.index)
-        // 依seriesIndex分組（二維陣列）
-        .reduce((acc, datum) => {
-          if (!acc[datum.seriesIndex]) {
-            acc[datum.seriesIndex] = []
-          }
-          acc[datum.seriesIndex].push(datum)
-          return acc
-        }, [])
+    map(({ seriesData, pluginParams }) => {
+      return seriesData.map(data => {
+        return data
+          // 攤為一維陣列
+          .flat()
+          // 排序後給 seq
+          .sort(pluginParams.sort ?? undefined)
+          .map((datum, index) => {
+            const visibleFilter = pluginParams.visibleFilter
+            return {
+              ...datum,
+              visible: visibleFilter ? visibleFilter(datum) : true,
+              seq: index
+            }
+          })
+          // 恢復原排序
+          .sort((a, b) => a.index - b.index)
+          // 依seriesIndex分組（二維陣列）
+          .reduce((acc, datum) => {
+            if (!acc[datum.seriesIndex]) {
+              acc[datum.seriesIndex] = []
+            }
+            acc[datum.seriesIndex].push(datum)
+            return acc
+          }, [])
+      })
     })
   )
 }
 
-export const datumLabelsObservable = ({ modelData$ }: { modelData$: Observable<ModelData<'series'>> }) => {
+export const datumLabelsObservable = ({ seriesData$ }: { seriesData$: Observable<ModelDataSeries[]> }) => {
   const DatumLabels = new Set<string>()
-  return modelData$.pipe(
-    map(data => {
-      data.forEach(series => {
+  return seriesData$.pipe(
+    map(seriesData => {
+      seriesData.flat().forEach(series => {
         series.forEach(datum => {
           DatumLabels.add(datum.name)
         })
@@ -95,14 +97,16 @@ export const separateNameObservable = ({ pluginParams$ }: { pluginParams$: Obser
 //   )
 // }
 
-export const seriesLabelsObservable = ({ modelData$ }: { modelData$: Observable<ModelData<'series'>> }) => {
-  return modelData$.pipe(
+export const seriesLabelsObservable = ({ seriesData$ }: { seriesData$: Observable<ModelDataSeries[]> }) => {
+  return seriesData$.pipe(
     map(data => {
-      return data
+      const seriesLabels = data
+        .flat()
         .filter(series => series.length)
         .map(series => {
           return series[0].series
         })
+      return Array.from(new Set(seriesLabels))
     }),
     distinctUntilChanged((a, b) => {
       return JSON.stringify(a) === JSON.stringify(b)
@@ -120,47 +124,47 @@ export const seriesVisibleComputedDataObservable = ({ seriesComputedData$ }: { s
   )
 }
 
-export const seriesComputedSortedDataObservable = ({ seriesComputedData$, separateSeries$, separateName$, sumSeries$, datumLabels$ }: {
+export const seriesComputedSortedDataObservable = ({ seriesComputedData$, separateSeries$, separateName$, datumLabels$ }: {
   seriesComputedData$: Observable<ComputedDatumSeries[][]>,
   separateSeries$: Observable<boolean>,
   separateName$: Observable<boolean>,
-  sumSeries$: Observable<boolean>,
+  // sumSeries$: Observable<boolean>,
   datumLabels$: Observable<string[]>
 }) => {
   return combineLatest({
     seriesComputedData: seriesComputedData$,
     separateSeries: separateSeries$,
     separateName: separateName$,
-    sumSeries: sumSeries$,
+    // sumSeries: sumSeries$,
     datumLabels: datumLabels$,
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
 
-      // sum series
-      const sumData: ComputedDatumSeries[][] = data.sumSeries == true
-        ? data.seriesComputedData.map(d => {
-            return [
-              // 加總為一筆資料
-              d.reduce((acc, current) => {
-                if (acc == null) {
-                  // * 取得第一筆資料
-                  return current
-                }
-                // 加總 value
-                acc.value = acc.value + current.value
-                return acc
-              }, null)
-            ]
-          })
-        : data.seriesComputedData
+      // // sum series
+      // const sumData: ComputedDatumSeries[][] = data.sumSeries == true
+      //   ? data.seriesComputedData.map(d => {
+      //       return [
+      //         // 加總為一筆資料
+      //         d.reduce((acc, current) => {
+      //           if (acc == null) {
+      //             // * 取得第一筆資料
+      //             return current
+      //           }
+      //           // 加總 value
+      //           acc.value = acc.value + current.value
+      //           return acc
+      //         }, null)
+      //       ]
+      //     })
+      //   : data.seriesComputedData
       
       // separate series
       const separateSeriesData: ComputedDatumSeries[][] = data.separateSeries == true
         // 有拆分的話每個series為一組
-        ? sumData
+        ? data.seriesComputedData
         // 無拆分的話所有資料為一組
-        : [sumData.flat()]
+        : [data.seriesComputedData.flat()]
 
       // separate label
       const separateNameData: ComputedDatumSeries[][] = data.separateName == true

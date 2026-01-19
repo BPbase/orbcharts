@@ -5,6 +5,24 @@ import {
 import type { SeriesSeparableGraphicExtendContext, SeriesSeparableGraphicPluginParams, SeriesSeparableGraphicAllLayerParams } from './types'
 import { definePlugin } from '../../../../core/src'
 import { DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS } from './defaults'
+import {
+  categoryDataMapObservable,
+  containerSizeObservable,
+  fontSizePxObservable,
+  highlightObservable,
+  seriesDataMapObservable
+} from '../../utils/observables'
+import {
+  datumContainerPositionMapObservable,
+  datumLabelsObservable,
+  separateNameObservable,
+  separateSeriesObservable,
+  seriesComputedDataObservable,
+  seriesComputedSortedDataObservable,
+  seriesContainerPositionObservable,
+  seriesLabelsObservable,
+  seriesVisibleComputedDataObservable
+} from './contextObservables'
 import { Pie } from './layers/Pie'
 
 const pie = new Pie()
@@ -19,57 +37,58 @@ export const SeriesSeparableGraphic = definePlugin<
   layers: [pie],
   setup: (props) => {
 
-    const textSizePx$ = textSizePxObservable(observer.fullChartParams$).pipe(
+    const computedData$ = seriesComputedDataObservable({
+      seriesData$: props.context.seriesData$,
+      pluginParams$: props.pluginParams$
+    }).pipe(
+      shareReplay(1)
+    )
+
+    const fontSizePx$ = fontSizePxObservable(props.context.theme$).pipe(
       shareReplay(1)
     )
 
     const datumLabels$ = datumLabelsObservable({
-      computedData$: observer.computedData$
+      seriesData$: props.context.seriesData$
     }).pipe(
       shareReplay(1)
     )
 
     const separateSeries$ = separateSeriesObservable({
-      fullDataFormatter$: observer.fullDataFormatter$
+      pluginParams$: props.pluginParams$
     }).pipe(
       shareReplay(1)
     )
 
-    const separateLabel$ = separateLabelObservable({
-      fullDataFormatter$: observer.fullDataFormatter$
+    const separateName$ = separateNameObservable({
+      pluginParams$: props.pluginParams$
     }).pipe(
       shareReplay(1)
     )
 
-    const sumSeries$ = sumSeriesObservable({
-      fullDataFormatter$: observer.fullDataFormatter$
-    }).pipe(
-      shareReplay(1)
-    )
-
-    // const visibleComputedData$ = seriesVisibleComputedDataObservable({
-    //   computedData$: observer.computedData$,
+    // const sumSeries$ = sumSeriesObservable({
+    //   fullDataFormatter$: observer.fullDataFormatter$
     // }).pipe(
     //   shareReplay(1)
     // )
 
     const computedSortedData$ = seriesComputedSortedDataObservable({
-      computedData$: observer.computedData$,
+      seriesComputedData$: computedData$,
       separateSeries$: separateSeries$,
-      separateLabel$: separateLabel$,
-      sumSeries$: sumSeries$,
+      separateName$: separateName$,
+      // sumSeries$: sumSeries$,
       datumLabels$: datumLabels$,
     }).pipe(
       shareReplay(1)
     )
 
     const visibleComputedSortedData$ = seriesVisibleComputedDataObservable({
-      computedData$: computedSortedData$,
+      seriesComputedData$: computedSortedData$,
     }).pipe(
       shareReplay(1)
     )
 
-    const datumList$ = observer.computedData$.pipe(
+    const datumList$ = computedData$.pipe(
       map(d => d.flat())
     ).pipe(
       shareReplay(1)
@@ -77,14 +96,16 @@ export const SeriesSeparableGraphic = definePlugin<
 
     const seriesHighlight$ = highlightObservable({
       datumList$,
-      fullChartParams$: observer.fullChartParams$,
-      event$: subject.event$
+      styles$: props.pluginParams$.pipe(
+        map(pluginParams => pluginParams.styles)
+      ),
+      event$: props.context.event$
     }).pipe(
       shareReplay(1)
     )
 
     const seriesLabels$ = seriesLabelsObservable({
-      computedData$: observer.computedData$,
+      seriesData$: props.context.seriesData$,
     }).pipe(
       shareReplay(1)
     )
@@ -97,7 +118,7 @@ export const SeriesSeparableGraphic = definePlugin<
 
     const seriesContainerPosition$ = seriesContainerPositionObservable({
       computedSortedData$: computedSortedData$,
-      fullDataFormatter$: observer.fullDataFormatter$,
+      pluginParams$: props.pluginParams$,
       layout$: observer.layout$,
     }).pipe(
       shareReplay(1)

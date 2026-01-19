@@ -28,6 +28,7 @@ import type {
   GraphicStyles,
   ContainerPositionScaled,
   HighlightTarget,
+  GraphicContainer
 } from '../types/PluginParams'
 
 // interface DatumUnknown {
@@ -79,7 +80,7 @@ interface HighlightTargetValue {
 export const highlightObservable = <T extends ModelType, D>({ datumList$, styles$, event$ }: {
   datumList$: Observable<D[]>
   styles$: Observable<GraphicStyles>
-  event$: Subject<EventData<T>>
+  event$: Observable<EventData<T>>
 }): Observable<D[]> => {
   const destroy$ = new Subject()
 
@@ -220,19 +221,19 @@ export const seriesDataMapObservable = <DatumType extends ComputedDatum<'series'
   )
 }
 
-export const groupDataMapObservable = <DatumType extends ComputedDatum<'grid'>> ({ datumList$ }: { datumList$: Observable<DatumType[]> }) => {
-  return datumList$.pipe(
-    map(data => {
-      const GroupDataMap: Map<string, DatumType[]> = new Map()
-      data.forEach(d => {
-        const groupData = GroupDataMap.get(d.category) ?? []
-        groupData.push(d)
-        GroupDataMap.set(d.category, groupData)
-      })
-      return GroupDataMap
-    })
-  )
-}
+// export const groupDataMapObservable = <DatumType extends ComputedDatum<'grid'>> ({ datumList$ }: { datumList$: Observable<DatumType[]> }) => {
+//   return datumList$.pipe(
+//     map(data => {
+//       const GroupDataMap: Map<string, DatumType[]> = new Map()
+//       data.forEach(d => {
+//         const groupData = GroupDataMap.get(d.category) ?? []
+//         groupData.push(d)
+//         GroupDataMap.set(d.category, groupData)
+//       })
+//       return GroupDataMap
+//     })
+//   )
+// }
 
 export const categoryDataMapObservable = <DatumType extends ComputedDatum<'multivariate' | 'graph' | 'tree'>> ({ datumList$ }: { datumList$: Observable<DatumType[]> }) => {
   return datumList$.pipe(
@@ -250,7 +251,7 @@ export const categoryDataMapObservable = <DatumType extends ComputedDatum<'multi
   )
 }
 
-export const textSizePxObservable = (chartParams$: Observable<Theme>) => {
+export const fontSizePxObservable = (chartParams$: Observable<Theme>) => {
   return chartParams$.pipe(
     map(d => d.fontSize),
     distinctUntilChanged(),
@@ -275,7 +276,7 @@ export const textSizePxObservable = (chartParams$: Observable<Theme>) => {
 export const containerSizeObservable = ({ layout$, containerPosition$, container$ }: {
   layout$: Observable<Layout>
   containerPosition$: Observable<ContainerPositionScaled[]>
-  container$: Observable<DataFormatterContainer>
+  container$: Observable<GraphicContainer>
 }) => {
   const rowAmount$ = containerPosition$.pipe(
     map(containerPosition => {

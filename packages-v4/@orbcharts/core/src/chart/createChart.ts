@@ -243,11 +243,11 @@ export const createChart: CreateChart = (element, options) => {
         subscriber.next(data)
       })
     })
-    const eventTrigger$ = new Subject<{ data: EventData; event: Event }>()
+    const eventTrigger$ = new Subject<EventData>()
 
-    const event$ = new Observable<{ data: EventData; event: Event }>(subscriber => {
-      eventTrigger$.subscribe(({ data, event }) => {
-        subscriber.next({ data, event })
+    const event$ = new Observable<EventData>(subscriber => {
+      eventTrigger$.subscribe((data) => {
+        subscriber.next(data)
       })
     })
     return {

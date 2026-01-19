@@ -32,7 +32,7 @@ export type ChartContext<ExtendContext extends ExtendableContext> = {
   treeData$: Observable<ModelData<'tree'>[]>
   plugins$: Observable<readonly PluginInfo[]>
   theme$: Observable<Theme>
-  event$: Observable<{ data: EventData; event: Event }>
-  eventTrigger$: Subject<{ data: EventData; event: Event }>
+  event$: Observable<EventData>
+  eventTrigger$: Subject<EventData>
   size$: Observable<ChartSize>
 } & ExtendContext

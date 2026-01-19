@@ -38,7 +38,7 @@ export interface ComputedDatumTree extends ModelDatumTree {
 export type ComputedDatum<T extends ModelType> = T extends 'series' ? ComputedDatumSeries
   : T extends 'grid' ? ComputedDatumGrid
   : T extends 'multivariate' ? ComputedDatumMultivariate
-  : T extends 'graph' ? ComputedDatumGraphNode | ComputedDatumGraphEdge
+  : T extends 'graph' ? ComputedDatumGraphNode
   : T extends 'tree' ? ComputedDatumTree
   : unknown
 
