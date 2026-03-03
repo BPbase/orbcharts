@@ -1,5 +1,5 @@
 import type { Observable } from 'rxjs'
-import type { DeepPartial, ChartContext, ExtendableContext, PluginSetupProps } from './index'
+import type { DeepPartial, ChartContext, ExtendableContext } from './index'
 
 // export type LayerParamsBase<LayerName extends string> = {
 //   [K in LayerName]: unknown
@@ -19,10 +19,19 @@ import type { DeepPartial, ChartContext, ExtendableContext, PluginSetupProps } f
 //   layerParams$: Observable<LayerParams>
 // }
 
-interface LayerSetupProps<ExtendContext extends ExtendableContext, PluginParams, LayerParams> extends PluginSetupProps<ExtendContext, PluginParams> {
-  // context: ChartContext<ExtendContext>
-  // svg: SVGSVGElement
-  // canvas: HTMLCanvasElement
+export interface LayerEnableProps<ExtendContext extends ExtendableContext, PluginParams, LayerParams> {
+  context: ChartContext<ExtendContext>
+  svgG: SVGGElement
+  canvas: HTMLCanvasElement
+  pluginParams$: Observable<PluginParams>
+  initLayerParams: DeepPartial<LayerParams>
+}
+
+export interface LayerSetupProps<ExtendContext extends ExtendableContext, PluginParams, LayerParams> {
+  context: ChartContext<ExtendContext>
+  svgG: SVGGElement
+  canvas: HTMLCanvasElement
+  pluginParams$: Observable<PluginParams>
   layerParams$: Observable<LayerParams>
 }
 
@@ -39,11 +48,11 @@ export interface LayerEntity<ExtendContext extends ExtendableContext, PluginPara
   defaultParams: Readonly<LayerParams>
   layerIndex: Readonly<number>
   // enable(el: { svg: SVGSVGElement; canvas: HTMLCanvasElement }, context: ChartContext<ExtendContext>): void
-  enable(setupProps: PluginSetupProps<ExtendContext, PluginParams>): void
+  enable(enableProps: LayerEnableProps<ExtendContext, PluginParams, LayerParams>): void
   disable(): void
   // setParams(params: DeepPartial<LayerParams>): void
   updateParams(params: DeepPartial<LayerParams>): void
-  forceReplaceParams(params: LayerParams): void
+  // forceReplaceParams(params: LayerParams): void
   getParams: () => Readonly<LayerParams>
 
   // injectContext(): void

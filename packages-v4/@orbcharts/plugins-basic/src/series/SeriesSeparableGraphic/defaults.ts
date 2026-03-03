@@ -28,6 +28,7 @@ export const DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS: SeriesSeparableGraphicPlug
   separateSeries: false,
   separateName: false,
   // sumSeries: false,
+  datasetIndex: 0
 }
 DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS.visibleFilter.toString = () => '(datum) => true'
 

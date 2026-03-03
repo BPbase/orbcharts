@@ -48,7 +48,6 @@ import { createMultivariateData } from './createMultivariateData'
 import { createGraphData } from './createGraphData'
 import { createTreeData } from './createTreeData'
 
-
 function elementValidator (element: HTMLElement | Element): ValidatorResult {
   const result = validateObject({ element }, {
     element: {
@@ -152,7 +151,9 @@ export const createChart: CreateChart = (element, options) => {
             map((d) => {
               return {
                 width: size.width === 'auto' ? d.width : size.width,
-                height: size.height === 'auto' ? d.height : size.height
+                height: size.height === 'auto'
+                  ? (d.height <= 0 ? d.width : d.height) // html高度很容易出現0的狀況，為避免顯示不出來這種情況就和width相等
+                  : size.height
               }
             })
           ),

@@ -1,6 +1,8 @@
 import {
   shareReplay,
-  map } from 'rxjs'
+  map, 
+  combineLatest,
+  debounceTime} from 'rxjs'
 
 import type { SeriesSeparableGraphicExtendContext, SeriesSeparableGraphicPluginParams, SeriesSeparableGraphicAllLayerParams } from './types'
 import { definePlugin } from '../../../../core/src'
@@ -8,6 +10,7 @@ import { DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS } from './defaults'
 import {
   categoryDataMapObservable,
   containerSizeObservable,
+  layoutObservable,
   fontSizePxObservable,
   highlightObservable,
   seriesDataMapObservable
@@ -37,8 +40,28 @@ export const SeriesSeparableGraphic = definePlugin<
   layers: [pie],
   setup: (props) => {
 
+    const selectedSeriesData$ = combineLatest({
+      seriesData: props.context.seriesData$,
+      datasetIndex: props.pluginParams$.pipe(
+        map(pluginParams => pluginParams.datasetIndex)
+      )
+    }).pipe(
+      debounceTime(0),
+      map(({ seriesData, datasetIndex }) => seriesData[datasetIndex]),
+      shareReplay(1)
+    )
+
+    const layout$ = layoutObservable({
+      size$: props.context.size$,
+      padding$: props.pluginParams$.pipe(
+        map(pluginParams => pluginParams.styles.padding)
+      )
+    }).pipe(
+      shareReplay(1)
+    )
+
     const computedData$ = seriesComputedDataObservable({
-      seriesData$: props.context.seriesData$,
+      selectedSeriesData$,
       pluginParams$: props.pluginParams$
     }).pipe(
       shareReplay(1)
@@ -49,7 +72,7 @@ export const SeriesSeparableGraphic = definePlugin<
     )
 
     const datumLabels$ = datumLabelsObservable({
-      seriesData$: props.context.seriesData$
+      selectedSeriesData$
     }).pipe(
       shareReplay(1)
     )
@@ -105,7 +128,7 @@ export const SeriesSeparableGraphic = definePlugin<
     )
 
     const seriesLabels$ = seriesLabelsObservable({
-      seriesData$: props.context.seriesData$,
+      selectedSeriesData$,
     }).pipe(
       shareReplay(1)
     )
@@ -119,7 +142,7 @@ export const SeriesSeparableGraphic = definePlugin<
     const seriesContainerPosition$ = seriesContainerPositionObservable({
       computedSortedData$: computedSortedData$,
       pluginParams$: props.pluginParams$,
-      layout$: observer.layout$,
+      layout$: layout$,
     }).pipe(
       shareReplay(1)
     )
@@ -131,11 +154,27 @@ export const SeriesSeparableGraphic = definePlugin<
       shareReplay(1)
     )
 
-    props.context = {
-      ...props.context,
-
+    const extendsContext: SeriesSeparableGraphicExtendContext = {
+      layout$,
+      computedData$,
+      fontSizePx$,
+      datumLabels$,
+      separateSeries$,
+      separateName$,
+      computedSortedData$,
+      visibleComputedSortedData$,
+      datumList$,
+      seriesHighlight$,
+      seriesLabels$,
+      SeriesDataMap$,
+      seriesContainerPosition$,
+      DatumContainerPositionMap$,
     }
 
+    props.context = {
+      ...props.context,
+      ...extendsContext,
+    }
     
     return () => {
       

@@ -9,6 +9,6 @@ import type {
 // }
 export type RenderDatumBase<
   T extends ModelType,
-  ExtendTypes extends Record<string, any>
+  ExtendTypes extends Record<string, any> = {}
 > = ModelDatum<T> & ExtendTypes
 

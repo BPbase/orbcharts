@@ -23,18 +23,17 @@ import type { Layout, ContainerPosition } from '../../types/PluginParams'
 import type { ComputedDatumSeries } from '../../types/ComputedData'
 import { calcContainerPosition } from '../../utils/orbchartsUtils'
 
-export const seriesComputedDataObservable = ({ seriesData$, pluginParams$ }: {
-  seriesData$: Observable<ModelDataSeries[]>
+export const seriesComputedDataObservable = ({ selectedSeriesData$, pluginParams$ }: {
+  selectedSeriesData$: Observable<ModelDataSeries>
   pluginParams$: Observable<SeriesSeparableGraphicPluginParams>
-}) => {
+}): Observable<ComputedDatumSeries[][]> => {
   return combineLatest({
-    seriesData: seriesData$,
+    selectedSeriesData: selectedSeriesData$,
     pluginParams: pluginParams$
   }).pipe(
     debounceTime(0),
-    map(({ seriesData, pluginParams }) => {
-      return seriesData.map(data => {
-        return data
+    map(({ selectedSeriesData, pluginParams }) => {
+      return selectedSeriesData
           // 攤為一維陣列
           .flat()
           // 排序後給 seq
@@ -58,15 +57,14 @@ export const seriesComputedDataObservable = ({ seriesData$, pluginParams$ }: {
             return acc
           }, [])
       })
-    })
   )
 }
 
-export const datumLabelsObservable = ({ seriesData$ }: { seriesData$: Observable<ModelDataSeries[]> }) => {
+export const datumLabelsObservable = ({ selectedSeriesData$ }: { selectedSeriesData$: Observable<ModelDataSeries> }) => {
   const DatumLabels = new Set<string>()
-  return seriesData$.pipe(
-    map(seriesData => {
-      seriesData.flat().forEach(series => {
+  return selectedSeriesData$.pipe(
+    map(selectedSeriesData => {
+      selectedSeriesData.forEach(series => {
         series.forEach(datum => {
           DatumLabels.add(datum.name)
         })
@@ -97,11 +95,10 @@ export const separateNameObservable = ({ pluginParams$ }: { pluginParams$: Obser
 //   )
 // }
 
-export const seriesLabelsObservable = ({ seriesData$ }: { seriesData$: Observable<ModelDataSeries[]> }) => {
-  return seriesData$.pipe(
+export const seriesLabelsObservable = ({ selectedSeriesData$ }: { selectedSeriesData$: Observable<ModelDataSeries> }) => {
+  return selectedSeriesData$.pipe(
     map(data => {
       const seriesLabels = data
-        .flat()
         .filter(series => series.length)
         .map(series => {
           return series[0].series
@@ -140,7 +137,6 @@ export const seriesComputedSortedDataObservable = ({ seriesComputedData$, separa
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-
       // // sum series
       // const sumData: ComputedDatumSeries[][] = data.sumSeries == true
       //   ? data.seriesComputedData.map(d => {
@@ -220,7 +216,6 @@ export const seriesContainerPositionObservable = ({ computedSortedData$, pluginP
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-
       // 已分類資料的分類數量
       const amount = data.computedSortedData.length
 

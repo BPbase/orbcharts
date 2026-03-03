@@ -1,4 +1,4 @@
-import type { ChartContext, DefineLayerConfig, LayerEntity, ExtendableContext, PluginSetupProps } from "./types"
+import type { ChartContext, DefineLayerConfig, LayerEntity, ExtendableContext, LayerEnableProps } from "./types"
 import { createLayer } from "./layer/createLayer"
 
 export const defineLayer = <
@@ -10,11 +10,11 @@ export const defineLayer = <
     name: string
     defaultParams: LayerParams
     layerIndex: number
-    enable: (setupProps: PluginSetupProps<ExtendContext, PluginParams>) => void
+    enable: (enableProps: LayerEnableProps<ExtendContext, PluginParams, LayerParams>) => void
     disable: () => void
     // setParams: (params: Partial<LayerParams>) => void
     updateParams: (params: Partial<LayerParams>) => void
-    forceReplaceParams: (params: LayerParams) => void
+    // forceReplaceParams: (params: LayerParams) => void
     getParams: () => Readonly<LayerParams>
     // injectContext: (context: ChartContext<ExtendContext>) => void
     destroy: () => void

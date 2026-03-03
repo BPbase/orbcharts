@@ -17,18 +17,19 @@ import type {
   ContainerPosition } from '../../types/PluginParams'
 import type {
   ComputedDatumSeries } from '../../types/ComputedData'
-import { getClassName, getUniID } from '../../utils/orbchartsUtils'
+import { createClassName } from '../../utils/orbchartsUtils'
 
-function createSeriesSelection ({ selection, pluginName, visibleComputedSortedData$ }: {
+function createSeriesSelection ({ selection, pluginName, layerName, visibleComputedSortedData$ }: {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
+  layerName: string
   // separateSeries$: Observable<boolean>
   // separateLabel$: Observable<boolean>
   // seriesLabels$: Observable<string[]>
   // datumLabels$: Observable<string[]>
   visibleComputedSortedData$: Observable<ComputedDatumSeries[][]>
 }) {
-  const seriesClassName = getClassName(pluginName, 'series')
+  const seriesClassName = createClassName(pluginName, layerName, 'series')
   
   return visibleComputedSortedData$.pipe(
     map(data => data.map(series => series[0] ? `${series[0].series}_${series[0].name}` : '')),
@@ -76,14 +77,15 @@ function createSeriesSelection ({ selection, pluginName, visibleComputedSortedDa
 }
 
 // series選取器，以起始座標位置為基準
-export const seriesStartSelectionObservable = ({ selection, pluginName, visibleComputedSortedData$, seriesContainerPosition$ }: {
+export const seriesStartSelectionObservable = ({ selection, pluginName, layerName, visibleComputedSortedData$, seriesContainerPosition$ }: {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
+  layerName: string
   visibleComputedSortedData$: Observable<ComputedDatumSeries[][]>
   seriesContainerPosition$: Observable<ContainerPosition[]>
 }) => {
   
-  const seriesStartSelection$ = createSeriesSelection({ selection, pluginName, visibleComputedSortedData$ })
+  const seriesStartSelection$ = createSeriesSelection({ selection, pluginName, layerName, visibleComputedSortedData$ })
 
   combineLatest({
     seriesStartSelection: seriesStartSelection$,
@@ -122,14 +124,15 @@ export const seriesStartSelectionObservable = ({ selection, pluginName, visibleC
 }
 
 // series選取器，以中心座標位置為基準
-export const seriesCenterSelectionObservable = ({ selection, pluginName, visibleComputedSortedData$, seriesContainerPosition$ }: {
+export const seriesCenterSelectionObservable = ({ selection, pluginName, layerName, visibleComputedSortedData$, seriesContainerPosition$ }: {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
+  layerName: string
   visibleComputedSortedData$: Observable<ComputedDatumSeries[][]>
   seriesContainerPosition$: Observable<ContainerPosition[]>
 }) => {
   
-  const seriesCenterSelection$ = createSeriesSelection({ selection, pluginName, visibleComputedSortedData$ })
+  const seriesCenterSelection$ = createSeriesSelection({ selection, pluginName, layerName, visibleComputedSortedData$ })
 
   combineLatest({
     seriesCenterSelection: seriesCenterSelection$,

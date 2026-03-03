@@ -24,7 +24,17 @@ export default function ChartEntity() {
     // console.log(domRef.current)
 
     const seriesPlugin = new SeriesSeparableGraphic({
-      Pie: {}
+      Pie: {
+        outerRadius: 0.85,
+        innerRadius: 0.5,
+        outerRadiusWhileHighlight: 0.9,
+        startAngle: 0,
+        endAngle: 6.283185307179586,
+        padAngle: 0,
+        strokeColorType: "background",
+        strokeWidth: 1,
+        cornerRadius: 0
+      }
     })
 
     const chart = new OrbCharts(domRef.current!, {
@@ -37,7 +47,21 @@ export default function ChartEntity() {
       plugins: [seriesPlugin]
     })
 
-    seriesPlugin.showOnly(['Pie'])
+    // seriesPlugin.updateParams({
+    //   Pie: {
+    //     outerRadius: 0.85,
+    //     innerRadius: 0.5,
+    //     outerRadiusWhileHighlight: 0.9,
+    //     startAngle: 0,
+    //     endAngle: 6.283185307179586,
+    //     padAngle: 0,
+    //     strokeColorType: "background",
+    //     strokeWidth: 1,
+    //     cornerRadius: 0
+    //   }
+    // })
+
+    // seriesPlugin.showOnly(['Pie'])
     
     // chart.updateEncoding({})
     // chart.updateTheme({})

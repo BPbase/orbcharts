@@ -1,5 +1,9 @@
 import type { Encoding, Theme } from '../types'
 
+// export const DEFAULT_CHART_WIDTH = 800
+
+// export const DEFAULT_CHART_HEIGHT = 500
+
 export const DEFAULT_DATA_ENCODING: Encoding = {
   dataset: {
     from: 'dataset',

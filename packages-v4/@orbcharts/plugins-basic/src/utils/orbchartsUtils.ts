@@ -15,6 +15,7 @@ import type {
 import { Layout, GraphicContainer, ContainerPosition, ContainerPositionScaled } from '../types/PluginParams'
 import { getMinMax } from './commonUtils'
 import { isLightColor } from './d3Utils'
+import { createLayerClassName } from '../../../core/src/utils/orbchartsUtils'
 import type { AxisPosition } from '../types/PluginParams'
 import type { ComputedDatum } from '../types/ComputedData'
 
@@ -36,9 +37,9 @@ export function getColorScheme (themeColorScheme: 'light' | 'dark' | 'auto') {
 }
 
 // 取得colorType顏色
-export function getColor (colorType: ColorType, fullChartParams: Theme) {
-  const colorScheme = getColorScheme(fullChartParams.colorScheme)
-  const colors = fullChartParams.colors[colorScheme]
+export function getColor (colorType: ColorType, theme: Theme) {
+  const colorScheme = getColorScheme(theme.colorScheme)
+  const colors = theme.colors[colorScheme]
   if (colorType === 'data') {
     return colors.data[0] // default label color
   } else if (colorType === 'dataContrast') {
@@ -70,8 +71,8 @@ export function getColor (colorType: ColorType, fullChartParams: Theme) {
 // }
 
 // 取得Datum顏色
-export function getDatumColor ({ datum, colorType, fullChartParams }: { datum: ModelDatumBase, colorType: ColorType, fullChartParams: Theme }) {
-  const colors = fullChartParams.colors[getColorScheme(fullChartParams.colorScheme)]
+export function getDatumColor ({ datum, colorType, theme }: { datum: ModelDatumBase, colorType: ColorType, theme: Theme }) {
+  const colors = theme.colors[getColorScheme(theme.colorScheme)]
 
   if (colorType === 'data') {
     const datumColor: string | undefined = (datum as unknown as ModelDatumSeries).color
@@ -102,17 +103,17 @@ export function getDatumColor ({ datum, colorType, fullChartParams }: { datum: M
       : colors.primary
 }
 
-export function getClassName (pluginName: string, elementName: string, modifier?: string) {
+export function createClassName (pluginName: string, layerName: string, elementName: string, modifier?: string) {
   const modifierText = modifier ? `--${modifier}` : ''
-  return `orbcharts-${pluginName}__${elementName}${modifierText}`
+  return `${createLayerClassName(pluginName, layerName)}__${elementName}${modifierText}`
 }
 
-export function getUniID (pluginName: string, elementName: string) {
+export function createUniID (pluginName: string, layerName: string, elementName: string) {
   const textLength = 5
   // 英文+數字
   const randomText: string = Math.random().toString(36).substr(2, textLength)
   
-  return getClassName(pluginName, elementName, randomText)
+  return createClassName(pluginName, layerName, elementName, randomText)
 }
 
 

@@ -11,7 +11,8 @@ import {
   shareReplay,
   switchMap,
   Subject,
-  Observable
+  Observable,
+  debounceTime
 } from 'rxjs'
 import type {
   ModelType,
@@ -22,9 +23,10 @@ import type {
 } from '../types/ComputedData'
 import type {
   EventData
-} from '../types/Event'
+} from '../../../core/src/types/Event'
 import type {
   Layout,
+  Padding,
   GraphicStyles,
   ContainerPositionScaled,
   HighlightTarget,
@@ -65,6 +67,30 @@ export function resizeObservable(elem: HTMLElement | Element): Observable<DOMRec
       ro.unobserve(elem)
     }
   })
+}
+
+export function layoutObservable({size$, padding$}: {size$: Observable<{ width: number, height: number }>, padding$: Observable<Padding>}): Observable<Layout> {
+  return combineLatest({
+    size: size$,
+    padding: padding$
+  }).pipe(
+    debounceTime(0),
+    map(data => {
+      const layout: Layout = {
+        rootWidth: data.size.width,
+        rootHeight: data.size.height,
+        width: data.size.width,
+        height: data.size.height,
+        left: data.padding.left ?? 0,
+        right: data.padding.right ?? 0,
+        top: data.padding.top ?? 0,
+        bottom: data.padding.bottom ?? 0
+      }
+      return layout
+    }),
+    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    shareReplay(1)
+  )
 }
 
 interface HighlightTargetValue {
@@ -186,7 +212,7 @@ export const highlightObservable = <T extends ModelType, D>({ datumList$, styles
       styles: styles$,
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async d => d)
+      debounceTime(0),
     ).subscribe(data => {
       let datumList: ComputedDatum<T>[] = []
       if (data.styles.highlightTarget === 'datum') {
@@ -304,7 +330,7 @@ export const containerSizeObservable = ({ layout$, containerPosition$, container
     columnAmount: columnAmount$,
     container: container$
   }).pipe(
-    switchMap(async (d) => d),
+    debounceTime(0),
     map(data => {
       // const width = (data.layout.rootWidth / data.columnAmount) - (data.layout.left + data.layout.right)
       // const height = (data.layout.rootHeight / data.rowAmount) - (data.layout.top + data.layout.bottom)

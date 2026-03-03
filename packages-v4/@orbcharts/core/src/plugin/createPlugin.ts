@@ -8,33 +8,39 @@ import {
   of,
   shareReplay,
   debounceTime,
+  first,
   Observable,
 } from 'rxjs'
+import type { PluginSetupProps, LayerEnableProps } from '../types'
 import { handleElementLifecycle } from '../utils/dom-lifecycle'
 import { createSvg, createCanvasElement, createSVGGroup, createCanvas } from '../utils/dom'
-
+import { createPluginClassName, createLayerClassName } from '../utils/orbchartsUtils'
+import { deepOverwrite } from '../utils/commonUtils'
 
 export const createPlugin = <
   ExtendContext extends ExtendableContext,
   PluginParams,
   AllLayerParams
 >(config: DefinePluginConfig<ExtendContext, PluginParams, AllLayerParams>, initPluginParams?: DeepPartial<PluginParams | AllLayerParams>): PluginEntity<PluginParams, AllLayerParams> => {
-
+  
   // const pluginParams$ = new BehaviorSubject<PluginParams>(Object.assign({}, config.defaultParams))
+
+  const svgClassName = `${createPluginClassName(config.name)}__svg`
+  const canvasClassName = `${createPluginClassName(config.name)}__canvas`
 
   let destroySetup = () => {}
 
   // 全部的layers
   const allLayerInstances = {
+    // 將陣列轉成字典
     ...config.layers.reduce((acc, layer) => {
       acc[layer.name as keyof AllLayerParams] = layer
       return acc
     }, {} as Record<keyof AllLayerParams, typeof config.layers[number]>)
   }
-
-  
   const getAllLayerNamesSet = () => new Set(config.layers.map(l => l.name as keyof AllLayerParams))
-  const getDefaultLayerNamesSet = (params: DeepPartial<PluginParams | AllLayerParams>): Set<keyof AllLayerParams> => {
+  const getParamsKeySet = (params: DeepPartial<PluginParams | AllLayerParams>): Set<keyof AllLayerParams> => {
+    // 取得有設定 params 的 layer name
     if (params) {
       const AllLayerNamesSet = getAllLayerNamesSet()
       const keysOfParams = Object.keys(params) as (keyof AllLayerParams)[]
@@ -42,19 +48,21 @@ export const createPlugin = <
     }
     return new Set()
   }
-
-  // 預設顯示的 layers
-  const defaultShowedLayerNames$ = new BehaviorSubject<Set<keyof AllLayerParams>>(getDefaultLayerNamesSet(initPluginParams))
+  // 有設定 params 對應的 layers 名稱
+  const SettedParamsKeySet$ = new BehaviorSubject<Set<keyof AllLayerParams>>(getParamsKeySet(initPluginParams))
   // 前一次顯示的 layers
   // const previousShowedLayerNames$ = new BehaviorSubject<Set<keyof PluginParams>>(new Set())
-  // 設定要顯示的 layers
-  const settingShowedLayerNames$ = new BehaviorSubject<Set<keyof AllLayerParams> | null>(null)
+  // 有設定 show/showOnly 等的 layers 名稱
+  const SettedIsShowKeySet$ = new BehaviorSubject<Set<keyof AllLayerParams> | null>(null)
 
   const context$ = new BehaviorSubject<ChartContext<ExtendContext> | null>(null)
+  const injectedContext$ = context$.pipe(
+    filter((context): context is ChartContext<ExtendContext> => context !== null)
+  )
 
   // const showAllLayers = () => {
   //   const AllLayerNamesSet = new Set(config.layers.map(l => l.name as keyof AllLayerParams))
-  //   settingShowedLayerNames$.next(AllLayerNamesSet)
+  //   SettedIsShowKeySet$.next(AllLayerNamesSet)
   // }
 
   // const defulatAllLayerParams = config.layers.reduce((acc, layer) => {
@@ -73,18 +81,18 @@ export const createPlugin = <
   // let mainSvgElement: SVGSVGElement | null = null
   // let mainCanvasElement: HTMLCanvasElement | null = null
 
-  // 當 context 或 settingShowedLayerNames 改變時，重新初始化 layers
-  const subscription = combineLatest({
-    context: context$,
-    defaultShowedLayerNames: defaultShowedLayerNames$,
-    settingShowedLayerNames: settingShowedLayerNames$
+  // 當 context 或 SettedIsShowKeySet 改變時，重新初始化 layers
+  const showedLayerNames$ = combineLatest({
+    // context: context$,
+    SettedParamsKeySet: SettedParamsKeySet$,
+    SettedIsShowKeySet: SettedIsShowKeySet$
   }).pipe(
     debounceTime(0),
-    filter(({ context }) => context !== null),
-    map(({ context, defaultShowedLayerNames, settingShowedLayerNames }) => {
-      const showedLayerNames = settingShowedLayerNames ?? defaultShowedLayerNames
+    // filter(({ context }) => context !== null),
+    map(({ SettedParamsKeySet, SettedIsShowKeySet }) => {
+      const ShowedLayerNamesSet = SettedIsShowKeySet == null ? SettedParamsKeySet : SettedIsShowKeySet // SettedIsShowKeySet 預設為 null
       // 依照 layerIndex 排序
-      const showedLayerNamesSeq: string[] = Array.from(showedLayerNames)
+      const showedLayerNamesSeq: string[] = Array.from(ShowedLayerNamesSet)
         .map(name => [
           name,
           config.layers.find(l => l.name === name)?.layerIndex ?? -1
@@ -93,68 +101,188 @@ export const createPlugin = <
         .sort((a, b) => (a[1] as number) - (b[1] as number))
         .map(([name]) => name as string)
 
-      return { context, showedLayerNames, showedLayerNamesSeq }
+      return { ShowedLayerNamesSet, showedLayerNamesSeq }
     })
-  ).subscribe(({ context, showedLayerNames, showedLayerNamesSeq }) => {
+  )
 
-    // 在context.root元素底下建立 svg 和 canvas 元素
-    let svgElement = context.root.querySelector('.orbcharts__svg-root') as SVGSVGElement | null
-    if (!svgElement) {
-      svgElement = createSvg('orbcharts__svg-root')
-      context.root.appendChild(svgElement)
-    }
-    // mainSvgElement = svgElement
-    
-    let canvasElement = context.root.querySelector('.orbcharts__canvas-root') as HTMLCanvasElement | null
-    if (!canvasElement) {
-      canvasElement = createCanvasElement('orbcharts__canvas-root')
-      context.root.appendChild(canvasElement)
-    }
-    // mainCanvasElement = canvasElement
+  const pluginElements$ = injectedContext$.pipe(
+    map(context => {
+      // -- 在context.root元素底下建立 svg 和 canvas 元素 --
+      let svgElement: SVGSVGElement | null = context.root.querySelector(`.${svgClassName}`)
+      if (!svgElement) {
+        svgElement = createSvg(svgClassName)
+        context.root.appendChild(svgElement)
+      }
+      
+      let canvasElement: HTMLCanvasElement | null = context.root.querySelector(`.${canvasClassName}`)
+      if (!canvasElement) {
+        canvasElement = createCanvasElement(canvasClassName)
+        context.root.appendChild(canvasElement)
+      }
 
-    // 初始化 plugin
-    if (config.setup) {
-      // const extension: ExtendContext = config.setup(context)
-      // Object.assign(context, extension)
-      destroySetup = config.setup({
+      return { svgElement, canvasElement }
+    })
+  )
+
+  const pluginPatchParams$ = new BehaviorSubject<DeepPartial<AllLayerParams | PluginParams> | undefined>(
+    initPluginParams
+  )
+
+  // const pluginParams$ = new BehaviorSubject<PluginParams>(
+  //   deepOverwrite(config.defaultParams, initPluginParams as DeepPartial<PluginParams>)
+  // )
+  const pluginParams$ = pluginPatchParams$.pipe(
+    map(patch => {
+      return deepOverwrite(config.defaultParams, patch as DeepPartial<PluginParams> ?? {})
+    }),
+    shareReplay(1)
+  )
+
+  const pluginSetupProps$ = combineLatest({
+    context: injectedContext$,
+    pluginElements: pluginElements$
+  }).pipe(
+    debounceTime(0),
+    map(({ context, pluginElements }) => {
+      const { svgElement, canvasElement } = pluginElements
+      const pluginSetupProps: PluginSetupProps<ExtendContext, PluginParams> = {
         context: context as ChartContext<ExtendContext>, // 初始化時 context 有可能被 in place 擴展
         svg: svgElement!,
         canvas: canvasElement!,
-        pluginParams$: of(config.defaultParams).pipe(shareReplay(1))
-      })
+        pluginParams$
+      }
+      return pluginSetupProps
+    }),
+    first() // 只做初始化
+  )
+  
+  // .subscribe(pluginSetupProps => {
+  //   // 初始化 plugin
+  //   if (config.setup) {
+  //     destroySetup = config.setup(pluginSetupProps)
+  //   }
+  // })
+
+  combineLatest({
+    pluginSetupProps: pluginSetupProps$,
+    showedLayerNames: showedLayerNames$
+  }).pipe(
+    debounceTime(0)
+  ).subscribe(({  pluginSetupProps, showedLayerNames }) => {
+    const { context, svg, canvas } = pluginSetupProps
+    const { ShowedLayerNamesSet, showedLayerNamesSeq } = showedLayerNames
+
+    // init plugin
+    if (config.setup) {
+      destroySetup = config.setup(pluginSetupProps)
     }
 
-    // 處理 SVG 元素的 enter/update/exit
+    // layer element - 處理 SVG 元素的 enter/update/exit
     handleElementLifecycle(
-      svgElement!, 
+      svg!, 
       showedLayerNamesSeq, // 依照 showedLayerNamesSeq
       layerSVGElementsRef,
-      (layerName) => createSVGGroup(`orbcharts__${config.name}-${layerName}`)
+      (layerName) => createSVGGroup(createLayerClassName(config.name, layerName))
     )
     
-    // 處理 Canvas 元素的 enter/update/exit
+    // layer element - 處理 Canvas 元素的 enter/update/exit
     handleElementLifecycle(
-      canvasElement!, 
+      canvas!, 
       showedLayerNamesSeq, // 依照 showedLayerNamesSeq
       layerCanvasElementsRef,
-      (layerName) => createCanvas(`orbcharts__${config.name}-${layerName}`)
+      (layerName) => createCanvas(createLayerClassName(config.name, layerName))
     )
 
     // init layers
     config.layers.forEach((layer) => {
-      if (showedLayerNames.has(layer.name as keyof AllLayerParams)) {
-        layer.enable({
-          svg: context.root.querySelector(`.orbcharts__${config.name}-${layer.name}`),
-          canvas: context.root.querySelector(`.orbcharts__${config.name}-${layer.name}`),
-          context,
-          pluginParams$: of(config.defaultParams).pipe(shareReplay(1))
-        })
+      if (ShowedLayerNamesSet.has(layer.name as keyof AllLayerParams)) {
+        const layerEnableProps: LayerEnableProps<ExtendContext, PluginParams, unknown> = {
+          svgG: context.root.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
+          canvas: context.root.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
+          // context: Object.assign({}, context) as ChartContext<ExtendContext>,
+          context: pluginSetupProps.context,
+          pluginParams$,
+          initLayerParams: pluginPatchParams$.getValue()?.[layer.name as keyof AllLayerParams] as unknown || {}
+        }
+        layer.enable(layerEnableProps)
       } else {
         layer.destroy()
       }
     })
-    
   })
+  
+  // const subscription = combineLatest({
+  //   showedLayerNames: showedLayerNames$,
+  //   context: context$
+  // }).pipe(
+  //   debounceTime(0),
+  //   filter(({ context }) => context !== null)
+  // ).subscribe(({ context, showedLayerNames }) => {
+
+  //   const { ShowedLayerNamesSet, showedLayerNamesSeq } = showedLayerNames
+
+  //   // -- 在context.root元素底下建立 svg 和 canvas 元素 --
+  //   let svgElement: SVGSVGElement | null = context.root.querySelector(`.${svgClassName}`)
+  //   if (!svgElement) {
+  //     svgElement = createSvg(svgClassName)
+  //     context.root.appendChild(svgElement)
+  //   }
+  //   // mainSvgElement = svgElement
+    
+  //   let canvasElement: HTMLCanvasElement | null = context.root.querySelector(`.${canvasClassName}`)
+  //   if (!canvasElement) {
+  //     canvasElement = createCanvasElement(canvasClassName)
+  //     context.root.appendChild(canvasElement)
+  //   }
+  //   // mainCanvasElement = canvasElement
+
+  //   // const extension: ExtendContext = config.setup(context)
+  //   // Object.assign(context, extension)
+  //   const pluginSetupProps: PluginSetupProps<ExtendContext, PluginParams> = {
+  //     context: context as ChartContext<ExtendContext>, // 初始化時 context 有可能被 in place 擴展
+  //     svg: svgElement!,
+  //     canvas: canvasElement!,
+  //     pluginParams$: of(config.defaultParams).pipe(shareReplay(1))
+  //   }
+
+  //   // 初始化 plugin
+  //   if (config.setup) {
+  //     destroySetup = config.setup(pluginSetupProps)
+  //   }
+
+  //   // 處理 SVG 元素的 enter/update/exit
+  //   handleElementLifecycle(
+  //     svgElement!, 
+  //     showedLayerNamesSeq, // 依照 showedLayerNamesSeq
+  //     layerSVGElementsRef,
+  //     (layerName) => createSVGGroup(createLayerClassName(config.name, layerName))
+  //   )
+    
+  //   // 處理 Canvas 元素的 enter/update/exit
+  //   handleElementLifecycle(
+  //     canvasElement!, 
+  //     showedLayerNamesSeq, // 依照 showedLayerNamesSeq
+  //     layerCanvasElementsRef,
+  //     (layerName) => createCanvas(createLayerClassName(config.name, layerName))
+  //   )
+
+  //   // init layers
+  //   config.layers.forEach((layer) => {
+  //     if (ShowedLayerNamesSet.has(layer.name as keyof AllLayerParams)) {
+  //       const layerEnableProps: LayerEnableProps<ExtendContext, PluginParams> = {
+  //         svgG: context.root.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
+  //         canvas: context.root.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
+  //         // context: Object.assign({}, context) as ChartContext<ExtendContext>,
+  //         context: pluginSetupProps.context,
+  //         pluginParams$
+  //       }
+  //       layer.enable(layerEnableProps)
+  //     } else {
+  //       layer.destroy()
+  //     }
+  //   })
+    
+  // })
 
   // const subscription = combineLatest({
   //   context: context$,
@@ -201,55 +329,59 @@ export const createPlugin = <
     // layer visibility controls
     show: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => {
       names = Array.isArray(names) ? names : [names]
-      settingShowedLayerNames$.next(new Set([...Array.from(settingShowedLayerNames$.getValue()), ...names]))
+      SettedIsShowKeySet$.next(new Set([...Array.from(SettedIsShowKeySet$.getValue()), ...names]))
     },
     showOnly: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => {
       names = Array.isArray(names) ? names : [names]
-      settingShowedLayerNames$.next(new Set([...names]))
+      SettedIsShowKeySet$.next(new Set([...names]))
     },
     showAll: () => {
-      settingShowedLayerNames$.next(getAllLayerNamesSet())
+      SettedIsShowKeySet$.next(getAllLayerNamesSet())
     },
     hide: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => {
       names = Array.isArray(names) ? names : [names]
-      settingShowedLayerNames$.next(new Set([...Array.from(settingShowedLayerNames$.getValue()).filter(name => !names.includes(name))]))
+      SettedIsShowKeySet$.next(new Set([...Array.from(SettedIsShowKeySet$.getValue()).filter(name => !names.includes(name))]))
     },
     hideAll: () => {
-      settingShowedLayerNames$.next(new Set())
+      SettedIsShowKeySet$.next(new Set())
     },
     toggle: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => {
       names = Array.isArray(names) ? names : [names]
-      Array.from(settingShowedLayerNames$.getValue()).forEach(shown => {
+      Array.from(SettedIsShowKeySet$.getValue()).forEach(shown => {
         if (names.includes(shown)) {
           names.splice(names.indexOf(shown), 1)
         } else {
           names.push(shown)
         }
       })
-      settingShowedLayerNames$.next(new Set(names))
+      SettedIsShowKeySet$.next(new Set(names))
     },
     // layer params
     // setLayers: (partial: DeepPartial<PluginParams>) => {
     //   params = { ...params, ...partial }
     // },
     updateParams: (patch: DeepPartial<PluginParams | AllLayerParams>) => {
+      // plugin params
+      pluginPatchParams$.next(patch)
+      // layer params
       Object.keys(patch).forEach((key) => {
         const layer = allLayerInstances[key as keyof AllLayerParams]
         if (layer) {
           layer.updateParams((patch as Record<string, any>)[key])
         }
       })
-      defaultShowedLayerNames$.next(getDefaultLayerNamesSet(patch))
+      
+      SettedParamsKeySet$.next(getParamsKeySet(patch))
     },
-    forceReplaceParams: (full: PluginParams | AllLayerParams) => {
-      Object.keys(full).forEach((key) => {
-        const layer = allLayerInstances[key as keyof AllLayerParams]
-        if (layer) {
-          layer.forceReplaceParams((full as Record<string, any>)[key])
-        }
-      })
-      defaultShowedLayerNames$.next(getDefaultLayerNamesSet(full))
-    },
+    // forceReplaceParams: (full: PluginParams | AllLayerParams) => {
+    //   Object.keys(full).forEach((key) => {
+    //     const layer = allLayerInstances[key as keyof AllLayerParams]
+    //     if (layer) {
+    //       layer.forceReplaceParams((full as Record<string, any>)[key])
+    //     }
+    //   })
+    //   SettedParamsKeySet$.next(getParamsKeySet(full))
+    // },
     getParams: () => {
       return config.layers.reduce((acc, layer) => {
         acc[layer.name] = layer.getParams()
@@ -282,8 +414,21 @@ export const createPlugin = <
     // }),
     // 由 chart 注入 context
     injectContext: (context) => {
+
       context$.next(Object.assign({}, context) as ChartContext<ExtendContext>)
 
+      context.size$.subscribe(size => {
+        const svgElement: SVGSVGElement | null = context.root.querySelector(`.${svgClassName}`)
+        const canvasElement: HTMLCanvasElement | null = context.root.querySelector(`.${canvasClassName}`)
+        if (svgElement) {
+          svgElement.setAttribute('width', size.width.toString())
+          svgElement.setAttribute('height', size.height.toString())
+        }
+        if (canvasElement) {
+          canvasElement.width = size.width
+          canvasElement.height = size.height
+        }
+      })
       // if (config.setup) {
       //   // const extension: ExtendContext = config.setup(context)
       //   // Object.assign(context, extension)
@@ -296,13 +441,13 @@ export const createPlugin = <
       // }
       
       // 顯示全部 layers
-      // settingShowedLayerNames$.next(getAllLayerNamesSet())
+      // SettedIsShowKeySet$.next(getAllLayerNamesSet())
     },
     destroy: () => {
       destroySetup()
-      subscription.unsubscribe()
+      // subscription.unsubscribe()
       context$.complete()
-      settingShowedLayerNames$.complete()
+      SettedIsShowKeySet$.complete()
       
       config.layers.forEach((layer) => {
         layer.destroy()
