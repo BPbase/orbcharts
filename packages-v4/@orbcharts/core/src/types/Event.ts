@@ -15,10 +15,10 @@ export type EventType = 'click'
   | 'transitionEnd'
 
 export interface EventData<T extends ModelType = ModelType, ExtendTypes extends Record<string, any> = {}> {
-  type: EventType
+  eventName: EventType
   pluginName: string
   layerName: string
-  target: RenderDatumBase<T, ExtendTypes>[] | null // 互動的目標資料（若有）
+  target: RenderDatumBase<T, ExtendTypes> | null
   tween?: number
   event?: Event
 }

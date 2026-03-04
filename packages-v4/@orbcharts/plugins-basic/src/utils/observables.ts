@@ -17,6 +17,7 @@ import {
 import type {
   ModelType,
   Theme,
+  ModelDatum
 } from '../../../core/src/types'
 import type {
   ComputedDatum
@@ -76,15 +77,17 @@ export function layoutObservable({size$, padding$}: {size$: Observable<{ width: 
   }).pipe(
     debounceTime(0),
     map(data => {
+      const width = data.size.width - data.padding.left - data.padding.right
+      const height = data.size.height - data.padding.top - data.padding.bottom
       const layout: Layout = {
         rootWidth: data.size.width,
         rootHeight: data.size.height,
-        width: data.size.width,
-        height: data.size.height,
-        left: data.padding.left ?? 0,
-        right: data.padding.right ?? 0,
-        top: data.padding.top ?? 0,
-        bottom: data.padding.bottom ?? 0
+        width: width > 0 ? width : 0,
+        height: height > 0 ? height : 0,
+        left: data.padding.left,
+        right: data.padding.right,
+        top: data.padding.top,
+        bottom: data.padding.bottom
       }
       return layout
     }),
@@ -96,8 +99,8 @@ export function layoutObservable({size$, padding$}: {size$: Observable<{ width: 
 interface HighlightTargetValue {
   id: string | null
   label: string | null
-  seriesLabel: string | null
-  groupLabel: string | null
+  series: string | null
+  // group: string | null
   category: string | null
   // highlightDefault: string | null
 }
@@ -119,8 +122,7 @@ export const highlightObservable = <T extends ModelType, D>({ datumList$, styles
       return {
         id: highlightDefault,
         label: highlightDefault,
-        seriesLabel: highlightDefault,
-        groupLabel: highlightDefault,
+        series: highlightDefault,
         category: highlightDefault,
         // highlightDefault
       } as HighlightTargetValue
@@ -141,24 +143,25 @@ export const highlightObservable = <T extends ModelType, D>({ datumList$, styles
       return event$.pipe(
         takeUntil(destroy$),
         // filter(d => d.eventName === 'mouseover' || d.eventName === 'mousemove'),
-        filter(d => d.type === 'mouseover'),
+        filter(d => d.eventName === 'mouseover'),
         // distinctUntilChanged((prev, current) => prev.eventName === current.eventName)
-        map(_d => {
-          const d = _d as any
-          return d.datum
+        map(d => {
+          
+          // const d = _d as any
+          // console.log('mouseover event', d)
+          return d.target
             ? {
-              id: d.datum.id,
+              id: d.target.id,
               label: null, // label有可能重覆所以不做判斷
-              seriesLabel: highlightTarget === 'series' ? d.datum.seriesLabel : null,
-              groupLabel: highlightTarget === 'group' ? d.datum.groupLabel : null,
-              category: highlightTarget === 'category' ? d.datum.category : null,
+              series: highlightTarget === 'series' ? d.target.series : null,
+              category: highlightTarget === 'category' ? (d.target as ModelDatum<'grid' | 'multivariate' | 'graph' | 'tree'>).category : null,
               // highlightDefault: null
             } as HighlightTargetValue
             : {
               id: null,
               label: null,
-              seriesLabel: null,
-              groupLabel: null,
+              series: null,
+              // group: null,
               category: null,
               // highlightDefault: null
             } as HighlightTargetValue
@@ -169,7 +172,7 @@ export const highlightObservable = <T extends ModelType, D>({ datumList$, styles
 
   const highlightMouseout$ = event$.pipe(
     takeUntil(destroy$),
-    filter(d => d.type === 'mouseout'),
+    filter(d => d.eventName === 'mouseout'),
     // distinctUntilChanged((prev, current) => prev.eventName === current.eventName)
     // map(d => {
     //   return { id: '', label: '' }
@@ -193,11 +196,11 @@ export const highlightObservable = <T extends ModelType, D>({ datumList$, styles
       : datumList.filter(d => (d as ComputedDatum<"series">).series === seriesLabel)
   }
 
-  function getGroupIds (datumList: ComputedDatum<T>[], groupLabel: string | null) {
-    return groupLabel == null
-      ? []
-      : datumList.filter(d => (d as ComputedDatum<"grid">).category === groupLabel)
-  }
+  // function getGroupIds (datumList: ComputedDatum<T>[], groupLabel: string | null) {
+  //   return groupLabel == null
+  //     ? []
+  //     : datumList.filter(d => (d as ComputedDatum<"grid">).category === groupLabel)
+  // }
 
   function getCategoryIds (datumList: ComputedDatum<T>[], category: string | null) {
     return category == null
@@ -218,9 +221,9 @@ export const highlightObservable = <T extends ModelType, D>({ datumList$, styles
       if (data.styles.highlightTarget === 'datum') {
         datumList = getDatumIds(data.datumList as ComputedDatum<T>[], data.target.id, data.target.label)
       } else if (data.styles.highlightTarget === 'series') {
-        datumList = getSeriesIds(data.datumList as ComputedDatum<T>[], data.target.seriesLabel)
-      } else if (data.styles.highlightTarget === 'group') {
-        datumList = getGroupIds(data.datumList as ComputedDatum<T>[], data.target.groupLabel)
+        datumList = getSeriesIds(data.datumList as ComputedDatum<T>[], data.target.series)
+      // } else if (data.styles.highlightTarget === 'group') {
+      //   datumList = getGroupIds(data.datumList as ComputedDatum<T>[], data.target.group)
       } else if (data.styles.highlightTarget === 'category') {
         datumList = getCategoryIds(data.datumList as ComputedDatum<T>[], data.target.category)
       }

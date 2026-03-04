@@ -136,45 +136,50 @@ export const createChart: CreateChart = (element, options) => {
   // plugins
   const pluginsInstance$ = new BehaviorSubject<PluginEntity<unknown, unknown>[]>(options?.plugins || [])
   
+  const sizeSetting$ = new BehaviorSubject<ChartResize>({
+    width: options?.size?.width ?? 'auto',
+    height: options?.size?.height ?? 'auto'
+  })
+
   // chart context
   const context: ChartContext<{}> = (() => {
     // 監聽外層的element尺寸
-    const rootSize$: Observable<ChartSize> = of({
-      width: options?.size?.width ?? 'auto',
-      height: options?.size?.height ?? 'auto'
-    }).pipe(
-      switchMap(size => {
+    const rootSize$: Observable<ChartSize> = sizeSetting$.pipe(
+      switchMap(sizeSetting => {
         return iif(
-          () => size.width === 'auto' || size.height === 'auto',
-          // 有 'auto' 的話就監聽element的尺寸
-          resizeObservable(element).pipe(
-            map((d) => {
-              return {
-                width: size.width === 'auto' ? d.width : size.width,
-                height: size.height === 'auto'
-                  ? (d.height <= 0 ? d.width : d.height) // html高度很容易出現0的狀況，為避免顯示不出來這種情況就和width相等
-                  : size.height
-              }
-            })
-          ),
-          of(size as ChartSize)
+          () => 
+            sizeSetting.width === 'auto' || sizeSetting.height === 'auto',
+            // 有 'auto' 的話就監聽element的尺寸
+            resizeObservable(element).pipe(
+              map((d) => {
+                return {
+                  width: sizeSetting.width === 'auto' ? d.width : sizeSetting.width,
+                  height: sizeSetting.height === 'auto'
+                    ? (d.height <= 0 ? d.width : d.height) // html高度很容易出現0的狀況，為避免顯示不出來這種情況就和width相等
+                    : sizeSetting.height
+                }
+              }),
+              debounceTime(50),
+              distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
+            ),
+            of(sizeSetting as ChartSize)
         )
       }),
       takeUntil(destroy$),
       shareReplay(1)
     )
-    const rootSizeFiltered$ = of().pipe(
-      mergeWith(
-        rootSize$.pipe(
-          debounceTime(250)
-        ),
-        rootSize$.pipe(
-          throttleTime(250)
-        )
-      ),
-      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-      shareReplay(1)
-    )
+    // const rootSizeFiltered$ = of().pipe(
+    //   mergeWith(
+    //     rootSize$.pipe(
+    //       debounceTime(250)
+    //     ),
+    //     rootSize$.pipe(
+    //       throttleTime(250)
+    //     )
+    //   ),
+    //   distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    //   shareReplay(1)
+    // )
     // rootSizeFiltered$.subscribe()
     const encoding$ = new Observable<Encoding>(subscriber => {
       currentEncoding$.subscribe(data => {
@@ -253,7 +258,7 @@ export const createChart: CreateChart = (element, options) => {
     })
     return {
       root: element,
-      size$: rootSizeFiltered$,
+      size$: rootSize$,
       encoding$,
       seriesData$,
       gridData$,
@@ -277,7 +282,7 @@ export const createChart: CreateChart = (element, options) => {
   // create chart instance
   return (() => {
     function resize ({ width, height }: ChartResize) {
-      
+      sizeSetting$.next({ width, height })
     }
     function setData (data: RawData) {
       rawData$.next(data)

@@ -22,7 +22,7 @@ export const createLayer = <
   ExtendContext extends ExtendableContext,
   PluginParams extends Record<string, any>,
   LayerParams extends Record<string, any>
->(config: DefineLayerConfig<ExtendContext, PluginParams, LayerParams>): LayerEntity<ExtendContext, PluginParams, LayerParams> => {
+>(elementType: 'canvas' | 'svg', config: DefineLayerConfig<'svg' | 'canvas', ExtendContext, PluginParams, LayerParams>): LayerEntity<ExtendContext, PluginParams, LayerParams> => {
   
   // let svgElement: SVGSVGElement | null = null
   // let canvasElement: HTMLCanvasElement | null = null
@@ -32,7 +32,7 @@ export const createLayer = <
   // let _context: ChartContext<ExtendContext> = {} as ChartContext<ExtendContext>
   let destroySetup = () => {}
 
-  const enableProps$ = new BehaviorSubject<LayerEnableProps<ExtendContext, PluginParams, LayerParams> | null>(null)
+  const enableProps$ = new BehaviorSubject<LayerEnableProps<'svg' | 'canvas', ExtendContext, PluginParams, LayerParams> | null>(null)
 
   // show
   combineLatest({
@@ -43,17 +43,29 @@ export const createLayer = <
     filter(d => d.enableProps !== null)
   ).subscribe(({ layerParams, enableProps }) => {
     destroySetup()
-    destroySetup = config.setup({
-      svgG: enableProps.svgG,
-      canvas: enableProps.canvas,
-      context: Object.assign({}, enableProps.context),
-      pluginParams$: enableProps.pluginParams$,
-      layerParams$: layerParams$.pipe(
-        map(params => {
-          return deepOverwrite(params, enableProps.initLayerParams ?? {})
-        }),
-      )
-    })
+    destroySetup = elementType === 'svg' ? 
+      config.setup({
+        svgG: (enableProps as LayerEnableProps<'svg', ExtendContext, PluginParams, LayerParams>).svgG,
+        // canvas: enableProps.canvas,
+        context: Object.assign({}, enableProps.context),
+        pluginParams$: enableProps.pluginParams$,
+        layerParams$: layerParams$.pipe(
+          map(params => {
+            return deepOverwrite(params, enableProps.initLayerParams ?? {})
+          }),
+        )
+      })
+      : config.setup({
+        // svgG: enableProps.svgG,
+        canvas: (enableProps as LayerEnableProps<'canvas', ExtendContext, PluginParams, LayerParams>).canvas,
+        context: Object.assign({}, enableProps.context),
+        pluginParams$: enableProps.pluginParams$,
+        layerParams$: layerParams$.pipe(
+          map(params => {
+            return deepOverwrite(params, enableProps.initLayerParams ?? {})
+          }),
+        )
+      })
   })
   
   // hide

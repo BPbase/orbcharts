@@ -21,7 +21,7 @@ export const createPlugin = <
   ExtendContext extends ExtendableContext,
   PluginParams,
   AllLayerParams
->(config: DefinePluginConfig<ExtendContext, PluginParams, AllLayerParams>, initPluginParams?: DeepPartial<PluginParams | AllLayerParams>): PluginEntity<PluginParams, AllLayerParams> => {
+>(elementType: 'canvas' | 'svg', config: DefinePluginConfig<'svg' | 'canvas', ExtendContext, PluginParams, AllLayerParams>, initPluginParams?: DeepPartial<PluginParams | AllLayerParams>): PluginEntity<PluginParams, AllLayerParams> => {
   
   // const pluginParams$ = new BehaviorSubject<PluginParams>(Object.assign({}, config.defaultParams))
 
@@ -105,22 +105,43 @@ export const createPlugin = <
     })
   )
 
-  const pluginElements$ = injectedContext$.pipe(
-    map(context => {
-      // -- 在context.root元素底下建立 svg 和 canvas 元素 --
-      let svgElement: SVGSVGElement | null = context.root.querySelector(`.${svgClassName}`)
-      if (!svgElement) {
-        svgElement = createSvg(svgClassName)
-        context.root.appendChild(svgElement)
-      }
+  // const pluginElements$ = injectedContext$.pipe(
+  //   map(context => {
+  //     // -- 在context.root元素底下建立 svg 和 canvas 元素 --
+  //     let svgElement: SVGSVGElement | null = context.root.querySelector(`.${svgClassName}`)
+  //     if (!svgElement) {
+  //       svgElement = createSvg(svgClassName)
+  //       context.root.appendChild(svgElement)
+  //     }
       
-      let canvasElement: HTMLCanvasElement | null = context.root.querySelector(`.${canvasClassName}`)
-      if (!canvasElement) {
-        canvasElement = createCanvasElement(canvasClassName)
-        context.root.appendChild(canvasElement)
-      }
+  //     let canvasElement: HTMLCanvasElement | null = context.root.querySelector(`.${canvasClassName}`)
+  //     if (!canvasElement) {
+  //       canvasElement = createCanvasElement(canvasClassName)
+  //       context.root.appendChild(canvasElement)
+  //     }
 
-      return { svgElement, canvasElement }
+  //     return { svgElement, canvasElement }
+  //   })
+  // )
+
+  const pluginElement$: Observable<SVGSVGElement | HTMLCanvasElement> = injectedContext$.pipe(
+    map(context => {
+      // -- 在context.root元素底下建立 svg 或 canvas 元素 --
+      if (elementType === 'svg') {
+        let svgElement: SVGSVGElement | null = context.root.querySelector(`.${svgClassName}`)
+        if (!svgElement) {
+          svgElement = createSvg(svgClassName)
+          context.root.appendChild(svgElement)
+        }
+        return svgElement
+      } else if (elementType === 'canvas') {
+        let canvasElement: HTMLCanvasElement | null = context.root.querySelector(`.${canvasClassName}`)
+        if (!canvasElement) {
+          canvasElement = createCanvasElement(canvasClassName)
+          context.root.appendChild(canvasElement)
+        }
+        return canvasElement
+      }
     })
   )
 
@@ -140,15 +161,18 @@ export const createPlugin = <
 
   const pluginSetupProps$ = combineLatest({
     context: injectedContext$,
-    pluginElements: pluginElements$
+    pluginElement: pluginElement$
   }).pipe(
     debounceTime(0),
-    map(({ context, pluginElements }) => {
-      const { svgElement, canvasElement } = pluginElements
-      const pluginSetupProps: PluginSetupProps<ExtendContext, PluginParams> = {
+    map(({ context, pluginElement }) => {
+      const pluginSetupProps: PluginSetupProps<'svg' | 'canvas', ExtendContext, PluginParams> = 
+      elementType === 'svg' ?{
         context: context as ChartContext<ExtendContext>, // 初始化時 context 有可能被 in place 擴展
-        svg: svgElement!,
-        canvas: canvasElement!,
+        svg: pluginElement as SVGSVGElement,
+        pluginParams$
+      } : {
+        context: context as ChartContext<ExtendContext>,
+        canvas: pluginElement as HTMLCanvasElement,
         pluginParams$
       }
       return pluginSetupProps
@@ -168,8 +192,8 @@ export const createPlugin = <
     showedLayerNames: showedLayerNames$
   }).pipe(
     debounceTime(0)
-  ).subscribe(({  pluginSetupProps, showedLayerNames }) => {
-    const { context, svg, canvas } = pluginSetupProps
+  ).subscribe(({ pluginSetupProps, showedLayerNames }) => {
+    // const { context, svg, canvas } = pluginSetupProps
     const { ShowedLayerNamesSet, showedLayerNamesSeq } = showedLayerNames
 
     // init plugin
@@ -178,32 +202,47 @@ export const createPlugin = <
     }
 
     // layer element - 處理 SVG 元素的 enter/update/exit
-    handleElementLifecycle(
-      svg!, 
-      showedLayerNamesSeq, // 依照 showedLayerNamesSeq
-      layerSVGElementsRef,
-      (layerName) => createSVGGroup(createLayerClassName(config.name, layerName))
-    )
+    if (elementType === 'svg') {
+      handleElementLifecycle(
+        (pluginSetupProps as PluginSetupProps<'svg', ExtendContext, PluginParams>).svg, 
+        showedLayerNamesSeq, // 依照 showedLayerNamesSeq
+        layerSVGElementsRef,
+        (layerName) => createSVGGroup(createLayerClassName(config.name, layerName))
+      )
+    }
     
     // layer element - 處理 Canvas 元素的 enter/update/exit
-    handleElementLifecycle(
-      canvas!, 
-      showedLayerNamesSeq, // 依照 showedLayerNamesSeq
-      layerCanvasElementsRef,
-      (layerName) => createCanvas(createLayerClassName(config.name, layerName))
-    )
+    if (elementType === 'canvas') {
+      handleElementLifecycle(
+        (pluginSetupProps as PluginSetupProps<'canvas', ExtendContext, PluginParams>).canvas, 
+        showedLayerNamesSeq, // 依照 showedLayerNamesSeq
+        layerCanvasElementsRef,
+        (layerName) => createCanvas(createLayerClassName(config.name, layerName))
+      )
+    }
 
     // init layers
     config.layers.forEach((layer) => {
       if (ShowedLayerNamesSet.has(layer.name as keyof AllLayerParams)) {
-        const layerEnableProps: LayerEnableProps<ExtendContext, PluginParams, unknown> = {
-          svgG: context.root.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
-          canvas: context.root.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
-          // context: Object.assign({}, context) as ChartContext<ExtendContext>,
-          context: pluginSetupProps.context,
-          pluginParams$,
-          initLayerParams: pluginPatchParams$.getValue()?.[layer.name as keyof AllLayerParams] as unknown || {}
-        }
+        const layerEnableProps: LayerEnableProps<'svg' | 'canvas', ExtendContext, PluginParams, unknown> = 
+          elementType === 'svg' ? 
+            {
+              svgG: (pluginSetupProps as PluginSetupProps<'svg', ExtendContext, PluginParams>).svg.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
+              // canvas: context.root.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
+              // context: Object.assign({}, context) as ChartContext<ExtendContext>,
+              context: pluginSetupProps.context,
+              pluginParams$,
+              initLayerParams: pluginPatchParams$.getValue()?.[layer.name as keyof AllLayerParams] as unknown || {}
+            }
+          : {
+              // svgG: context.root.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
+              canvas: (pluginSetupProps as PluginSetupProps<'canvas', ExtendContext, PluginParams>).canvas.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
+              // context: Object.assign({}, context) as ChartContext<ExtendContext>,
+              context: pluginSetupProps.context,
+              pluginParams$,
+              initLayerParams: pluginPatchParams$.getValue()?.[layer.name as keyof AllLayerParams] as unknown || {}
+            }
+            
         layer.enable(layerEnableProps)
       } else {
         layer.destroy()

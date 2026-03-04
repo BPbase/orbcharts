@@ -19,28 +19,54 @@ import type { DeepPartial, ChartContext, ExtendableContext } from './index'
 //   layerParams$: Observable<LayerParams>
 // }
 
-export interface LayerEnableProps<ExtendContext extends ExtendableContext, PluginParams, LayerParams> {
+export interface SVGLayerEnableProps<ExtendContext extends ExtendableContext, PluginParams, LayerParams> {
   context: ChartContext<ExtendContext>
   svgG: SVGGElement
+  // canvas: HTMLCanvasElement
+  pluginParams$: Observable<PluginParams>
+  initLayerParams: DeepPartial<LayerParams>
+}
+
+export interface CanvasLayerEnableProps<ExtendContext extends ExtendableContext, PluginParams, LayerParams> {
+  context: ChartContext<ExtendContext>
+  // svgG: SVGGElement
   canvas: HTMLCanvasElement
   pluginParams$: Observable<PluginParams>
   initLayerParams: DeepPartial<LayerParams>
 }
 
-export interface LayerSetupProps<ExtendContext extends ExtendableContext, PluginParams, LayerParams> {
+export type LayerEnableProps<ElementType extends 'svg' | 'canvas', ExtendContext extends ExtendableContext, PluginParams, LayerParams> =
+  ElementType extends 'svg' ? SVGLayerEnableProps<ExtendContext, PluginParams, LayerParams> :
+  ElementType extends 'canvas' ? CanvasLayerEnableProps<ExtendContext, PluginParams, LayerParams> :
+  never
+
+export interface SVGLayerSetupProps<ExtendContext extends ExtendableContext, PluginParams, LayerParams> {
   context: ChartContext<ExtendContext>
   svgG: SVGGElement
+  // canvas: HTMLCanvasElement
+  pluginParams$: Observable<PluginParams>
+  layerParams$: Observable<LayerParams>
+}
+
+export interface CanvasLayerSetupProps<ExtendContext extends ExtendableContext, PluginParams, LayerParams> {
+  context: ChartContext<ExtendContext>
+  // svgG: SVGGElement
   canvas: HTMLCanvasElement
   pluginParams$: Observable<PluginParams>
   layerParams$: Observable<LayerParams>
 }
 
-export interface DefineLayerConfig<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>, LayerParams extends Record<string, any>> {
+export type LayerSetupProps<ElementType extends 'svg' | 'canvas', ExtendContext extends ExtendableContext, PluginParams, LayerParams> =
+  ElementType extends 'svg' ? SVGLayerSetupProps<ExtendContext, PluginParams, LayerParams> :
+  ElementType extends 'canvas' ? CanvasLayerSetupProps<ExtendContext, PluginParams, LayerParams> :
+  never
+
+export interface DefineLayerConfig<ElementType extends 'svg' | 'canvas', ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>, LayerParams extends Record<string, any>> {
   name: string
   defaultParams: LayerParams
   layerIndex: number
   validator?: (params: LayerParams) => { valid: boolean; errors?: string[] }
-  setup: (setupProps: LayerSetupProps<ExtendContext, PluginParams, LayerParams>) => () => void
+  setup: (setupProps: LayerSetupProps<ElementType, ExtendContext, PluginParams, LayerParams>) => () => void
 }
 
 export interface LayerEntity<ExtendContext extends ExtendableContext, PluginParams, LayerParams> {
@@ -48,7 +74,7 @@ export interface LayerEntity<ExtendContext extends ExtendableContext, PluginPara
   defaultParams: Readonly<LayerParams>
   layerIndex: Readonly<number>
   // enable(el: { svg: SVGSVGElement; canvas: HTMLCanvasElement }, context: ChartContext<ExtendContext>): void
-  enable(enableProps: LayerEnableProps<ExtendContext, PluginParams, LayerParams>): void
+  enable(enableProps: LayerEnableProps<'svg' | 'canvas', ExtendContext, PluginParams, LayerParams>): void
   disable(): void
   // setParams(params: DeepPartial<LayerParams>): void
   updateParams(params: DeepPartial<LayerParams>): void

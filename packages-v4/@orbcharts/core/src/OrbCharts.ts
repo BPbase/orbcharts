@@ -3,7 +3,7 @@ import type {
   ChartResize,
   ChartEntity,
   ChartContext,
-  ChartOptions,
+  PartialChartOptions,
   Encoding,
   PluginEntity,
   RawData,
@@ -28,7 +28,7 @@ export class OrbCharts implements ChartEntity {
   destroy: () => void;
   context: ChartContext<unknown>
 
-  constructor(element: HTMLElement | Element, options?: DeepPartial<ChartOptions>) {
+  constructor(element: HTMLElement | Element, options?: PartialChartOptions) {
     return createChart(element, options)
   }
 }

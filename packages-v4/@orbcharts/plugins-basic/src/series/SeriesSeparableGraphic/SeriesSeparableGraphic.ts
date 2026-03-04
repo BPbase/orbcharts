@@ -5,7 +5,7 @@ import {
   debounceTime} from 'rxjs'
 
 import type { SeriesSeparableGraphicExtendContext, SeriesSeparableGraphicPluginParams, SeriesSeparableGraphicAllLayerParams } from './types'
-import { definePlugin } from '../../../../core/src'
+import { defineSVGPlugin } from '../../../../core/src'
 import { DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS } from './defaults'
 import {
   categoryDataMapObservable,
@@ -30,7 +30,7 @@ import { Pie } from './layers/Pie'
 
 const pie = new Pie()
 
-export const SeriesSeparableGraphic = definePlugin<
+export const SeriesSeparableGraphic = defineSVGPlugin<
   SeriesSeparableGraphicExtendContext,
   SeriesSeparableGraphicPluginParams,
   SeriesSeparableGraphicAllLayerParams
@@ -59,6 +59,10 @@ export const SeriesSeparableGraphic = definePlugin<
     }).pipe(
       shareReplay(1)
     )
+
+    // const layoutSubscription = layout$.subscribe(layout => {
+    //   props.svg.setAttribute('transform', `translate(${layout.left}, ${layout.top})`)
+    // })
 
     const computedData$ = seriesComputedDataObservable({
       selectedSeriesData$,
@@ -177,7 +181,7 @@ export const SeriesSeparableGraphic = definePlugin<
     }
     
     return () => {
-      
+      // layoutSubscription.unsubscribe()
     }
   },
   validator: (params: SeriesSeparableGraphicPluginParams) => {

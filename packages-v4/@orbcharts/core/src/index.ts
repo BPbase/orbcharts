@@ -1,4 +1,6 @@
 
 export { OrbCharts } from './OrbCharts'
-export { defineLayer } from './defineLayer'
-export { definePlugin } from './definePlugin'
+export { defineSVGPlugin } from './defineSVGPlugin'
+export { defineSVGLayer } from './defineSVGLayer'
+export { defineCanvasPlugin } from './defineCanvasPlugin'
+export { defineCanvasLayer } from './defineCanvasLayer'

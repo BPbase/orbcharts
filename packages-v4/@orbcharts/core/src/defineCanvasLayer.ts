@@ -1,16 +1,16 @@
 import type { ChartContext, DefineLayerConfig, LayerEntity, ExtendableContext, LayerEnableProps } from "./types"
 import { createLayer } from "./layer/createLayer"
 
-export const defineLayer = <
+export const defineCanvasLayer = <
   ExtendContext extends ExtendableContext,
   PluginParams extends Record<string, any>,
   LayerParams extends Record<string, any>,
->(config: DefineLayerConfig<ExtendContext, PluginParams, LayerParams>) => {
+>(config: DefineLayerConfig<'canvas', ExtendContext, PluginParams, LayerParams>) => {
   return class Layer implements LayerEntity<ExtendContext, PluginParams, LayerParams> {
     name: string
     defaultParams: LayerParams
     layerIndex: number
-    enable: (enableProps: LayerEnableProps<ExtendContext, PluginParams, LayerParams>) => void
+    enable: (enableProps: LayerEnableProps<'canvas', ExtendContext, PluginParams, LayerParams>) => void
     disable: () => void
     // setParams: (params: Partial<LayerParams>) => void
     updateParams: (params: Partial<LayerParams>) => void
@@ -19,7 +19,7 @@ export const defineLayer = <
     // injectContext: (context: ChartContext<ExtendContext>) => void
     destroy: () => void
     constructor () {
-      return createLayer<ExtendContext, PluginParams, LayerParams>(config)
+      return createLayer<ExtendContext, PluginParams, LayerParams>('canvas', config)
     }
   }
 }

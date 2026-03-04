@@ -1,11 +1,11 @@
 import type { DeepPartial, DefinePluginConfig, PluginEntity, ChartContext, ExtendableContext } from './types'
 import { createPlugin } from './plugin/createPlugin'
 
-export const definePlugin = <
+export const defineSVGPlugin = <
   ExtendContext extends ExtendableContext,
   PluginParams extends Record<string, any>,
   AllLayerParams extends Record<string, any>,
->(config: DefinePluginConfig<ExtendContext, PluginParams, AllLayerParams>) => {
+>(config: DefinePluginConfig<'svg', ExtendContext, PluginParams, AllLayerParams>) => {
   return class Plugin implements PluginEntity<PluginParams, AllLayerParams> {
     name: string
     show: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => void
@@ -29,7 +29,7 @@ export const definePlugin = <
     injectContext: (context: ChartContext<{}>) => void
     destroy: () => void
     constructor (params: DeepPartial<PluginParams | AllLayerParams>) {
-      return createPlugin(config, params)
+      return createPlugin('svg', config, params)
     }
   }
 }

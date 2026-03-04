@@ -12,7 +12,7 @@ import {
 import type { Theme, EventData } from '../../../../../core/src/types'
 import type { SeriesSeparableGraphicExtendContext, SeriesSeparableGraphicPluginParams, PieParams } from "../types"
 import type { PieDatum } from '../utils'
-import { defineLayer } from "../../../../../core/src"
+import { defineSVGLayer } from "../../../../../core/src"
 import { DEFAULT_PIE_PARAMS } from "../defaults"
 import { seriesCenterSelectionObservable } from "../sharedObservables"
 import { getDatumColor } from '../../../utils/orbchartsUtils'
@@ -367,7 +367,7 @@ function createEachPie (context: {
       takeUntil(destroy$)
     )
     .subscribe(d => seriesHighlight = d)
-
+  
   const pathSelection$ = new Observable<d3.Selection<SVGPathElement, PieDatum, any, any>>(subscriber => {
     combineLatest({
       pieData: pieData$,
@@ -376,11 +376,12 @@ function createEachPie (context: {
       fullParams: context.fullParams$,
       styles: context.pluginParams$.pipe(map(d => d.styles)),
       theme: context.theme$,
-      highlightTarget: highlightTarget$
+      // highlightTarget: highlightTarget$
     }).pipe(
       takeUntil(destroy$),
       debounceTime(0)
     ).subscribe(data => {
+      
       context.containerSelection.interrupt('graphicMove')
       // console.log('graphic', data)
       const update: d3.Selection<SVGPathElement, PieDatum, any, any> = context.containerSelection
@@ -405,8 +406,8 @@ function createEachPie (context: {
         .tween('move', (self, t) => {
           return (t) => {
             tweenData = makeTweenPieRenderData(t)
-  
-            const pathSelection = renderPie({
+            
+            renderPie({
               selection: context.containerSelection,
               data: tweenData,
               arc: data.arc,
@@ -492,7 +493,7 @@ function createEachPie (context: {
             // seriesIndex: -1,
             // seriesLabel: '',
             // datum: null
-            type: 'transitionEnd',
+            eventName: 'transitionEnd',
             pluginName,
             layerName,
             target: null,
@@ -553,10 +554,10 @@ function createEachPie (context: {
           // seriesLabel: pieDatum.data.seriesLabel,
           // event,
           // data: data.computedData
-          type: 'mouseover',
+          eventName: 'mouseover',
           pluginName,
           layerName,
-          target: [pieDatum.data],
+          target: pieDatum.data,
           event
         })
       })
@@ -574,10 +575,10 @@ function createEachPie (context: {
           // seriesLabel: pieDatum.data.seriesLabel,
           // event,
           // data: data.computedData,
-          type: 'mousemove',
+          eventName: 'mousemove',
           pluginName,
           layerName,
-          target: [pieDatum.data],
+          target: pieDatum.data,
           event
         })
       })
@@ -595,10 +596,10 @@ function createEachPie (context: {
           // seriesLabel: pieDatum.data.seriesLabel,
           // event,
           // data: data.computedData,
-          type: 'mouseout',
+          eventName: 'mouseout',
           pluginName,
           layerName,
-          target: [pieDatum.data],
+          target: pieDatum.data,
           event
         })
       })
@@ -616,10 +617,10 @@ function createEachPie (context: {
           // seriesLabel: pieDatum.data.seriesLabel,
           // event,
           // data: data.computedData,
-          type: 'click',
+          eventName: 'click',
           pluginName,
           layerName,
-          target: [pieDatum.data],
+          target: pieDatum.data,
           event
         })
       })
@@ -653,7 +654,7 @@ function createEachPie (context: {
   }
 }
 
-export const Pie = defineLayer<SeriesSeparableGraphicExtendContext, SeriesSeparableGraphicPluginParams, PieParams>({
+export const Pie = defineSVGLayer<SeriesSeparableGraphicExtendContext, SeriesSeparableGraphicPluginParams, PieParams>({
   name: layerName,
   defaultParams: DEFAULT_PIE_PARAMS,
   layerIndex: 0,
@@ -669,6 +670,15 @@ export const Pie = defineLayer<SeriesSeparableGraphicExtendContext, SeriesSepara
     //   console.log(data)
     // })
     const destroy$ = new Subject()
+
+    context.layout$
+      .pipe(
+        takeUntil(destroy$)
+      )
+      .subscribe(layout => {
+        d3.select(svgG)
+          .attr('transform', `translate(${layout.left}, ${layout.top})`)
+      })
 
     const { seriesCenterSelection$ } = seriesCenterSelectionObservable({
       selection: d3.select(svgG),

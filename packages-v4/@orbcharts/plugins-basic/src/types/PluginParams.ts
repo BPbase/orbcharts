@@ -45,7 +45,7 @@ export interface Layout extends Padding {
   rootHeight: number;
 }
 
-export type HighlightTarget = 'series' | 'group' | 'category' | 'datum' | 'none'
+export type HighlightTarget = 'series' | 'category' | 'datum' | 'none'
 
 export interface GraphicStyles {
   padding: Padding,

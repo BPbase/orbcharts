@@ -13,12 +13,12 @@ export interface PluginInfo {
   layers: string[]
 }
 
-export interface PluginSetupProps<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> {
-  context: ChartContext<ExtendContext>
-  svg: SVGElement
-  canvas: HTMLCanvasElement
-  pluginParams$: Observable<PluginParams>
-}
+// export interface PluginSetupProps<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> {
+//   context: ChartContext<ExtendContext>
+//   svg: SVGElement
+//   canvas: HTMLCanvasElement
+//   pluginParams$: Observable<PluginParams>
+// }
 
 export interface SVGPluginSetupProps<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> {
   context: ChartContext<ExtendContext>
@@ -34,14 +34,18 @@ export interface CanvasPluginSetupProps<ExtendContext extends ExtendableContext,
   pluginParams$: Observable<PluginParams>
 }
 
+export type PluginSetupProps<ElementType extends 'svg' | 'canvas', ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> =
+  ElementType extends 'svg' ? SVGPluginSetupProps<ExtendContext, PluginParams> :
+  ElementType extends 'canvas' ? CanvasPluginSetupProps<ExtendContext, PluginParams> :
+  never
 
-export interface DefinePluginConfig<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>, AllLayerParams extends Record<string, any>>{
+export interface DefinePluginConfig<ElementType extends 'svg' | 'canvas', ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>, AllLayerParams extends Record<string, any>>{
   name: string
   defaultParams?: PluginParams
   validator?: (params: PluginParams) => { valid: boolean; errors?: string[] }
   layers?: LayerEntity<ExtendContext, PluginParams, AllLayerParams[keyof AllLayerParams]>[]
   // extendContext?: (context: Readonly<ChartContext>) => ExtendContext
-  setup?: (props: PluginSetupProps<ExtendContext, PluginParams>) => () => void
+  setup?: (props: PluginSetupProps<ElementType, ExtendContext, PluginParams>) => () => void
 }
 
 // export interface CreatePlugin<PluginParams> {
