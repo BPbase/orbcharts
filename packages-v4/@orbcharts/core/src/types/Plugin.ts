@@ -5,7 +5,7 @@ import type {
   ChartContext,
   ExtendableContext
 } from './index'
-
+import { ValidatorResult } from '../types/Validator'
 
 
 export interface PluginInfo {
@@ -42,7 +42,8 @@ export type PluginSetupProps<ElementType extends 'svg' | 'canvas', ExtendContext
 export interface DefinePluginConfig<ElementType extends 'svg' | 'canvas', ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>, AllLayerParams extends Record<string, any>>{
   name: string
   defaultParams?: PluginParams
-  validator?: (params: PluginParams) => { valid: boolean; errors?: string[] }
+  validator?: (params: DeepPartial<AllLayerParams | PluginParams>) => ValidatorResult
+    // { valid: boolean; errors?: string[] }
   layers?: LayerEntity<ExtendContext, PluginParams, AllLayerParams[keyof AllLayerParams]>[]
   // extendContext?: (context: Readonly<ChartContext>) => ExtendContext
   setup?: (props: PluginSetupProps<ElementType, ExtendContext, PluginParams>) => () => void

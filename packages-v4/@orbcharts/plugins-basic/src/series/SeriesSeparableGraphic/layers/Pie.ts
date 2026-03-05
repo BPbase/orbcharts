@@ -13,6 +13,7 @@ import type { Theme, EventData } from '../../../../../core/src/types'
 import type { SeriesSeparableGraphicExtendContext, SeriesSeparableGraphicPluginParams, PieParams } from "../types"
 import type { PieDatum } from '../utils'
 import { defineSVGLayer } from "../../../../../core/src"
+import { validateObject } from '../../../../../core/src/utils'
 import { DEFAULT_PIE_PARAMS } from "../defaults"
 import { seriesCenterSelectionObservable } from "../sharedObservables"
 import { getDatumColor } from '../../../utils/orbchartsUtils'
@@ -658,7 +659,39 @@ export const Pie = defineSVGLayer<SeriesSeparableGraphicExtendContext, SeriesSep
   name: layerName,
   defaultParams: DEFAULT_PIE_PARAMS,
   layerIndex: 0,
-  // validator: (params) => ({ valid: true }),
+  validator: (params) => {
+    const result = validateObject<PieParams>(params, {
+      outerRadius: {
+        toBeTypes: ['number'],
+      },
+      innerRadius: {
+        toBeTypes: ['number'],
+      },
+      outerRadiusWhileHighlight: {
+        toBeTypes: ['number'],
+      },
+      startAngle: {
+        toBeTypes: ['number'],
+      },
+      endAngle: {
+        toBeTypes: ['number'],
+      },
+      padAngle: {
+        toBeTypes: ['number'],
+      },
+      strokeColorType: {
+        toBeTypes: ['string'],
+      },
+      strokeWidth: {
+        toBeTypes: ['number'],
+      },
+      cornerRadius: {
+        toBeTypes: ['number'],
+      }
+    })
+
+    return result
+  },
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
 
     // const subscription = layerParams$.subscribe((params) => {

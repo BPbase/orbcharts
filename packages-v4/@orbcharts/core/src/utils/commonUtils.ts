@@ -1,4 +1,4 @@
-import { DeepPartial } from "../types/utils";
+import { DeepPartial } from "../types/Common";
 
 // 是否為原始物件
 export function isPlainObject(variable: any) {

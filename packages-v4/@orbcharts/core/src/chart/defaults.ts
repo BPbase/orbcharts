@@ -1,8 +1,14 @@
-import type { Encoding, Theme } from '../types'
+import type { Encoding, Theme, SizeConfig } from '../types'
 
 // export const DEFAULT_CHART_WIDTH = 800
 
 // export const DEFAULT_CHART_HEIGHT = 500
+
+export const DEFAULT_SIZE_CONFIG: SizeConfig = {
+  width: 'auto',
+  height: 'auto',
+  resizeDebounce: 50
+}
 
 export const DEFAULT_DATA_ENCODING: Encoding = {
   dataset: {

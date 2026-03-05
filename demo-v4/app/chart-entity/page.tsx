@@ -112,19 +112,19 @@ export default function ChartEntity() {
       plugins: [seriesPlugin]
     })
 
-    seriesPlugin.updateParams({
-      Pie: {
-        outerRadius: 0.85,
-        innerRadius: 0.5,
-        outerRadiusWhileHighlight: 0.9,
-        startAngle: 0,
-        endAngle: 6.283185307179586,
-        padAngle: 0,
-        strokeColorType: "background",
-        strokeWidth: 1,
-        cornerRadius: 0
-      },
-    })
+    // seriesPlugin.updateParams({
+    //   Pie: {
+    //     outerRadius: 0.85,
+    //     innerRadius: 0.5,
+    //     outerRadiusWhileHighlight: 0.9,
+    //     startAngle: 0,
+    //     endAngle: 6.283185307179586,
+    //     padAngle: 0,
+    //     strokeColorType: "background",
+    //     strokeWidth: 1,
+    //     cornerRadius: 0
+    //   },
+    // })
 
     // seriesPlugin.showOnly(['Pie'])
     

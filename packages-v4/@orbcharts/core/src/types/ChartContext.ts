@@ -8,7 +8,7 @@ import type {
   EventData,
 } from './index'
 
-export interface ChartSize {
+export interface Size {
   width: number
   height: number
 }
@@ -34,5 +34,5 @@ export type ChartContext<ExtendContext extends ExtendableContext> = {
   theme$: Observable<Theme>
   event$: Observable<EventData>
   eventTrigger$: Subject<EventData>
-  size$: Observable<ChartSize>
+  size$: Observable<Size>
 } & ExtendContext

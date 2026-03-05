@@ -16,6 +16,7 @@ import { handleElementLifecycle } from '../utils/dom-lifecycle'
 import { createSvg, createCanvasElement, createSVGGroup, createCanvas } from '../utils/dom'
 import { createPluginClassName, createLayerClassName } from '../utils/orbchartsUtils'
 import { deepOverwrite } from '../utils/commonUtils'
+import { createOrbChartsErrorMessage, createValidatorErrorMessage, createValidatorWarningMessage } from '../utils/errorMessage'
 
 export const createPlugin = <
   ExtendContext extends ExtendableContext,
@@ -154,6 +155,28 @@ export const createPlugin = <
   // )
   const pluginParams$ = pluginPatchParams$.pipe(
     map(patch => {
+      try {
+        // 檢查 data$ 資料格式是否正確
+        const { status, columnName, expectToBe } = config.validator(patch)
+        if (status === 'error') {
+          throw new Error(createValidatorErrorMessage({
+            columnName,
+            expectToBe,
+            from: `${config.name}.params$`
+          }))
+        } else if (status === 'warning') {
+          console.warn(createValidatorWarningMessage({
+            columnName,
+            expectToBe,
+            from: `${config.name}.params$`
+          }))
+        }
+      } catch (e) {
+        // throw new Error(e.message)
+        // 驗證失敗仍繼續執行，才不會把 Observable 資料流給中斷掉
+        console.error(createOrbChartsErrorMessage(e))
+      }
+
       return deepOverwrite(config.defaultParams, patch as DeepPartial<PluginParams> ?? {})
     }),
     shareReplay(1)

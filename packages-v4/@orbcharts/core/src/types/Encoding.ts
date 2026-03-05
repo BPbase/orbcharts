@@ -22,10 +22,12 @@ export interface EncodingValue {
   aggregate: 'sum' | 'mean' | 'median' | 'min' | 'max' | 'count' | 'none'
 }
 
-export type EncodingMultivariate = {
+export interface EncodingMultivariateItem {
   from: string
   label: string
-}[]
+}
+
+export type EncodingMultivariate = EncodingMultivariateItem[]
 
 export interface EncodingColor {
   from: 'index' | 'series' | 'category' | 'dataset'

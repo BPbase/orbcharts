@@ -3,6 +3,7 @@ import { Observable } from 'rxjs'
 import type { ColorType, ModelDatumSeries } from '../../../../core/src/types'
 import type { ContainerPosition, GraphicContainer, GraphicStyles, Layout } from '../../types/PluginParams'
 import { ComputedDatumSeries } from '../../types/ComputedData'
+import type { ArcScaleType } from '../../types/Common'
 
 // context
 export interface SeriesSeparableGraphicExtendContext {
@@ -38,6 +39,7 @@ export interface SeriesSeparableGraphicPluginParams {
 // all layer params
 export interface SeriesSeparableGraphicAllLayerParams {
   Pie: PieParams
+  Bubbles: BubblesParams
 }
 
 // -- shared types --
@@ -59,3 +61,20 @@ export interface PieParams {
   cornerRadius: number;
 }
 
+export interface BubblesParams {
+  force: {
+    strength: number; // 泡泡引力
+    velocityDecay: number; // 衰減數
+    collisionSpacing: number // 泡泡間距
+  }
+  bubbleLabel: {
+    labelFn: ((d: ComputedDatumSeries) => string)
+    colorType: ColorType
+    fillRate: number
+    lineHeight: number
+    maxLineLength: number
+    wordBreakAll: boolean
+  }
+  // highlightRIncrease: number
+  arcScaleType: ArcScaleType
+}

@@ -1,19 +1,16 @@
-import type { Observable, Subject } from 'rxjs'
 import type {
   DeepPartial,
   ChartContext,
   Encoding,
-  EventData,
-  ModelData,
-  PluginInfo,
   PluginEntity,
   RawData,
   Theme
 } from './index'
 
-export interface ChartResize {
+export interface SizeConfig {
   width: number | 'auto'
   height: number | 'auto'
+  resizeDebounce: number
 }
 
 // export interface ChartDefaults {
@@ -22,7 +19,7 @@ export interface ChartResize {
 // }
 
 export interface ChartOptions {
-  size: ChartResize
+  size: SizeConfig
   // defaults: ChartDefaults
   theme: Theme
   data: RawData
@@ -31,7 +28,7 @@ export interface ChartOptions {
 }
 
 export interface PartialChartOptions {
-  size?: Partial<ChartResize>
+  size?: Partial<SizeConfig>
   theme?: DeepPartial<Theme>
   data?: RawData
   encoding?: DeepPartial<Encoding>
@@ -44,18 +41,18 @@ export interface CreateChart {
 
 export interface ChartEntity {
   // Commands
-  resize({ width, height }: ChartResize): void
+  resize(sizeConfig: SizeConfig): void
   setData(data: RawData): void // replace
   // setEncoding(partial: Partial<Encoding>): void // deep-merge with default
   updateEncoding(patch: DeepPartial<Encoding>): void // deep-merge with previous
-  forceReplaceEncoding(full: Encoding): void // replace
+  // forceReplaceEncoding(full: Encoding): void // replace
   getEncoding(): Readonly<Encoding>
   setPlugins(plugins: PluginEntity<unknown, unknown>[]): void // replace all
   addPlugin(plugin: PluginEntity<unknown, unknown>): void
   removePlugin(id: string): void
   // setTheme(theme: Theme): void // replace all
   updateTheme(patch: DeepPartial<Theme>): void // deep-merge with previous
-  forceReplaceTheme(full: Theme): void // replace all
+  // forceReplaceTheme(full: Theme): void // replace all
   getTheme(): Readonly<Theme>
   destroy(): void;
 
