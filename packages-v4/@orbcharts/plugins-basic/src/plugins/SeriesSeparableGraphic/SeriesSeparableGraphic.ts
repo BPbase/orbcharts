@@ -6,6 +6,7 @@ import {
 
 import type { SeriesSeparableGraphicExtendContext, SeriesSeparableGraphicPluginParams, SeriesSeparableGraphicAllLayerParams } from './types'
 import { defineSVGPlugin } from '../../../../core/src'
+import { validateObject } from '../../../../core/src/utils'
 import { DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS } from './defaults'
 import {
   categoryDataMapObservable,
@@ -26,9 +27,19 @@ import {
   seriesLabelsObservable,
   seriesVisibleComputedDataObservable
 } from './contextObservables'
+import { Bubbles } from './layers/Bubbles'
 import { Pie } from './layers/Pie'
+import { PieEventTexts } from './layers/PieEventTexts'
+import { PieLabels } from './layers/PieLabels'
+import { Rose } from './layers/Rose'
+import { RoseLabels } from './layers/RoseLabels'
 
+const bubbles = new Bubbles()
 const pie = new Pie()
+const pieEventTexts = new PieEventTexts()
+const pieLabels = new PieLabels()
+const rose = new Rose()
+const roseLabels = new RoseLabels()
 
 export const SeriesSeparableGraphic = defineSVGPlugin<
   SeriesSeparableGraphicExtendContext,
@@ -37,7 +48,7 @@ export const SeriesSeparableGraphic = defineSVGPlugin<
 >({
   name: 'SeriesSeparableGraphic',
   defaultParams: DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS,
-  layers: [pie],
+  layers: [bubbles, pie, pieEventTexts, pieLabels, rose, roseLabels],
   setup: (props) => {
 
     const selectedSeriesData$ = combineLatest({
@@ -185,6 +196,95 @@ export const SeriesSeparableGraphic = defineSVGPlugin<
     }
   },
   validator: (params: SeriesSeparableGraphicPluginParams) => {
-    return { valid: true }
+    const result = validateObject(params, {
+      styles: {
+        toBeTypes: ['object'],
+      },
+      visibleFilter: {
+        toBeTypes: ['Function', 'null']
+      },
+      sort: {
+        toBeTypes: ['Function', 'null']
+      },
+      container: {
+        toBeTypes: ['object']
+      },
+      separateSeries: {
+        toBeTypes: ['boolean']
+      },
+      separateName: {
+        toBeTypes: ['boolean']
+      },
+      datasetIndex: {
+        toBeTypes: ['number']
+      }
+    })
+    if (params.styles) {
+      const stylesResult = validateObject(params.styles, {
+        padding: {
+          toBeTypes: ['object']
+        },
+        highlightTarget: {
+          toBeTypes: ['string']
+        },
+        highlightDefault: {
+          toBeTypes: ['string', 'null']
+        },
+        unhighlightedOpacity: {
+          toBeTypes: ['number']
+        },
+        transitionDuration: {
+          toBeTypes: ['number']
+        },
+        transitionEase: {
+          toBeTypes: ['string']
+        }
+      })
+      if (stylesResult.status === 'error') {
+        return stylesResult
+      }
+      if (params.styles.padding) {
+        const paddingResult = validateObject(params.styles.padding, {
+          top: {
+            toBeTypes: ['number']
+          },
+          right: {
+            toBeTypes: ['number']
+          },
+          bottom: {
+            toBeTypes: ['number']
+          },
+          left: {
+            toBeTypes: ['number']
+          }
+        })
+        if (paddingResult.status === 'error') {
+          return paddingResult
+        }
+      }
+    }
+    if (params.container) {
+      const containerResult = validateObject(params.container, {
+        columnAmount: {
+          toBeTypes: ['number']
+        },
+        rowAmount: {
+          toBeTypes: ['number']
+        },
+        columnGap: {
+          toBe: 'number | "auto"',
+          test: (value) => typeof value === 'number' || value === 'auto'
+        },
+        rowGap: {
+          toBe: 'number | "auto"',
+          test: (value) => typeof value === 'number' || value === 'auto'
+        }
+      })
+      if (containerResult.status === 'error') {
+        return containerResult
+      }
+    }
+    
+    return result
   },
 })

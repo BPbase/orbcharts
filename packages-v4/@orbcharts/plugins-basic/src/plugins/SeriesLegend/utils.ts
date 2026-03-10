@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
-import type { ModelDatumSeries } from '../../../../core/src/types'
+// import type { ModelDatumSeries } from '../../../../core/src/types'
+import type { ComputedDatumSeries } from '../../types/ComputedData'
 // import type { D3PieDatum, PieDatum } from '../types'
 
 // 由d3.pie()建出來的資料格式
@@ -13,12 +14,12 @@ export interface D3PieDatum {
 }
 
 export interface PieDatum extends D3PieDatum {
-  data: ModelDatumSeries
+  data: ComputedDatumSeries
   id: string
 }
 
 export function makePieData ({ data, startAngle, endAngle }: {
-  data: ModelDatumSeries[]
+  data: ComputedDatumSeries[]
   startAngle: number
   endAngle: number
   // itemLabels: string[]

@@ -6,32 +6,33 @@ import type {
   ModelDatumMultivariate,
   ModelDatumGraphNode,
   ModelDatumGraphEdge,
-  ModelDatumTree
+  ModelDatumTree,
+  RenderDatumBase,
 } from '../../../core/src/types'
 
 
-export interface ComputedDatumSeries extends ModelDatumSeries {
+export interface ComputedDatumSeries extends RenderDatumBase<'series'> {
   visible: boolean
   seq: number
 }
 
-export interface ComputedDatumGrid extends ModelDatumGrid {
+export interface ComputedDatumGrid extends RenderDatumBase<'grid'> {
   visible: boolean
 }
 
-export interface ComputedDatumMultivariate extends ModelDatumMultivariate {
+export interface ComputedDatumMultivariate extends RenderDatumBase<'multivariate'> {
   visible: boolean
 }
 
-export interface ComputedDatumGraphNode extends ModelDatumGraphNode {
+export interface ComputedDatumGraphNode extends RenderDatumBase<'graph'> {
   visible: boolean
 }
 
-export interface ComputedDatumGraphEdge extends ModelDatumGraphEdge {
+export interface ComputedDatumGraphEdge extends RenderDatumBase<'graph'> {
   visible: boolean
 }
 
-export interface ComputedDatumTree extends ModelDatumTree {
+export interface ComputedDatumTree extends RenderDatumBase<'tree'> {
   visible: boolean
 }
 

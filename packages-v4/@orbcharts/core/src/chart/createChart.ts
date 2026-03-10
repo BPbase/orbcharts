@@ -2,6 +2,7 @@ import {
   Subject,
   BehaviorSubject,
   Observable,
+  EMPTY,
   shareReplay,
   takeUntil,
   filter,
@@ -14,7 +15,8 @@ import {
   distinctUntilChanged,
   mergeWith,
   share,
-  combineLatest
+  combineLatest,
+  catchError
 } from 'rxjs'
 import type {
   DeepPartial,
@@ -41,7 +43,8 @@ import {
   createValidatorErrorMessage,
   createValidatorWarningMessage,
   createOrbChartsErrorMessage,
-  resizeObservable
+  resizeObservable,
+  createUnexpectedErrorMessage
 } from '../utils'
 import { DEFAULT_DATA_ENCODING, DEFAULT_THEME, DEFAULT_SIZE_CONFIG } from './defaults'
 import { createSeriesData } from './createSeriesData'
@@ -405,8 +408,8 @@ export const createChart: CreateChart = (element, options) => {
   const defaultTheme = options && options.theme
     ? deepOverwrite(DEFAULT_THEME, options.theme)
     : DEFAULT_THEME
-  const defaultTheme$ = new BehaviorSubject<Theme>(defaultTheme)
-  const previousTheme$ = new BehaviorSubject<Theme>(defaultTheme)
+  // const defaultTheme$ = new BehaviorSubject<Theme>(defaultTheme)
+  // const previousTheme$ = new BehaviorSubject<Theme>(defaultTheme)
   const currentTheme$ = new BehaviorSubject<Theme>(defaultTheme)
   // plugins
   const pluginsInstance$ = new BehaviorSubject<PluginEntity<unknown, unknown>[]>(options?.plugins || [])
@@ -446,13 +449,18 @@ export const createChart: CreateChart = (element, options) => {
       takeUntil(destroy$),
       shareReplay(1)
     )
-    const encoding$ = new Observable<Encoding>(subscriber => {
-      currentEncoding$.subscribe(data => {
-        subscriber.next(data)
-      })
-    }).pipe(
-      shareReplay(1)
-    )
+    // const encoding$ = new Observable<Encoding>(subscriber => {
+    //   currentEncoding$.subscribe(data => {
+    //     subscriber.next(data)
+    //   })
+    // }).pipe(
+    //   shareReplay(1)
+    // )
+    const encoding$ = currentEncoding$
+      .asObservable()
+      .pipe(
+        shareReplay(1)
+      )
     const seriesData$ = combineLatest([
       rawData$,
       currentEncoding$,
@@ -460,7 +468,18 @@ export const createChart: CreateChart = (element, options) => {
     ]).pipe(
       debounceTime(0),
       map(([rawData, encoding, theme]) => {
-        return createSeriesData(rawData, encoding, theme)
+        try {
+          return createSeriesData(rawData, encoding, theme)
+        } catch (e) {
+          throw new Error(createUnexpectedErrorMessage({
+            from: 'Chart.seriesData$',
+            systemMessage: e
+          }))
+        }
+      }),
+      catchError((e) => {
+        console.error(createOrbChartsErrorMessage(e))
+        return EMPTY
       }),
       shareReplay(1)
     )
@@ -471,7 +490,18 @@ export const createChart: CreateChart = (element, options) => {
     ]).pipe(
       debounceTime(0),
       map(([rawData, encoding, theme]) => {
-        return createGridData(rawData, encoding, theme)
+        try {
+          return createGridData(rawData, encoding, theme)
+        } catch (e) {
+          throw new Error(createUnexpectedErrorMessage({
+            from: 'Chart.gridData$',
+            systemMessage: e
+          }))
+        }
+      }),
+      catchError((e) => {
+        console.error(createOrbChartsErrorMessage(e))
+        return EMPTY
       }),
       shareReplay(1)
     )
@@ -482,7 +512,18 @@ export const createChart: CreateChart = (element, options) => {
     ]).pipe(
       debounceTime(0),
       map(([rawData, encoding, theme]) => {
-        return createMultivariateData(rawData, encoding, theme)
+        try {
+          return createMultivariateData(rawData, encoding, theme)
+        } catch (e) {
+          throw new Error(createUnexpectedErrorMessage({
+            from: 'Chart.multivariateData$',
+            systemMessage: e
+          }))
+        }
+      }),
+      catchError((e) => {
+        console.error(createOrbChartsErrorMessage(e))
+        return EMPTY
       }),
       shareReplay(1)
     )
@@ -493,7 +534,18 @@ export const createChart: CreateChart = (element, options) => {
     ]).pipe(
       debounceTime(0),
       map(([rawData, encoding, theme]) => {
-        return createGraphData(rawData, encoding, theme)
+        try {
+          return createGraphData(rawData, encoding, theme)
+        } catch (e) {
+          throw new Error(createUnexpectedErrorMessage({
+            from: 'Chart.graphData$',
+            systemMessage: e
+          }))
+        }
+      }),
+      catchError((e) => {
+        console.error(createOrbChartsErrorMessage(e))
+        return EMPTY
       }),
       shareReplay(1)
     )
@@ -504,23 +556,54 @@ export const createChart: CreateChart = (element, options) => {
     ]).pipe(
       debounceTime(0),
       map(([rawData, encoding, theme]) => {
-        return createTreeData(rawData, encoding, theme)
+        try {
+          return createTreeData(rawData, encoding, theme)
+        } catch (e) {
+          throw new Error(createUnexpectedErrorMessage({
+            from: 'Chart.treeData$',
+            systemMessage: e
+          }))
+        }
+      }),
+      catchError((e) => {
+        console.error(createOrbChartsErrorMessage(e))
+        return EMPTY
       }),
       shareReplay(1)
     )
-    const plugins$ = new Observable<readonly PluginInfo[]>()
-    const theme$ = new Observable<Theme>(subscriber => {
-      currentTheme$.subscribe(data => {
-        subscriber.next(data)
+    const plugins$ = new Observable<readonly PluginInfo[]>(subscriber => {
+      pluginsInstance$.subscribe(plugins => {
+        const pluginInfos = plugins.map(plugin => {
+          return {
+            name: plugin.name,
+            shownLayers: plugin.getShownLayerNames()
+          }
+        })
+        subscriber.next(pluginInfos)
       })
     })
+    // const theme$ = new Observable<Theme>(subscriber => {
+    //   currentTheme$.subscribe(data => {
+    //     subscriber.next(data)
+    //   })
+    // })
+    const theme$ = currentTheme$
+      .asObservable()
+      .pipe(
+        shareReplay(1)
+      )
     const eventTrigger$ = new Subject<EventData>()
 
-    const event$ = new Observable<EventData>(subscriber => {
-      eventTrigger$.subscribe((data) => {
-        subscriber.next(data)
-      })
-    })
+    // const event$ = new Observable<EventData>(subscriber => {
+    //   eventTrigger$.subscribe((data) => {
+    //     subscriber.next(data)
+    //   })
+    // })
+    const event$ = eventTrigger$
+      .asObservable()
+      .pipe(
+        share()
+      )
     return {
       root: element,
       size$: size$,
@@ -556,13 +639,13 @@ export const createChart: CreateChart = (element, options) => {
           throw new Error(createValidatorErrorMessage({
             columnName,
             expectToBe,
-            from: 'Chart.data$'
+            from: 'Chart.setData'
           }))
         } else if (status === 'warning') {
           console.warn(createValidatorWarningMessage({
             columnName,
             expectToBe,
-            from: 'Chart.data$'
+            from: 'Chart.setData'
           }))
         }
       } catch (e) {
@@ -583,13 +666,13 @@ export const createChart: CreateChart = (element, options) => {
           throw new Error(createValidatorErrorMessage({
             columnName,
             expectToBe,
-            from: 'Chart.encoding$'
+            from: 'Chart.updateEncoding'
           }))
         } else if (status === 'warning') {
           console.warn(createValidatorWarningMessage({
             columnName,
             expectToBe,
-            from: 'Chart.encoding$'
+            from: 'Chart.updateEncoding'
           }))
         }
       } catch (e) {
@@ -597,21 +680,59 @@ export const createChart: CreateChart = (element, options) => {
         console.error(createOrbChartsErrorMessage(e))
       }
       // deep-merge with previous
-      const currentEncoding = deepOverwrite(currentEncoding$.getValue(), patch)
-      currentEncoding$.next(currentEncoding)
+      const newEncoding = deepOverwrite(currentEncoding$.getValue(), patch)
+      currentEncoding$.next(newEncoding)
     }
-    // function forceReplaceEncoding (full: Encoding) {
-    //   // replace
-    //   currentEncoding$.next(full)
-    // }
+    function forceReplaceEncoding (full: Encoding) {
+      // replace
+      currentEncoding$.next(full)
+    }
     function getEncoding () {
       return currentEncoding$.getValue()
     }
     function setPlugins (plugins: PluginEntity<unknown, unknown>[]) {
+      try {  
+        const { status, columnName, expectToBe } = pluginsValidator(plugins)
+        if (status === 'error') {
+          throw new Error(createValidatorErrorMessage({
+            columnName,
+            expectToBe,
+            from: 'Chart.setPlugins'
+          }))
+        } else if (status === 'warning') {
+          console.warn(createValidatorWarningMessage({
+            columnName,
+            expectToBe,
+            from: 'Chart.setPlugins'
+          }))
+        }
+      } catch (e) {
+        // 不中斷資料流
+        console.error(createOrbChartsErrorMessage(e))
+      }
       // replace all
       pluginsInstance$.next(plugins)
     }
     function addPlugin (plugin: PluginEntity<unknown, unknown>) {
+      try {
+        const { status, columnName, expectToBe } = pluginsValidator([plugin])
+        if (status === 'error') {
+          throw new Error(createValidatorErrorMessage({
+            columnName,
+            expectToBe,
+            from: 'Chart.addPlugin'
+          }))
+        } else if (status === 'warning') {
+          console.warn(createValidatorWarningMessage({
+            columnName,
+            expectToBe,
+            from: 'Chart.addPlugin'
+          }))
+        }
+      } catch (e) {
+        // 不中斷資料流
+        console.error(createOrbChartsErrorMessage(e))
+      }
       // add one
       pluginsInstance$.next([...pluginsInstance$.getValue(), plugin])
     }
@@ -619,23 +740,41 @@ export const createChart: CreateChart = (element, options) => {
       // remove one by name
       pluginsInstance$.next(pluginsInstance$.getValue().filter(plugin => plugin.name !== name))
     }
-    function setTheme (theme: DeepPartial<Theme>) {
-      // replace all
-      const currentTheme = deepOverwrite(defaultTheme$.getValue(), theme)
-      previousTheme$.next(currentTheme)
-      currentTheme$.next(currentTheme)
-    }
-    function updateTheme (patch: DeepPartial<Theme>) {
-      // deep-merge with previous
-      const currentTheme = deepOverwrite(previousTheme$.getValue(), patch)
-      previousTheme$.next(currentTheme)
-      currentTheme$.next(currentTheme)
-    }
-    // function forceReplaceTheme (full: Theme) {
+    // function setTheme (theme: DeepPartial<Theme>) {
     //   // replace all
-    //   previousTheme$.next(full)
-    //   currentTheme$.next(full)
+    //   const currentTheme = deepOverwrite(defaultTheme$.getValue(), theme)
+    //   previousTheme$.next(currentTheme)
+    //   currentTheme$.next(currentTheme)
     // }
+    function updateTheme (patch: DeepPartial<Theme>) {
+      try {
+        const { status, columnName, expectToBe } = themeOptionsValidator(patch)
+        if (status === 'error') {
+          throw new Error(createValidatorErrorMessage({
+            columnName,
+            expectToBe,
+            from: 'Chart.updateTheme'
+          }))
+        } else if (status === 'warning') {
+          console.warn(createValidatorWarningMessage({
+            columnName,
+            expectToBe,
+            from: 'Chart.updateTheme'
+          }))
+        }
+      } catch (e) {
+        // 不中斷資料流
+        console.error(createOrbChartsErrorMessage(e))
+      }
+      // deep-merge with previous
+      const newTheme = deepOverwrite(currentTheme$.getValue(), patch)
+      currentTheme$.next(newTheme)
+    }
+    function forceReplaceTheme (full: Theme) {
+      // replace all
+      // previousTheme$.next(full)
+      currentTheme$.next(full)
+    }
     function getTheme () {
       return currentTheme$.getValue()
     }
@@ -652,14 +791,14 @@ export const createChart: CreateChart = (element, options) => {
       setData,
       // setEncoding,
       updateEncoding,
-      // forceReplaceEncoding,
+      forceReplaceEncoding,
       getEncoding,
       setPlugins,
       addPlugin,
       removePlugin,
-      setTheme,
+      // setTheme,
       updateTheme,
-      // forceReplaceTheme,
+      forceReplaceTheme,
       getTheme,
       destroy,
       context

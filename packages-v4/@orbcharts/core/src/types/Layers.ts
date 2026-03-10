@@ -1,5 +1,5 @@
 import type { Observable } from 'rxjs'
-import type { DeepPartial, ChartContext, ExtendableContext } from './index'
+import type { DeepPartial, ChartContext, ExtendableContext, ValidatorResult } from './index'
 
 // export type LayerParamsBase<LayerName extends string> = {
 //   [K in LayerName]: unknown
@@ -65,7 +65,7 @@ export interface DefineLayerConfig<ElementType extends 'svg' | 'canvas', ExtendC
   name: string
   defaultParams: LayerParams
   layerIndex: number
-  validator?: (params: LayerParams) => { valid: boolean; errors?: string[] }
+  validator?: (params: DeepPartial<LayerParams>) => ValidatorResult
   setup: (setupProps: LayerSetupProps<ElementType, ExtendContext, PluginParams, LayerParams>) => () => void
 }
 
@@ -78,7 +78,7 @@ export interface LayerEntity<ExtendContext extends ExtendableContext, PluginPara
   disable(): void
   // setParams(params: DeepPartial<LayerParams>): void
   updateParams(params: DeepPartial<LayerParams>): void
-  // forceReplaceParams(params: LayerParams): void
+  forceReplaceParams(params: LayerParams): void
   getParams: () => Readonly<LayerParams>
 
   // injectContext(): void

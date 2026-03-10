@@ -17,6 +17,7 @@ import type {
   LayerEnableProps
 } from "../types"
 import { deepOverwrite } from "../utils/commonUtils"
+import { createOrbChartsErrorMessage, createValidatorErrorMessage, createValidatorWarningMessage } from "../utils"
 
 export const createLayer = <
   ExtendContext extends ExtendableContext,
@@ -87,12 +88,33 @@ export const createLayer = <
     //   previousParams$.next(deepOverwrite(defaultParams$.getValue(), partial))
     // },
     updateParams: (patch) => {
+      try {
+        // 檢查 data$ 資料格式是否正確
+        const { status, columnName, expectToBe } = config.validator(patch)
+        if (status === 'error') {
+          throw new Error(createValidatorErrorMessage({
+            columnName,
+            expectToBe,
+            from: `${config.name}.params$`
+          }))
+        } else if (status === 'warning') {
+          console.warn(createValidatorWarningMessage({
+            columnName,
+            expectToBe,
+            from: `${config.name}.params$`
+          }))
+        }
+      } catch (e) {
+        // throw new Error(e.message)
+        // 驗證失敗仍繼續執行，才不會把 Observable 資料流給中斷掉
+        console.error(createOrbChartsErrorMessage(e))
+      }
       const layerParams = deepOverwrite(layerParams$.getValue(), patch)
       layerParams$.next(layerParams)
     },
-    // forceReplaceParams: (full) => {
-    //   layerParams$.next(full)
-    // },
+    forceReplaceParams: (full) => {
+      layerParams$.next(full)
+    },
     getParams: () => {
       return layerParams$.getValue()
     },

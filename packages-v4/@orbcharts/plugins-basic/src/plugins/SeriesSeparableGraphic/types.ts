@@ -1,9 +1,9 @@
 
 import { Observable } from 'rxjs'
-import type { ColorType, ModelDatumSeries } from '../../../../core/src/types'
+import type { ColorType, ModelDatumSeries, EventData } from '../../../../core/src/types'
 import type { ContainerPosition, GraphicContainer, GraphicStyles, Layout } from '../../types/PluginParams'
 import { ComputedDatumSeries } from '../../types/ComputedData'
-import type { ArcScaleType } from '../../types/Common'
+import type { ArcScaleType, Placement } from '../../types/Common'
 
 // context
 export interface SeriesSeparableGraphicExtendContext {
@@ -38,29 +38,16 @@ export interface SeriesSeparableGraphicPluginParams {
 
 // all layer params
 export interface SeriesSeparableGraphicAllLayerParams {
-  Pie: PieParams
   Bubbles: BubblesParams
-}
-
-// -- shared types --
-export interface ComputedDatum extends ModelDatumSeries {
-  visible: boolean
-  seq: number
+  Pie: PieParams
+  PieEventTexts: PieEventTextsParams
+  PieLabels: PieLabelsParams
+  Rose: RoseParams
+  RoseLabels: RoseLabelsParams
+  Indicator: IndicatorParams
 }
 
 // -- layer params --
-export interface PieParams {
-  outerRadius: number;
-  innerRadius: number;
-  outerRadiusWhileHighlight: number;
-  startAngle: number;
-  endAngle: number;
-  padAngle: number;
-  strokeColorType: ColorType;
-  strokeWidth: number;
-  cornerRadius: number;
-}
-
 export interface BubblesParams {
   force: {
     strength: number; // 泡泡引力
@@ -77,4 +64,66 @@ export interface BubblesParams {
   }
   // highlightRIncrease: number
   arcScaleType: ArcScaleType
+}
+
+export interface PieParams {
+  outerRadius: number;
+  innerRadius: number;
+  outerRadiusWhileHighlight: number;
+  startAngle: number;
+  endAngle: number;
+  padAngle: number;
+  strokeColorType: ColorType;
+  strokeWidth: number;
+  cornerRadius: number;
+}
+
+export interface PieEventTextsParams {
+  renderFn: (d: EventData) => string[] | string | null
+  textAttrs: Array<{ [key:string]: string | number }>
+  textStyles: Array<{ [key:string]: string | number }>
+}
+
+export interface PieLabelsParams {
+  // solidColor?: string;
+  // colors?: string[];
+  outerRadius: number
+  outerRadiusWhileHighlight: number
+  // innerRadius?: number;
+  // enterDuration?: number
+  startAngle: number
+  endAngle: number
+  labelCentroid: number
+  // fontSize?: number
+  labelFn: ((d: ComputedDatumSeries) => string)
+  labelColorType: ColorType
+}
+
+export interface RoseParams {
+  outerRadius: number
+  padAngle: number
+  strokeColorType: ColorType
+  strokeWidth: number
+  cornerRadius: number
+  arcScaleType: ArcScaleType
+  angleIncreaseWhileHighlight: number
+}
+
+export interface RoseLabelsParams {
+  outerRadius: number
+  labelCentroid: number
+  labelFn: ((d: ComputedDatumSeries) => string)
+  labelColorType: ColorType
+  arcScaleType: ArcScaleType
+}
+
+export interface IndicatorParams {
+  startAngle: number
+  endAngle: number
+  radius: number
+  indicatorType: 'line' | 'needle' | 'pin' | 'triangle'
+  size: number
+  colorType: ColorType
+  // autoHighlight: boolean
+  value: number
 }

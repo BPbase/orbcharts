@@ -1,2 +1,3 @@
 
-export { SeriesSeparableGraphic } from './series/SeriesSeparableGraphic/SeriesSeparableGraphic'
+export * from './plugins'
+export * from './types'

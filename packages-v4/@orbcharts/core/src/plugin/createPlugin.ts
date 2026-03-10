@@ -83,7 +83,7 @@ export const createPlugin = <
   // let mainCanvasElement: HTMLCanvasElement | null = null
 
   // 當 context 或 SettedIsShowKeySet 改變時，重新初始化 layers
-  const showedLayerNames$ = combineLatest({
+  const shownLayerNames$ = combineLatest({
     // context: context$,
     SettedParamsKeySet: SettedParamsKeySet$,
     SettedIsShowKeySet: SettedIsShowKeySet$
@@ -91,9 +91,9 @@ export const createPlugin = <
     debounceTime(0),
     // filter(({ context }) => context !== null),
     map(({ SettedParamsKeySet, SettedIsShowKeySet }) => {
-      const ShowedLayerNamesSet = SettedIsShowKeySet == null ? SettedParamsKeySet : SettedIsShowKeySet // SettedIsShowKeySet 預設為 null
+      const ShownLayerNamesSet = SettedIsShowKeySet == null ? SettedParamsKeySet : SettedIsShowKeySet // SettedIsShowKeySet 預設為 null
       // 依照 layerIndex 排序
-      const showedLayerNamesSeq: string[] = Array.from(ShowedLayerNamesSet)
+      const shownLayerNamesSeq: string[] = Array.from(ShownLayerNamesSet)
         .map(name => [
           name,
           config.layers.find(l => l.name === name)?.layerIndex ?? -1
@@ -102,7 +102,7 @@ export const createPlugin = <
         .sort((a, b) => (a[1] as number) - (b[1] as number))
         .map(([name]) => name as string)
 
-      return { ShowedLayerNamesSet, showedLayerNamesSeq }
+      return { ShownLayerNamesSet, shownLayerNamesSeq }
     })
   )
 
@@ -150,10 +150,50 @@ export const createPlugin = <
     initPluginParams
   )
 
+  const pluginForceReplaceParams$ = new BehaviorSubject<DeepPartial<AllLayerParams | PluginParams> | undefined>(
+    initPluginParams
+  )
+
   // const pluginParams$ = new BehaviorSubject<PluginParams>(
   //   deepOverwrite(config.defaultParams, initPluginParams as DeepPartial<PluginParams>)
   // )
-  const pluginParams$ = pluginPatchParams$.pipe(
+  const pluginParams$ = new Observable<PluginParams>(subscriber => {
+    // update
+    pluginPatchParams$.subscribe(patch => {
+      try {
+        // 檢查 data$ 資料格式是否正確
+        const { status, columnName, expectToBe } = config.validator(patch)
+        if (status === 'error') {
+          throw new Error(createValidatorErrorMessage({
+            columnName,
+            expectToBe,
+            from: `${config.name}.params$`
+          }))
+        } else if (status === 'warning') {
+          console.warn(createValidatorWarningMessage({
+            columnName,
+            expectToBe,
+            from: `${config.name}.params$`
+          }))
+        }
+      } catch (e) {
+        // throw new Error(e.message)
+        // 驗證失敗仍繼續執行，才不會把 Observable 資料流給中斷掉
+        console.error(createOrbChartsErrorMessage(e))
+      }
+
+      const newParams = deepOverwrite(config.defaultParams, patch as DeepPartial<PluginParams> ?? {})
+
+      subscriber.next(newParams)
+    })
+
+    // force replace
+    pluginForceReplaceParams$.subscribe(full => {
+      subscriber.next(full as PluginParams)
+    })
+  })
+  
+  pluginPatchParams$.pipe(
     map(patch => {
       try {
         // 檢查 data$ 資料格式是否正確
@@ -212,12 +252,12 @@ export const createPlugin = <
 
   combineLatest({
     pluginSetupProps: pluginSetupProps$,
-    showedLayerNames: showedLayerNames$
+    shownLayerNames: shownLayerNames$
   }).pipe(
     debounceTime(0)
-  ).subscribe(({ pluginSetupProps, showedLayerNames }) => {
+  ).subscribe(({ pluginSetupProps, shownLayerNames }) => {
     // const { context, svg, canvas } = pluginSetupProps
-    const { ShowedLayerNamesSet, showedLayerNamesSeq } = showedLayerNames
+    const { ShownLayerNamesSet, shownLayerNamesSeq } = shownLayerNames
 
     // init plugin
     if (config.setup) {
@@ -228,7 +268,7 @@ export const createPlugin = <
     if (elementType === 'svg') {
       handleElementLifecycle(
         (pluginSetupProps as PluginSetupProps<'svg', ExtendContext, PluginParams>).svg, 
-        showedLayerNamesSeq, // 依照 showedLayerNamesSeq
+        shownLayerNamesSeq, // 依照 shownLayerNamesSeq
         layerSVGElementsRef,
         (layerName) => createSVGGroup(createLayerClassName(config.name, layerName))
       )
@@ -238,7 +278,7 @@ export const createPlugin = <
     if (elementType === 'canvas') {
       handleElementLifecycle(
         (pluginSetupProps as PluginSetupProps<'canvas', ExtendContext, PluginParams>).canvas, 
-        showedLayerNamesSeq, // 依照 showedLayerNamesSeq
+        shownLayerNamesSeq, // 依照 shownLayerNamesSeq
         layerCanvasElementsRef,
         (layerName) => createCanvas(createLayerClassName(config.name, layerName))
       )
@@ -246,7 +286,7 @@ export const createPlugin = <
 
     // init layers
     config.layers.forEach((layer) => {
-      if (ShowedLayerNamesSet.has(layer.name as keyof AllLayerParams)) {
+      if (ShownLayerNamesSet.has(layer.name as keyof AllLayerParams)) {
         const layerEnableProps: LayerEnableProps<'svg' | 'canvas', ExtendContext, PluginParams, unknown> = 
           elementType === 'svg' ? 
             {
@@ -274,14 +314,14 @@ export const createPlugin = <
   })
   
   // const subscription = combineLatest({
-  //   showedLayerNames: showedLayerNames$,
+  //   shownLayerNames: shownLayerNames$,
   //   context: context$
   // }).pipe(
   //   debounceTime(0),
   //   filter(({ context }) => context !== null)
-  // ).subscribe(({ context, showedLayerNames }) => {
+  // ).subscribe(({ context, shownLayerNames }) => {
 
-  //   const { ShowedLayerNamesSet, showedLayerNamesSeq } = showedLayerNames
+  //   const { ShownLayerNamesSet, shownLayerNamesSeq } = shownLayerNames
 
   //   // -- 在context.root元素底下建立 svg 和 canvas 元素 --
   //   let svgElement: SVGSVGElement | null = context.root.querySelector(`.${svgClassName}`)
@@ -315,7 +355,7 @@ export const createPlugin = <
   //   // 處理 SVG 元素的 enter/update/exit
   //   handleElementLifecycle(
   //     svgElement!, 
-  //     showedLayerNamesSeq, // 依照 showedLayerNamesSeq
+  //     shownLayerNamesSeq, // 依照 shownLayerNamesSeq
   //     layerSVGElementsRef,
   //     (layerName) => createSVGGroup(createLayerClassName(config.name, layerName))
   //   )
@@ -323,14 +363,14 @@ export const createPlugin = <
   //   // 處理 Canvas 元素的 enter/update/exit
   //   handleElementLifecycle(
   //     canvasElement!, 
-  //     showedLayerNamesSeq, // 依照 showedLayerNamesSeq
+  //     shownLayerNamesSeq, // 依照 shownLayerNamesSeq
   //     layerCanvasElementsRef,
   //     (layerName) => createCanvas(createLayerClassName(config.name, layerName))
   //   )
 
   //   // init layers
   //   config.layers.forEach((layer) => {
-  //     if (ShowedLayerNamesSet.has(layer.name as keyof AllLayerParams)) {
+  //     if (ShownLayerNamesSet.has(layer.name as keyof AllLayerParams)) {
   //       const layerEnableProps: LayerEnableProps<ExtendContext, PluginParams> = {
   //         svgG: context.root.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
   //         canvas: context.root.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
@@ -348,14 +388,14 @@ export const createPlugin = <
 
   // const subscription = combineLatest({
   //   context: context$,
-  //   showedLayerNames: showedLayerNames$
+  //   shownLayerNames: shownLayerNames$
   // }).pipe(
   //   switchMap(async d => d),
   //   filter(({ context }) => context !== null)
-  // ).subscribe(({ context, showedLayerNames }) => {
+  // ).subscribe(({ context, shownLayerNames }) => {
   //   // init layers
   //   config.layers.forEach((layer) => {
-  //     if (showedLayerNames.has(layer.name as keyof PluginParams)) {
+  //     if (shownLayerNames.has(layer.name as keyof PluginParams)) {
   //       layer.enable({ svg: mainSvgElement, canvas: mainCanvasElement }, context)
   //     } else {
   //       layer.destroy()
@@ -418,6 +458,9 @@ export const createPlugin = <
       })
       SettedIsShowKeySet$.next(new Set(names))
     },
+    getShownLayerNames: () => {
+      return Array.from(SettedIsShowKeySet$.getValue())
+    },
     // layer params
     // setLayers: (partial: DeepPartial<PluginParams>) => {
     //   params = { ...params, ...partial }
@@ -435,15 +478,18 @@ export const createPlugin = <
       
       SettedParamsKeySet$.next(getParamsKeySet(patch))
     },
-    // forceReplaceParams: (full: PluginParams | AllLayerParams) => {
-    //   Object.keys(full).forEach((key) => {
-    //     const layer = allLayerInstances[key as keyof AllLayerParams]
-    //     if (layer) {
-    //       layer.forceReplaceParams((full as Record<string, any>)[key])
-    //     }
-    //   })
-    //   SettedParamsKeySet$.next(getParamsKeySet(full))
-    // },
+    forceReplaceParams: (full: PluginParams | AllLayerParams) => {
+      // plugin params
+      pluginForceReplaceParams$.next(full)
+      // layer params
+      Object.keys(full).forEach((key) => {
+        const layer = allLayerInstances[key as keyof AllLayerParams]
+        if (layer) {
+          layer.forceReplaceParams((full as Record<string, any>)[key])
+        }
+      })
+      SettedParamsKeySet$.next(getParamsKeySet(full))
+    },
     getParams: () => {
       return config.layers.reduce((acc, layer) => {
         acc[layer.name] = layer.getParams()

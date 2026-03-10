@@ -22,6 +22,7 @@ import { makeD3Arc } from '../../../utils/d3Utils'
 import { makePieData } from '../utils'
 import type { ComputedDatumSeries } from '../../../types/ComputedData'
 import type { ContainerPosition } from '../../../types/PluginParams'
+import { LAYER_INDEX_OF_GRAPHIC } from '../../../const/layerIndex'
 
 const pluginName = 'SeriesSeparableGraphic'
 const layerName = 'Pie'
@@ -658,9 +659,9 @@ function createEachPie (context: {
 export const Pie = defineSVGLayer<SeriesSeparableGraphicExtendContext, SeriesSeparableGraphicPluginParams, PieParams>({
   name: layerName,
   defaultParams: DEFAULT_PIE_PARAMS,
-  layerIndex: 0,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC,
   validator: (params) => {
-    const result = validateObject<PieParams>(params, {
+    const result = validateObject(params, {
       outerRadius: {
         toBeTypes: ['number'],
       },

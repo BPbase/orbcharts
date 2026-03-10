@@ -10,7 +10,7 @@ import { ValidatorResult } from '../types/Validator'
 
 export interface PluginInfo {
   name: string
-  layers: string[]
+  shownLayers: string[]
 }
 
 // export interface PluginSetupProps<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> {
@@ -63,10 +63,11 @@ export interface PluginEntity<PluginParams extends Record<string, any>, AllLayer
   hide(names: (keyof AllLayerParams) | (keyof AllLayerParams)[]): void
   hideAll(): void
   toggle(names: (keyof AllLayerParams) | (keyof AllLayerParams)[]): void
+  getShownLayerNames(): (keyof AllLayerParams)[]
   // layer params
   // setLayers(partial: DeepPartial<PluginParams>): void // deep-merge with default
   updateParams(patch: DeepPartial<PluginParams | AllLayerParams>): void // deep-merge with previous
-  // forceReplaceParams(full: PluginParams | AllLayerParams): void // replace（特殊需求，可節省效能）
+  forceReplaceParams(full: PluginParams | AllLayerParams): void // replace（特殊需求，可節省效能）
   getParams(): Readonly<PluginParams | AllLayerParams>
   // layer<LayerName extends keyof PluginParams>(name: LayerName): {
   //   // set(partial: DeepPartial<PluginParams[LayerName]>): void // deep-merge with default 該 layer 的 params

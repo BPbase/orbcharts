@@ -158,11 +158,11 @@ export function renderTspansOnAxis (textSelection: d3.Selection<d3.BaseType, unk
 // 四象限上的多行tspan
 export function renderTspansOnQuadrant (textSelection: d3.Selection<d3.BaseType, unknown, null, undefined>, {
   textArr,
-  textSizePx,
+  fontSizePx,
   quadrant
 }: {
   textArr: string[]
-  textSizePx: number
+  fontSizePx: number
   quadrant: number
 }) {
   textSelection
@@ -171,7 +171,7 @@ export function renderTspansOnQuadrant (textSelection: d3.Selection<d3.BaseType,
     .join('tspan')
     .attr('x', 0)
     .attr('y', (_d, _i) => quadrant == 1 || quadrant == 2
-      ? - (textArr.length - 1 - _i) * textSizePx
-      : _i * textSizePx)
+      ? - (textArr.length - 1 - _i) * fontSizePx
+      : _i * fontSizePx)
     .text(d => d)
 }

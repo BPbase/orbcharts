@@ -45,14 +45,14 @@ export interface ChartEntity {
   setData(data: RawData): void // replace
   // setEncoding(partial: Partial<Encoding>): void // deep-merge with default
   updateEncoding(patch: DeepPartial<Encoding>): void // deep-merge with previous
-  // forceReplaceEncoding(full: Encoding): void // replace
+  forceReplaceEncoding(full: Encoding): void // replace
   getEncoding(): Readonly<Encoding>
   setPlugins(plugins: PluginEntity<unknown, unknown>[]): void // replace all
   addPlugin(plugin: PluginEntity<unknown, unknown>): void
   removePlugin(id: string): void
   // setTheme(theme: Theme): void // replace all
   updateTheme(patch: DeepPartial<Theme>): void // deep-merge with previous
-  // forceReplaceTheme(full: Theme): void // replace all
+  forceReplaceTheme(full: Theme): void // replace all
   getTheme(): Readonly<Theme>
   destroy(): void;
 
