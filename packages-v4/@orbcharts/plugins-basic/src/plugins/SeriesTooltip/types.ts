@@ -1,7 +1,7 @@
 
 import { Observable } from 'rxjs'
 import type { ColorType, ModelDatumSeries, EventData } from '../../../../core/src/types'
-import type { GraphicContainer, GraphicStyles, Layout } from '../../types/PluginParams'
+import type { GraphicStyles, Layout, VisibleFilter } from '../../types/PluginParams'
 import { ComputedDatum, ComputedDatumSeries } from '../../types/ComputedData'
 import { BaseTooltipStyle, BaseTooltipUtils } from '../../baseLayers/types'
 
@@ -15,9 +15,9 @@ export interface SeriesTooltipExtendContext {
 // plugin params
 export interface SeriesTooltipPluginParams {
   styles: GraphicStyles
-  visibleFilter: (datum: ModelDatumSeries) => boolean | null
+  visibleFilter: VisibleFilter<'series'>
   sort: ((a: ModelDatumSeries, b: ModelDatumSeries) => number) | null
-  // container: GraphicContainer
+  // container: Container
   // separateSeries: boolean
   // separateName: boolean
   datasetIndex: number

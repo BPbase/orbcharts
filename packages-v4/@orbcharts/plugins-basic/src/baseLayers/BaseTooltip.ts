@@ -10,14 +10,44 @@ import {
   Subject, 
   Observable,
   distinctUntilChanged } from 'rxjs'
-import type { EventData, RenderDatumBase, Theme } from '../../../core/src/types'
-import type { BaseLayerFn, BaseTooltipParams, BaseTooltipStyle } from './types'
+import type { ColorType, EventData, RenderDatumBase, Theme } from '../../../core/src/types'
+import type { BaseLayerFn } from './../types/BaseLayer'
 import type { Layout } from '../types/PluginParams'
 import type { ComputedDatum } from '../types'
 import { fontSizePxObservable } from '../utils/observables'
 import { getSvgGElementSize, appendSvg } from '../utils/d3Utils'
 import { getColor, createClassName } from '../utils/orbchartsUtils'
 import { measureTextWidth, toCurrency } from '../utils/commonUtils'
+
+export interface BaseTooltipStyle {
+    backgroundColor: string;
+    backgroundOpacity: number;
+    strokeColor: string;
+    offset: [number, number];
+    padding: number;
+    textColor: string;
+    textSize: number | string;
+    textSizePx: number;
+    // seriesColors: string[];
+}
+export interface BaseTooltipUtils {
+    toCurrency: (num: number | null) => string;
+    measureTextWidth(text: string, size?: number): number;
+}
+export type BaseTooltipParams = {
+    backgroundColorType: ColorType;
+    backgroundOpacity: number;
+    strokeColorType: ColorType;
+    textColorType: ColorType;
+    offset: [number, number];
+    padding: number;
+    renderFn: ((eventData: EventData<any>, context: {
+        styles: BaseTooltipStyle;
+        utils: BaseTooltipUtils;
+        seriesData: ComputedDatum<any>[]
+        categoryData: ComputedDatum<any>[]
+    }) => string[] | string);
+};
 
 interface BaseTooltipContext {
   pluginName: string
@@ -30,17 +60,6 @@ interface BaseTooltipContext {
   SeriesDataMap$: Observable<Map<string, ComputedDatum<any>[]>>
   CategoryDataMap$: Observable<Map<string, ComputedDatum<any>[]>>
 }
-
-// export interface BaseTooltipStyle {
-//   backgroundColor: string
-//   backgroundOpacity: number
-//   strokeColor: string
-//   offset: [number, number]
-//   padding: number
-//   textColor: string
-//   textSize: number | string // chartParams上的設定
-//   fontSizePx: number
-// }
 
 function textToSvg (_textArr: string[] | string | null | undefined, textStyle: BaseTooltipStyle) {
   const lineHeight = textStyle.textSizePx * 1.5

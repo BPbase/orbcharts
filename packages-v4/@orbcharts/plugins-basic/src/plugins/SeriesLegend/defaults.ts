@@ -1,5 +1,4 @@
 import type { SeriesLegendParams, SeriesLegendPluginParams } from './types'
-import type { EventData, ModelDatumSeries } from '../../../../core/src/types'
 
 export const DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS: SeriesLegendPluginParams = {
   styles: {

@@ -1,7 +1,7 @@
 
 import { Observable } from 'rxjs'
 import type { ColorType, ModelDatumSeries, EventData } from '../../../../core/src/types'
-import type { GraphicContainer, GraphicStyles, Layout } from '../../types/PluginParams'
+import type { GraphicStyles, Layout } from '../../types/PluginParams'
 import { ComputedDatumSeries } from '../../types/ComputedData'
 import type { Placement } from '../../types/Common'
 
@@ -17,7 +17,7 @@ export interface SeriesLegendPluginParams {
   styles: GraphicStyles
   visibleFilter: (datum: ModelDatumSeries) => boolean | null
   sort: ((a: ModelDatumSeries, b: ModelDatumSeries) => number) | null
-  // container: GraphicContainer
+  // container: Container
   // separateSeries: boolean
   // separateName: boolean
   datasetIndex: number

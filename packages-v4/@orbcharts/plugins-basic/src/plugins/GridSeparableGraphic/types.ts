@@ -1,7 +1,7 @@
 
 import { Observable } from 'rxjs'
 import type { ColorType, ModelDatumSeries, EventData } from '../../../../core/src/types'
-import type { AxisPosition, ContainerPosition, ContainerPositionScaled, GraphicContainer, GraphicStyles, Layout } from '../../types/PluginParams'
+import type { AxisPosition, ContainerPosition, ContainerPositionScaled, Container, GraphicStyles, Layout, VisibleFilter } from '../../types/PluginParams'
 import { ComputedDatumGrid,  } from '../../types/ComputedData'
 import type { ContainerSize, Placement, TransformData } from '../../types/Common'
 import { BaseTooltipStyle, BaseTooltipUtils } from '../../baseLayers/types'
@@ -32,7 +32,7 @@ export interface GridSeparableGraphicExtendContext {
   visibleComputedData$: Observable<ComputedDatumGrid[][]> // filter掉visible=false的資料
   visibleComputedAxesData$: Observable<ComputedAxesDataGrid>
   computedStackedData$: Observable<ComputedDatumGrid[][]>
-  groupScaleDomainValue$: Observable<[number, number]>
+  categoryScaleDomainValue$: Observable<[number, number]>
   filteredMinMaxValue$: Observable<[number, number]>
   filteredStackedMinMaxValue$: Observable<[number, number]>
   gridAxesTransform$: Observable<TransformData>
@@ -64,13 +64,13 @@ export interface GroupAxis {
 
 export interface GridSeparableGraphicPluginParams {
   styles: GraphicStyles
-  visibleFilter: (datum: ModelDatumSeries) => boolean | null
-  container: GraphicContainer
+  visibleFilter: VisibleFilter<'grid'>
+  container: Container
   // seriesDirection: SeriesDirection
   // rowLabels: string[]
   // columnLabels: string[]
   valueAxis: ValueAxis
-  groupAxis: GroupAxis
+  categoryAxis: GroupAxis
   separateSeries: boolean
   datasetIndex: number
 }
@@ -229,6 +229,8 @@ export interface GridTooltipParams {
       context: {
         styles: BaseTooltipStyle
         utils: BaseTooltipUtils
+        categoryData: ComputedDatumGrid[]
+        seriesData: ComputedDatumGrid[]
       }
     ) => string[] | string
   )

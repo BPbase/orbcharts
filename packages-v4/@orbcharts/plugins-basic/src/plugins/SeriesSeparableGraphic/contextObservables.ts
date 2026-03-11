@@ -204,7 +204,7 @@ export const seriesComputedSortedDataObservable = ({ seriesComputedData$, separa
 
 // 所有container位置（對應series）
 export const seriesContainerPositionObservable = ({ computedSortedData$, pluginParams$, layout$ }: {
-  computedSortedData$: Observable<ModelDatumSeries[][]>
+  computedSortedData$: Observable<ComputedDatumSeries[][]>
   pluginParams$: Observable<SeriesSeparableGraphicPluginParams>
   layout$: Observable<Layout>
 }): Observable<ContainerPosition[]> => {
@@ -228,7 +228,7 @@ export const seriesContainerPositionObservable = ({ computedSortedData$, pluginP
 
 export const datumContainerPositionMapObservable = ({ seriesContainerPosition$, computedSortedData$ }: {
   seriesContainerPosition$: Observable<ContainerPosition[]>
-  computedSortedData$: Observable<ModelDatumSeries[][]>
+  computedSortedData$: Observable<ComputedDatumSeries[][]>
 }) => {
   return combineLatest({
     seriesContainerPosition: seriesContainerPosition$,

@@ -9,28 +9,26 @@ import {
   distinctUntilChanged,
   Observable,
   Subject } from 'rxjs'
-import type { BaseLayerFn, BaseLegendParams } from './types'
+import type { BaseLayerFn } from './../types/BaseLayer'
 import type { Layout, GraphicStyles } from '../types/PluginParams'
 import { createClassName, getColor, getColorScheme } from '../utils/orbchartsUtils'
 import { measureTextWidth } from '../utils/commonUtils'
-import { Theme } from '../../../core/src/types'
+import { ColorType, Theme } from '../../../core/src/types'
+import { Placement } from '../types'
 
-// export interface BaseLegendParams {
-//   position: 'top' | 'bottom' | 'left' | 'right'
-//   justify: 'start' | 'center' | 'end'
-//   padding: number
-//   // offset: [number, number]
-//   backgroundFill: ColorType
-//   backgroundStroke: ColorType
-//   textColorType: ColorType
-//   gap: number
-//   labelList: Array<{
-//     listRectWidth: number
-//     listRectHeight: number
-//     listRectRadius: number
-//   }>
-//   // highlightEvent: boolean
-// }
+export interface BaseLegendParams {
+    placement: Placement;
+    padding: number;
+    backgroundFill: ColorType;
+    backgroundStroke: ColorType;
+    textColorType: ColorType;
+    gap: number;
+    labelList: Array<{
+        listRectWidth: number;
+        listRectHeight: number;
+        listRectRadius: number;
+    }>;
+}
 
 interface BaseLegendContext {
   rootSelection: d3.Selection<any, unknown, any, unknown>

@@ -27,7 +27,7 @@ export const DEFAULT_GRID_SEPARABLE_GRAPHIC_PARAMS: GridSeparableGraphicPluginPa
     scaleRange: [0, 0.9],
     label: '',
   },
-  groupAxis: {
+  categoryAxis: {
     position: 'bottom',
     scaleDomain: [0, 'max'],
     scalePadding: 0.5,
@@ -51,7 +51,7 @@ export const DEFAULT_LINE_AREAS_PARAMS: LineAreasParams = {
 export const DEFAULT_DOTS_PARAMS: DotsParams = {
   radius: 4,
   fillColorType: 'background',
-  strokeColorType: 'label',
+  strokeColorType: 'data',
   strokeWidth: 2,
   // strokeWidthWhileHighlight: 3,
   onlyShowHighlighted: false
@@ -176,28 +176,28 @@ export const DEFAULT_GRID_TOOLTIP_PARAMS: GridTooltipParams = {
   textColorType: 'primary',
   offset: [20, 5],
   padding: 10,
-  renderFn: (eventData, { styles, utils }) => {
+  renderFn: (eventData, { styles, utils, categoryData }) => {
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
 
     const titleSvg = `<g><text dominant-baseline="hanging" font-size="${styles.textSizePx}" fill="${styles.textColor}">${eventData.target.category}</text></g>`
-    const groupLabelTextWidth = utils.measureTextWidth(eventData.target.category, styles.textSizePx)
-    const listTextWidth = eventData.group.reduce((acc, group) => {
-      const text = `${group.seriesLabel}${utils.toCurrency(group.value)}`
+    const categoryLabelTextWidth = utils.measureTextWidth(eventData.target.category, styles.textSizePx)
+    const listTextWidth = categoryData.reduce((acc, category) => {
+      const text = `${category.series}${utils.toCurrency(category.value)}`
       const _maxTextWidth = utils.measureTextWidth(text, styles.textSizePx)
       return _maxTextWidth > acc ? _maxTextWidth : acc
     }, 0)
-    const maxTextWidth = Math.max(groupLabelTextWidth, listTextWidth)
+    const maxTextWidth = Math.max(categoryLabelTextWidth, listTextWidth)
     const lineEndX = maxTextWidth + styles.textSizePx * 3
-    const contentSvg = eventData.group
-      .map((group, i) => {
+    const contentSvg = categoryData
+      .map((category, i) => {
         const y = i * styles.textSizePx * 1.5
-        const isHighlight = group.id === (eventData.datum && eventData.datum.id)
+        const isHighlight = category.id === (eventData.target && eventData.target.id)
         return `<g transform="translate(0, ${styles.textSizePx * 2})">
-  <rect width="${bulletWidth}" height="${bulletWidth}" x="${offset}" y="${y + offset}" rx="${bulletWidth / 2}" fill="${group.color}"></rect>
+  <rect width="${bulletWidth}" height="${bulletWidth}" x="${offset}" y="${y + offset}" rx="${bulletWidth / 2}" fill="${category.color}"></rect>
   <text x="${styles.textSizePx * 1.5}" y="${y}" font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
-    <tspan font-weight="${isHighlight ? 'bold' : ''}">${group.seriesLabel}</tspan>
-    <tspan font-weight="bold" text-anchor="end" x="${lineEndX}">${utils.toCurrency(group.value)}</tspan>
+    <tspan font-weight="${isHighlight ? 'bold' : ''}">${category.series}</tspan>
+    <tspan font-weight="bold" text-anchor="end" x="${lineEndX}">${utils.toCurrency(category.value)}</tspan>
   </text>
 </g>`
       })
@@ -206,28 +206,28 @@ export const DEFAULT_GRID_TOOLTIP_PARAMS: GridTooltipParams = {
 ${contentSvg}`
   }
 }
-DEFAULT_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils }) => {
+DEFAULT_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils, categoryData }) => {
     const bulletWidth = styles.textSizePx * 0.7
     const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
 
-    const titleSvg = \`<g><text dominant-baseline="hanging" font-size="\${styles.textSizePx}" fill="\${styles.textColor}">\${eventData.groupLabel}</text></g>\`
-    const groupLabelTextWidth = utils.measureTextWidth(eventData.groupLabel, styles.textSizePx)
-    const listTextWidth = eventData.group.reduce((acc, group) => {
-      const text = \`\${group.seriesLabel}\${utils.toCurrency(group.value)}\`
+    const titleSvg = \`<g><text dominant-baseline="hanging" font-size="\${styles.textSizePx}" fill="\${styles.textColor}">\${eventData.target.category}</text></g>\`
+    const categoryLabelTextWidth = utils.measureTextWidth(eventData.target.category, styles.textSizePx)
+    const listTextWidth = categoryData.reduce((acc, category) => {
+      const text = \`\${category.series}\${utils.toCurrency(category.value)}\`
       const _maxTextWidth = utils.measureTextWidth(text, styles.textSizePx)
       return _maxTextWidth > acc ? _maxTextWidth : acc
     }, 0)
-    const maxTextWidth = Math.max(groupLabelTextWidth, listTextWidth)
+    const maxTextWidth = Math.max(categoryLabelTextWidth, listTextWidth)
     const lineEndX = maxTextWidth + styles.textSizePx * 3
-    const contentSvg = eventData.group
-      .map((group, i) => {
+    const contentSvg = categoryData
+      .map((category, i) => {
         const y = i * styles.textSizePx * 1.5
-        const isHighlight = group.id === (eventData.datum && eventData.datum.id)
+        const isHighlight = category.id === (eventData.target && eventData.target.id)
         return \`<g transform="translate(0, \${styles.textSizePx * 2})">
-  <rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${y + offset}" rx="\${bulletWidth / 2}" fill="\${group.color}"></rect>
+  <rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${y + offset}" rx="\${bulletWidth / 2}" fill="\${category.color}"></rect>
   <text x="\${styles.textSizePx * 1.5}" y="\${y}" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
-    <tspan font-weight="\${isHighlight ? 'bold' : ''}">\${group.seriesLabel}</tspan>
-    <tspan font-weight="bold" text-anchor="end" x="\${lineEndX}">\${utils.toCurrency(group.value)}</tspan>
+    <tspan font-weight="\${isHighlight ? 'bold' : ''}">\${category.series}</tspan>
+    <tspan font-weight="bold" text-anchor="end" x="\${lineEndX}">\${utils.toCurrency(category.value)}</tspan>
   </text>
 </g>\`
       })

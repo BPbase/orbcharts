@@ -31,7 +31,7 @@ import type {
   GraphicStyles,
   ContainerPositionScaled,
   HighlightTarget,
-  GraphicContainer
+  Container
 } from '../types/PluginParams'
 
 // interface DatumUnknown {
@@ -305,7 +305,7 @@ export const fontSizePxObservable = (chartParams$: Observable<Theme>) => {
 export const containerSizeObservable = ({ layout$, containerPosition$, container$ }: {
   layout$: Observable<Layout>
   containerPosition$: Observable<ContainerPositionScaled[]>
-  container$: Observable<GraphicContainer>
+  container$: Observable<Container>
 }) => {
   const rowAmount$ = containerPosition$.pipe(
     map(containerPosition => {

@@ -1,7 +1,7 @@
 
 import { Observable } from 'rxjs'
 import type { ColorType, ModelDatumSeries, EventData } from '../../../../core/src/types'
-import type { ContainerPosition, GraphicContainer, GraphicStyles, Layout } from '../../types/PluginParams'
+import type { ContainerPosition, Container, GraphicStyles, Layout } from '../../types/PluginParams'
 import { ComputedDatumSeries } from '../../types/ComputedData'
 import type { ArcScaleType, Placement } from '../../types/Common'
 
@@ -29,7 +29,7 @@ export interface SeriesSeparableGraphicPluginParams {
   visibleFilter: (datum: ModelDatumSeries) => boolean | null
   sort: ((a: ModelDatumSeries, b: ModelDatumSeries) => number) | null
   // seriesLabels: string[]
-  container: GraphicContainer
+  container: Container
   separateSeries: boolean
   separateName: boolean
   // sumSeries: boolean

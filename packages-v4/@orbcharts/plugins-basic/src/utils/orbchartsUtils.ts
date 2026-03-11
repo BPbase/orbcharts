@@ -2,6 +2,7 @@ import type {
   // AxisPosition,
   ColorType,
   Theme,
+  ModelDatum,
   ModelDatumBase,
   ModelDatumSeries,
   ModelType,
@@ -12,7 +13,7 @@ import type {
   // ComputedDatumBaseSeries,
   // ComputedDatumBaseCategory
 } from '../../../core/src/types'
-import { Layout, GraphicContainer, ContainerPosition, ContainerPositionScaled } from '../types/PluginParams'
+import { Layout, Container, ContainerPosition, ContainerPositionScaled } from '../types/PluginParams'
 import { getMinMax } from './commonUtils'
 import { isLightColor } from './d3Utils'
 import { createLayerClassName } from '../../../core/src/utils/orbchartsUtils'
@@ -26,6 +27,93 @@ export function getMinMaxValue<T extends ModelType> (data: ComputedDatum<T>[]): 
     .map(d => d.value as number)
   return getMinMax(arr)
 }
+
+// // 取得最小及最大值 - Series Data
+// export function getMinMaxSeries (data: ModelDatum<'series'>[][]): [number, number] {
+//   const flatData: ModelDatum<'series'>[] = data[0] && Array.isArray((data as (DataSeriesValue | DataSeriesDatum)[][])[0])
+//     ? data.flat()
+//     : data as (DataSeriesValue | DataSeriesDatum)[]
+//   const arr = flatData
+//     .filter(d => (d == null || (isPlainObject(d) && (d as DataSeriesDatum).value == null)) === false) // 過濾掉null &
+//     .map(d => typeof d === 'number' ? d : d.value )
+//   return getMinMax(arr)
+// }
+
+// // 取得最小及最大值 - Grid Data
+// export function getMinMaxGrid (data: DataGrid): [number, number] {
+//   const flatData: (DataGridValue | DataGridDatum)[] = data.flat()
+//   const arr = flatData
+//     .filter(d => (d == null || (isPlainObject(d) && (d as DataGridDatum).value == null)) === false) // 過濾掉null
+//     .map(d => typeof d === 'number' ? d : d.value )
+//   return getMinMax(arr)
+// }
+
+// // 取得最小及最大值 - MultiGrid Data
+// export function getMinMaxMultiGrid (data: DataMultiGrid): [number, number] {
+//   const flatData: (DataGridValue | DataGridDatum)[] = data.flat().flat()
+//   const arr = flatData
+//     .filter(d => (d == null || (isPlainObject(d) && (d as DataGridDatum).value == null)) === false) // 過濾掉null
+//     .map(d => typeof d === 'number' ? d : d.value )
+//   return getMinMax(arr)
+// }
+
+// // 取得最小及最大值 - MultiValue Data
+// export function getMinMaxMultiValue (data: DataMultiValue, valueIndex: number): [number, number] {
+//   const arr: number[] = data
+//     .map(d => {
+//       if (Array.isArray(d)) {
+//         return d[valueIndex] ?? null
+//       } else if (isPlainObject(d)) {
+//         return (d as DataMultiValueDatum).value[valueIndex] ?? null
+//       } else {
+//         return null
+//       }
+//     })
+//     .filter(d => d != null)
+//   return getMinMax(arr)
+// }
+
+// export function getMinMaxMultiValueXY ({ data, minX, maxX, minY, maxY }: {
+//   data: ComputedXYDatumMultiValue[][]
+//   minX: number
+//   maxX: number
+//   minY: number
+//   maxY: number
+// }) {
+//   let filteredData: ComputedXYDatumMultiValue[][] = []
+//   let minXDatum: ComputedXYDatumMultiValue | null = null
+//   let maxXDatum: ComputedXYDatumMultiValue | null = null
+//   let minYDatum: ComputedXYDatumMultiValue | null = null
+//   let maxYDatum: ComputedXYDatumMultiValue | null = null
+  
+//   for (let categoryData of data) {
+//     for (let datum of categoryData) {
+//       if (datum.axisX >= minX && datum.axisX <= maxX && datum.axisY >= minY && datum.axisY <= maxY) {
+//         filteredData.push(categoryData)
+//         if (minXDatum == null || datum.axisX < minXDatum.axisX) {
+//           minXDatum = datum
+//         }
+//         if (maxXDatum == null || datum.axisX > maxXDatum.axisX) {
+//           maxXDatum = datum
+//         }
+//         if (minYDatum == null || datum.axisY < minYDatum.axisY) {
+//           minYDatum = datum
+//         }
+//         if (maxYDatum == null || datum.axisY > maxYDatum.axisY) {
+//           maxYDatum = datum
+//         }
+//       }
+//     }
+//   }
+
+//   return {
+//     minXDatum,
+//     maxXDatum,
+//     minYDatum,
+//     maxYDatum,
+//     filteredData
+//   }
+// }
 
 export function getColorScheme (themeColorScheme: 'light' | 'dark' | 'auto') {
   if (themeColorScheme === 'auto') {
@@ -103,6 +191,15 @@ export function getDatumColor ({ datum, colorType, theme }: { datum: ModelDatumB
       : colors.primary
 }
 
+export function seriesColorPredicate (seriesIndex: number, theme: Theme) {
+  const colorScheme = getColorScheme(theme.colorScheme)
+  return seriesIndex < theme.colors[colorScheme].data.length
+    ? theme.colors[colorScheme].data[seriesIndex]
+    : theme.colors[colorScheme].data[
+      seriesIndex % theme.colors[colorScheme].data.length
+    ]
+}
+
 export function createClassName (pluginName: string, layerName: string, elementName: string, modifier?: string) {
   const modifierText = modifier ? `--${modifier}` : ''
   return `${createLayerClassName(pluginName, layerName)}__${elementName}${modifierText}`
@@ -163,7 +260,7 @@ function calcGridDimensions (amount: number): { rowAmount: number; columnAmount:
   return { rowAmount, columnAmount }
 }
 
-export function calcContainerPosition (layout: Layout, container: GraphicContainer, amount: number): ContainerPosition[] {
+export function calcContainerPosition (layout: Layout, container: Container, amount: number): ContainerPosition[] {
   // const { gap } = container
   const columnGap = container.columnGap === 'auto'
     ? layout.left + layout.right
@@ -202,7 +299,7 @@ export function calcContainerPosition (layout: Layout, container: GraphicContain
   })
 }
 
-export function calcContainerPositionScaled (layout: Layout, container: GraphicContainer, amount: number): ContainerPositionScaled[] {
+export function calcContainerPositionScaled (layout: Layout, container: Container, amount: number): ContainerPositionScaled[] {
   // const { gap } = container
   const columnGap = container.columnGap === 'auto'
     ? layout.left + layout.right

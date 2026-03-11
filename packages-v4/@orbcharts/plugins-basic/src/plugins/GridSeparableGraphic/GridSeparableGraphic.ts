@@ -2,7 +2,8 @@ import {
   shareReplay,
   map, 
   combineLatest,
-  debounceTime} from 'rxjs'
+  debounceTime,
+  distinctUntilChanged} from 'rxjs'
 
 import type { GridSeparableGraphicExtendContext, GridSeparableGraphicPluginParams, GridSeparableGraphicAllLayerParams } from './types'
 import { defineSVGPlugin } from '../../../../core/src'
@@ -17,15 +18,22 @@ import {
   seriesDataMapObservable
 } from '../../utils/observables'
 import {
-  datumContainerPositionMapObservable,
-  datumLabelsObservable,
-  separateNameObservable,
-  separateSeriesObservable,
-  seriesComputedDataObservable,
-  seriesComputedSortedDataObservable,
-  seriesContainerPositionObservable,
-  seriesLabelsObservable,
-  seriesVisibleComputedDataObservable
+  gridComputedDataObservable,
+  gridComputedAxesDataObservable,
+  gridAxesSizeObservable,
+  gridAxesContainerSizeObservable,
+  gridSeriesLabelsObservable,
+  gridVisibleComputedDataObservable,
+  gridVisibleComputedAxesDataObservable,
+  // isSeriesSeprateObservable,
+  gridContainerPositionObservable,
+  computedStackedDataObservables,
+  categoryScaleDomainValueObservable,
+  filteredMinMaxValueObservable,
+  gridAxesTransformObservable,
+  gridAxesReverseTransformObservable,
+  gridGraphicTransformObservable,
+  gridGraphicReverseScaleObservable,
 } from './contextObservables'
 // import { Bubbles } from './layers/Bubbles'
 // import { Pie } from './layers/Pie'
@@ -41,24 +49,24 @@ import {
 // const rose = new Rose()
 // const roseLabels = new RoseLabels()
 
-export const SeriesSeparableGraphic = defineSVGPlugin<
+export const GridSeparableGraphic = defineSVGPlugin<
   GridSeparableGraphicExtendContext,
   GridSeparableGraphicPluginParams,
   GridSeparableGraphicAllLayerParams
 >({
   name: 'GridSeparableGraphic',
   defaultParams: DEFAULT_GRID_SEPARABLE_GRAPHIC_PARAMS,
-  layers: [bubbles, pie, pieEventTexts, pieLabels, rose, roseLabels],
+  layers: [],
   setup: (props) => {
 
-    const selectedSeriesData$ = combineLatest({
-      seriesData: props.context.seriesData$,
+    const selectedGridData$ = combineLatest({
+      gridData: props.context.gridData$,
       datasetIndex: props.pluginParams$.pipe(
         map(pluginParams => pluginParams.datasetIndex)
       )
     }).pipe(
       debounceTime(0),
-      map(({ seriesData, datasetIndex }) => seriesData[datasetIndex]),
+      map(({ gridData, datasetIndex }) => gridData[datasetIndex]),
       shareReplay(1)
     )
 
@@ -75,8 +83,8 @@ export const SeriesSeparableGraphic = defineSVGPlugin<
     //   props.svg.setAttribute('transform', `translate(${layout.left}, ${layout.top})`)
     // })
 
-    const computedData$ = seriesComputedDataObservable({
-      selectedSeriesData$,
+    const computedData$ = gridComputedDataObservable({
+      selectedGridData$: selectedGridData$,
       pluginParams$: props.pluginParams$
     }).pipe(
       shareReplay(1)
@@ -86,42 +94,40 @@ export const SeriesSeparableGraphic = defineSVGPlugin<
       shareReplay(1)
     )
 
-    const datumLabels$ = datumLabelsObservable({
-      selectedSeriesData$
+    const isSeriesSeprate$ = props.pluginParams$.pipe(
+      map(d => d.separateSeries),
+      distinctUntilChanged(),
+      shareReplay(1)
+    )
+    
+    const gridContainerPosition$ = gridContainerPositionObservable({
+      selectedGridData$: selectedGridData$,
+      pluginParams$: props.pluginParams$,
+      layout$: layout$,
     }).pipe(
       shareReplay(1)
     )
 
-    const separateSeries$ = separateSeriesObservable({
-      pluginParams$: props.pluginParams$
+    const containerSize$ = containerSizeObservable({
+      layout$: layout$,
+      containerPosition$: gridContainerPosition$,
+      container$: props.pluginParams$.pipe(
+        map(d => d.container)
+      )
     }).pipe(
       shareReplay(1)
     )
 
-    const separateName$ = separateNameObservable({
-      pluginParams$: props.pluginParams$
+    const gridAxesSize$ = gridAxesSizeObservable({
+      pluginParams$: props.pluginParams$,
+      layout$: layout$
     }).pipe(
       shareReplay(1)
     )
 
-    // const sumSeries$ = sumSeriesObservable({
-    //   fullDataFormatter$: observer.fullDataFormatter$
-    // }).pipe(
-    //   shareReplay(1)
-    // )
-
-    const computedSortedData$ = seriesComputedSortedDataObservable({
-      seriesComputedData$: computedData$,
-      separateSeries$: separateSeries$,
-      separateName$: separateName$,
-      // sumSeries$: sumSeries$,
-      datumLabels$: datumLabels$,
-    }).pipe(
-      shareReplay(1)
-    )
-
-    const visibleComputedSortedData$ = seriesVisibleComputedDataObservable({
-      seriesComputedData$: computedSortedData$,
+    const gridAxesContainerSize$ = gridAxesContainerSizeObservable({
+      pluginParams$: props.pluginParams$,
+      containerSize$
     }).pipe(
       shareReplay(1)
     )
@@ -132,39 +138,107 @@ export const SeriesSeparableGraphic = defineSVGPlugin<
       shareReplay(1)
     )
 
-    const seriesHighlight$ = highlightObservable({
+    const gridHighlight$ = highlightObservable({
       datumList$,
       styles$: props.pluginParams$.pipe(
-        map(pluginParams => pluginParams.styles)
+        map(params => params.styles)
       ),
       event$: props.context.event$
     }).pipe(
       shareReplay(1)
     )
 
-    const seriesLabels$ = seriesLabelsObservable({
-      selectedSeriesData$,
-    }).pipe(
-      shareReplay(1)
-    )
+    const seriesLabels$ = gridSeriesLabelsObservable({
+      computedData$: computedData$,
+    })
 
     const SeriesDataMap$ = seriesDataMapObservable({
-      datumList$
+      datumList$: datumList$
     }).pipe(
       shareReplay(1)
     )
 
-    const seriesContainerPosition$ = seriesContainerPositionObservable({
-      computedSortedData$: computedSortedData$,
+    const GroupDataMap$ = categoryDataMapObservable({
+      datumList$: datumList$
+    }).pipe(
+      shareReplay(1)
+    )
+
+    const computedAxesData$ = gridComputedAxesDataObservable({
+      computedData$: computedData$,
       pluginParams$: props.pluginParams$,
       layout$: layout$,
     }).pipe(
       shareReplay(1)
     )
 
-    const DatumContainerPositionMap$ = datumContainerPositionMapObservable({
-      seriesContainerPosition$: seriesContainerPosition$,
-      computedSortedData$: computedSortedData$,
+    const visibleComputedData$ = gridVisibleComputedDataObservable({
+      computedData$: computedData$,
+    }).pipe(
+      shareReplay(1)
+    )
+
+    const visibleComputedAxesData$ = gridVisibleComputedAxesDataObservable({
+      computedAxesData$: computedAxesData$,
+    }).pipe(
+      shareReplay(1)
+    )
+
+    const computedStackedData$ = computedStackedDataObservables({
+      computedData$: computedData$,
+      isSeriesSeprate$: isSeriesSeprate$
+    }).pipe(
+      shareReplay(1)
+    )
+
+    const categoryScaleDomainValue$ = categoryScaleDomainValueObservable({
+      selectedGridData$: selectedGridData$,
+      pluginParams$: props.pluginParams$,
+    }).pipe(
+      shareReplay(1)
+    )
+
+    const filteredMinMaxValue$ = filteredMinMaxValueObservable({
+      computedData$: computedData$,
+      categoryScaleDomainValue$: categoryScaleDomainValue$,
+    }).pipe(
+      shareReplay(1)
+    )
+
+    const filteredStackedMinMaxValue$ = filteredMinMaxValueObservable({
+      computedData$: computedStackedData$,
+      categoryScaleDomainValue$: categoryScaleDomainValue$,
+    }).pipe(
+      shareReplay(1)
+    )
+
+    const gridAxesTransform$ = gridAxesTransformObservable({
+      pluginParams$: props.pluginParams$,
+      layout$: layout$
+    }).pipe(
+      shareReplay(1)
+    )
+
+    const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({
+      gridAxesTransform$
+    }).pipe(
+      shareReplay(1)
+    )
+    
+    const gridGraphicTransform$ = gridGraphicTransformObservable({
+      computedData$: computedData$,
+      categoryScaleDomainValue$: categoryScaleDomainValue$,
+      filteredMinMaxValue$: filteredMinMaxValue$,
+      pluginParams$: props.pluginParams$,
+      layout$: layout$
+    }).pipe(
+      shareReplay(1)
+    )
+
+    const gridGraphicReverseScale$ = gridGraphicReverseScaleObservable({
+      gridContainerPosition$: gridContainerPosition$,
+      gridAxesTransform$: gridAxesTransform$,
+      gridGraphicTransform$: gridGraphicTransform$,
     }).pipe(
       shareReplay(1)
     )
@@ -173,17 +247,26 @@ export const SeriesSeparableGraphic = defineSVGPlugin<
       layout$,
       computedData$,
       fontSizePx$,
-      datumLabels$,
-      separateSeries$,
-      separateName$,
-      computedSortedData$,
-      visibleComputedSortedData$,
-      datumList$,
-      seriesHighlight$,
+      isSeriesSeprate$,
+      gridContainerPosition$,
+      containerSize$,
+      gridAxesSize$,
+      gridAxesContainerSize$,
+      gridHighlight$,
       seriesLabels$,
       SeriesDataMap$,
-      seriesContainerPosition$,
-      DatumContainerPositionMap$,
+      GroupDataMap$,
+      computedAxesData$,
+      visibleComputedData$,
+      visibleComputedAxesData$,
+      computedStackedData$,
+      categoryScaleDomainValue$,
+      filteredMinMaxValue$,
+      filteredStackedMinMaxValue$,
+      gridAxesTransform$,
+      gridAxesReverseTransform$,
+      gridGraphicTransform$,
+      gridGraphicReverseScale$,
     }
 
     props.context = {
@@ -201,24 +284,40 @@ export const SeriesSeparableGraphic = defineSVGPlugin<
         toBeTypes: ['object'],
       },
       visibleFilter: {
-        toBeTypes: ['Function', 'null']
+        toBeTypes: ['Function']
       },
-      sort: {
-        toBeTypes: ['Function', 'null']
-      },
+      // grid: {
+      //   toBeTypes: ['object']
+      // },
       container: {
         toBeTypes: ['object']
       },
-      separateSeries: {
-        toBeTypes: ['boolean']
+      // seriesDirection: {
+      //   toBe: '"row" | "column"',
+      //   test: (value) => value === 'row' || value === 'column'
+      // },
+      // rowLabels: {
+      //   toBeTypes: ['string[]']
+      // },
+      // columnLabels: {
+      //   toBeTypes: ['string[]']
+      // },
+      valueAxis: {
+        toBeTypes: ['object']
       },
-      separateName: {
+      categoryAxis: {
+        toBeTypes: ['object']
+      },
+      separateSeries: {
         toBeTypes: ['boolean']
       },
       datasetIndex: {
         toBeTypes: ['number']
       }
     })
+    if (result.status === 'error') {
+      return result
+    }
     if (params.styles) {
       const stylesResult = validateObject(params.styles, {
         padding: {
@@ -282,6 +381,49 @@ export const SeriesSeparableGraphic = defineSVGPlugin<
       })
       if (containerResult.status === 'error') {
         return containerResult
+      }
+    }
+    if (params.valueAxis) {
+      const valueAxisResult = validateObject(params.valueAxis, {
+        position: {
+          toBe: '"bottom" | "left" | "top" | "right"',
+          test: (value) => value === 'bottom' || value === 'left' || value === 'top' || value === 'right'
+        },
+        scaleDomain: {
+          toBe: '[number | "min" | "auto", number | "max" | "auto"]',
+          test: (value) => Array.isArray(value) && value.length === 2 && (typeof value[0] === 'number' || value[0] === 'min' || value[0] === 'auto') && (typeof value[1] === 'number' || value[1] === 'max' || value[1] === 'auto')
+        },
+        scaleRange: {
+          toBe: '[number, number]',
+          test: (value) => Array.isArray(value) && value.length === 2 && typeof value[0] === 'number' && typeof value[1] === 'number'
+        },
+        label: {
+          toBeTypes: ['string']
+        }
+      })
+      if (valueAxisResult.status === 'error') {
+        return valueAxisResult
+      }
+    }
+    if (params.categoryAxis) {
+      const categoryAxisResult = validateObject(params.categoryAxis, {
+        position: {
+          toBe: '"bottom" | "left" | "top" | "right"',
+          test: (value) => value === 'bottom' || value === 'left' || value === 'top' || value === 'right'
+        },
+        scaleDomain: {
+          toBe: '[number, number | "max"]',
+          test: (value) => Array.isArray(value) && value.length === 2 && typeof value[0] === 'number' && (typeof value[1] === 'number' || value[1] === 'max')
+        },
+        scalePadding: {
+          toBeTypes: ['number']
+        },
+        label: {
+          toBeTypes: ['string']
+        }
+      })
+      if (categoryAxisResult.status === 'error') {
+        return categoryAxisResult
       }
     }
     

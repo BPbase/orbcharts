@@ -2,10 +2,6 @@ import type { ColorType, EventData } from '../../../core/src/types'
 import type { Placement } from '../types/Common'
 import type { ComputedDatum } from '../types';
 
-// -- shared types --
-export interface BaseLayerFn<Context> {
-  (context: Context): () => void // return unsubscribe function
-}
 
 // -- base layer params --
 export interface BaseBarsParams {
@@ -32,7 +28,7 @@ export interface BaseDotsParams {
     strokeWidth: number;
     onlyShowHighlighted: boolean;
 }
-export interface BaseGroupAxisParams {
+export interface BaseCategoryAxisParams {
     labelOffset: [number, number];
     labelColorType: ColorType;
     axisLineVisible: boolean;

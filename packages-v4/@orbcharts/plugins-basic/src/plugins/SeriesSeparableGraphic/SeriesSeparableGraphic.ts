@@ -219,6 +219,9 @@ export const SeriesSeparableGraphic = defineSVGPlugin<
         toBeTypes: ['number']
       }
     })
+    if (result.status === 'error') {
+      return result
+    }
     if (params.styles) {
       const stylesResult = validateObject(params.styles, {
         padding: {
@@ -273,11 +276,11 @@ export const SeriesSeparableGraphic = defineSVGPlugin<
         },
         columnGap: {
           toBe: 'number | "auto"',
-          test: (value) => typeof value === 'number' || value === 'auto'
+          test: (value: any) => typeof value === 'number' || value === 'auto'
         },
         rowGap: {
           toBe: 'number | "auto"',
-          test: (value) => typeof value === 'number' || value === 'auto'
+          test: (value: any) => typeof value === 'number' || value === 'auto'
         }
       })
       if (containerResult.status === 'error') {
