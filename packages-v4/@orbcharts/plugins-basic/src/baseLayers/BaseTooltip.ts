@@ -53,7 +53,7 @@ interface BaseTooltipContext {
   pluginName: string
   layerName: string
   rootSelection: d3.Selection<any, unknown, any, unknown>
-  layerParams$: Observable<BaseTooltipParams>
+  baseTooltipParams$: Observable<BaseTooltipParams>
   theme$: Observable<Theme>
   layout$: Observable<Layout>
   eventTrigger$: Subject<EventData<any>>
@@ -210,7 +210,7 @@ function renderTooltip ({ rootSelection, pluginName, layerName, gClassName, boxC
     // .style('position', 'absolute')
     // .style('z-index', 10000)
     // .style('left', (d) => {
-    //   const x = d.x + this.layerParams.offsetX! - containerSize.x
+    //   const x = d.x + this.baseTooltipParams.offsetX! - containerSize.x
     //   if (x < minX) {
     //     return `${minX}px`
     //   } else if (x > maxX) {
@@ -219,7 +219,7 @@ function renderTooltip ({ rootSelection, pluginName, layerName, gClassName, boxC
     //   return `${x}px`
     // })
     // .style('top', (d) => {
-    //   const y = d.y + this.layerParams.offsetY! - containerSize.y
+    //   const y = d.y + this.baseTooltipParams.offsetY! - containerSize.y
     //   if (y < minY) {
     //     return `${minY}px`
     //   } else if (y > maxY) {
@@ -241,7 +241,7 @@ export const createBaseTooltip: BaseLayerFn<BaseTooltipContext> = ({
   pluginName,
   layerName,
   rootSelection,
-  layerParams$,
+  baseTooltipParams$,
   theme$,
   layout$,
   eventTrigger$,
@@ -273,27 +273,27 @@ export const createBaseTooltip: BaseLayerFn<BaseTooltipContext> = ({
   const tooltipStyle$: Observable<BaseTooltipStyle> = combineLatest({
     theme: theme$,
     fontSizePx: fontSizePx$,
-    layerParams: layerParams$,
+    baseTooltipParams: baseTooltipParams$,
   }).pipe(
     takeUntil(destroy$),
     debounceTime(0),
     map(data => {
       return {
-        backgroundColor: getColor(data.layerParams.backgroundColorType, data.theme),
-        backgroundOpacity: data.layerParams.backgroundOpacity,
-        strokeColor: getColor(data.layerParams.strokeColorType, data.theme),
-        offset: data.layerParams.offset,
-        padding: data.layerParams.padding,
+        backgroundColor: getColor(data.baseTooltipParams.backgroundColorType, data.theme),
+        backgroundOpacity: data.baseTooltipParams.backgroundOpacity,
+        strokeColor: getColor(data.baseTooltipParams.strokeColorType, data.theme),
+        offset: data.baseTooltipParams.offset,
+        padding: data.baseTooltipParams.padding,
         textSize: data.theme.fontSize,
         textSizePx: data.fontSizePx,
-        textColor: getColor(data.layerParams.textColorType, data.theme),
+        textColor: getColor(data.baseTooltipParams.textColorType, data.theme),
         // seriesColors: data.theme.colors[data.theme.colorScheme].data
       }
     })
   )
 
   const contentRenderFn$: Observable<((eventData: EventData<any>) => string)> = combineLatest({
-    layerParams: layerParams$,
+    baseTooltipParams: baseTooltipParams$,
     tooltipStyle: tooltipStyle$,
     SeriesDataMap: SeriesDataMap$,
     CategoryDataMap: CategoryDataMap$
@@ -301,18 +301,18 @@ export const createBaseTooltip: BaseLayerFn<BaseTooltipContext> = ({
     takeUntil(destroy$),
     debounceTime(0),
     map(data => {
-      // if (data.layerParams.svgRenderFn) {
-      //   return data.layerParams.svgRenderFn
+      // if (data.baseTooltipParams.svgRenderFn) {
+      //   return data.baseTooltipParams.svgRenderFn
       // }
       // // 將textRenderFn回傳的資料使用<text>包裝起來
       // return (eventData: EventData<any>) => {
-      //   const textArr: string | string[] | null = data.layerParams.textRenderFn
-      //     ? data.layerParams.textRenderFn(eventData as any)
+      //   const textArr: string | string[] | null = data.baseTooltipParams.textRenderFn
+      //     ? data.baseTooltipParams.textRenderFn(eventData as any)
       //     : null
       //   return textToSvg(textArr, data.tooltipStyle)
       // }
       return (eventData: EventData) => {
-        const renderText: string | string[] = data.layerParams.renderFn(
+        const renderText: string | string[] = data.baseTooltipParams.renderFn(
           // mouseover事件的資料
           eventData,
           // context

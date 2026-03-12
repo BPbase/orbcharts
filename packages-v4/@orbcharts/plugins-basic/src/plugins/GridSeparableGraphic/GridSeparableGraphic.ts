@@ -158,7 +158,7 @@ export const GridSeparableGraphic = defineSVGPlugin<
       shareReplay(1)
     )
 
-    const GroupDataMap$ = categoryDataMapObservable({
+    const CategoryDataMap$ = categoryDataMapObservable({
       datumList$: datumList$
     }).pipe(
       shareReplay(1)
@@ -255,7 +255,7 @@ export const GridSeparableGraphic = defineSVGPlugin<
       gridHighlight$,
       seriesLabels$,
       SeriesDataMap$,
-      GroupDataMap$,
+      CategoryDataMap$,
       computedAxesData$,
       visibleComputedData$,
       visibleComputedAxesData$,

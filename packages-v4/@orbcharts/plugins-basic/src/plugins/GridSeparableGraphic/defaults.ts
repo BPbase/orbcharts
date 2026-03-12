@@ -1,4 +1,4 @@
-import type { BarsParams, BarsTriangleParams, DotsParams, GridLegendParams, GridSeparableGraphicPluginParams, GridTooltipParams, GroupAuxParams, GroupAxisParams, GroupZoomParams, LineAreasParams, LinesParams, StackedBarsParams, StackedValueAxisParams, ValueAxisParams } from './types'
+import type { BarsParams, BarsTriangleParams, DotsParams, GridLegendParams, GridSeparableGraphicPluginParams, GridTooltipParams, CategoryAuxParams, CategoryAxisParams, CategoryZoomParams, LineAreasParams, LinesParams, StackedBarsParams, StackedValueAxisParams, ValueAxisParams } from './types'
 
 export const DEFAULT_GRID_SEPARABLE_GRAPHIC_PARAMS: GridSeparableGraphicPluginParams = {
   styles: {
@@ -57,7 +57,7 @@ export const DEFAULT_DOTS_PARAMS: DotsParams = {
   onlyShowHighlighted: false
 }
 
-export const DEFAULT_GROUP_AUX_PARAMS: GroupAuxParams = {
+export const DEFAULT_CATEGORY_AUX_PARAMS: CategoryAuxParams = {
   showLine: true,
   showLabel: true,
   lineDashArray: '3, 3',
@@ -68,7 +68,7 @@ export const DEFAULT_GROUP_AUX_PARAMS: GroupAuxParams = {
   labelPadding: 20,
   labelRotate: 0
 }
-DEFAULT_GROUP_AUX_PARAMS.labelTextFormat.toString = () => `text => text`
+DEFAULT_CATEGORY_AUX_PARAMS.labelTextFormat.toString = () => `text => text`
 
 export const DEFAULT_BARS_PARAMS: BarsParams = {
   // barType: 'rect',
@@ -95,7 +95,7 @@ export const DEFAULT_BARS_TRIANGLE_PARAMS: BarsTriangleParams = {
   linearGradientOpacity: [1, 0]
 }
 
-export const DEFAULT_GROUP_AXIS_PARAMS: GroupAxisParams = {
+export const DEFAULT_CATEGORY_AXIS_PARAMS: CategoryAxisParams = {
   // labelAnchor: 'start',
   labelOffset: [0, 0],
   labelColorType: 'primary',
@@ -111,7 +111,7 @@ export const DEFAULT_GROUP_AXIS_PARAMS: GroupAxisParams = {
   tickTextRotate: 0,
   tickTextColorType: 'primary',
 }
-DEFAULT_GROUP_AXIS_PARAMS.tickFormat.toString = () => `text => text`
+DEFAULT_CATEGORY_AXIS_PARAMS.tickFormat.toString = () => `text => text`
 
 export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
   // labelAnchor: 'end',
@@ -151,7 +151,7 @@ export const DEFAULT_STACKED_VALUE_AXIS_PARAMS: StackedValueAxisParams = {
   ...DEFAULT_VALUE_AXIS_PARAMS
 }
 
-export const DEFAULT_GROUP_ZOOM_PARAMS: GroupZoomParams = {
+export const DEFAULT_CATEGORY_ZOOM_PARAMS: CategoryZoomParams = {
 
 }
 

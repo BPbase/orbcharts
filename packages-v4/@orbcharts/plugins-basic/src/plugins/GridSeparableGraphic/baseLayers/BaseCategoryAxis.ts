@@ -60,7 +60,7 @@ interface BaseGroupAxisContext {
   }>
   gridContainerPosition$: Observable<ContainerPositionScaled[]>
   isSeriesSeprate$: Observable<boolean>
-  textSizePx$: Observable<number>
+  fontSizePx$: Observable<number>
 }
 
 interface TextAlign {
@@ -172,7 +172,7 @@ function renderAxisLabel ({ selection, categoryLabelClassName, baseCategoryAxisP
 
 }
 
-function renderAxis ({ selection, xAxisClassName, baseCategoryAxisParams, tickTextAlign, gridAxesSize, categoryAxis, categoryScale, categoryScaleDomain, categoryLabelData, textReverseTransformWithRotate, theme, textSizePx }: {
+function renderAxis ({ selection, xAxisClassName, baseCategoryAxisParams, tickTextAlign, gridAxesSize, categoryAxis, categoryScale, categoryScaleDomain, categoryLabelData, textReverseTransformWithRotate, theme, fontSizePx }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   xAxisClassName: string
   baseCategoryAxisParams: BaseCategoryAxisParams
@@ -185,7 +185,7 @@ function renderAxis ({ selection, xAxisClassName, baseCategoryAxisParams, tickTe
   categoryLabelData: GroupLabelData[]
   textReverseTransformWithRotate: string
   theme: Theme
-  textSizePx: number
+  fontSizePx: number
 }) {
 
   const xAxisSelection = selection
@@ -260,7 +260,7 @@ function renderAxis ({ selection, xAxisClassName, baseCategoryAxisParams, tickTe
           // 將原本單行文字改為多行文字
           renderTspansOnAxis(d3.select(n[i]), {
             textArr,
-            textSizePx,
+            textSizePx: fontSizePx,
             categoryAxisPosition: categoryAxis.position,
             isContainerRotated: true
           })
@@ -298,7 +298,7 @@ function renderAxis ({ selection, xAxisClassName, baseCategoryAxisParams, tickTe
 }
 
 
-export const createBaseGroupAxis: BaseLayerFn<BaseGroupAxisContext> = (({
+export const createBaseCategoryAxis: BaseLayerFn<BaseGroupAxisContext> = (({
   selection,
   pluginName,
   layerName,
@@ -313,7 +313,7 @@ export const createBaseGroupAxis: BaseLayerFn<BaseGroupAxisContext> = (({
   gridAxesSize$,
   gridContainerPosition$,
   isSeriesSeprate$,
-  textSizePx$,
+  fontSizePx$,
 }) => {
   
   const destroy$ = new Subject()
@@ -366,7 +366,7 @@ export const createBaseGroupAxis: BaseLayerFn<BaseGroupAxisContext> = (({
     gridContainerPosition: gridContainerPosition$
   }).pipe(
     takeUntil(destroy$),
-    switchMap(async d => d)
+    debounceTime(0)
   ).subscribe(data => {
     data.containerSelection
       .attr('transform', (d, i) => {
@@ -385,7 +385,7 @@ export const createBaseGroupAxis: BaseLayerFn<BaseGroupAxisContext> = (({
     gridAxesTransform: gridAxesTransform$,
   }).pipe(
     takeUntil(destroy$),
-    switchMap(async d => d)
+    debounceTime(0)
   ).subscribe(data => {
     data.axisSelection
       .style('transform', data.gridAxesTransform.value)
@@ -665,7 +665,7 @@ export const createBaseGroupAxis: BaseLayerFn<BaseGroupAxisContext> = (({
     categoryLabelData: categoryLabelData$,
     textReverseTransform: textReverseTransform$,
     textReverseTransformWithRotate: textReverseTransformWithRotate$,
-    textSizePx: textSizePx$
+    fontSizePx: fontSizePx$
     // tickTextFormatter: tickTextFormatter$
   }).pipe(
     takeUntil(destroy$),
@@ -685,7 +685,7 @@ export const createBaseGroupAxis: BaseLayerFn<BaseGroupAxisContext> = (({
       // categoryLabels: data.categoryLabels,
       categoryLabelData: data.categoryLabelData,
       textReverseTransformWithRotate: data.textReverseTransformWithRotate,
-      textSizePx: data.textSizePx
+      fontSizePx: data.fontSizePx
     })
 
     renderAxisLabel({

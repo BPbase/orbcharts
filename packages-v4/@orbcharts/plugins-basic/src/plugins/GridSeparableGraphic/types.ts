@@ -1,7 +1,7 @@
 
-import { Observable } from 'rxjs'
+import { Observable, Subject } from 'rxjs'
 import type { ColorType, ModelDatumSeries, EventData } from '../../../../core/src/types'
-import type { AxisPosition, ContainerPosition, ContainerPositionScaled, Container, GraphicStyles, Layout, VisibleFilter } from '../../types/PluginParams'
+import type { AxisPosition, ContainerPosition, ContainerPositionScaled, Container, GraphicStyles, Layout, VisibleFilter, CategoryAxis } from '../../types/PluginParams'
 import { ComputedDatumGrid,  } from '../../types/ComputedData'
 import type { ContainerSize, Placement, TransformData } from '../../types/Common'
 import { BaseTooltipStyle, BaseTooltipUtils } from '../../baseLayers/types'
@@ -27,7 +27,7 @@ export interface GridSeparableGraphicExtendContext {
   gridAxesContainerSize$: Observable<ContainerSize> // 軸轉後的container尺寸
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
-  GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
+  CategoryDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   computedAxesData$: Observable<ComputedAxesDataGrid> // 有座標的資料
   visibleComputedData$: Observable<ComputedDatumGrid[][]> // filter掉visible=false的資料
   visibleComputedAxesData$: Observable<ComputedAxesDataGrid>
@@ -39,6 +39,7 @@ export interface GridSeparableGraphicExtendContext {
   gridAxesReverseTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>
   gridGraphicReverseScale$: Observable<[number, number][]>
+  updateScaleDomainSubject$: Subject<[number, number | "max"]> // zoom後要更新categoryAxis的scaleDomain
 }
 
 // plugin params
@@ -80,15 +81,15 @@ export interface GridSeparableGraphicAllLayerParams {
   Lines: LinesParams
   LineAreas: LineAreasParams
   Dots: DotsParams
-  GroupAux: GroupAuxParams
+  CategoryAux: CategoryAuxParams
   Bars: BarsParams
   BarsPN: BarsPNParams
   StackedBars: StackedBarsParams
   BarsTriangle: BarsTriangleParams
-  GroupAxis: GroupAxisParams
+  CategoryAxis: CategoryAxisParams
   ValueAxis: ValueAxisParams
   StackedValueAxis: StackedValueAxisParams
-  GroupZoom: GroupZoomParams
+  CategoryZoom: CategoryZoomParams
   GridLegend: GridLegendParams
   GridTooltip: GridTooltipParams
 }
@@ -119,7 +120,7 @@ export interface DotsParams {
   onlyShowHighlighted: boolean
 }
 
-export interface GroupAuxParams {
+export interface CategoryAuxParams {
   showLine: boolean
   showLabel: boolean
   lineDashArray: string
@@ -154,7 +155,7 @@ export interface BarsTriangleParams {
   linearGradientOpacity: [number, number]
 }
 
-export interface GroupAxisParams {
+export interface CategoryAxisParams {
   // xLabel: string
   // labelAnchor: 'start' | 'end'
   labelOffset: [number, number]
@@ -196,7 +197,7 @@ export interface ValueAxisParams {
 
 export interface StackedValueAxisParams extends ValueAxisParams {}
 
-export interface GroupZoomParams {
+export interface CategoryZoomParams {
 
 }
 

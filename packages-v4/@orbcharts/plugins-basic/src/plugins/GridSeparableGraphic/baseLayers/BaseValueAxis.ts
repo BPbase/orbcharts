@@ -326,7 +326,7 @@ export const createBaseValueAxis: BaseLayerFn<BaseValueAxisContext> = ({
   //   gridContainerPosition: gridContainerPosition$
   // }).pipe(
   //   takeUntil(destroy$),
-  //   switchMap(async d => d)
+  //   debounceTime(0)
   // ).subscribe(data => {
   //   data.containerSelection
   //     .attr('transform', (d, i) => {
@@ -346,7 +346,7 @@ export const createBaseValueAxis: BaseLayerFn<BaseValueAxisContext> = ({
     gridAxesTransform: gridAxesTransform$,
   }).pipe(
     takeUntil(destroy$),
-    switchMap(async d => d)
+    debounceTime(0)
   ).subscribe(data => {
     data.axisSelection
       .style('transform', data.gridAxesTransform.value)

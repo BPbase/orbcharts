@@ -213,49 +213,49 @@ export const gridContainerSelectionsObservable = ({ selection, pluginName, layer
   return containerSelection$
 }
 
-// 由事件取得group data的function
-export const gridGroupPositionFnObservable = ({ plugingParams$, gridAxesSize$, computedData$, gridContainerPosition$, layout$ }: {
-  plugingParams$: Observable<GridSeparableGraphicPluginParams>
+// 由事件取得category data的function
+export const gridCategoryPositionFnObservable = ({ pluginParams$, gridAxesSize$, computedData$, gridContainerPosition$, layout$ }: {
+  pluginParams$: Observable<GridSeparableGraphicPluginParams>
   gridAxesSize$: Observable<{
     width: number;
     height: number;
   }>
   computedData$: Observable<ComputedData<'grid'>>
-  // GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
+  // CategoryDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   // fullChartParams$: Observable<ChartParams>
   gridContainerPosition$: Observable<ContainerPositionScaled[]>
   layout$: Observable<Layout>
-}): Observable<(event: any) => { groupIndex: number; groupLabel: string }> => {
+}): Observable<(event: any) => { categoryIndex: number; categoryLabel: string }> => {
   const destroy$ = new Subject()
 
-  // 顯示範圍內的group labels
-  // const scaleRangeGroupLabels$: Observable<string[]> = new Observable(subscriber => {
+  // 顯示範圍內的category labels
+  // const scaleRangeCategoryLabels$: Observable<string[]> = new Observable(subscriber => {
   //   combineLatest({
-  //     plugingParams: plugingParams$,
+  //     pluginParams: pluginParams$,
   //     computedData: computedData$
   //   }).pipe(
   //     takeUntil(destroy$),
   //     switchMap(async (d) => d),
   //   ).subscribe(data => {
-  //     const groupMin = 0
-  //     const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-  //     const groupScaleDomainMin = data.dataFormatter.groupAxis.scaleDomain[0] === 'auto'
-  //       ? groupMin - data.dataFormatter.groupAxis.scalePadding
-  //       : data.dataFormatter.groupAxis.scaleDomain[0] as number - data.dataFormatter.groupAxis.scalePadding
-  //     const groupScaleDomainMax = data.dataFormatter.groupAxis.scaleDomain[1] === 'auto'
-  //       ? groupMax + data.dataFormatter.groupAxis.scalePadding
-  //       : data.dataFormatter.groupAxis.scaleDomain[1] as number + data.dataFormatter.groupAxis.scalePadding
+  //     const categoryMin = 0
+  //     const categoryMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
+  //     const categoryScaleDomainMin = data.dataFormatter.categoryAxis.scaleDomain[0] === 'auto'
+  //       ? categoryMin - data.dataFormatter.categoryAxis.scalePadding
+  //       : data.dataFormatter.categoryAxis.scaleDomain[0] as number - data.dataFormatter.categoryAxis.scalePadding
+  //     const categoryScaleDomainMax = data.dataFormatter.categoryAxis.scaleDomain[1] === 'auto'
+  //       ? categoryMax + data.dataFormatter.categoryAxis.scalePadding
+  //       : data.dataFormatter.categoryAxis.scaleDomain[1] as number + data.dataFormatter.categoryAxis.scalePadding
       
-  //     // const groupingAmount = data.computedData[0]
+  //     // const categoryAmount = data.computedData[0]
   //     //   ? data.computedData[0].length
   //     //   : 0
 
   //     let _labels = data.dataFormatter.seriesDirection === 'row'
-  //       ? (data.computedData[0] ?? []).map(d => d.groupLabel)
-  //       : data.computedData.map(d => d[0].groupLabel)
+  //       ? (data.computedData[0] ?? []).map(d => d.categoryLabel)
+  //       : data.computedData.map(d => d[0].categoryLabel)
 
   //     const _axisLabels = 
-  //     // new Array(groupingAmount).fill(0)
+  //     // new Array(categoryAmount).fill(0)
   //     //   .map((d, i) => {
   //     //     return _labels[i] != null
   //     //       ? _labels[i]
@@ -263,56 +263,56 @@ export const gridGroupPositionFnObservable = ({ plugingParams$, gridAxesSize$, c
   //     //   })
   //       _labels
   //       .filter((d, i) => {
-  //         return i >= groupScaleDomainMin && i <= groupScaleDomainMax
+  //         return i >= categoryScaleDomainMin && i <= categoryScaleDomainMax
   //       })
   //     subscriber.next(_axisLabels)
   //   })
   // })
-  const groupScaleDomain$ = combineLatest({
-    plugingParams: plugingParams$,
+  const categoryScaleDomain$ = combineLatest({
+    pluginParams: pluginParams$,
     gridAxesSize: gridAxesSize$,
     computedData: computedData$
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-      const groupMin = 0
-      const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      // const groupScaleDomainMin = data.plugingParams.groupAxis.scaleDomain[0] === 'auto'
-      //   ? groupMin - data.plugingParams.groupAxis.scalePadding
-      //   : data.plugingParams.groupAxis.scaleDomain[0] as number - data.plugingParams.groupAxis.scalePadding
-      const groupScaleDomainMin = data.plugingParams.categoryAxis.scaleDomain[0] - data.plugingParams.categoryAxis.scalePadding
-      const groupScaleDomainMax = data.plugingParams.categoryAxis.scaleDomain[1] === 'max'
-        ? groupMax + data.plugingParams.categoryAxis.scalePadding
-        : data.plugingParams.categoryAxis.scaleDomain[1] as number + data.plugingParams.categoryAxis.scalePadding
+      const categoryMin = 0
+      const categoryMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
+      // const categoryScaleDomainMin = data.pluginParams.categoryAxis.scaleDomain[0] === 'auto'
+      //   ? categoryMin - data.pluginParams.categoryAxis.scalePadding
+      //   : data.pluginParams.categoryAxis.scaleDomain[0] as number - data.pluginParams.categoryAxis.scalePadding
+      const categoryScaleDomainMin = data.pluginParams.categoryAxis.scaleDomain[0] - data.pluginParams.categoryAxis.scalePadding
+      const categoryScaleDomainMax = data.pluginParams.categoryAxis.scaleDomain[1] === 'max'
+        ? categoryMax + data.pluginParams.categoryAxis.scalePadding
+        : data.pluginParams.categoryAxis.scaleDomain[1] as number + data.pluginParams.categoryAxis.scalePadding
 
-      return [groupScaleDomainMin, groupScaleDomainMax]
+      return [categoryScaleDomainMin, categoryScaleDomainMax]
     }),
     shareReplay(1)
   )
 
-  const groupLabels$ = combineLatest({
-    plugingParams: plugingParams$,
+  const categoryLabels$ = combineLatest({
+    pluginParams: pluginParams$,
     computedData: computedData$
   }).pipe(
     switchMap(async d => d),
     map(data => {
-      // return data.plugingParams.seriesDirection === 'row'
+      // return data.pluginParams.seriesDirection === 'row'
       //   ? (data.computedData[0] ?? []).map(d => d.category)
       //   : data.computedData.map(d => d[0].category)
       return (data.computedData[0] ?? []).map(d => d.category)
     })
   )
 
-  // 顯示範圍內的group labels
-  const scaleRangeGroupLabels$ = combineLatest({
-    groupScaleDomain: groupScaleDomain$,
-    groupLabels: groupLabels$
+  // 顯示範圍內的category labels
+  const scaleRangeCategoryLabels$ = combineLatest({
+    categoryScaleDomain: categoryScaleDomain$,
+    categoryLabels: categoryLabels$
   }).pipe(
     switchMap(async d => d),
     map(data => {
-      return data.groupLabels
+      return data.categoryLabels
         .filter((d, i) => {
-          return i >= data.groupScaleDomain[0] && i <= data.groupScaleDomain[1]
+          return i >= data.categoryScaleDomain[0] && i <= data.categoryScaleDomain[1]
         })
     })
   )
@@ -337,13 +337,13 @@ export const gridGroupPositionFnObservable = ({ plugingParams$, gridAxesSize$, c
     distinctUntilChanged()
   )
 
-  return new Observable<(event: any) => { groupIndex: number; groupLabel: string }>(subscriber => {
+  return new Observable<(event: any) => { categoryIndex: number; categoryLabel: string }>(subscriber => {
     combineLatest({
-      plugingParams: plugingParams$,
+      pluginParams: pluginParams$,
       axisSize: gridAxesSize$,
-      scaleRangeGroupLabels: scaleRangeGroupLabels$,
-      groupLabels: groupLabels$,
-      groupScaleDomain: groupScaleDomain$,
+      scaleRangeCategoryLabels: scaleRangeCategoryLabels$,
+      categoryLabels: categoryLabels$,
+      categoryScaleDomain: categoryScaleDomain$,
       columnAmount: columnAmount$,
       rowAmount: rowAmount$,
       layout: layout$
@@ -352,28 +352,28 @@ export const gridGroupPositionFnObservable = ({ plugingParams$, gridAxesSize$, c
       switchMap(async (d) => d),
     ).subscribe(data => {
       
-      const reverse = data.plugingParams.valueAxis.position === 'right'
-        || data.plugingParams.valueAxis.position === 'bottom'
+      const reverse = data.pluginParams.valueAxis.position === 'right'
+        || data.pluginParams.valueAxis.position === 'bottom'
           ? true : false
 
       // 比例尺座標對應非連續資料索引
       const xIndexScale = createAxisToLabelIndexScale({
-        axisLabels: data.scaleRangeGroupLabels,
+        axisLabels: data.scaleRangeCategoryLabels,
         axisWidth: data.axisSize.width,
-        padding: data.plugingParams.categoryAxis.scalePadding,
+        padding: data.pluginParams.categoryAxis.scalePadding,
         reverse
       })
 
       // 依比例尺位置計算座標
       const axisValuePredicate = (event: any) => {
-        return data.plugingParams.categoryAxis.position === 'bottom'
-          || data.plugingParams.categoryAxis.position === 'top'
-            ? event.offsetX - data.plugingParams.styles.padding.left
-            : event.offsetY - data.plugingParams.styles.padding.top
+        return data.pluginParams.categoryAxis.position === 'bottom'
+          || data.pluginParams.categoryAxis.position === 'top'
+            ? event.offsetX - data.pluginParams.styles.padding.left
+            : event.offsetY - data.pluginParams.styles.padding.top
       }
 
-      // 比例尺座標取得groupData的function
-      const createEventGroupData: (event: MouseEvent) => { groupIndex: number; groupLabel: string } = (event: any) => {
+      // 比例尺座標取得categoryData的function
+      const createEventCategoryData: (event: MouseEvent) => { categoryIndex: number; categoryLabel: string } = (event: any) => {
         // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
         const eventData = {
           offsetX: event.offsetX * data.columnAmount % data.layout.rootWidth,
@@ -382,16 +382,16 @@ export const gridGroupPositionFnObservable = ({ plugingParams$, gridAxesSize$, c
         // console.log('data.columnAmount', data.columnAmount, 'data.rowAmount', data.rowAmount, 'data.layout.rootWidth', data.layout.rootWidth, 'data.layout.rootHeight', data.layout.rootHeight)
         const axisValue = axisValuePredicate(eventData)
         const xIndex = xIndexScale(axisValue)
-        const currentxIndexStart = Math.ceil(data.groupScaleDomain[0]) // 因為有padding所以會有小數點，所以要無條件進位
-        const groupIndex =  xIndex + currentxIndexStart
+        const currentxIndexStart = Math.ceil(data.categoryScaleDomain[0]) // 因為有padding所以會有小數點，所以要無條件進位
+        const categoryIndex =  xIndex + currentxIndexStart
         
         return {
-          groupIndex,
-          groupLabel: data.groupLabels[groupIndex] ?? ''
+          categoryIndex,
+          categoryLabel: data.categoryLabels[categoryIndex] ?? ''
         }
       }
 
-      subscriber.next(createEventGroupData)
+      subscriber.next(createEventCategoryData)
 
       return function unsubscribe () {
         destroy$.next(undefined)
@@ -400,7 +400,7 @@ export const gridGroupPositionFnObservable = ({ plugingParams$, gridAxesSize$, c
   })
 }
 
-export const gridGroupPositionObservable = ({ rootSelection, pluginParams$, gridAxesContainerSize$, computedData$, gridContainerPosition$, layout$ }: {
+export const gridCategoryPositionObservable = ({ rootSelection, pluginParams$, gridAxesContainerSize$, computedData$, gridContainerPosition$, layout$ }: {
   rootSelection: d3.Selection<any, unknown, any, unknown>
   pluginParams$: Observable<GridSeparableGraphicPluginParams>
   // gridAxesSize$: Observable<ContainerSize>
@@ -412,29 +412,29 @@ export const gridGroupPositionObservable = ({ rootSelection, pluginParams$, grid
 }) => {
   const rootMousemove$ = d3EventObservable(rootSelection, 'mousemove')
 
-  const groupScaleDomain$ = combineLatest({
+  const categoryScaleDomain$ = combineLatest({
     pluginParams: pluginParams$,
     // gridAxesSize: gridAxesSize$,
     computedData: computedData$
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-      const groupMin = 0
-      const groupMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      // const groupScaleDomainMin = data.fullDataFormatter.groupAxis.scaleDomain[0] === 'auto'
-      //   ? groupMin - data.fullDataFormatter.groupAxis.scalePadding
-      //   : data.fullDataFormatter.groupAxis.scaleDomain[0] as number - data.fullDataFormatter.groupAxis.scalePadding
-      const groupScaleDomainMin = data.pluginParams.categoryAxis.scaleDomain[0] - data.pluginParams.categoryAxis.scalePadding
-      const groupScaleDomainMax = data.pluginParams.categoryAxis.scaleDomain[1] === 'max'
-        ? groupMax + data.pluginParams.categoryAxis.scalePadding
+      const categoryMin = 0
+      const categoryMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
+      // const categoryScaleDomainMin = data.fullDataFormatter.categoryAxis.scaleDomain[0] === 'auto'
+      //   ? categoryMin - data.fullDataFormatter.categoryAxis.scalePadding
+      //   : data.fullDataFormatter.categoryAxis.scaleDomain[0] as number - data.fullDataFormatter.categoryAxis.scalePadding
+      const categoryScaleDomainMin = data.pluginParams.categoryAxis.scaleDomain[0] - data.pluginParams.categoryAxis.scalePadding
+      const categoryScaleDomainMax = data.pluginParams.categoryAxis.scaleDomain[1] === 'max'
+        ? categoryMax + data.pluginParams.categoryAxis.scalePadding
         : data.pluginParams.categoryAxis.scaleDomain[1] as number + data.pluginParams.categoryAxis.scalePadding
 
-      return [groupScaleDomainMin, groupScaleDomainMax]
+      return [categoryScaleDomainMin, categoryScaleDomainMax]
     }),
     shareReplay(1)
   )
 
-  const groupLabels$ = combineLatest({
+  const categoryLabels$ = combineLatest({
     pluginParams: pluginParams$,
     computedData: computedData$
   }).pipe(
@@ -447,15 +447,15 @@ export const gridGroupPositionObservable = ({ rootSelection, pluginParams$, grid
     })
   )
 
-  const scaleRangeGroupLabels$ = combineLatest({
-    groupScaleDomain: groupScaleDomain$,
-    groupLabels: groupLabels$
+  const scaleRangeCategoryLabels$ = combineLatest({
+    categoryScaleDomain: categoryScaleDomain$,
+    categoryLabels: categoryLabels$
   }).pipe(
     switchMap(async d => d),
     map(data => {
-      return data.groupLabels
+      return data.categoryLabels
         .filter((d, i) => {
-          return i >= data.groupScaleDomain[0] && i <= data.groupScaleDomain[1]
+          return i >= data.categoryScaleDomain[0] && i <= data.categoryScaleDomain[1]
         })
     })
   )
@@ -473,13 +473,13 @@ export const gridGroupPositionObservable = ({ rootSelection, pluginParams$, grid
     reverse: reverse$,
     // gridAxesSize: gridAxesSize$,
     gridAxesContainerSize: gridAxesContainerSize$,
-    scaleRangeGroupLabels: scaleRangeGroupLabels$,
+    scaleRangeCategoryLabels: scaleRangeCategoryLabels$,
     pluginParams: pluginParams$
   }).pipe(
     switchMap(async d => d),
     map(data => {
       return createAxisToLabelIndexScale({
-        axisLabels: data.scaleRangeGroupLabels,
+        axisLabels: data.scaleRangeCategoryLabels,
         axisWidth: data.gridAxesContainerSize.width,
         padding: data.pluginParams.categoryAxis.scalePadding,
         reverse: data.reverse
@@ -523,8 +523,8 @@ export const gridGroupPositionObservable = ({ rootSelection, pluginParams$, grid
       //   offsetX: data.rootMousemove.offsetX * data.columnAmount % data.layout.rootWidth,
       //   offsetY: data.rootMousemove.offsetY * data.rowAmount % data.layout.rootHeight
       // }
-      // return data.pluginParams.groupAxis.position === 'bottom'
-      //     || data.pluginParams.groupAxis.position === 'top'
+      // return data.pluginParams.categoryAxis.position === 'bottom'
+      //     || data.pluginParams.categoryAxis.position === 'top'
       //       ? eventData.offsetX - data.layout.left
       //       : eventData.offsetY - data.layout.top
       
@@ -552,38 +552,38 @@ export const gridGroupPositionObservable = ({ rootSelection, pluginParams$, grid
     })
   )
 
-  const groupIndex$ = combineLatest({
+  const categoryIndex$ = combineLatest({
     xIndexScale: xIndexScale$,
     axisValue: axisValue$,
-    groupScaleDomain: groupScaleDomain$
+    categoryScaleDomain: categoryScaleDomain$
   }).pipe(
     switchMap(async d => d),
     map(data => {
       const xIndex = data.xIndexScale(data.axisValue)
-      const currentxIndexStart = Math.ceil(data.groupScaleDomain[0]) // 因為有padding所以會有小數點，所以要無條件進位
+      const currentxIndexStart = Math.ceil(data.categoryScaleDomain[0]) // 因為有padding所以會有小數點，所以要無條件進位
       return xIndex + currentxIndexStart
     })
   )
 
-  const groupLabel$ = combineLatest({
-    groupIndex: groupIndex$,
-    groupLabels: groupLabels$
+  const categoryLabel$ = combineLatest({
+    categoryIndex: categoryIndex$,
+    categoryLabels: categoryLabels$
   }).pipe(
     switchMap(async d => d),
     map(data => {
-      return data.groupLabels[data.groupIndex] ?? ''
+      return data.categoryLabels[data.categoryIndex] ?? ''
     })
   )
 
   return combineLatest({
-    groupIndex: groupIndex$,
-    groupLabel: groupLabel$
+    categoryIndex: categoryIndex$,
+    categoryLabel: categoryLabel$
   }).pipe(
     switchMap(async d => d),
     map(data => {
       return {
-        groupIndex: data.groupIndex,
-        groupLabel: data.groupLabel
+        categoryIndex: data.categoryIndex,
+        categoryLabel: data.categoryLabel
       }
     })
   )
