@@ -7,7 +7,7 @@ import {
 import type { SeriesSeparableGraphicExtendContext, SeriesSeparableGraphicPluginParams, SeriesSeparableGraphicAllLayerParams } from './types'
 import { defineSVGPlugin } from '../../../../core/src'
 import { validateObject } from '../../../../core/src/utils'
-import { DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS } from './defaults'
+import { DEFAULT_SERIES_SEPARABLE_GRAPHIC_PLUGIN_PARAMS } from './defaults'
 import {
   categoryDataMapObservable,
   containerSizeObservable,
@@ -47,7 +47,7 @@ export const SeriesSeparableGraphic = defineSVGPlugin<
   SeriesSeparableGraphicAllLayerParams
 >({
   name: 'SeriesSeparableGraphic',
-  defaultParams: DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS,
+  defaultParams: DEFAULT_SERIES_SEPARABLE_GRAPHIC_PLUGIN_PARAMS,
   layers: [bubbles, pie, pieEventTexts, pieLabels, rose, roseLabels],
   setup: (props) => {
 

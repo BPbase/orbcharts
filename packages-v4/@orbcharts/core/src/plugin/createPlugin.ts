@@ -183,7 +183,7 @@ export const createPlugin = <
       }
 
       const newParams = deepOverwrite(config.defaultParams, patch as DeepPartial<PluginParams> ?? {})
-
+      // console.log('newParams', newParams)
       subscriber.next(newParams)
     })
 
@@ -229,15 +229,15 @@ export const createPlugin = <
     debounceTime(0),
     map(({ context, pluginElement }) => {
       const pluginSetupProps: PluginSetupProps<'svg' | 'canvas', ExtendContext, PluginParams> = 
-      elementType === 'svg' ?{
-        context: context as ChartContext<ExtendContext>, // 初始化時 context 有可能被 in place 擴展
-        svg: pluginElement as SVGSVGElement,
-        pluginParams$
-      } : {
-        context: context as ChartContext<ExtendContext>,
-        canvas: pluginElement as HTMLCanvasElement,
-        pluginParams$
-      }
+        elementType === 'svg' ? {
+          context: context as ChartContext<ExtendContext>, // 初始化時 context 有可能被 in place 擴展
+          svg: pluginElement as SVGSVGElement,
+          pluginParams$
+        } : {
+          context: context as ChartContext<ExtendContext>,
+          canvas: pluginElement as HTMLCanvasElement,
+          pluginParams$
+        }
       return pluginSetupProps
     }),
     first() // 只做初始化

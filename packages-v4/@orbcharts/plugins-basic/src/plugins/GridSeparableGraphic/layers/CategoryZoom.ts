@@ -191,18 +191,19 @@ export const CategoryZoom = defineSVGLayer<GridSeparableGraphicExtendContext, Gr
           lastTransform.y = t.y
 
 
-          const newPluginParams: GridSeparableGraphicPluginParams = {
-            ...data.pluginParams,
-            // grid: {
-              // ...data.fullDataFormatter.grid,
-              categoryAxis: {
-                ...data.pluginParams.categoryAxis,
-                scaleDomain: zoomedDomain
-              }
-            // }
-          }
+          // const newPluginParams: GridSeparableGraphicPluginParams = {
+          //   ...data.pluginParams,
+          //   // grid: {
+          //     // ...data.fullDataFormatter.grid,
+          //     categoryAxis: {
+          //       ...data.pluginParams.categoryAxis,
+          //       scaleDomain: zoomedDomain
+          //     }
+          //   // }
+          // }
           
-          pluginParams$.next(newPluginParams)
+          // pluginParams$.next(newPluginParams)
+          context.updateScaleDomain$.next(zoomedDomain as [number, number | "max"])
         })
 
       // 傳入外層selection

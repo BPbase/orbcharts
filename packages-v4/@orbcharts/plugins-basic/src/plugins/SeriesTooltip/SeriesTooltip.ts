@@ -7,7 +7,7 @@ import {
 import type { SeriesTooltipExtendContext, SeriesTooltipPluginParams, SeriesTooltipAllLayerParams } from './types'
 import { defineSVGPlugin } from '../../../../core/src'
 import { validateObject } from '../../../../core/src/utils'
-import { DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS } from './defaults'
+import { DEFAULT_SERIES_TOOLTIP_PLUGIN_PARAMS } from './defaults'
 import {
   layoutObservable,
   fontSizePxObservable,
@@ -18,7 +18,7 @@ import {
 } from './contextObservables'
 import { SeriesTooltip as SeriesTooltipLayer } from './layers/SeriesTooltip'
 
-const seriesLegend = new SeriesTooltipLayer()
+const seriesTooltip = new SeriesTooltipLayer()
 
 export const SeriesTooltip = defineSVGPlugin<
   SeriesTooltipExtendContext,
@@ -26,8 +26,8 @@ export const SeriesTooltip = defineSVGPlugin<
   SeriesTooltipAllLayerParams
 >({
   name: 'SeriesTooltip',
-  defaultParams: DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS,
-  layers: [seriesLegend],
+  defaultParams: DEFAULT_SERIES_TOOLTIP_PLUGIN_PARAMS,
+  layers: [seriesTooltip],
   setup: (props) => {
 
     const selectedSeriesData$ = combineLatest({

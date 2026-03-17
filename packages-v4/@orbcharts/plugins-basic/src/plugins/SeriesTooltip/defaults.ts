@@ -1,7 +1,7 @@
 import type { SeriesTooltipParams, SeriesTooltipPluginParams } from './types'
 import type { EventData, ModelDatumSeries } from '../../../../core/src/types'
 
-export const DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS: SeriesTooltipPluginParams = {
+export const DEFAULT_SERIES_TOOLTIP_PLUGIN_PARAMS: SeriesTooltipPluginParams = {
   styles: {
     padding: {
       top: 60,
@@ -19,7 +19,7 @@ export const DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS: SeriesTooltipPluginParams 
   sort: null,
   datasetIndex: 0
 }
-DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS.visibleFilter.toString = () => '(datum) => true'
+DEFAULT_SERIES_TOOLTIP_PLUGIN_PARAMS.visibleFilter.toString = () => '(datum) => true'
 
 export const DEFAULT_SERIES_TOOLTIP_PARAMS: SeriesTooltipParams = {
   backgroundColorType: 'background',

@@ -7,7 +7,7 @@ import {
 import type { SeriesLegendExtendContext, SeriesLegendPluginParams, SeriesLegendAllLayerParams } from './types'
 import { defineSVGPlugin } from '../../../../core/src'
 import { validateObject } from '../../../../core/src/utils'
-import { DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS } from './defaults'
+import { DEFAULT_SERIES_LEGEND_PLUGIN_PARAMS } from './defaults'
 import {
   layoutObservable,
   fontSizePxObservable,
@@ -26,7 +26,7 @@ export const SeriesLegend = defineSVGPlugin<
   SeriesLegendAllLayerParams
 >({
   name: 'SeriesLegend',
-  defaultParams: DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS,
+  defaultParams: DEFAULT_SERIES_LEGEND_PLUGIN_PARAMS,
   layers: [seriesLegend],
   setup: (props) => {
 

@@ -1,7 +1,7 @@
 
 import { Observable, Subject } from 'rxjs'
 import type { ColorType, ModelDatumSeries, EventData } from '../../../../core/src/types'
-import type { AxisPosition, ContainerPosition, ContainerPositionScaled, Container, GraphicStyles, Layout, VisibleFilter, CategoryAxis } from '../../types/PluginParams'
+import type { AxisPosition, ContainerPosition, ContainerPositionScaled, Container, GraphicStyles, Layout, VisibleFilter, ValueAxis, CategoryAxis } from '../../types/PluginParams'
 import { ComputedDatumGrid,  } from '../../types/ComputedData'
 import type { ContainerSize, Placement, TransformData } from '../../types/Common'
 import { BaseTooltipStyle, BaseTooltipUtils } from '../../baseLayers/types'
@@ -39,29 +39,29 @@ export interface GridSeparableGraphicExtendContext {
   gridAxesReverseTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>
   gridGraphicReverseScale$: Observable<[number, number][]>
-  updateScaleDomainSubject$: Subject<[number, number | "max"]> // zoom後要更新categoryAxis的scaleDomain
+  updateScaleDomain$: Subject<[number, number | "max"]> // zoom後要更新categoryAxis的scaleDomain
 }
 
 // plugin params
-export type SeriesDirection = 'row' | 'column' // default: 'row'
+// export type SeriesDirection = 'row' | 'column' // default: 'row'
 
-export interface ValueAxis {
-  position: AxisPosition
-  /* scaleDomain說明
-   * [0] => min: 最小值, 'auto': 取最小值，但若大於0則保持為0
-   * [1] => max: 最大值, 'auto': 取最大值，但若小於0則保持為0
-   */ 
-  scaleDomain: [number | 'min' | 'auto', number | 'max' | 'auto']
-  scaleRange: [number, number]
-  label: string
-}
+// export interface ValueAxis {
+//   position: AxisPosition
+//   /* scaleDomain說明
+//    * [0] => min: 最小值, 'auto': 取最小值，但若大於0則保持為0
+//    * [1] => max: 最大值, 'auto': 取最大值，但若小於0則保持為0
+//    */ 
+//   scaleDomain: [number | 'min' | 'auto', number | 'max' | 'auto']
+//   scaleRange: [number, number]
+//   label: string
+// }
 
-export interface GroupAxis {
-  position: AxisPosition
-  scaleDomain: [number, number | 'max']
-  scalePadding: number
-  label: string
-}
+// export interface CategoryAxis {
+//   position: AxisPosition
+//   scaleDomain: [number, number | 'max']
+//   scalePadding: number
+//   label: string
+// }
 
 export interface GridSeparableGraphicPluginParams {
   styles: GraphicStyles
@@ -71,7 +71,7 @@ export interface GridSeparableGraphicPluginParams {
   // rowLabels: string[]
   // columnLabels: string[]
   valueAxis: ValueAxis
-  categoryAxis: GroupAxis
+  categoryAxis: CategoryAxis
   separateSeries: boolean
   datasetIndex: number
 }

@@ -1,6 +1,6 @@
 import type { SeriesLegendParams, SeriesLegendPluginParams } from './types'
 
-export const DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS: SeriesLegendPluginParams = {
+export const DEFAULT_SERIES_LEGEND_PLUGIN_PARAMS: SeriesLegendPluginParams = {
   styles: {
     padding: {
       top: 60,
@@ -18,7 +18,7 @@ export const DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS: SeriesLegendPluginParams =
   sort: null,
   datasetIndex: 0
 }
-DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS.visibleFilter.toString = () => '(datum) => true'
+DEFAULT_SERIES_LEGEND_PLUGIN_PARAMS.visibleFilter.toString = () => '(datum) => true'
 
 export const DEFAULT_SERIES_LEGEND_PARAMS: SeriesLegendParams = {
   // position: 'right',

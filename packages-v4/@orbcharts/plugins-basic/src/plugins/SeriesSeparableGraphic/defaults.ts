@@ -2,7 +2,7 @@ import type { IndicatorParams, PieEventTextsParams, PieLabelsParams, RoseLabelsP
 import type { EventData, ModelDatumSeries } from '../../../../core/src/types'
 import type { BubblesParams, PieParams } from './types'
 
-export const DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS: SeriesSeparableGraphicPluginParams = {
+export const DEFAULT_SERIES_SEPARABLE_GRAPHIC_PLUGIN_PARAMS: SeriesSeparableGraphicPluginParams = {
   styles: {
     padding: {
       top: 60,
@@ -30,7 +30,7 @@ export const DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS: SeriesSeparableGraphicPlug
   // sumSeries: false,
   datasetIndex: 0
 }
-DEFAULT_SERIES_SEPARABLE_GRAPHIC_PARAMS.visibleFilter.toString = () => '(datum) => true'
+DEFAULT_SERIES_SEPARABLE_GRAPHIC_PLUGIN_PARAMS.visibleFilter.toString = () => '(datum) => true'
 
 export const DEFAULT_BUBBLES_PARAMS: BubblesParams = {
   force: {

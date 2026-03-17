@@ -33,7 +33,7 @@ interface BaseLineAreasContext {
   visibleComputedAxesData$: Observable<ComputedAxesDataGrid>
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
-  GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
+  CategoryDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   pluginParams$: Observable<GridSeparableGraphicPluginParams>
   baseLineAreasParams$: Observable<BaseLineAreasParams>
   styles$: Observable<GraphicStyles>
@@ -47,7 +47,7 @@ interface BaseLineAreasContext {
   gridContainerPosition$: Observable<ContainerPositionScaled[]>
   allContainerPosition$: Observable<ContainerPositionScaled[]>
   layout$: Observable<Layout>
-  event$: Subject<EventData<'grid'>>
+  eventTrigger$: Subject<EventData<'grid'>>
 }
 
 type ClipPathDatum = {
@@ -259,7 +259,7 @@ export const createBaseLineAreas: BaseLayerFn<BaseLineAreasContext> = ({
   visibleComputedAxesData$,
   seriesLabels$,
   SeriesDataMap$,
-  GroupDataMap$,
+  CategoryDataMap$,
   pluginParams$,
   baseLineAreasParams$,
   styles$,
@@ -269,7 +269,7 @@ export const createBaseLineAreas: BaseLayerFn<BaseLineAreasContext> = ({
   gridHighlight$,
   gridContainerPosition$,
   layout$,
-  event$
+  eventTrigger$
 }) => {
 
   const destroy$ = new Subject()
@@ -386,8 +386,8 @@ export const createBaseLineAreas: BaseLayerFn<BaseLineAreasContext> = ({
   //   map(d => makeGridSeriesDataMap(d))
   // )
 
-  // const GroupDataMap$ = computedData$.pipe(
-  //   map(d => makeGridGroupDataMap(d))
+  // const CategoryDataMap$ = computedData$.pipe(
+  //   map(d => makeGridCategoryDataMap(d))
   // )
 
   const DataMap$ = computedData$.pipe(
@@ -473,7 +473,7 @@ export const createBaseLineAreas: BaseLayerFn<BaseLineAreasContext> = ({
     pathSelectionArr: pathSelectionArr$,
     computedData: computedData$,
     SeriesDataMap: SeriesDataMap$,
-    GroupDataMap: GroupDataMap$,
+    CategoryDataMap: CategoryDataMap$,
     highlightTarget: highlightTarget$,
     gridCategoryPositionFn: gridCategoryPositionFn$,
   }).pipe(
@@ -487,11 +487,11 @@ export const createBaseLineAreas: BaseLayerFn<BaseLineAreasContext> = ({
 
           const seriesLabel = datum[0] ? datum[0].series : ''
           const { categoryIndex, categoryLabel } = data.gridCategoryPositionFn(event)
-          const groupData = data.GroupDataMap.get(categoryLabel)!
+          const groupData = data.CategoryDataMap.get(categoryLabel)!
           const targetDatum = groupData.find(d => d.series === seriesLabel)
           const _datum = targetDatum ?? datum[0]
     
-          event$.next({
+          eventTrigger$.next({
             // type: 'grid',
             // eventName: 'mouseover',
             // pluginName,
@@ -501,7 +501,7 @@ export const createBaseLineAreas: BaseLayerFn<BaseLineAreasContext> = ({
             // series: data.SeriesDataMap.get(_datum.seriesLabel)!,
             // seriesIndex: _datum.seriesIndex,
             // seriesLabel: _datum.seriesLabel,
-            // group: data.GroupDataMap.get(_datum.categoryLabel)!,
+            // group: data.CategoryDataMap.get(_datum.categoryLabel)!,
             // categoryIndex: _datum.categoryIndex,
             // categoryLabel: _datum.categoryLabel,
             // event,
@@ -518,11 +518,11 @@ export const createBaseLineAreas: BaseLayerFn<BaseLineAreasContext> = ({
 
           const seriesLabel = datum[0] ? datum[0].series : ''
           const { categoryIndex, categoryLabel } = data.gridCategoryPositionFn(event)
-          const groupData = data.GroupDataMap.get(categoryLabel)!
+          const groupData = data.CategoryDataMap.get(categoryLabel)!
           const targetDatum = groupData.find(d => d.series === seriesLabel)
           const _datum = targetDatum ?? datum[0]
     
-          event$.next({
+          eventTrigger$.next({
             // type: 'grid',
             // eventName: 'mousemove',
             // pluginName,
@@ -532,7 +532,7 @@ export const createBaseLineAreas: BaseLayerFn<BaseLineAreasContext> = ({
             // series: data.SeriesDataMap.get(_datum.seriesLabel)!,
             // seriesIndex: _datum.seriesIndex,
             // seriesLabel: _datum.seriesLabel,
-            // group: data.GroupDataMap.get(_datum.categoryLabel)!,
+            // group: data.CategoryDataMap.get(_datum.categoryLabel)!,
             // categoryIndex: _datum.categoryIndex,
             // categoryLabel: _datum.categoryLabel,
             // event,
@@ -549,11 +549,11 @@ export const createBaseLineAreas: BaseLayerFn<BaseLineAreasContext> = ({
 
           const seriesLabel = datum[0] ? datum[0].series : ''
           const { categoryIndex, categoryLabel } = data.gridCategoryPositionFn(event)
-          const groupData = data.GroupDataMap.get(categoryLabel)!
+          const groupData = data.CategoryDataMap.get(categoryLabel)!
           const targetDatum = groupData.find(d => d.series === seriesLabel)
           const _datum = targetDatum ?? datum[0]
     
-          event$.next({
+          eventTrigger$.next({
             // type: 'grid',
             // eventName: 'mouseout',
             // pluginName,
@@ -563,7 +563,7 @@ export const createBaseLineAreas: BaseLayerFn<BaseLineAreasContext> = ({
             // series: data.SeriesDataMap.get(_datum.seriesLabel)!,
             // seriesIndex: _datum.seriesIndex,
             // seriesLabel: _datum.seriesLabel,
-            // group: data.GroupDataMap.get(_datum.categoryLabel)!,
+            // group: data.CategoryDataMap.get(_datum.categoryLabel)!,
             // categoryIndex: _datum.categoryIndex,
             // categoryLabel: _datum.categoryLabel,
             // event,
@@ -580,11 +580,11 @@ export const createBaseLineAreas: BaseLayerFn<BaseLineAreasContext> = ({
 
           const seriesLabel = datum[0] ? datum[0].series : ''
           const { categoryIndex, categoryLabel } = data.gridCategoryPositionFn(event)
-          const groupData = data.GroupDataMap.get(categoryLabel)!
+          const groupData = data.CategoryDataMap.get(categoryLabel)!
           const targetDatum = groupData.find(d => d.series === seriesLabel)
           const _datum = targetDatum ?? datum[0]
     
-          event$.next({
+          eventTrigger$.next({
             // type: 'grid',
             // eventName: 'click',
             // pluginName,
@@ -594,7 +594,7 @@ export const createBaseLineAreas: BaseLayerFn<BaseLineAreasContext> = ({
             // series: data.SeriesDataMap.get(_datum.seriesLabel)!,
             // seriesIndex: _datum.seriesIndex,
             // seriesLabel: _datum.seriesLabel,
-            // group: data.GroupDataMap.get(_datum.categoryLabel)!,
+            // group: data.CategoryDataMap.get(_datum.categoryLabel)!,
             // categoryIndex: _datum.categoryIndex,
             // categoryLabel: _datum.categoryLabel,
             // event,
@@ -613,7 +613,7 @@ export const createBaseLineAreas: BaseLayerFn<BaseLineAreasContext> = ({
   //   takeUntil(destroy$),
   //   map(d => d.flat())
   // )
-  // const highlight$ = highlightObservable({ datumList$, fullChartParams$, event$: store.event$ })
+  // const highlight$ = highlightObservable({ datumList$, fullChartParams$, eventTrigger$: store.eventTrigger$ })
   // const highlightSubscription = gridHighlight$.subscribe()
   
   styles$.pipe(

@@ -43,7 +43,7 @@ interface BaseStackedBarsContext {
   filteredStackedMinMaxValue$: Observable<[number, number]>
   seriesLabels$: Observable<string[]>
   SeriesDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
-  GroupDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
+  CategoryDataMap$: Observable<Map<string, ComputedDatumGrid[]>>
   baseStackedBarParams$: Observable<BaseStackedBarsParams>
   pluginParams$: Observable<GridSeparableGraphicPluginParams>
   styles$: Observable<GraphicStyles>
@@ -57,7 +57,7 @@ interface BaseStackedBarsContext {
   gridHighlight$: Observable<ComputedDatumGrid[]>
   gridContainerPosition$: Observable<ContainerPositionScaled[]>
   isSeriesSeprate$: Observable<boolean>
-  event$: Subject<EventData<'grid'>>
+  eventTrigger$: Subject<EventData<'grid'>>
 }
 
 
@@ -308,7 +308,7 @@ export const createBaseStackedBars: BaseLayerFn<BaseStackedBarsContext> = ({
   filteredStackedMinMaxValue$,
   seriesLabels$,
   SeriesDataMap$,
-  GroupDataMap$,
+  CategoryDataMap$,
   baseStackedBarParams$,
   pluginParams$,
   styles$,
@@ -319,7 +319,7 @@ export const createBaseStackedBars: BaseLayerFn<BaseStackedBarsContext> = ({
   gridHighlight$,
   gridContainerPosition$,
   isSeriesSeprate$,
-  event$
+  eventTrigger$
 }) => {
 
   const destroy$ = new Subject()
@@ -682,14 +682,14 @@ export const createBaseStackedBars: BaseLayerFn<BaseStackedBarsContext> = ({
     computedData: computedData$,
     highlightTarget: highlightTarget$,
     SeriesDataMap: SeriesDataMap$,
-    GroupDataMap: GroupDataMap$,
+    CategoryDataMap: CategoryDataMap$,
   }).subscribe(data => {
 
     data.barSelection!
       .on('mouseover', (event, datum) => {
         event.stopPropagation()
 
-        event$.next({
+        eventTrigger$.next({
           // type: 'grid',
           // eventName: 'mouseover',
           // pluginName,
@@ -699,7 +699,7 @@ export const createBaseStackedBars: BaseLayerFn<BaseStackedBarsContext> = ({
           // series: data.SeriesDataMap.get(datum.seriesLabel)!,
           // seriesIndex: datum.seriesIndex,
           // seriesLabel: datum.seriesLabel,
-          // group: data.GroupDataMap.get(datum.groupLabel)!,
+          // group: data.CategoryDataMap.get(datum.groupLabel)!,
           // groupIndex: datum.groupIndex,
           // groupLabel: datum.groupLabel,
           // event,
@@ -714,7 +714,7 @@ export const createBaseStackedBars: BaseLayerFn<BaseStackedBarsContext> = ({
       .on('mousemove', (event, datum) => {
         event.stopPropagation()
 
-        event$.next({
+        eventTrigger$.next({
           // type: 'grid',
           // eventName: 'mousemove',
           // pluginName,
@@ -724,7 +724,7 @@ export const createBaseStackedBars: BaseLayerFn<BaseStackedBarsContext> = ({
           // series: data.SeriesDataMap.get(datum.seriesLabel)!,
           // seriesIndex: datum.seriesIndex,
           // seriesLabel: datum.seriesLabel,
-          // group: data.GroupDataMap.get(datum.groupLabel)!,
+          // group: data.CategoryDataMap.get(datum.groupLabel)!,
           // groupIndex: datum.groupIndex,
           // groupLabel: datum.groupLabel,
           // event,
@@ -739,7 +739,7 @@ export const createBaseStackedBars: BaseLayerFn<BaseStackedBarsContext> = ({
       .on('mouseout', (event, datum) => {
         event.stopPropagation()
 
-        event$.next({
+        eventTrigger$.next({
           // type: 'grid',
           // eventName: 'mouseout',
           // pluginName,
@@ -749,7 +749,7 @@ export const createBaseStackedBars: BaseLayerFn<BaseStackedBarsContext> = ({
           // series: data.SeriesDataMap.get(datum.seriesLabel)!,
           // seriesIndex: datum.seriesIndex,
           // seriesLabel: datum.seriesLabel,
-          // group: data.GroupDataMap.get(datum.groupLabel)!,
+          // group: data.CategoryDataMap.get(datum.groupLabel)!,
           // groupIndex: datum.groupIndex,
           // groupLabel: datum.groupLabel,
           // event,
@@ -764,7 +764,7 @@ export const createBaseStackedBars: BaseLayerFn<BaseStackedBarsContext> = ({
       .on('click', (event, datum) => {
         event.stopPropagation()
 
-        event$.next({
+        eventTrigger$.next({
           // type: 'grid',
           // eventName: 'click',
           // pluginName,
@@ -774,7 +774,7 @@ export const createBaseStackedBars: BaseLayerFn<BaseStackedBarsContext> = ({
           // series: data.SeriesDataMap.get(datum.seriesLabel)!,
           // seriesIndex: datum.seriesIndex,
           // seriesLabel: datum.seriesLabel,
-          // group: data.GroupDataMap.get(datum.groupLabel)!,
+          // group: data.CategoryDataMap.get(datum.groupLabel)!,
           // groupIndex: datum.groupIndex,
           // groupLabel: datum.groupLabel,
           // event,
@@ -793,7 +793,7 @@ export const createBaseStackedBars: BaseLayerFn<BaseStackedBarsContext> = ({
   //   takeUntil(destroy$),
   //   map(d => d.flat())
   // )
-  // const highlight$ = highlightObservable({ datumList$, chartParams$, event$: store.event$ })
+  // const highlight$ = highlightObservable({ datumList$, chartParams$, eventTrigger$: store.eventTrigger$ })
   
   combineLatest({
     barSelection: barSelection$,

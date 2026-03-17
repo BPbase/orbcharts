@@ -20,7 +20,8 @@ import type {
   // Layout
 } from '../../../../core/src/types'
 import type { ComputedData, ComputedDatumGrid } from '../../types/ComputedData'
-import type { ComputedLayoutDatumGrid, ComputedAxesDataGrid, GridSeparableGraphicPluginParams, ValueAxis, GroupAxis } from './types'
+import type { ComputedLayoutDatumGrid, ComputedAxesDataGrid, GridSeparableGraphicPluginParams } from './types'
+import type { ValueAxis, CategoryAxis } from '../../types/PluginParams'
 import type { Layout, ContainerPosition, AxisPosition, ContainerPositionScaled } from '../../types/PluginParams'
 // import { getMinMaxGrid } from '../../utils/orbchartsUtils'
 import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from '../../utils/d3Scale'
@@ -53,15 +54,17 @@ export const gridComputedDataObservable = ({ selectedGridData$, pluginParams$ }:
   )
 }
 
-export const gridComputedAxesDataObservable = ({ computedData$, pluginParams$, layout$ }: {
+export const gridComputedAxesDataObservable = ({ computedData$, categoryAxis$, valueAxis$, layout$ }: {
   computedData$: Observable<ComputedDatumGrid[][]>
-  pluginParams$: Observable<GridSeparableGraphicPluginParams>
+  // pluginParams$: Observable<GridSeparableGraphicPluginParams>
+  categoryAxis$: Observable<CategoryAxis>
+  valueAxis$: Observable<ValueAxis>
   layout$: Observable<Layout>
 }): Observable<ComputedLayoutDatumGrid[][]> => {
 
   // 未篩選category範圍前的category scale（ * 不受到dataFormatter設定影響）
-  function createOriginGroupScale (computedData: ComputedDatumGrid[][], pluginParams: GridSeparableGraphicPluginParams, layout: Layout) {
-    const categoryAxisWidth = (pluginParams.categoryAxis.position === 'top' || pluginParams.categoryAxis.position === 'bottom')
+  function createOriginGroupScale (computedData: ComputedDatumGrid[][], categoryAxis: CategoryAxis, layout: Layout) {
+    const categoryAxisWidth = (categoryAxis.position === 'top' || categoryAxis.position === 'bottom')
       ? layout.width
       : layout.height
     const categoryEndIndex = computedData[0] ? computedData[0].length - 1 : 0
@@ -77,8 +80,8 @@ export const gridComputedAxesDataObservable = ({ computedData$, pluginParams$, l
   }
 
   // 未篩選category範圍及visible前的value scale（ * 不受到dataFormatter設定影響）
-  function createOriginValueScale (computedData: ComputedDatumGrid[][], pluginParams: GridSeparableGraphicPluginParams, layout: Layout) {
-    const valueAxisWidth = (pluginParams.valueAxis.position === 'left' || pluginParams.valueAxis.position === 'right')
+  function createOriginValueScale (computedData: ComputedDatumGrid[][], valueAxis: ValueAxis, layout: Layout) {
+    const valueAxisWidth = (valueAxis.position === 'left' || valueAxis.position === 'right')
       ? layout.height
       : layout.width
   
@@ -103,13 +106,14 @@ export const gridComputedAxesDataObservable = ({ computedData$, pluginParams$, l
 
   return combineLatest({
     computedData: computedData$,
-    pluginParams: pluginParams$,
+    categoryAxis: categoryAxis$,
+    valueAxis: valueAxis$,
     layout: layout$
   }).pipe(
-    switchMap(async d => d),
+    debounceTime(0),
     map(data => {
-      const categoryScale = createOriginGroupScale(data.computedData, data.pluginParams, data.layout)
-      const valueScale = createOriginValueScale(data.computedData, data.pluginParams, data.layout)
+      const categoryScale = createOriginGroupScale(data.computedData, data.categoryAxis, data.layout)
+      const valueScale = createOriginValueScale(data.computedData, data.valueAxis, data.layout)
       const zeroY = valueScale(0)
 
       return data.computedData.map((seriesData, seriesIndex) => {
@@ -128,8 +132,9 @@ export const gridComputedAxesDataObservable = ({ computedData$, pluginParams$, l
   )
 }
 
-export const gridAxesSizeObservable = ({ pluginParams$, layout$ }: {
-  pluginParams$: Observable<GridSeparableGraphicPluginParams>
+export const gridAxesSizeObservable = ({ categoryAxis$, valueAxis$, layout$ }: {
+  categoryAxis$: Observable<CategoryAxis>
+  valueAxis$: Observable<ValueAxis>
   layout$: Observable<Layout>
 }): Observable<{
   width: number;
@@ -156,13 +161,13 @@ export const gridAxesSizeObservable = ({ pluginParams$, layout$ }: {
     }
   }
 
-  const categoryAxisPosition$ = pluginParams$.pipe(
-    map(d => d.categoryAxis.position),
+  const categoryAxisPosition$ = categoryAxis$.pipe(
+    map(d => d.position),
     distinctUntilChanged()
   )
 
-  const valueAxisPosition$ = pluginParams$.pipe(
-    map(d => d.valueAxis.position),
+  const valueAxisPosition$ = valueAxis$.pipe(
+    map(d => d.position),
     distinctUntilChanged()
   )
 
@@ -173,7 +178,7 @@ export const gridAxesSizeObservable = ({ pluginParams$, layout$ }: {
       layout: layout$
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async (d) => d),
+      debounceTime(0),
     ).subscribe(data => {
       
       const axisSize = calcAxesSize({
@@ -192,12 +197,14 @@ export const gridAxesSizeObservable = ({ pluginParams$, layout$ }: {
   })
 }
 
-export const gridAxesContainerSizeObservable = ({ pluginParams$, containerSize$ }: {
+export const gridAxesContainerSizeObservable = ({ categoryAxis$, valueAxis$, containerSize$ }: {
   containerSize$: Observable<ContainerSize>
-  pluginParams$: Observable<GridSeparableGraphicPluginParams>
+  categoryAxis$: Observable<CategoryAxis>
+  valueAxis$: Observable<ValueAxis>
 }): Observable<ContainerSize> => {
   return gridAxesSizeObservable({
-    pluginParams$,
+    categoryAxis$,
+    valueAxis$,
     layout$: containerSize$ as Observable<Layout>
   })
 }
@@ -270,7 +277,7 @@ export const gridContainerPositionObservable = ({ selectedGridData$, pluginParam
     pluginParams: pluginParams$,
     layout: layout$,
   }).pipe(
-    switchMap(async (d) => d),
+    debounceTime(0),
     map(data => {
       
       // 無資料時回傳預設container位置
@@ -341,17 +348,17 @@ export const computedStackedDataObservables = ({ isSeriesSeprate$, computedData$
   )
 }
 
-export const categoryScaleDomainValueObservable = ({ selectedGridData$, pluginParams$ }: {
+export const categoryScaleDomainValueObservable = ({ selectedGridData$, categoryAxis$ }: {
   selectedGridData$: Observable<ModelDataGrid>
-  pluginParams$: Observable<GridSeparableGraphicPluginParams>
+  categoryAxis$: Observable<CategoryAxis>
 }): Observable<[number, number]> => {
   return combineLatest({
     selectedGridData: selectedGridData$,
-    pluginParams: pluginParams$
+    categoryAxis: categoryAxis$
   }).pipe(
-    switchMap(async (d) => d),
+    debounceTime(0),
     map(data => {
-      const categoryAxis = data.pluginParams.categoryAxis
+      const categoryAxis = data.categoryAxis
       const categoryMin = 0
       const categoryMax = data.selectedGridData[0] ? data.selectedGridData[0].length - 1 : 0
       // const categoryScaleDomainMin = categoryAxis.scaleDomain[0] === 'min'
@@ -393,14 +400,15 @@ export const filteredMinMaxValueObservable = ({ computedData$, categoryScaleDoma
   )
 }
 
-export const gridAxesTransformObservable = ({ pluginParams$, layout$ }: {
-  pluginParams$: Observable<GridSeparableGraphicPluginParams>
+export const gridAxesTransformObservable = ({ categoryAxis$, valueAxis$, layout$ }: {
+  categoryAxis$: Observable<CategoryAxis>
+  valueAxis$: Observable<ValueAxis>
   layout$: Observable<Layout>
 }): Observable<TransformData> => {
   const destroy$ = new Subject()
 
   function calcAxesTransform ({ xAxis, yAxis, width, height }: {
-    xAxis: GroupAxis | ValueAxis,
+    xAxis: CategoryAxis | ValueAxis,
     yAxis: ValueAxis,
     width: number,
     height: number
@@ -493,15 +501,16 @@ export const gridAxesTransformObservable = ({ pluginParams$, layout$ }: {
 
   return new Observable(subscriber => {
     combineLatest({
-      pluginParams: pluginParams$,
+      categoryAxis: categoryAxis$,
+      valueAxis: valueAxis$,
       layout: layout$
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async (d) => d),
+      debounceTime(0),
     ).subscribe(data => {
       const axesTransformData = calcAxesTransform({
-        xAxis: data.pluginParams.categoryAxis,
-        yAxis: data.pluginParams.valueAxis,
+        xAxis: data.categoryAxis,
+        yAxis: data.valueAxis,
         width: data.layout.width,
         height: data.layout.height
       })
@@ -538,18 +547,19 @@ export const gridAxesReverseTransformObservable = ({ gridAxesTransform$ }: {
   )
 }
 
-export const gridGraphicTransformObservable = ({ computedData$, categoryScaleDomainValue$, filteredMinMaxValue$, pluginParams$, layout$ }: {
+export const gridGraphicTransformObservable = ({ computedData$, categoryScaleDomainValue$, filteredMinMaxValue$, categoryAxis$, valueAxis$, layout$ }: {
   computedData$: Observable<ComputedData<'grid'>>
   categoryScaleDomainValue$: Observable<[number, number]>
   filteredMinMaxValue$: Observable<[number, number]>
-  pluginParams$: Observable<GridSeparableGraphicPluginParams>
+  categoryAxis$: Observable<CategoryAxis>
+  valueAxis$: Observable<ValueAxis>
   layout$: Observable<Layout>
 }): Observable<TransformData> => {
   const destroy$ = new Subject()
 
   function calcGridDataAreaTransform ({ data, categoryAxis, valueAxis, categoryScaleDomainValue, filteredMinMaxValue, width, height }: {
     data: ComputedData<'grid'>
-    categoryAxis: GroupAxis
+    categoryAxis: CategoryAxis
     valueAxis: ValueAxis
     categoryScaleDomainValue: [number, number],
     filteredMinMaxValue: [number, number],
@@ -657,16 +667,17 @@ export const gridGraphicTransformObservable = ({ computedData$, categoryScaleDom
       computedData: computedData$,
       categoryScaleDomainValue: categoryScaleDomainValue$,
       filteredMinMaxValue: filteredMinMaxValue$,
-      pluginParams: pluginParams$,
+      categoryAxis: categoryAxis$,
+      valueAxis: valueAxis$,
       layout: layout$
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async (d) => d),
+      debounceTime(0),
     ).subscribe(data => {
       const dataAreaTransformData = calcGridDataAreaTransform ({
         data: data.computedData,
-        categoryAxis: data.pluginParams.categoryAxis,
-        valueAxis: data.pluginParams.valueAxis,
+        categoryAxis: data.categoryAxis,
+        valueAxis: data.valueAxis,
         categoryScaleDomainValue: data.categoryScaleDomainValue,
         filteredMinMaxValue: data.filteredMinMaxValue,
         width: data.layout.width,
@@ -692,7 +703,7 @@ export const gridGraphicReverseScaleObservable = ({ gridContainerPosition$, grid
     gridAxesTransform: gridAxesTransform$,
     gridGraphicTransform: gridGraphicTransform$,
   }).pipe(
-    switchMap(async (d) => d),
+    debounceTime(0),
     map(data => {
       if (data.gridAxesTransform.rotate == 0 || data.gridAxesTransform.rotate == 180) {
         return data.gridContainerPosition.map((series, seriesIndex) => {

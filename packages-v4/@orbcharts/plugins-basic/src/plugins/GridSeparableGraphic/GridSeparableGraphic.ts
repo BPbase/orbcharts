@@ -3,7 +3,10 @@ import {
   map, 
   combineLatest,
   debounceTime,
-  distinctUntilChanged} from 'rxjs'
+  distinctUntilChanged,
+  Subject,
+  switchMap,
+  BehaviorSubject} from 'rxjs'
 
 import type { GridSeparableGraphicExtendContext, GridSeparableGraphicPluginParams, GridSeparableGraphicAllLayerParams } from './types'
 import { defineSVGPlugin } from '../../../../core/src'
@@ -35,19 +38,33 @@ import {
   gridGraphicTransformObservable,
   gridGraphicReverseScaleObservable,
 } from './contextObservables'
-// import { Bubbles } from './layers/Bubbles'
-// import { Pie } from './layers/Pie'
-// import { PieEventTexts } from './layers/PieEventTexts'
-// import { PieLabels } from './layers/PieLabels'
-// import { Rose } from './layers/Rose'
-// import { RoseLabels } from './layers/RoseLabels'
+import { Bars } from './layers/Bars'
+import { BarsTriangle } from './layers/BarsTriangle'
+import { CategoryAux } from './layers/CategoryAux'
+import { CategoryAxis } from './layers/CategoryAxis'
+import { CategoryZoom } from './layers/CategoryZoom'
+import { Dots } from './layers/Dots'
+import { GridLegend } from './layers/GridLegend'
+import { GridTooltip } from './layers/GridTooltip'
+import { LineAreas } from './layers/LineAreas'
+import { Lines } from './layers/Lines'
+import { StackedBars } from './layers/StackedBars'
+import { StackedValueAxis } from './layers/StackedValueAxis'
+import { ValueAxis } from './layers/ValueAxis'
 
-// const bubbles = new Bubbles()
-// const pie = new Pie()
-// const pieEventTexts = new PieEventTexts()
-// const pieLabels = new PieLabels()
-// const rose = new Rose()
-// const roseLabels = new RoseLabels()
+const bars = new Bars()
+const barsTriangle = new BarsTriangle()
+const categoryAux = new CategoryAux()
+const categoryAxis = new CategoryAxis()
+const categoryZoom = new CategoryZoom()
+const dots = new Dots()
+const gridLegend = new GridLegend()
+const gridTooltip = new GridTooltip()
+const lineAreas = new LineAreas()
+const lines = new Lines()
+const stackedBars = new StackedBars()
+const stackedValueAxis = new StackedValueAxis()
+const valueAxis = new ValueAxis()
 
 export const GridSeparableGraphic = defineSVGPlugin<
   GridSeparableGraphicExtendContext,
@@ -56,8 +73,44 @@ export const GridSeparableGraphic = defineSVGPlugin<
 >({
   name: 'GridSeparableGraphic',
   defaultParams: DEFAULT_GRID_SEPARABLE_GRAPHIC_PARAMS,
-  layers: [],
+  layers: [bars, barsTriangle, categoryAux, categoryAxis, categoryZoom, dots, gridLegend, gridTooltip, lineAreas, lines, stackedBars, stackedValueAxis, valueAxis],
   setup: (props) => {
+
+    // const updateScaleDomain$ = props.pluginParams$.pipe(
+    //   map(params => params.categoryAxis.scaleDomain),
+    //   distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    //   shareReplay(1)
+    // )
+    const updateScaleDomain$ = new BehaviorSubject<[number, number | "max"] | undefined>(undefined)
+
+    const categoryAxis$ = props.pluginParams$.pipe(
+      map(params => params.categoryAxis),
+      switchMap(categoryAxis => updateScaleDomain$.pipe(
+        map(scaleDomain => {
+          if (!scaleDomain) {
+            return categoryAxis
+          }
+          return {
+            ...categoryAxis,
+            scaleDomain
+          }
+        })
+      )),
+      shareReplay(1)
+    )
+
+    props.pluginParams$.subscribe(params => {
+      console.log('Plugin Params Updated:', params)
+    })
+
+    categoryAxis$.subscribe(categoryAxis => {
+      console.log('Category Axis Updated:', categoryAxis)
+    })
+
+    const valueAxis$ = props.pluginParams$.pipe(
+      map(params => params.valueAxis),
+      shareReplay(1)
+    )
 
     const selectedGridData$ = combineLatest({
       gridData: props.context.gridData$,
@@ -119,14 +172,16 @@ export const GridSeparableGraphic = defineSVGPlugin<
     )
 
     const gridAxesSize$ = gridAxesSizeObservable({
-      pluginParams$: props.pluginParams$,
+      categoryAxis$,
+      valueAxis$,
       layout$: layout$
     }).pipe(
       shareReplay(1)
     )
 
     const gridAxesContainerSize$ = gridAxesContainerSizeObservable({
-      pluginParams$: props.pluginParams$,
+      categoryAxis$,
+      valueAxis$,
       containerSize$
     }).pipe(
       shareReplay(1)
@@ -166,7 +221,8 @@ export const GridSeparableGraphic = defineSVGPlugin<
 
     const computedAxesData$ = gridComputedAxesDataObservable({
       computedData$: computedData$,
-      pluginParams$: props.pluginParams$,
+      categoryAxis$,
+      valueAxis$,
       layout$: layout$,
     }).pipe(
       shareReplay(1)
@@ -193,7 +249,7 @@ export const GridSeparableGraphic = defineSVGPlugin<
 
     const categoryScaleDomainValue$ = categoryScaleDomainValueObservable({
       selectedGridData$: selectedGridData$,
-      pluginParams$: props.pluginParams$,
+      categoryAxis$
     }).pipe(
       shareReplay(1)
     )
@@ -213,7 +269,8 @@ export const GridSeparableGraphic = defineSVGPlugin<
     )
 
     const gridAxesTransform$ = gridAxesTransformObservable({
-      pluginParams$: props.pluginParams$,
+      categoryAxis$,
+      valueAxis$,
       layout$: layout$
     }).pipe(
       shareReplay(1)
@@ -229,7 +286,8 @@ export const GridSeparableGraphic = defineSVGPlugin<
       computedData$: computedData$,
       categoryScaleDomainValue$: categoryScaleDomainValue$,
       filteredMinMaxValue$: filteredMinMaxValue$,
-      pluginParams$: props.pluginParams$,
+      categoryAxis$,
+      valueAxis$,
       layout$: layout$
     }).pipe(
       shareReplay(1)
@@ -267,6 +325,7 @@ export const GridSeparableGraphic = defineSVGPlugin<
       gridAxesReverseTransform$,
       gridGraphicTransform$,
       gridGraphicReverseScale$,
+      updateScaleDomain$
     }
 
     props.context = {
