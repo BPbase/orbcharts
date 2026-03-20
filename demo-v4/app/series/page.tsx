@@ -3,13 +3,15 @@
 import { useState, useEffect, useRef } from 'react'
 import type { RawData } from '@orbcharts/core/types'
 import { OrbCharts } from '@orbcharts/core/index'
-import { SeriesSeparableGraphic } from '@orbcharts/plugins-basic/index'
+import { CompositionPlot } from '@orbcharts/plugins-basic/index'
 
 const pieData: RawData = [
   { series: 'A', value: 30, name: 'a' },
   { series: 'A', value: 50 },
-  { series: 'A', value: 20 },
   { series: 'B', value: 70 },
+  { series: 'A', value: 20 },
+  { series: 'C', value: 45 },
+  { series: 'D', value: 85 },
   { series: 'C', value: 45 },
   { series: 'D', value: 85 },
 ]
@@ -23,7 +25,7 @@ export default function Series() {
     
     // console.log(domRef.current)
 
-    const seriesPlugin = new SeriesSeparableGraphic({
+    const seriesPlugin = new CompositionPlot({
       Pie: {
         outerRadius: 0.85,
         innerRadius: 0.5,
@@ -67,7 +69,12 @@ export default function Series() {
     const chart = new OrbCharts(domRef.current!, {
       data: pieData,
       encoding: {
-        
+        value: {
+          sort: 'asc'
+        },
+        // color: {
+        //   from: 'category'
+        // }
       },
       // plugins: [],
       theme: {

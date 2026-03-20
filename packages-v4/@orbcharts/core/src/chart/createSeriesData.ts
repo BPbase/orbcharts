@@ -39,19 +39,30 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
   } else if (encoding.dataset.sort === 'original') {
     // original 排序：依照原始資料中 dataset 名稱出現的順序
     const datasetOrder: string[] = []
-    rawData.forEach((d) => {
-      const datasetKey = (d as any)[encoding.dataset.from] || 'default'
-      if (!datasetOrder.includes(datasetKey)) {
-        datasetOrder.push(datasetKey)
-      }
-    })
+    if (is2DArray) {
+      (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
+        datasetArray.forEach((d) => {
+          const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+          if (!datasetOrder.includes(datasetKey)) {
+            datasetOrder.push(datasetKey)
+          }
+        })
+      })
+    } else {
+      (rawData as RawDataColumn[]).forEach((d) => {
+        const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+        if (!datasetOrder.includes(datasetKey)) {
+          datasetOrder.push(datasetKey)
+        }
+      })
+    }
     sortedDatasetNames = datasetOrder
   } else if (encoding.dataset.sort === 'alphabetical') {
     // alphabetical 排序：依照字母順序
     sortedDatasetNames.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
   }
 
-  // 對每個 dataset 進行 series 資料的處理
+  // 對每個 dataset 進行 grid 資料的處理
   const result: ModelDataSeries[] = []
   sortedDatasetNames.forEach((datasetName, datasetIndex) => {
     const data = datasetMap.get(datasetName)!
@@ -66,11 +77,11 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
       seriesMap.get(seriesKey)!.push(d)
     })
 
-    // 建立排序後的類別名稱陣列
-    let sortedCategoryNames: string[] = Array.from(seriesMap.keys())
+    // 建立排序後的系列名稱陣列
+    let sortedSeriesNames: string[] = Array.from(seriesMap.keys())
     if (Array.isArray(encoding.series.sort)) {
-      sortedCategoryNames = encoding.series.sort.filter(name => seriesMap.has(name))
-        .concat(sortedCategoryNames.filter(name => !encoding.series.sort.includes(name)))
+      sortedSeriesNames = encoding.series.sort.filter(name => seriesMap.has(name))
+        .concat(sortedSeriesNames.filter(name => !encoding.series.sort.includes(name)))
     } else if (encoding.series.sort === 'original') {
       // original 排序：依照原始資料中 series 名稱出現的順序
       const seriesOrder: string[] = []
@@ -80,47 +91,108 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
           seriesOrder.push(seriesKey)
         }
       })
-      sortedCategoryNames = seriesOrder
+      sortedSeriesNames = seriesOrder
     } else if (encoding.series.sort === 'alphabetical') {
       // alphabetical 排序：依照字母順序
-      sortedCategoryNames.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+      sortedSeriesNames.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
     }
 
-    // 依據排序後的類別名稱來建立最終的資料結構
-    const seriesData: ModelDatumSeries[][] = []
-    sortedCategoryNames.forEach((seriesName, seriesIndex) => {
-      const items = seriesMap.get(seriesName)!
+    // 在處理各 series 之前，先建立跨所有 series 的全域 category 順序與索引對應表
+    // 這樣可確保相同的 category 在不同 series 中擁有相同的 categoryIndex
+    const globalCategoryOrder: string[] = []
+    if (encoding.category.sort === 'original') {
+      // original：依照原始資料中 category 名稱出現的全域順序，不進行排序
+      data.forEach((d) => {
+        const categoryKey = (d as any)[encoding.category.from] || 'default'
+        if (!globalCategoryOrder.includes(categoryKey)) {
+          globalCategoryOrder.push(categoryKey)
+        }
+      })
+    } else if (encoding.category.sort === 'alphabetical') {
+      // alphabetical：依照字母順序排序所有 category
+      const allCategoryNames = new Set<string>()
+      data.forEach((d) => {
+        allCategoryNames.add((d as any)[encoding.category.from] || 'default')
+      })
+      globalCategoryOrder.push(...Array.from(allCategoryNames).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })))
+    } else if (Array.isArray(encoding.category.sort)) {
+      // 自訂順序：指定的 category 優先，其餘依原始順序補上
+      const allCategoryNames: string[] = []
+      data.forEach((d) => {
+        const categoryKey = (d as any)[encoding.category.from] || 'default'
+        if (!allCategoryNames.includes(categoryKey)) {
+          allCategoryNames.push(categoryKey)
+        }
+      })
+      const sortArray = encoding.category.sort as string[]
+      globalCategoryOrder.push(
+        ...sortArray.filter(name => allCategoryNames.includes(name)),
+        ...allCategoryNames.filter(name => !sortArray.includes(name))
+      )
+    }
+
+    // 建立全域 category → categoryIndex 對應表
+    const globalCategoryIndexMap = new Map<string, number>()
+    globalCategoryOrder.forEach((name, index) => {
+      globalCategoryIndexMap.set(name, index)
+    })
+
+    // 依據排序後的系列名稱來建立最終的資料結構
+    const gridData: ModelDatumSeries[][] = []
+    sortedSeriesNames.forEach((seriesName, seriesIndex) => {
+      const seriesItems = seriesMap.get(seriesName)!
       
-      if (encoding.value.aggregate === 'none') {
-        // 不聚合，保持原始資料結構
-        let modelData: ModelDatumSeries[] = items.map((d, index) => {
+      // 依據 category 欄位將 series 內的資料分組
+      const categoryMap = new Map<string, RawDataColumn[]>()
+      seriesItems.forEach((d) => {
+        const categoryKey = (d as any)[encoding.category.from] || 'default'
+        if (!categoryMap.has(categoryKey)) {
+          categoryMap.set(categoryKey, [])
+        }
+        categoryMap.get(categoryKey)!.push(d)
+      })
+
+      // 依據全域 category 順序篩選出此 series 含有的 category（保持全域順序）
+      const sortedCategoryNames: string[] = globalCategoryOrder.filter(name => categoryMap.has(name))
+
+      // 處理每個 category
+      const seriesData: ModelDatumSeries[] = []
+
+      if (encoding.category.sort === 'original' && encoding.value.aggregate === 'none') {
+        // sort=original + 不聚合：直接依照 seriesItems 的原始排列順序，不進行分組重排
+        seriesItems.forEach((d, index) => {
+          const categoryName = (d as any)[encoding.category.from] || 'default'
+          const categoryIndex = globalCategoryIndexMap.get(categoryName)!
           const value = (d as any)[encoding.value.from]
-          return {
-            id: d.id || `${datasetName}-${seriesName}-${index}`,
-            index,
+          seriesData.push({
+            id: d.id || `${datasetName}-${seriesName}-${categoryName}-${index}`,
+            index: categoryIndex, // Series 模式下 index 對應 categoryIndex
             name: d.name || '',
             data: d.data,
             value: typeof value === 'number' ? value : null,
-            color: getColorByFrom(encoding.color.from, { 
-              index, 
+            color: getColorByFrom(encoding.color.from, {
+              index: categoryIndex,
               seriesIndex,
+              categoryIndex,
               datasetIndex
             }, theme),
             series: seriesName,
             seriesIndex,
-          }
+            category: categoryName,
+            categoryIndex,
+          })
         })
-        
-        // 根據 value.sort 進行排序
+
+        // 根據 value.sort 對整個 seriesData 進行排序
         if (encoding.value.sort === 'asc') {
-          modelData.sort((a, b) => {
+          seriesData.sort((a, b) => {
             if (a.value === null && b.value === null) return 0
             if (a.value === null) return 1
             if (b.value === null) return -1
             return a.value - b.value
           })
         } else if (encoding.value.sort === 'desc') {
-          modelData.sort((a, b) => {
+          seriesData.sort((a, b) => {
             if (a.value === null && b.value === null) return 0
             if (a.value === null) return 1
             if (b.value === null) return -1
@@ -128,47 +200,94 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
           })
         }
         // 'original' 不需要額外排序，保持原始順序
-        
-        // 重新設定 index（排序後索引可能改變）
-        modelData = modelData.map((d, newIndex) => ({
-          ...d,
-          index: newIndex
-        }))
-        
-        seriesData.push(modelData)
       } else {
-        // 進行聚合，將相同 dataset 和 series 的資料合併為一筆
-        const values: (number | null)[] = items.map(d => {
-          if (encoding.value.aggregate === 'count') {
-            return 1 // count 聚合時每筆資料計為 1
+        sortedCategoryNames.forEach((categoryName) => {
+          // 使用全域 categoryIndex，確保不同 series 中相同 category 有相同的索引
+          const categoryIndex = globalCategoryIndexMap.get(categoryName)!
+          const categoryItems = categoryMap.get(categoryName)!
+
+          if (encoding.value.aggregate === 'none') {
+            // 不聚合，保持原始資料結構
+            let modelData: ModelDatumSeries[] = categoryItems.map((d, index) => {
+              const value = (d as any)[encoding.value.from]
+              return {
+                id: d.id || `${datasetName}-${seriesName}-${categoryName}-${index}`,
+                index: categoryIndex, // Series 模式下 index 對應 categoryIndex
+                name: d.name || '',
+                data: d.data,
+                value: typeof value === 'number' ? value : null,
+                color: getColorByFrom(encoding.color.from, { 
+                  index: categoryIndex, 
+                  seriesIndex,
+                  categoryIndex,
+                  datasetIndex
+                }, theme),
+                series: seriesName,
+                seriesIndex,
+                category: categoryName,
+                categoryIndex,
+              }
+            })
+            
+            // 根據 value.sort 進行排序
+            if (encoding.value.sort === 'asc') {
+              modelData.sort((a, b) => {
+                if (a.value === null && b.value === null) return 0
+                if (a.value === null) return 1
+                if (b.value === null) return -1
+                return a.value - b.value
+              })
+            } else if (encoding.value.sort === 'desc') {
+              modelData.sort((a, b) => {
+                if (a.value === null && b.value === null) return 0
+                if (a.value === null) return 1
+                if (b.value === null) return -1
+                return b.value - a.value
+              })
+            }
+            // 'original' 不需要額外排序，保持原始順序
+            
+            seriesData.push(...modelData)
+          } else {
+            // 進行聚合，將相同 dataset, series, category 的資料合併為一筆
+            const values: (number | null)[] = categoryItems.map(d => {
+              if (encoding.value.aggregate === 'count') {
+                return 1 // count 聚合時每筆資料計為 1
+              }
+              const value = (d as any)[encoding.value.from]
+              return typeof value === 'number' ? value : null
+            })
+            
+            const aggregatedValue = aggregate(values, encoding.value.aggregate)
+            
+            // 合併其他欄位（使用第一筆資料的值）
+            const firstItem = categoryItems[0]
+            const modelData: ModelDatumSeries = {
+              id: firstItem.id || `${datasetName}-${seriesName}-${categoryName}-aggregated`,
+              index: categoryIndex, // Series 模式下 index 對應 categoryIndex
+              name: firstItem.name || categoryName,
+              data: firstItem.data,
+              value: aggregatedValue,
+              color: getColorByFrom(encoding.color.from, { 
+                index: categoryIndex, 
+                seriesIndex,
+                categoryIndex,
+                datasetIndex
+              }, theme),
+              series: seriesName,
+              seriesIndex,
+              category: categoryName,
+              categoryIndex,
+            }
+            seriesData.push(modelData)
           }
-          const value = (d as any)[encoding.value.from]
-          return typeof value === 'number' ? value : null
         })
-        
-        const aggregatedValue = aggregate(values, encoding.value.aggregate)
-        
-        // 合併其他欄位（使用第一筆資料的值）
-        const firstItem = items[0]
-        const modelData: ModelDatumSeries[] = [{
-          id: firstItem.id || `${datasetName}-${seriesName}-aggregated`,
-          index: 0,
-          name: firstItem.name || seriesName,
-          data: firstItem.data,
-          value: aggregatedValue,
-          color: getColorByFrom(encoding.color.from, { 
-            index: 0, 
-            seriesIndex,
-            datasetIndex
-          }, theme),
-          series: seriesName,
-          seriesIndex,
-        }]
-        seriesData.push(modelData)
       }
+
+      gridData.push(seriesData)
     })
 
-    result.push(seriesData)
+    result.push(gridData)
   })
 
   return result

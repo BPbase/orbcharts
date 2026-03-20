@@ -13,6 +13,8 @@ export interface ModelDatumBase {
 export interface ModelDatumSeries extends ModelDatumBase {
   series: string
   seriesIndex: number
+  category: string
+  categoryIndex: number
 }
 
 export interface ModelDatumGrid extends ModelDatumBase {

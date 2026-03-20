@@ -97,6 +97,27 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
       sortedSeriesNames.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
     }
 
+    // 建立全局的 category 排序（跨該 dataset 下所有 series）
+    const globalCategoryOrder: string[] = []
+    data.forEach((d) => {
+      const categoryKey = (d as any)[encoding.category.from] || 'default'
+      if (!globalCategoryOrder.includes(categoryKey)) {
+        globalCategoryOrder.push(categoryKey)
+      }
+    })
+    const globalCategorySet = new Set<string>(globalCategoryOrder)
+    let globalSortedCategoryNames: string[] = Array.from(globalCategorySet)
+    if (Array.isArray(encoding.category.sort)) {
+      globalSortedCategoryNames = (encoding.category.sort as string[]).filter(name => globalCategorySet.has(name))
+        .concat(globalSortedCategoryNames.filter(name => !(encoding.category.sort as string[]).includes(name)))
+    } else if (encoding.category.sort === 'original') {
+      // original 排序：依照原始資料中 category 名稱出現的順序
+      globalSortedCategoryNames = globalCategoryOrder
+    } else if (encoding.category.sort === 'alphabetical') {
+      // alphabetical 排序：依照字母順序
+      globalSortedCategoryNames.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+    }
+
     // 依據排序後的系列名稱來建立最終的資料結構
     const gridData: ModelDatumGrid[][] = []
     sortedSeriesNames.forEach((seriesName, seriesIndex) => {
@@ -112,32 +133,31 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
         categoryMap.get(categoryKey)!.push(d)
       })
 
-      // 建立排序後的類別名稱陣列
-      let sortedCategoryNames: string[] = Array.from(categoryMap.keys())
-      if (Array.isArray(encoding.category.sort)) {
-        sortedCategoryNames = encoding.category.sort.filter(name => categoryMap.has(name))
-          .concat(sortedCategoryNames.filter(name => !encoding.category.sort.includes(name)))
-      } else if (encoding.category.sort === 'original') {
-        // original 排序：依照原始資料中 category 名稱出現的順序
-        const categoryOrder: string[] = []
-        seriesItems.forEach((d) => {
-          const categoryKey = (d as any)[encoding.category.from] || 'default'
-          if (!categoryOrder.includes(categoryKey)) {
-            categoryOrder.push(categoryKey)
-          }
-        })
-        sortedCategoryNames = categoryOrder
-      } else if (encoding.category.sort === 'alphabetical') {
-        // alphabetical 排序：依照字母順序
-        sortedCategoryNames.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
-      }
-
-      // 處理每個 category
+      // 處理每個 category（使用全局排序後的 category 名稱，確保所有 series 的 category 順序一致）
       const seriesData: ModelDatumGrid[] = []
-      sortedCategoryNames.forEach((categoryName, categoryIndex) => {
-        const categoryItems = categoryMap.get(categoryName)!
-        
-        if (encoding.value.aggregate === 'none') {
+      globalSortedCategoryNames.forEach((categoryName, categoryIndex) => {
+        const categoryItems = categoryMap.get(categoryName)
+
+        if (!categoryItems) {
+          // 該 series 缺少此 category，以 value 為 null 的預設資料補上
+          seriesData.push({
+            id: `${datasetName}-${seriesName}-${categoryName}-null`,
+            index: categoryIndex,
+            name: categoryName,
+            data: undefined,
+            value: null,
+            color: getColorByFrom(encoding.color.from, {
+              index: categoryIndex,
+              seriesIndex,
+              categoryIndex,
+              datasetIndex
+            }, theme),
+            series: seriesName,
+            seriesIndex,
+            category: categoryName,
+            categoryIndex,
+          })
+        } else if (encoding.value.aggregate === 'none') {
           // 不聚合，保持原始資料結構
           let modelData: ModelDatumGrid[] = categoryItems.map((d, index) => {
             const value = (d as any)[encoding.value.from]

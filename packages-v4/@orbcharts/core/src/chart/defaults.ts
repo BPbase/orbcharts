@@ -26,7 +26,7 @@ export const DEFAULT_DATA_ENCODING: Encoding = {
   value: {
     from: 'value',
     sort: 'original',
-    aggregate: 'sum'
+    aggregate: 'none'
   },
   multivariate: [
     { from: 'x', label: 'x' },

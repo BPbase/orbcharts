@@ -10,6 +10,7 @@ import {
   debounceTime,
   first,
   Observable,
+  Subject,
 } from 'rxjs'
 import type { PluginSetupProps, LayerEnableProps } from '../types'
 import { handleElementLifecycle } from '../utils/dom-lifecycle'
@@ -150,9 +151,7 @@ export const createPlugin = <
     initPluginParams
   )
 
-  const pluginForceReplaceParams$ = new BehaviorSubject<DeepPartial<AllLayerParams | PluginParams> | undefined>(
-    initPluginParams
-  )
+  const pluginForceReplaceParams$ = new Subject<DeepPartial<AllLayerParams | PluginParams> | undefined>()
 
   // const pluginParams$ = new BehaviorSubject<PluginParams>(
   //   deepOverwrite(config.defaultParams, initPluginParams as DeepPartial<PluginParams>)

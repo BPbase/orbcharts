@@ -19,8 +19,8 @@ export class OrbCharts implements ChartEntity {
   updateEncoding: (patch: DeepPartial<Encoding>) => void
   forceReplaceEncoding: (full: Encoding) => void
   getEncoding: () => Readonly<Encoding>
-  setPlugins: (plugins: PluginEntity<unknown, unknown>[]) => void
-  addPlugin: (plugin: PluginEntity<unknown, unknown>) => void
+  setPlugins: (plugins: PluginEntity<any, any>[]) => void
+  addPlugin: (plugin: PluginEntity<any, any>) => void
   removePlugin: (id: string) => void
   // setTheme: (theme: Theme) => void
   updateTheme: (patch: DeepPartial<Theme>) => void
