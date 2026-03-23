@@ -1,6 +1,6 @@
 import { isDom } from "./commonUtils";
 
-export function createSvg (className?: string): SVGSVGElement {
+export function createSVG (className?: string): SVGSVGElement {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
   svg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink')
   svg.setAttribute('xmls', 'http://www.w3.org/2000/svg')

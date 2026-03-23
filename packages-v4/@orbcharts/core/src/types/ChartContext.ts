@@ -23,6 +23,8 @@ export type ChartContext<ExtendContext extends ExtendableContext> = {
   // svgSelection: d3.Selection<SVGGElement, unknown, HTMLElement, any>
   // canvasSelection: d3.Selection<HTMLCanvasElement, unknown, HTMLElement, any>
   root: HTMLElement | Element
+  svg: SVGElement | null
+  canvas: HTMLCanvasElement | null
   // rawData$: Observable<RawData>
   encoding$: Observable<Encoding>
   seriesData$: Observable<ModelData<'series'>[]>

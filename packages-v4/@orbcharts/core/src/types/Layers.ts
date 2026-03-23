@@ -19,6 +19,14 @@ import type { DeepPartial, ChartContext, ExtendableContext, ValidatorResult } fr
 //   layerParams$: Observable<LayerParams>
 // }
 
+// export interface LayerInfo {
+//   // id: string
+//   pluginName: string
+//   // pluginSeq: number
+//   layerName: string
+//   layerIndex: number
+// }
+
 export interface SVGLayerEnableProps<ExtendContext extends ExtendableContext, PluginParams, LayerParams> {
   context: ChartContext<ExtendContext>
   svgG: SVGGElement

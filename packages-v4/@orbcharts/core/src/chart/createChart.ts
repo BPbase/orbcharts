@@ -31,9 +31,10 @@ import type {
   Theme,
   EventData,
   Size,
-  SizeConfig
+  SizeConfig,
+  ValidatorResult,
+  // LayerInfo,
 } from '../types'
-import type { ValidatorResult } from '../types'
 import {
   isDom,
   isPlainObject,
@@ -44,7 +45,9 @@ import {
   createValidatorWarningMessage,
   createOrbChartsErrorMessage,
   resizeObservable,
-  createUnexpectedErrorMessage
+  createUnexpectedErrorMessage,
+  createSVG,
+  createCanvas
 } from '../utils'
 import { DEFAULT_DATA_ENCODING, DEFAULT_THEME, DEFAULT_SIZE_CONFIG } from './defaults'
 import { createSeriesData } from './createSeriesData'
@@ -52,6 +55,11 @@ import { createGridData } from './createGridData'
 import { createMultivariateData } from './createMultivariateData'
 import { createGraphData } from './createGraphData'
 import { createTreeData } from './createTreeData'
+import { handleElementLifecycle } from '../utils/dom-lifecycle'
+
+// interface LayerMakerInfo extends LayerInfo {
+//   pluginSeq: number
+// }
 
 function elementValidator (element: HTMLElement | Element): ValidatorResult {
   const result = validateObject({ element }, {
@@ -283,11 +291,11 @@ function dataValidator (data: RawData): ValidatorResult {
   return result
 }
 
-function pluginsValidator (plugins: PluginEntity<any, any>[]): ValidatorResult {
+function pluginsValidator (plugins: PluginEntity<any, any, any>[]): ValidatorResult {
   const result = validateObject({ plugins }, {
     plugins: {
       toBe: `PluginEntity[]`,
-      test: (value: PluginEntity<any, any>[]) => {
+      test: (value: PluginEntity<any, any, any>[]) => {
         return Array.isArray(value)
           && value.every((v) => isPlainObject(v) && typeof v.name === 'string' && typeof v.injectContext === 'function')
       }
@@ -318,7 +326,7 @@ function chartOptionsValidator (chartOptionsPartial: PartialChartOptions): Valid
     },
     plugins: {
       toBe: `PluginEntity[]`,
-      test: (value: PluginEntity<any, any>[]) => {
+      test: (value: PluginEntity<any, any, any>[]) => {
         return Array.isArray(value)
           && value.every((v) => isPlainObject(v) && typeof v.name === 'string' && typeof v.injectContext === 'function')
       }
@@ -397,6 +405,55 @@ export const createChart: CreateChart = (element, options) => {
 
   const destroy$ = new Subject()
 
+  // elements
+  // const svgElement: SVGElement | null = null
+  // const canvasElement: HTMLCanvasElement | null = null
+  // const layerSVGElementsRef: Record<string, SVGElement> = {}
+  // const layerCanvasElementsRef: Record<string, HTMLCanvasElement> = {}
+
+  // // layers 管理
+  // let pluginSeq: Record<string, number> = {}
+  // let svgLayerInfo: LayerMakerInfo[] = []
+  // let canvasLayerInfo: LayerMakerInfo[] = []
+  // const createElementId = (pluginName: string, layerName: string) => `${pluginName}_${layerName}`
+  // const layerElementMaker = (elementType: 'svg' | 'canvas', fromPluginName: string, updateLayerInfo: LayerInfo[]) => {
+  //   const addedLayerInfo: LayerMakerInfo[] = updateLayerInfo.map(layerInfo => ({
+  //     ...layerInfo,
+  //     pluginSeq: pluginSeq[layerInfo.pluginName]
+  //   }))
+  //   const newLayerInfo = elementType === 'svg' ? svgLayerInfo : canvasLayerInfo
+  //     .filter((layerInfo) => layerInfo.pluginName !== fromPluginName)
+  //     .map(layerInfo => {
+  //       return {
+  //         ...layerInfo,
+  //         pluginSeq: pluginSeq[layerInfo.pluginName]
+  //       }
+  //     })
+  //     .concat(addedLayerInfo)
+  //     .sort((a, b) => {
+  //       // 優先排layerIndex再排pluginSeq
+  //       return a.layerIndex - b.layerIndex || a.pluginSeq - b.pluginSeq
+  //     })
+    
+  //   if (elementType === 'svg') {
+  //     handleElementLifecycle(
+  //       svgElement,
+  //       newLayerInfo.map(info => createElementId(info.pluginName, info.layerName)),
+  //       layerSVGElementsRef,
+  //       (elementId) => createSVGGroup(elementId)
+  //     )
+  //   } else {
+  //     handleElementLifecycle(
+  //       canvasElement,
+  //       newLayerInfo.map(info => createElementId(info.pluginName, info.layerName)),
+  //       layerCanvasElementsRef,
+  //       (elementId) => createCanvas(elementId)
+  //     )
+  //   }
+    
+  // }
+
+
   // data
   const rawData$ = new BehaviorSubject<RawData>(options?.data || [])
   // data encoding
@@ -412,7 +469,7 @@ export const createChart: CreateChart = (element, options) => {
   // const previousTheme$ = new BehaviorSubject<Theme>(defaultTheme)
   const currentTheme$ = new BehaviorSubject<Theme>(defaultTheme)
   // plugins
-  const pluginsInstance$ = new BehaviorSubject<PluginEntity<unknown, unknown>[]>(options?.plugins || [])
+  const pluginsInstance$ = new BehaviorSubject<PluginEntity<any, unknown, unknown>[]>(options?.plugins || [])
   // size
   const defaultSizeConfig = options && options.size
     ? deepOverwrite(DEFAULT_SIZE_CONFIG, options.size)
@@ -576,6 +633,7 @@ export const createChart: CreateChart = (element, options) => {
         const pluginInfos = plugins.map(plugin => {
           return {
             name: plugin.name,
+            elementType: plugin.elementType,
             shownLayers: plugin.getShownLayerNames()
           }
         })
@@ -604,8 +662,10 @@ export const createChart: CreateChart = (element, options) => {
       .pipe(
         share()
       )
-    return {
+    const _context: ChartContext<{}> = {
       root: element,
+      svg: null,
+      canvas: null,
       size$: size$,
       encoding$,
       seriesData$,
@@ -618,14 +678,87 @@ export const createChart: CreateChart = (element, options) => {
       event$,
       eventTrigger$
     }
+    return _context
   })()
+  
+  const svgElement$ = new BehaviorSubject<SVGElement | null>(null)
+  const canvasElement$ = new BehaviorSubject<HTMLCanvasElement | null>(null)
 
   // inject context into plugins
   pluginsInstance$.subscribe(plugins => {
+    // -- 建立頂層 svg 和 canvas --
+    let hasSVGPlugin = false
+    let hasCanvasPlugin = false
+    plugins.forEach(plugin => {
+      if (plugin.elementType === 'svg') {
+        hasSVGPlugin = true
+      } else if (plugin.elementType === 'canvas') {
+        hasCanvasPlugin = true
+      }
+    })
+    if (hasSVGPlugin && !context.svg) {
+      context.svg = createSVG('orbcharts-root-svg')
+      context.root.appendChild(context.svg)
+      svgElement$.next(context.svg)
+    } else if (!hasSVGPlugin && context.svg) {
+      context.svg.remove()
+      context.svg = null
+      svgElement$.next(null)
+    }
+    if (hasCanvasPlugin && !context.canvas) {
+      context.canvas = createCanvas('orbcharts-root-canvas')
+      context.root.appendChild(context.canvas)
+      canvasElement$.next(context.canvas)
+    } else if (!hasCanvasPlugin && context.canvas) {
+      context.canvas.remove()
+      context.canvas = null
+      canvasElement$.next(null)
+    }
+
+    // inject context
     plugins.forEach(plugin => {
       plugin.injectContext(context)
     })
   })
+
+  combineLatest({
+    size: context.size$,
+    svg: svgElement$,
+  }).pipe(
+    debounceTime(0),
+    filter(({ svg }) => !!svg)
+  ).subscribe(({ size, svg }) => {
+    if (svg) {
+      svg.setAttribute('width', size.width.toString())
+      svg.setAttribute('height', size.height.toString())
+    }
+  })
+
+  combineLatest({
+    size: context.size$,
+    canvas: canvasElement$
+  }).pipe(
+    debounceTime(0),
+    filter(({ canvas }) => !!canvas)
+  ).subscribe(({ size, canvas }) => {
+    if (canvas) {
+      canvas.width = size.width
+      canvas.height = size.height
+    }
+  })
+
+  // context.size$.subscribe(size => {
+  //   const svgGElement: SVGGElement | null = context.root.querySelector(`:scope > svg`)
+  //   const canvasElement: HTMLCanvasElement | null = context.root.querySelector(`:scope > canvas`)
+  //   if (svgGElement) {
+  //     svgGElement.setAttribute('width', size.width.toString())
+  //     svgGElement.setAttribute('height', size.height.toString())
+  //   }
+  //   if (canvasElement) {
+  //     canvasElement.width = size.width
+  //     canvasElement.height = size.height
+  //   }
+  // })
 
   // create chart instance
   return (() => {
@@ -690,7 +823,7 @@ export const createChart: CreateChart = (element, options) => {
     function getEncoding () {
       return currentEncoding$.getValue()
     }
-    function setPlugins (plugins: PluginEntity<unknown, unknown>[]) {
+    function setPlugins (plugins: PluginEntity<any, unknown, unknown>[]) {
       try {  
         const { status, columnName, expectToBe } = pluginsValidator(plugins)
         if (status === 'error') {
@@ -713,7 +846,7 @@ export const createChart: CreateChart = (element, options) => {
       // replace all
       pluginsInstance$.next(plugins)
     }
-    function addPlugin (plugin: PluginEntity<unknown, unknown>) {
+    function addPlugin (plugin: PluginEntity<any, unknown, unknown>) {
       try {
         const { status, columnName, expectToBe } = pluginsValidator([plugin])
         if (status === 'error') {

@@ -10,6 +10,7 @@ import { ValidatorResult } from '../types/Validator'
 
 export interface PluginInfo {
   name: string
+  elementType: 'svg' | 'canvas'
   shownLayers: string[]
 }
 
@@ -22,14 +23,12 @@ export interface PluginInfo {
 
 export interface SVGPluginSetupProps<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> {
   context: ChartContext<ExtendContext>
-  svg: SVGElement
-  // canvas: HTMLCanvasElement
+  svgG: SVGGElement
   pluginParams$: Observable<PluginParams>
 }
 
 export interface CanvasPluginSetupProps<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> {
   context: ChartContext<ExtendContext>
-  // svg: SVGElement
   canvas: HTMLCanvasElement
   pluginParams$: Observable<PluginParams>
 }
@@ -54,8 +53,9 @@ export interface DefinePluginConfig<ElementType extends 'svg' | 'canvas', Extend
 // }
 
 
-export interface PluginEntity<PluginParams extends Record<string, any>, AllLayerParams extends Record<string, any>> {
+export interface PluginEntity<ElementType extends 'svg' | 'canvas', PluginParams extends Record<string, any>, AllLayerParams extends Record<string, any>> {
   name: string
+  elementType: ElementType
   // layer visibility controls
   show(names: (keyof AllLayerParams) | (keyof AllLayerParams)[]): void
   showOnly(names: (keyof AllLayerParams) | (keyof AllLayerParams)[]): void

@@ -14,18 +14,19 @@ import {
 } from 'rxjs'
 import type { PluginSetupProps, LayerEnableProps } from '../types'
 import { handleElementLifecycle } from '../utils/dom-lifecycle'
-import { createSvg, createCanvasElement, createSVGGroup, createCanvas } from '../utils/dom'
+import { createSVG, createCanvasElement, createSVGGroup, createCanvas } from '../utils/dom'
 import { createPluginClassName, createLayerClassName } from '../utils/orbchartsUtils'
 import { deepOverwrite } from '../utils/commonUtils'
 import { createOrbChartsErrorMessage, createValidatorErrorMessage, createValidatorWarningMessage } from '../utils/errorMessage'
 
 export const createPlugin = <
+  ElementType extends 'svg' | 'canvas',
   ExtendContext extends ExtendableContext,
   PluginParams,
   AllLayerParams
->(elementType: 'canvas' | 'svg', config: DefinePluginConfig<'svg' | 'canvas', ExtendContext, PluginParams, AllLayerParams>, initPluginParams?: DeepPartial<PluginParams | AllLayerParams>): PluginEntity<PluginParams, AllLayerParams> => {
-
-  const svgClassName = `${createPluginClassName(config.name)}__svg`
+>(elementType: ElementType, config: DefinePluginConfig<'svg' | 'canvas', ExtendContext, PluginParams, AllLayerParams>, initPluginParams?: DeepPartial<PluginParams | AllLayerParams>): PluginEntity<ElementType, PluginParams, AllLayerParams> => {
+  // const svgClassName = `${createPluginClassName(config.name)}__svg`
+  const svgGClassName = `${createPluginClassName(config.name)}__g`
   const canvasClassName = `${createPluginClassName(config.name)}__canvas`
 
   let destroySetup = () => {}
@@ -94,21 +95,21 @@ export const createPlugin = <
   )
 
   // plugin 的根元素
-  const pluginElement$: Observable<SVGSVGElement | HTMLCanvasElement> = injectedContext$.pipe(
+  const pluginElement$: Observable<SVGGElement | HTMLCanvasElement> = injectedContext$.pipe(
     map(context => {
-      // -- 在context.root元素底下建立 svg 或 canvas 元素 --
+      // -- 在 svg 或 canvas 元素底下建立 plugin 的元素 --
       if (elementType === 'svg') {
-        let svgElement: SVGSVGElement | null = context.root.querySelector(`.${svgClassName}`)
-        if (!svgElement) {
-          svgElement = createSvg(svgClassName)
-          context.root.appendChild(svgElement)
+        let svgGElement: SVGGElement | null = context.svg.querySelector(`.${svgGClassName}`)
+        if (!svgGElement) {
+          svgGElement = createSVGGroup(svgGClassName)
+          context.svg.appendChild(svgGElement)
         }
-        return svgElement
+        return svgGElement
       } else if (elementType === 'canvas') {
-        let canvasElement: HTMLCanvasElement | null = context.root.querySelector(`.${canvasClassName}`)
+        let canvasElement: HTMLCanvasElement | null = context.canvas.querySelector(`.${canvasClassName}`)
         if (!canvasElement) {
           canvasElement = createCanvasElement(canvasClassName)
-          context.root.appendChild(canvasElement)
+          context.canvas.appendChild(canvasElement)
         }
         return canvasElement
       }
@@ -197,7 +198,7 @@ export const createPlugin = <
       const pluginSetupProps: PluginSetupProps<'svg' | 'canvas', ExtendContext, PluginParams> = 
         elementType === 'svg' ? {
           context: context as ChartContext<ExtendContext>, // 初始化時 context 有可能被 in place 擴展
-          svg: pluginElement as SVGSVGElement,
+          svgG: pluginElement as SVGSVGElement,
           pluginParams$
         } : {
           context: context as ChartContext<ExtendContext>,
@@ -225,7 +226,7 @@ export const createPlugin = <
     // layer element - 處理 SVG 元素的 enter/update/exit
     if (elementType === 'svg') {
       handleElementLifecycle(
-        (pluginSetupProps as PluginSetupProps<'svg', ExtendContext, PluginParams>).svg, 
+        (pluginSetupProps as PluginSetupProps<'svg', ExtendContext, PluginParams>).svgG, 
         shownLayerNamesSeq, // 依照 shownLayerNamesSeq
         layerSVGElementsRef,
         (layerName) => createSVGGroup(createLayerClassName(config.name, layerName))
@@ -248,7 +249,7 @@ export const createPlugin = <
         const layerEnableProps: LayerEnableProps<'svg' | 'canvas', ExtendContext, PluginParams, unknown> = 
           elementType === 'svg' ? 
             {
-              svgG: (pluginSetupProps as PluginSetupProps<'svg', ExtendContext, PluginParams>).svg.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
+              svgG: (pluginSetupProps as PluginSetupProps<'svg', ExtendContext, PluginParams>).svgG.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
               // canvas: context.root.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
               // context: Object.assign({}, context) as ChartContext<ExtendContext>,
               context: pluginSetupProps.context,
@@ -274,6 +275,7 @@ export const createPlugin = <
   return {
     // name: `${config.name}-${Math.random().toString(36).substr(2, 9)}`,
     name: config.name,
+    elementType,
     // info: {
     //   name: config.name,
     //   layers: [config.name]
@@ -381,18 +383,19 @@ export const createPlugin = <
 
       context$.next(Object.assign({}, context) as ChartContext<ExtendContext>)
 
-      context.size$.subscribe(size => {
-        const svgElement: SVGSVGElement | null = context.root.querySelector(`.${svgClassName}`)
-        const canvasElement: HTMLCanvasElement | null = context.root.querySelector(`.${canvasClassName}`)
-        if (svgElement) {
-          svgElement.setAttribute('width', size.width.toString())
-          svgElement.setAttribute('height', size.height.toString())
-        }
-        if (canvasElement) {
-          canvasElement.width = size.width
-          canvasElement.height = size.height
-        }
-      })
+      // context.size$.subscribe(size => {
+      //   const svgGElement: SVGGElement | null = context.root.querySelector(`.${svgGClassName}`)
+      //   const canvasElement: HTMLCanvasElement | null = context.root.querySelector(`.${canvasClassName}`)
+      //   if (svgGElement) {
+      //     svgGElement.setAttribute('width', size.width.toString())
+      //     svgGElement.setAttribute('height', size.height.toString())
+      //   }
+      //   if (canvasElement) {
+      //     canvasElement.width = size.width
+      //     canvasElement.height = size.height
+      //   }
+      // })
+
       // if (config.setup) {
       //   // const extension: ExtendContext = config.setup(context)
       //   // Object.assign(context, extension)

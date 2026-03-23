@@ -24,7 +24,7 @@ export interface ChartOptions {
   theme: Theme
   data: RawData
   encoding: Encoding
-  plugins: PluginEntity<any, any>[]
+  plugins: PluginEntity<any, any, any>[]
 }
 
 export interface PartialChartOptions {
@@ -32,7 +32,7 @@ export interface PartialChartOptions {
   theme?: DeepPartial<Theme>
   data?: RawData
   encoding?: DeepPartial<Encoding>
-  plugins?: PluginEntity<any, any>[]
+  plugins?: PluginEntity<any, any, any>[]
 }
 
 export interface CreateChart {
@@ -47,8 +47,8 @@ export interface ChartEntity {
   updateEncoding(patch: DeepPartial<Encoding>): void // deep-merge with previous
   forceReplaceEncoding(full: Encoding): void // replace
   getEncoding(): Readonly<Encoding>
-  setPlugins(plugins: PluginEntity<any, any>[]): void // replace all
-  addPlugin(plugin: PluginEntity<any, any>): void
+  setPlugins(plugins: PluginEntity<any, any, any>[]): void // replace all
+  addPlugin(plugin: PluginEntity<any, any, any>): void
   removePlugin(id: string): void
   // setTheme(theme: Theme): void // replace all
   updateTheme(patch: DeepPartial<Theme>): void // deep-merge with previous

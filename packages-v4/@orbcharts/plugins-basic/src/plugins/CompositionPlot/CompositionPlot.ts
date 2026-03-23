@@ -81,7 +81,7 @@ export const CompositionPlot = defineSVGPlugin<
       debounceTime(0)
     ).subscribe(data => {
       d3
-        .select(props.svg)
+        .select(props.svgG)
         .selectAll(':scope > g') // 所有 layer
         .attr('transform', `translate(${data.layout.left}, ${data.layout.top})`)
     })
