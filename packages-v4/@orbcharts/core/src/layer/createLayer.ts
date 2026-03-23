@@ -35,35 +35,40 @@ export const createLayer = <
 
   const enableProps$ = new BehaviorSubject<LayerEnableProps<'svg' | 'canvas', ExtendContext, PluginParams, LayerParams> | null>(null)
 
+  const enabledProps$ = enableProps$.pipe(
+    filter(enableProps => enableProps !== null)
+  )
+
   // show
   combineLatest({
     layerParams: layerParams$,
-    enableProps: enableProps$
+    enabledProps: enabledProps$
   }).pipe(
-    debounceTime(0),
-    filter(d => d.enableProps !== null)
-  ).subscribe(({ layerParams, enableProps }) => {
+    debounceTime(0)
+  ).subscribe(({ layerParams, enabledProps }) => {
     destroySetup()
     destroySetup = elementType === 'svg' ? 
       config.setup({
-        svgG: (enableProps as LayerEnableProps<'svg', ExtendContext, PluginParams, LayerParams>).svgG,
-        // canvas: enableProps.canvas,
-        context: Object.assign({}, enableProps.context),
-        pluginParams$: enableProps.pluginParams$,
+        svgG: (enabledProps as LayerEnableProps<'svg', ExtendContext, PluginParams, LayerParams>).svgG,
+        // canvas: enabledProps.canvas,
+        // context: Object.assign({}, enabledProps.context),
+        context: enabledProps.context,
+        pluginParams$: enabledProps.pluginParams$,
         layerParams$: layerParams$.pipe(
           map(params => {
-            return deepOverwrite(params, enableProps.initLayerParams ?? {})
+            return deepOverwrite(params, enabledProps.initLayerParams ?? {})
           }),
         )
       })
       : config.setup({
-        // svgG: enableProps.svgG,
-        canvas: (enableProps as LayerEnableProps<'canvas', ExtendContext, PluginParams, LayerParams>).canvas,
-        context: Object.assign({}, enableProps.context),
-        pluginParams$: enableProps.pluginParams$,
+        // svgG: enabledProps.svgG,
+        canvas: (enabledProps as LayerEnableProps<'canvas', ExtendContext, PluginParams, LayerParams>).canvas,
+        // context: Object.assign({}, enabledProps.context),
+        context: enabledProps.context,
+        pluginParams$: enabledProps.pluginParams$,
         layerParams$: layerParams$.pipe(
           map(params => {
-            return deepOverwrite(params, enableProps.initLayerParams ?? {})
+            return deepOverwrite(params, enabledProps.initLayerParams ?? {})
           }),
         )
       })

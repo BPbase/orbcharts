@@ -56,7 +56,7 @@ interface BaseTooltipContext {
   baseTooltipParams$: Observable<BaseTooltipParams>
   theme$: Observable<Theme>
   layout$: Observable<Layout>
-  eventTrigger$: Subject<EventData<any>>
+  event$: Observable<EventData<any>>
   SeriesDataMap$: Observable<Map<string, ComputedDatum<any>[]>>
   CategoryDataMap$: Observable<Map<string, ComputedDatum<any>[]>>
 }
@@ -234,7 +234,6 @@ function renderTooltip ({ rootSelection, pluginName, layerName, gClassName, boxC
 function removeTooltip (gClassName: string) {
   d3.selectAll(`g.${gClassName}`)
     .remove()
-
 }
 
 export const createBaseTooltip: BaseLayerFn<BaseTooltipContext> = ({
@@ -244,7 +243,7 @@ export const createBaseTooltip: BaseLayerFn<BaseTooltipContext> = ({
   baseTooltipParams$,
   theme$,
   layout$,
-  eventTrigger$,
+  event$,
   SeriesDataMap$,
   CategoryDataMap$
 }) => {
@@ -255,13 +254,13 @@ export const createBaseTooltip: BaseLayerFn<BaseTooltipContext> = ({
   const boxClassName = createClassName(pluginName, layerName, 'box')
 
   // 事件觸發
-  const eventMouseover$: Observable<EventData<any>> = eventTrigger$.pipe(
+  const eventMouseover$: Observable<EventData<any>> = event$.pipe(
     takeUntil(destroy$),
     filter(d => d.eventName === 'mouseover' || d.eventName === 'mousemove'),
     // distinctUntilChanged((prev, current) => prev.eventName === current.eventName)
     // map(d => d as EventData<typeof chartType>)
   )
-  const eventMouseout$: Observable<EventData<any>> = eventTrigger$.pipe(
+  const eventMouseout$: Observable<EventData<any>> = event$.pipe(
     takeUntil(destroy$),
     filter(d => d.eventName === 'mouseout'),
     // distinctUntilChanged((prev, current) => prev.eventName === current.eventName)

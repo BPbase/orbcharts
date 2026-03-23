@@ -10,6 +10,7 @@ export interface TooltipExtendContext {
   layout$: Observable<Layout>
   fontSizePx$: Observable<number>
   SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
+  CategoryDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
 }
 
 // plugin params

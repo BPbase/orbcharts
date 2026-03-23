@@ -29,7 +29,7 @@ export const defineCanvasPlugin = <
     // }
     injectContext: (context: ChartContext<{}>) => void
     destroy: () => void
-    constructor (params: DeepPartial<PluginParams | AllLayerParams>) {
+    constructor (params?: DeepPartial<PluginParams | AllLayerParams>) {
       return createPlugin('canvas', config, params)
     }
   }

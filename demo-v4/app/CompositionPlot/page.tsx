@@ -3,30 +3,20 @@
 import { useState, useEffect, useRef } from 'react'
 import type { RawData } from '@orbcharts/core/types'
 import { OrbCharts } from '@orbcharts/core/index'
-import { SeriesPlot } from '@orbcharts/plugins-basic/index'
+import { CompositionPlot } from '@orbcharts/plugins-basic/index'
 
-const data: RawData = [
-  { series: 'A', category: 'category1', value: 30, name: 'a' },
-  { series: 'A', category: 'category2', value: 20, name: 'a' },
-  { series: 'A', category: 'category3', value: 45, name: 'a' },
-  // { series: 'A', category: 'category1', value: 50 },
-  // { series: 'A', category: 'category2', value: 30 },
-  // { series: 'A', category: 'category3', value: 40 },
-  // { series: 'A', category: 'category1', value: 20 },
-  // { series: 'A', category: 'category2', value: 30 },
-  // { series: 'A', category: 'category3', value: 40 },
-  { series: 'B', category: 'category1', value: 70 },
-  { series: 'B', category: 'category2', value: 80 },
-  { series: 'B', category: 'category3', value: 90 },
-  { series: 'C', category: 'category1', value: 45 },
-  { series: 'C', category: 'category2', value: 55 },
-  { series: 'C', category: 'category3', value: 65 },
-  { series: 'D', category: 'category2', value: 85 },
-  { series: 'D', category: 'category3', value: 105 },
-  // { series: 'D', category: 'category3', value: 75 },
+const pieData: RawData = [
+  { series: 'A', value: 30, name: 'a' },
+  { series: 'A', value: 50 },
+  { series: 'B', value: 70 },
+  { series: 'A', value: 20 },
+  { series: 'C', value: 45 },
+  { series: 'D', value: 85 },
+  { series: 'C', value: 45 },
+  { series: 'D', value: 85 },
 ]
 
-export default function Grid() {
+export default function Series() {
 
   const domRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<OrbCharts | null>(null)
@@ -35,8 +25,19 @@ export default function Grid() {
     
     // console.log(domRef.current)
 
-    const gridPlugin = new SeriesPlot({
-      Bars: {},
+    const seriesPlugin = new CompositionPlot({
+      Pie: {
+        outerRadius: 0.85,
+        innerRadius: 0.5,
+        outerRadiusWhileHighlight: 0.9,
+        startAngle: 0,
+        endAngle: 6.283185307179586,
+        padAngle: 0,
+        strokeColorType: "background",
+        strokeWidth: 1,
+        cornerRadius: 0
+      },
+      // Bubbles: {},
       styles: {
         padding: {
           top: 60,
@@ -51,6 +52,7 @@ export default function Grid() {
         transitionEase: 'easeCubic'
       },
       visibleFilter: (datum: any) => true,
+      sort: null,
       // seriesLabels: [],
       container: {
         columnAmount: 1,
@@ -59,13 +61,20 @@ export default function Grid() {
         rowGap: 'auto',
       },
       separateSeries: false,
+      separateName: false,
+      // sumSeries: false,
       datasetIndex: 0
     })
 
     const chart = new OrbCharts(domRef.current!, {
-      data: data,
+      data: pieData,
       encoding: {
-        
+        // value: {
+        //   sort: 'asc'
+        // },
+        // color: {
+        //   from: 'category'
+        // }
       },
       // plugins: [],
       theme: {
@@ -110,7 +119,7 @@ export default function Grid() {
         // },
         // fontSize: '0.875rem'
       },
-      plugins: [gridPlugin]
+      plugins: [seriesPlugin]
     })
 
     // seriesPlugin.updateParams({
@@ -132,12 +141,21 @@ export default function Grid() {
     // chart.updateEncoding({})
     // chart.updateTheme({})
     // chart.setPlugins([seriesPlugin])
-    // chart.setData(data)
-    chart.context.gridData$.subscribe(data => {
-      console.log('Grid Data Updated:', data)
+    // chart.setData(pieData)
+    const subscription = chart.context.seriesData$.subscribe(data => {
+      console.log('Series Data Updated:', data)
     })
+
+    // chart.context.encoding$.subscribe(encoding => {
+    //   console.log('Encoding Updated:', encoding)
+    // })
     
-    console.log(chart)
+    // console.log(chart)
+
+    return () => {
+      subscription.unsubscribe()
+      chart.destroy()
+    }
 
   }, [])
 

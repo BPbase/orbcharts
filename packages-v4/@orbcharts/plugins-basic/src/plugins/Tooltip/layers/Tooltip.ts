@@ -77,9 +77,9 @@ export const Tooltip = defineSVGLayer<TooltipExtendContext, TooltipPluginParams,
       baseTooltipParams$: layerParams$,
       theme$: context.theme$,
       layout$: context.layout$,
-      eventTrigger$: context.eventTrigger$,
+      event$: context.event$,
       SeriesDataMap$: context.SeriesDataMap$,
-      CategoryDataMap$: new Observable<Map<string, ComputedDatum<any>[]>>()
+      CategoryDataMap$: context.CategoryDataMap$
     })
 
     return () => {

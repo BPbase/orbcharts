@@ -1,3 +1,4 @@
+import * as d3 from 'd3'
 import {
   shareReplay,
   map, 
@@ -81,6 +82,7 @@ export const SeriesPlot = defineSVGPlugin<
     //   distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
     //   shareReplay(1)
     // )
+    
     const updateScaleDomain$ = new BehaviorSubject<[number, number | "max"] | undefined>(undefined)
 
     const categoryAxis$ = props.pluginParams$.pipe(
@@ -123,6 +125,18 @@ export const SeriesPlot = defineSVGPlugin<
     }).pipe(
       shareReplay(1)
     )
+
+    combineLatest({
+      layout: layout$,
+      plugins: props.context.plugins$
+    }).pipe(
+      debounceTime(0)
+    ).subscribe(data => {
+      d3
+        .select(props.svg)
+        .selectAll(':scope > g') // 所有 layer
+        .attr('transform', `translate(${data.layout.left}, ${data.layout.top})`)
+    })
 
     // const layoutSubscription = layout$.subscribe(layout => {
     //   props.svg.setAttribute('transform', `translate(${layout.left}, ${layout.top})`)

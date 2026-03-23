@@ -11,7 +11,8 @@ import { DEFAULT_SERIES_TOOLTIP_PLUGIN_PARAMS } from './defaults'
 import {
   layoutObservable,
   fontSizePxObservable,
-  seriesDataMapObservable
+  seriesDataMapObservable,
+  categoryDataMapObservable
 } from '../../utils/observables'
 import {
   seriesComputedDataObservable,
@@ -77,10 +78,17 @@ export const Tooltip = defineSVGPlugin<
       shareReplay(1)
     )
 
+    const CategoryDataMap$ = categoryDataMapObservable({
+      datumList$: datumList$
+    }).pipe(
+      shareReplay(1)
+    )
+
     const extendsContext: TooltipExtendContext = {
       layout$,
       fontSizePx$,
       SeriesDataMap$,
+      CategoryDataMap$,
     }
 
     props.context = {

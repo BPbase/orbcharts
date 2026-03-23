@@ -14,12 +14,12 @@ import {
 import type {
   ModelDataSeries,
 } from '../../../../core/src/types'
-import type { SeriesTooltipPluginParams } from './types'
+import type { TooltipPluginParams } from './types'
 import type { ComputedDatumSeries } from '../../types/ComputedData'
 
 export const seriesComputedDataObservable = ({ selectedSeriesData$, pluginParams$ }: {
   selectedSeriesData$: Observable<ModelDataSeries>
-  pluginParams$: Observable<SeriesTooltipPluginParams>
+  pluginParams$: Observable<TooltipPluginParams>
 }): Observable<ComputedDatumSeries[][]> => {
   return combineLatest({
     selectedSeriesData: selectedSeriesData$,
