@@ -23,8 +23,8 @@ DEFAULT_SERIES_LEGEND_PLUGIN_PARAMS.visibleFilter.toString = () => '(datum) => t
 export const DEFAULT_SERIES_LEGEND_PARAMS: LegendParams = {
   // position: 'right',
   // justify: 'end',
-  placement: 'right-end',
-  padding: 28,
+  placement: 'bottom',
+  padding: 5,
   // offset: [0, 0],
   backgroundFill: 'none',
   backgroundStroke: 'none',

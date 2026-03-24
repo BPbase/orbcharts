@@ -3,6 +3,7 @@ export type ModelType = 'series' | 'grid' | 'multivariate' | 'graph' | 'tree'
 export interface ModelDatumBase {
   id: string
   index: number // 在同類別中的索引
+  modelType: ModelType
   name: string // 原始資料的 name 欄位
   data: any // 原始資料的 data 欄位
   value: number | null // 經過 aggregate 後的數值
@@ -31,7 +32,7 @@ export interface ModelDatumMultivariate extends ModelDatumBase {
   categoryIndex: number
   multivariate: Array<{
     index: number // 維度
-    label: string // multivariate 的 label
+    name: string // multivariate 的 label
     value: number | null
   }>
 }

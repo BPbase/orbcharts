@@ -25,6 +25,7 @@ export const CategoryZoom = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPl
   name: layerName,
   defaultParams: DEFAULT_CATEGORY_ZOOM_PARAMS,
   layerIndex: LAYER_INDEX_OF_ROOT,
+  initShow: false,
   validator: (params) => {
     return {
       status: 'success',
@@ -35,7 +36,8 @@ export const CategoryZoom = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPl
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
     const destroy$ = new Subject()
 
-    const rootSelection = d3.select(svgG.parentElement)
+    // const rootSelection = d3.select(svgG.parentElement)
+    const rootSelection = d3.select(context.svg)
 
     // const rootRectSelection: d3.Selection<SVGRectElement, any, any, any> = rootSelection
     //   .append('rect')

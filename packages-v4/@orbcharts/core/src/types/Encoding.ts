@@ -24,7 +24,7 @@ export interface EncodingValue {
 
 export interface EncodingMultivariateItem {
   from: string
-  label: string
+  name: string
 }
 
 export type EncodingMultivariate = EncodingMultivariateItem[]

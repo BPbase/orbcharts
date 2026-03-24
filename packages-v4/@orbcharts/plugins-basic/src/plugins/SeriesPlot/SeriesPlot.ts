@@ -12,7 +12,7 @@ import {
 import type { SeriesPlotExtendContext, SeriesPlotPluginParams, SeriesPlotAllLayerParams } from './types'
 import { defineSVGPlugin } from '../../../../core/src'
 import { validateObject } from '../../../../core/src/utils'
-import { DEFAULT_GRID_SEPARABLE_GRAPHIC_PARAMS } from './defaults'
+import { DEFAULT_SERIES_PLOT_PARAMS } from './defaults'
 import {
   categoryDataMapObservable,
   containerSizeObservable,
@@ -45,8 +45,6 @@ import { CategoryAux } from './layers/CategoryAux'
 import { CategoryAxis } from './layers/CategoryAxis'
 import { CategoryZoom } from './layers/CategoryZoom'
 import { Dots } from './layers/Dots'
-import { GridLegend } from './layers/GridLegend'
-import { GridTooltip } from './layers/GridTooltip'
 import { LineAreas } from './layers/LineAreas'
 import { Lines } from './layers/Lines'
 import { StackedBars } from './layers/StackedBars'
@@ -59,8 +57,6 @@ const categoryAux = new CategoryAux()
 const categoryAxis = new CategoryAxis()
 const categoryZoom = new CategoryZoom()
 const dots = new Dots()
-const gridLegend = new GridLegend()
-const gridTooltip = new GridTooltip()
 const lineAreas = new LineAreas()
 const lines = new Lines()
 const stackedBars = new StackedBars()
@@ -73,8 +69,8 @@ export const SeriesPlot = defineSVGPlugin<
   SeriesPlotAllLayerParams
 >({
   name: 'SeriesPlot',
-  defaultParams: DEFAULT_GRID_SEPARABLE_GRAPHIC_PARAMS,
-  layers: [bars, barsTriangle, categoryAux, categoryAxis, categoryZoom, dots, gridLegend, gridTooltip, lineAreas, lines, stackedBars, stackedValueAxis, valueAxis],
+  defaultParams: DEFAULT_SERIES_PLOT_PARAMS,
+  layers: [bars, barsTriangle, categoryAux, categoryAxis, categoryZoom, dots, lineAreas, lines, stackedBars, stackedValueAxis, valueAxis],
   setup: (props) => {
 
     // const updateScaleDomain$ = props.pluginParams$.pipe(
@@ -126,17 +122,17 @@ export const SeriesPlot = defineSVGPlugin<
       shareReplay(1)
     )
 
-    combineLatest({
-      layout: layout$,
-      plugins: props.context.plugins$
-    }).pipe(
-      debounceTime(0)
-    ).subscribe(data => {
-      d3
-        .select(props.svgG)
-        .selectAll(':scope > g') // 所有 layer
-        .attr('transform', `translate(${data.layout.left}, ${data.layout.top})`)
-    })
+    // combineLatest({
+    //   layout: layout$,
+    //   plugins: props.context.plugins$
+    // }).pipe(
+    //   debounceTime(0)
+    // ).subscribe(data => {
+    //   d3
+    //     .select(props.context.svg)
+    //     .selectAll(':scope > g') // 所有 layer
+    //     .attr('transform', `translate(${data.layout.left}, ${data.layout.top})`)
+    // })
 
     // const layoutSubscription = layout$.subscribe(layout => {
     //   props.svg.setAttribute('transform', `translate(${layout.left}, ${layout.top})`)

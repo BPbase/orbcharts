@@ -139,9 +139,9 @@ export const createMultivariateData = (rawData: RawData, encoding: Encoding, the
         // MultivariateData 不進行聚合，直接處理每筆資料
         categoryItems.forEach((d, index) => {
           // 處理 multivariate 欄位，將多個維度的值收集起來
-          const multivariate = encoding.multivariate.map((multiVariateDef: {from: string, label: string}, multiVariateIndex: number) => ({
+          const multivariate = encoding.multivariate.map((multiVariateDef, multiVariateIndex) => ({
             index: multiVariateIndex,
-            label: multiVariateDef.label,
+            name: multiVariateDef.name,
             value: (() => {
               const rawValue = (d as any)[multiVariateDef.from]
               return typeof rawValue === 'number' ? rawValue : null
@@ -151,6 +151,7 @@ export const createMultivariateData = (rawData: RawData, encoding: Encoding, the
           const modelData: ModelDatumMultivariate = {
             id: d.id || `${datasetName}-${seriesName}-${categoryName}-${index}`,
             index,
+            modelType: 'multivariate',
             name: d.name || '',
             data: d.data,
             value: null, // MultivariateData 的主要值在 values 陣列中，這裡設為 null

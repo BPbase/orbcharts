@@ -154,6 +154,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
           const treeNode: ModelDatumTree = {
             id: nodeId,
             index: globalNodeIndex++,
+            modelType: 'tree',
             name: firstItem.name || nodeId,
             data: firstItem.data,
             value: typeof value === 'number' ? value : null,
@@ -189,6 +190,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
           const treeNode: ModelDatumTree = {
             id: nodeId,
             index: globalNodeIndex++,
+            modelType: 'tree',
             name: firstItem.name || nodeId,
             data: firstItem.data,
             value: aggregatedValue,
@@ -284,6 +286,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
         result.push({
           id: `empty-${datasetName}-${seriesName}`,
           index: globalNodeIndex++,
+          modelType: 'tree',
           name: 'Empty Tree',
           data: {},
           value: null,
@@ -311,6 +314,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
         const virtualRoot: ModelDatumTree = {
           id: `virtual-root-${datasetName}-${seriesName}`,
           index: globalNodeIndex++,
+          modelType: 'tree',
           name: `Virtual Root (${datasetName}-${seriesName})`,
           data: {},
           value: null,

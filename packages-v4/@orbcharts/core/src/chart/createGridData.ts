@@ -143,6 +143,7 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
           seriesData.push({
             id: `${datasetName}-${seriesName}-${categoryName}-null`,
             index: categoryIndex,
+            modelType: 'grid',
             name: categoryName,
             data: undefined,
             value: null,
@@ -164,6 +165,7 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
             return {
               id: d.id || `${datasetName}-${seriesName}-${categoryName}-${index}`,
               index: categoryIndex, // Grid 模式下 index 對應 categoryIndex
+              modelType: 'grid',
               name: d.name || '',
               data: d.data,
               value: typeof value === 'number' ? value : null,
@@ -216,6 +218,7 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
           const modelData: ModelDatumGrid = {
             id: firstItem.id || `${datasetName}-${seriesName}-${categoryName}-aggregated`,
             index: categoryIndex, // Grid 模式下 index 對應 categoryIndex
+            modelType: 'grid',
             name: firstItem.name || categoryName,
             data: firstItem.data,
             value: aggregatedValue,

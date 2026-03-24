@@ -10,6 +10,7 @@ export const defineCanvasLayer = <
     name: string
     defaultParams: LayerParams
     layerIndex: number
+    initShow: boolean
     enable: (enableProps: LayerEnableProps<'canvas', ExtendContext, PluginParams, LayerParams>) => void
     disable: () => void
     // setParams: (params: Partial<LayerParams>) => void

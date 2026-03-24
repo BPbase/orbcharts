@@ -21,6 +21,7 @@ export const StackedBars = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPlu
   name: layerName,
   defaultParams: DEFAULT_STACKED_BARS_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
+  initShow: false,
   validator: (params) => {
     const result = validateObject(params, {
       barWidth: {
@@ -38,6 +39,15 @@ export const StackedBars = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPlu
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
 
     const destroy$ = new Subject()
+
+    context.layout$
+      .pipe(
+        takeUntil(destroy$)
+      )
+      .subscribe(layout => {
+        d3.select(svgG)
+          .attr('transform', `translate(${layout.left}, ${layout.top})`)
+      })
 
     const unsubscribeBaseBars = createBaseStackedBars({
       selection: d3.select(svgG),

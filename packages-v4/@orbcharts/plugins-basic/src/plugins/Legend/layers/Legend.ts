@@ -25,6 +25,7 @@ export const Legend = defineSVGLayer<LegendExtendContext, LegendPluginParams, Le
   name: layerName,
   defaultParams: DEFAULT_SERIES_LEGEND_PARAMS,
   layerIndex: LAYER_INDEX_OF_INFO,
+  initShow: true,
   validator: (params) => {
     const result = validateObject(params, {
       placement: {
@@ -97,7 +98,7 @@ export const Legend = defineSVGLayer<LegendExtendContext, LegendPluginParams, Le
     const unsubscribeBaseLegend = createBaseLegend({
       pluginName,
       layerName,
-      rootSelection: d3.select(context.root),
+      rootSelection: d3.select(context.svg),
       legendLabels$,
       baseLegendParams$,
       layout$: context.layout$,

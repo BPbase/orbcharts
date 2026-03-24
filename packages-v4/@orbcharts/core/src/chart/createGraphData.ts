@@ -166,6 +166,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
             return {
               id: d.id || `${datasetName}-${seriesName}-${categoryName}-${index}`,
               index: nodes.length + index, // 在所有 nodes 中的索引
+              modelType: 'graph',
               name: d.name || '',
               data: d.data,
               value: typeof value === 'number' ? value : null,
@@ -217,6 +218,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
           const modelNode: ModelDatumGraphNode = {
             id: firstItem.id || `${datasetName}-${seriesName}-${categoryName}-aggregated`,
             index: nodes.length, // 在所有 nodes 中的索引
+            modelType: 'graph',
             name: firstItem.name || categoryName,
             data: firstItem.data,
             value: aggregatedValue,
@@ -287,6 +289,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
             const edge: ModelDatumGraphEdge = {
               id: d.id || `edge-${edgeIndex}-${index}`,
               index: edges.length,
+              modelType: 'graph',
               name: d.name || '',
               data: d.data,
               value: typeof value === 'number' ? value : null,
@@ -318,6 +321,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
           const edge: ModelDatumGraphEdge = {
             id: firstEdge.id || `edge-${edgeIndex}-aggregated`,
             index: edges.length,
+            modelType: 'graph',
             name: firstEdge.name || '',
             data: firstEdge.data,
             value: aggregatedValue,

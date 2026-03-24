@@ -167,6 +167,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
           seriesData.push({
             id: d.id || `${datasetName}-${seriesName}-${categoryName}-${index}`,
             index: categoryIndex, // Series 模式下 index 對應 categoryIndex
+            modelType: 'series',
             name: d.name || '',
             data: d.data,
             value: typeof value === 'number' ? value : null,
@@ -213,6 +214,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
               return {
                 id: d.id || `${datasetName}-${seriesName}-${categoryName}-${index}`,
                 index: categoryIndex, // Series 模式下 index 對應 categoryIndex
+                modelType: 'series',
                 name: d.name || '',
                 data: d.data,
                 value: typeof value === 'number' ? value : null,
@@ -265,6 +267,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
             const modelData: ModelDatumSeries = {
               id: firstItem.id || `${datasetName}-${seriesName}-${categoryName}-aggregated`,
               index: categoryIndex, // Series 模式下 index 對應 categoryIndex
+              modelType: 'series',
               name: firstItem.name || categoryName,
               data: firstItem.data,
               value: aggregatedValue,

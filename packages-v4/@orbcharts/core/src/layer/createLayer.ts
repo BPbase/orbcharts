@@ -83,6 +83,7 @@ export const createLayer = <
     name: config.name,
     defaultParams: config.defaultParams,
     layerIndex: config.layerIndex,
+    initShow: config.initShow,
     enable: (enableProps) => {
       enableProps$.next(enableProps)
     },

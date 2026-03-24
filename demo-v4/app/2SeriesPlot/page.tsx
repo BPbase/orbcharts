@@ -6,24 +6,46 @@ import { OrbCharts } from '@orbcharts/core/index'
 import { SeriesPlot, Tooltip, Legend } from '@orbcharts/plugins-basic/index'
 
 const data: RawData = [
-  { series: 'A', category: 'category1', value: 30, name: 'a' },
-  { series: 'A', category: 'category2', value: 20, name: 'a' },
-  { series: 'A', category: 'category3', value: 45, name: 'a' },
-  // { series: 'A', category: 'category1', value: 50 },
-  // { series: 'A', category: 'category2', value: 30 },
-  // { series: 'A', category: 'category3', value: 40 },
-  // { series: 'A', category: 'category1', value: 20 },
-  // { series: 'A', category: 'category2', value: 30 },
-  // { series: 'A', category: 'category3', value: 40 },
-  { series: 'B', category: 'category1', value: 70 },
-  { series: 'B', category: 'category2', value: 80 },
-  { series: 'B', category: 'category3', value: 90 },
-  { series: 'C', category: 'category1', value: 45 },
-  { series: 'C', category: 'category2', value: 55 },
-  { series: 'C', category: 'category3', value: 65 },
-  { series: 'D', category: 'category2', value: 85 },
-  { series: 'D', category: 'category3', value: 105 },
-  // { series: 'D', category: 'category3', value: 75 },
+  [
+    { series: 'A', category: 'category1', value: 30, name: 'a' },
+    { series: 'A', category: 'category2', value: 20, name: 'a' },
+    { series: 'A', category: 'category3', value: 45, name: 'a' },
+    // { series: 'A', category: 'category1', value: 50 },
+    // { series: 'A', category: 'category2', value: 30 },
+    // { series: 'A', category: 'category3', value: 40 },
+    // { series: 'A', category: 'category1', value: 20 },
+    // { series: 'A', category: 'category2', value: 30 },
+    // { series: 'A', category: 'category3', value: 40 },
+    { series: 'B', category: 'category1', value: 70 },
+    { series: 'B', category: 'category2', value: 80 },
+    { series: 'B', category: 'category3', value: 90 },
+    { series: 'C', category: 'category1', value: 45 },
+    { series: 'C', category: 'category2', value: 55 },
+    { series: 'C', category: 'category3', value: 65 },
+    { series: 'D', category: 'category2', value: 85 },
+    { series: 'D', category: 'category3', value: 105 },
+    // { series: 'D', category: 'category3', value: 75 },
+  ],
+  [
+    { series: 'A', category: 'category1', value: 30, name: 'a' },
+    { series: 'A', category: 'category2', value: 20, name: 'a' },
+    { series: 'A', category: 'category3', value: 45, name: 'a' },
+    // { series: 'A', category: 'category1', value: 50 },
+    // { series: 'A', category: 'category2', value: 30 },
+    // { series: 'A', category: 'category3', value: 40 },
+    // { series: 'A', category: 'category1', value: 20 },
+    // { series: 'A', category: 'category2', value: 30 },
+    // { series: 'A', category: 'category3', value: 40 },
+    { series: 'B', category: 'category1', value: 70 },
+    { series: 'B', category: 'category2', value: 80 },
+    { series: 'B', category: 'category3', value: 90 },
+    { series: 'C', category: 'category1', value: 45 },
+    { series: 'C', category: 'category2', value: 55 },
+    { series: 'C', category: 'category3', value: 65 },
+    { series: 'D', category: 'category2', value: 85 },
+    { series: 'D', category: 'category3', value: 105 },
+    // { series: 'D', category: 'category3', value: 75 },
+  ]
 ]
 
 export default function Grid() {
@@ -36,11 +58,11 @@ export default function Grid() {
     // console.log(domRef.current)
 
     const seriesPlot = new SeriesPlot({
-      // Bars: {},
+      Bars: {},
       // Lines: {},
       // Dots: {},
-      // ValueAxis: {},
-      // CategoryAxis: {},
+      ValueAxis: {},
+      CategoryAxis: {},
       // CategoryZoom: {},
       // styles: {
       //   padding: {
@@ -64,7 +86,12 @@ export default function Grid() {
       //   rowGap: 'auto',
       // },
       // separateSeries: false,
-      // datasetIndex: 0
+      datasetIndex: 0
+    })
+
+    const seriesPlot2 = new SeriesPlot({
+      Lines: {},
+      datasetIndex: 1
     })
 
     const tooltip = new Tooltip()

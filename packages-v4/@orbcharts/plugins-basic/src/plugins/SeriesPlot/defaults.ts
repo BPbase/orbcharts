@@ -1,11 +1,11 @@
 import type { BarsParams, BarsTriangleParams, DotsParams, GridLegendParams, SeriesPlotPluginParams, GridTooltipParams, CategoryAuxParams, CategoryAxisParams, CategoryZoomParams, LineAreasParams, LinesParams, StackedBarsParams, StackedValueAxisParams, ValueAxisParams } from './types'
 
-export const DEFAULT_GRID_SEPARABLE_GRAPHIC_PARAMS: SeriesPlotPluginParams = {
+export const DEFAULT_SERIES_PLOT_PARAMS: SeriesPlotPluginParams = {
   styles: {
     padding: {
-      top: 60,
+      top: 20,
       right: 60,
-      bottom: 60,
+      bottom: 80,
       left: 60
     },
     highlightTarget: 'datum',
@@ -36,7 +36,7 @@ export const DEFAULT_GRID_SEPARABLE_GRAPHIC_PARAMS: SeriesPlotPluginParams = {
   separateSeries: false,
   datasetIndex: 0
 }
-DEFAULT_GRID_SEPARABLE_GRAPHIC_PARAMS.visibleFilter.toString = () => '(datum) => true'
+DEFAULT_SERIES_PLOT_PARAMS.visibleFilter.toString = () => '(datum) => true'
 
 export const DEFAULT_LINES_PARAMS: LinesParams = {
   lineCurve: 'curveLinear',

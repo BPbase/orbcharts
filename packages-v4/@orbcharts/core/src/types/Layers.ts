@@ -19,13 +19,13 @@ import type { DeepPartial, ChartContext, ExtendableContext, ValidatorResult } fr
 //   layerParams$: Observable<LayerParams>
 // }
 
-// export interface LayerInfo {
-//   // id: string
-//   pluginName: string
-//   // pluginSeq: number
-//   layerName: string
-//   layerIndex: number
-// }
+export interface LayerInfo {
+  // id: string
+  pluginName: string
+  // pluginSeq: number
+  layerName: string
+  layerIndex: number
+}
 
 export interface SVGLayerEnableProps<ExtendContext extends ExtendableContext, PluginParams, LayerParams> {
   context: ChartContext<ExtendContext>
@@ -73,6 +73,7 @@ export interface DefineLayerConfig<ElementType extends 'svg' | 'canvas', ExtendC
   name: string
   defaultParams: LayerParams
   layerIndex: number
+  initShow: boolean
   validator?: (params: DeepPartial<LayerParams>) => ValidatorResult
   setup: (setupProps: LayerSetupProps<ElementType, ExtendContext, PluginParams, LayerParams>) => () => void
 }
@@ -81,6 +82,7 @@ export interface LayerEntity<ExtendContext extends ExtendableContext, PluginPara
   name: Readonly<string>
   defaultParams: Readonly<LayerParams>
   layerIndex: Readonly<number>
+  initShow: boolean
   // enable(el: { svg: SVGSVGElement; canvas: HTMLCanvasElement }, context: ChartContext<ExtendContext>): void
   enable(enableProps: LayerEnableProps<'svg' | 'canvas', ExtendContext, PluginParams, LayerParams>): void
   disable(): void

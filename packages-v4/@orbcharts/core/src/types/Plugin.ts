@@ -21,31 +21,36 @@ export interface PluginInfo {
 //   pluginParams$: Observable<PluginParams>
 // }
 
-export interface SVGPluginSetupProps<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> {
+// export interface SVGPluginSetupProps<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> {
+//   context: ChartContext<ExtendContext>
+//   svgG: SVGGElement
+//   pluginParams$: Observable<PluginParams>
+// }
+
+// export interface CanvasPluginSetupProps<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> {
+//   context: ChartContext<ExtendContext>
+//   canvas: HTMLCanvasElement
+//   pluginParams$: Observable<PluginParams>
+// }
+
+// export type PluginSetupProps<ElementType extends 'svg' | 'canvas', ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> =
+//   ElementType extends 'svg' ? SVGPluginSetupProps<ExtendContext, PluginParams> :
+//   ElementType extends 'canvas' ? CanvasPluginSetupProps<ExtendContext, PluginParams> :
+//   never
+
+export interface PluginSetupProps<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> {
   context: ChartContext<ExtendContext>
-  svgG: SVGGElement
   pluginParams$: Observable<PluginParams>
 }
 
-export interface CanvasPluginSetupProps<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> {
-  context: ChartContext<ExtendContext>
-  canvas: HTMLCanvasElement
-  pluginParams$: Observable<PluginParams>
-}
-
-export type PluginSetupProps<ElementType extends 'svg' | 'canvas', ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>> =
-  ElementType extends 'svg' ? SVGPluginSetupProps<ExtendContext, PluginParams> :
-  ElementType extends 'canvas' ? CanvasPluginSetupProps<ExtendContext, PluginParams> :
-  never
-
-export interface DefinePluginConfig<ElementType extends 'svg' | 'canvas', ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>, AllLayerParams extends Record<string, any>>{
+export interface DefinePluginConfig<ExtendContext extends ExtendableContext, PluginParams extends Record<string, any>, AllLayerParams extends Record<string, any>>{
   name: string
   defaultParams?: PluginParams
   validator?: (params: DeepPartial<AllLayerParams | PluginParams>) => ValidatorResult
     // { valid: boolean; errors?: string[] }
   layers?: LayerEntity<ExtendContext, PluginParams, AllLayerParams[keyof AllLayerParams]>[]
   // extendContext?: (context: Readonly<ChartContext>) => ExtendContext
-  setup?: (props: PluginSetupProps<ElementType, ExtendContext, PluginParams>) => () => void
+  setup?: (props: PluginSetupProps<ExtendContext, PluginParams>) => () => void
 }
 
 // export interface CreatePlugin<PluginParams> {
@@ -54,6 +59,7 @@ export interface DefinePluginConfig<ElementType extends 'svg' | 'canvas', Extend
 
 
 export interface PluginEntity<ElementType extends 'svg' | 'canvas', PluginParams extends Record<string, any>, AllLayerParams extends Record<string, any>> {
+  id: string
   name: string
   elementType: ElementType
   // layer visibility controls

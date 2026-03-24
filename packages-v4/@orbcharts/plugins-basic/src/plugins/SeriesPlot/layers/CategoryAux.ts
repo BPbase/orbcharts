@@ -303,6 +303,7 @@ export const CategoryAux = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPlu
   name: layerName,
   defaultParams: DEFAULT_CATEGORY_AUX_PARAMS,
   layerIndex: LAYER_INDEX_OF_AUX,
+  initShow: false,
   validator: (params) => {
     const result = validateObject(params, {
       showLine: {
@@ -337,6 +338,15 @@ export const CategoryAux = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPlu
   },
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
     const destroy$ = new Subject()
+
+    context.layout$
+      .pipe(
+        takeUntil(destroy$)
+      )
+      .subscribe(layout => {
+        d3.select(svgG)
+          .attr('transform', `translate(${layout.left}, ${layout.top})`)
+      })
 
     let isLabelMouseover = false
 

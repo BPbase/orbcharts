@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import { map, Subject } from 'rxjs'
+import { map, Subject, takeUntil } from 'rxjs'
 import type { LinesParams, SeriesPlotPluginParams } from '../types'
 import { defineSVGLayer } from '../../../../../core/src'
 import { SeriesPlotExtendContext } from '../types'
@@ -15,6 +15,7 @@ export const Lines = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPluginPar
   name: layerName,
   defaultParams: DEFAULT_LINES_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
+  initShow: false,
   validator: (params) => {
     const result = validateObject(params, {
       lineCurve: {
@@ -29,6 +30,15 @@ export const Lines = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPluginPar
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
 
     const destroy$ = new Subject()
+
+    context.layout$
+      .pipe(
+        takeUntil(destroy$)
+      )
+      .subscribe(layout => {
+        d3.select(svgG)
+          .attr('transform', `translate(${layout.left}, ${layout.top})`)
+      })
 
     const unsubscribeBaseBars = createBaseLines({
       selection: d3.select(svgG),

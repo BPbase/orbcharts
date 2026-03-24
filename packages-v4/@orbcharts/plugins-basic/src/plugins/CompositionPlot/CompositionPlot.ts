@@ -8,7 +8,7 @@ import {
 import type { CompositionPlotExtendContext, CompositionPlotPluginParams, CompositionPlotAllLayerParams } from './types'
 import { defineSVGPlugin } from '../../../../core/src'
 import { validateObject } from '../../../../core/src/utils'
-import { DEFAULT_SERIES_SEPARABLE_GRAPHIC_PLUGIN_PARAMS } from './defaults'
+import { DEFAULT_COMPOSITION_PLOT_PARAMS } from './defaults'
 import {
   categoryDataMapObservable,
   containerSizeObservable,
@@ -48,7 +48,7 @@ export const CompositionPlot = defineSVGPlugin<
   CompositionPlotAllLayerParams
 >({
   name: 'CompositionPlot',
-  defaultParams: DEFAULT_SERIES_SEPARABLE_GRAPHIC_PLUGIN_PARAMS,
+  defaultParams: DEFAULT_COMPOSITION_PLOT_PARAMS,
   layers: [bubbles, pie, pieEventTexts, pieLabels, rose, roseLabels],
   setup: (props) => {
     // props.context.seriesData$.subscribe(seriesData => {
@@ -74,17 +74,17 @@ export const CompositionPlot = defineSVGPlugin<
       shareReplay(1)
     )
 
-    combineLatest({
-      layout: layout$,
-      plugins: props.context.plugins$
-    }).pipe(
-      debounceTime(0)
-    ).subscribe(data => {
-      d3
-        .select(props.svgG)
-        .selectAll(':scope > g') // 所有 layer
-        .attr('transform', `translate(${data.layout.left}, ${data.layout.top})`)
-    })
+    // combineLatest({
+    //   layout: layout$,
+    //   plugins: props.context.plugins$
+    // }).pipe(
+    //   debounceTime(0)
+    // ).subscribe(data => {
+    //   d3
+    //     .select(props.context.svg)
+    //     .selectAll(':scope > g') // 所有 layer
+    //     .attr('transform', `translate(${data.layout.left}, ${data.layout.top})`)
+    // })
 
     // const layoutSubscription = layout$.subscribe(layout => {
     //   props.svg.setAttribute('transform', `translate(${layout.left}, ${layout.top})`)

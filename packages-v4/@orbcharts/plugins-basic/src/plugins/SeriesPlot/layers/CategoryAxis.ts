@@ -22,6 +22,7 @@ export const CategoryAxis = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPl
   name: layerName,
   defaultParams: DEFAULT_CATEGORY_AXIS_PARAMS,
   layerIndex: LAYER_INDEX_OF_INFO,
+  initShow: false,
   validator: (params) => {
     const result = validateObject(params, {
       labelOffset: {
@@ -53,6 +54,15 @@ export const CategoryAxis = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPl
   },
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
     const destroy$ = new Subject()
+
+    context.layout$
+      .pipe(
+        takeUntil(destroy$)
+      )
+      .subscribe(layout => {
+        d3.select(svgG)
+          .attr('transform', `translate(${layout.left}, ${layout.top})`)
+      })
 
     const unsubscribeBaseGroupAxis = createBaseCategoryAxis({
       selection: d3.select(svgG),

@@ -6,6 +6,7 @@ import type {
   PluginInfo,
   Theme,
   EventData,
+  LayerInfo,
 } from './index'
 
 export interface Size {
@@ -37,4 +38,5 @@ export type ChartContext<ExtendContext extends ExtendableContext> = {
   event$: Observable<EventData>
   eventTrigger$: Subject<EventData>
   size$: Observable<Size>
+  _updateLayerElements: <ElementType extends "svg" | "canvas">(elementType: ElementType, fromPluginName: string, fetchLayerInfo: LayerInfo[]) => Record<string, ElementType extends "svg" ? SVGGElement : HTMLCanvasElement>
 } & ExtendContext

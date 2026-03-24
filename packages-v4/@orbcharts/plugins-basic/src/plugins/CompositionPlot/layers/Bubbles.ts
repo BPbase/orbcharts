@@ -362,6 +362,7 @@ export const Bubbles = defineSVGLayer<CompositionPlotExtendContext, CompositionP
   name: layerName,
   defaultParams: DEFAULT_BUBBLES_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
+  initShow: true,
   validator: (params) => {
     const result = validateObject(params, {
       force: {
@@ -418,6 +419,15 @@ export const Bubbles = defineSVGLayer<CompositionPlotExtendContext, CompositionP
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
 
     const destroy$ = new Subject()
+
+    context.layout$
+      .pipe(
+        takeUntil(destroy$)
+      )
+      .subscribe(layout => {
+        d3.select(svgG)
+          .attr('transform', `translate(${layout.left}, ${layout.top})`)
+      })
 
     let simulation: d3.Simulation<d3.SimulationNodeDatum, undefined> | undefined
 

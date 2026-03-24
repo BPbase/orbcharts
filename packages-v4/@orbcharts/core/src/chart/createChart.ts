@@ -33,7 +33,7 @@ import type {
   Size,
   SizeConfig,
   ValidatorResult,
-  // LayerInfo,
+  LayerInfo,
 } from '../types'
 import {
   isDom,
@@ -47,6 +47,7 @@ import {
   resizeObservable,
   createUnexpectedErrorMessage,
   createSVG,
+  createSVGGroup,
   createCanvas
 } from '../utils'
 import { DEFAULT_DATA_ENCODING, DEFAULT_THEME, DEFAULT_SIZE_CONFIG } from './defaults'
@@ -56,10 +57,11 @@ import { createMultivariateData } from './createMultivariateData'
 import { createGraphData } from './createGraphData'
 import { createTreeData } from './createTreeData'
 import { handleElementLifecycle } from '../utils/dom-lifecycle'
+import { createLayerClassName } from '../utils/orbchartsUtils'
 
-// interface LayerMakerInfo extends LayerInfo {
-//   pluginSeq: number
-// }
+interface LayerMakerInfo extends LayerInfo {
+  pluginSeq: number
+}
 
 function elementValidator (element: HTMLElement | Element): ValidatorResult {
   const result = validateObject({ element }, {
@@ -368,6 +370,89 @@ function chartOptionsValidator (chartOptionsPartial: PartialChartOptions): Valid
   return result
 }
 
+function createLayerElementsUpdater ({ svgElement$, canvasElement$, pluginsInstance$ }:{
+  svgElement$: BehaviorSubject<SVGElement | null>
+  canvasElement$: BehaviorSubject<HTMLCanvasElement | null>
+  pluginsInstance$: BehaviorSubject<PluginEntity<any, unknown, unknown>[]>
+}) {
+  // 紀錄 layer 陣列的資訊
+  let svgLayerInfo: LayerMakerInfo[] = []
+  let canvasLayerInfo: LayerMakerInfo[] = []
+  // 產生新的 layer 資訊
+  const createLayerInfo = (elementType: 'svg' | 'canvas', fromPluginName: string, fetchLayerInfo: LayerInfo[]) => {
+    const pluginSeq = pluginsInstance$.getValue().reduce((acc, plugin, index) => {
+      acc[plugin.name] = index
+      return acc
+    }, {} as Record<string, number>)
+    const addedLayerInfo: LayerMakerInfo[] = fetchLayerInfo.map(layerInfo => ({
+      ...layerInfo,
+      pluginSeq: pluginSeq[layerInfo.pluginName]
+    }))
+    const newLayerInfo = (elementType === 'svg' ? svgLayerInfo : canvasLayerInfo)
+      .filter((layerInfo) => layerInfo.pluginName !== fromPluginName)
+      .map(layerInfo => {
+        return {
+          ...layerInfo,
+          pluginSeq: pluginSeq[layerInfo.pluginName]
+        }
+      })
+      .concat(addedLayerInfo)
+      .sort((a, b) => {
+        // 優先排layerIndex再排pluginSeq
+        return a.layerIndex - b.layerIndex || a.pluginSeq - b.pluginSeq
+      })
+    return newLayerInfo
+  }
+  // layer elements
+  const layerSVGElementsRef: Record<string, SVGGElement> = {}
+  const layerCanvasElementsRef: Record<string, HTMLCanvasElement> = {}
+  
+  return <ElementType extends 'svg' | 'canvas'>(elementType: ElementType, fromPluginName: string, fetchLayerInfo: LayerInfo[])
+    : Record<string, ElementType extends 'svg' ? SVGGElement : HTMLCanvasElement> => {
+    
+    const element = elementType === 'svg' ? svgElement$.getValue() : canvasElement$.getValue()
+    
+    if (!element) {
+      return {}
+    }
+    
+    const layerElementsRef = elementType === 'svg' ? layerSVGElementsRef : layerCanvasElementsRef
+    const newLayerInfo = createLayerInfo(elementType, fromPluginName, fetchLayerInfo)
+    const sortedLayerClassNames = newLayerInfo.map(info => createLayerClassName(info.pluginName, info.layerName))
+
+    // 根據新的 layerInfo 來更新 DOM 結構
+    if (elementType === 'svg') {
+      handleElementLifecycle(
+        element,
+        sortedLayerClassNames,
+        layerElementsRef as Record<string, SVGGElement>,
+        (elementClassName) => createSVGGroup(elementClassName)
+      )
+      svgLayerInfo = newLayerInfo
+    } else {
+      handleElementLifecycle(
+        element,
+        sortedLayerClassNames,
+        layerElementsRef as Record<string, HTMLCanvasElement>,
+        (elementClassName) => createCanvas(elementClassName)
+      )
+      canvasLayerInfo = newLayerInfo
+    }
+    
+    // 回傳目前pluginName的elements (Record<layerName, element>)
+    const currentLayerElementsRef = Object.entries(layerElementsRef as Record<string, ElementType extends 'svg' ? SVGGElement : HTMLCanvasElement>)
+      .reduce((prev, [key, layerElement]) => {
+        const [orbchartsPrefix, pluginName, layerName] = key.split('-')
+        if (pluginName === fromPluginName) {
+          prev[layerName] = layerElement
+        }
+        return prev
+      }, {} as Record<string, ElementType extends 'svg' ? SVGGElement : HTMLCanvasElement>)
+
+    return currentLayerElementsRef
+  }
+}
+
 export const createChart: CreateChart = (element, options) => {
   try {
     const { status, columnName, expectToBe } = chartOptionsValidator(options)
@@ -405,55 +490,6 @@ export const createChart: CreateChart = (element, options) => {
 
   const destroy$ = new Subject()
 
-  // elements
-  // const svgElement: SVGElement | null = null
-  // const canvasElement: HTMLCanvasElement | null = null
-  // const layerSVGElementsRef: Record<string, SVGElement> = {}
-  // const layerCanvasElementsRef: Record<string, HTMLCanvasElement> = {}
-
-  // // layers 管理
-  // let pluginSeq: Record<string, number> = {}
-  // let svgLayerInfo: LayerMakerInfo[] = []
-  // let canvasLayerInfo: LayerMakerInfo[] = []
-  // const createElementId = (pluginName: string, layerName: string) => `${pluginName}_${layerName}`
-  // const layerElementMaker = (elementType: 'svg' | 'canvas', fromPluginName: string, updateLayerInfo: LayerInfo[]) => {
-  //   const addedLayerInfo: LayerMakerInfo[] = updateLayerInfo.map(layerInfo => ({
-  //     ...layerInfo,
-  //     pluginSeq: pluginSeq[layerInfo.pluginName]
-  //   }))
-  //   const newLayerInfo = elementType === 'svg' ? svgLayerInfo : canvasLayerInfo
-  //     .filter((layerInfo) => layerInfo.pluginName !== fromPluginName)
-  //     .map(layerInfo => {
-  //       return {
-  //         ...layerInfo,
-  //         pluginSeq: pluginSeq[layerInfo.pluginName]
-  //       }
-  //     })
-  //     .concat(addedLayerInfo)
-  //     .sort((a, b) => {
-  //       // 優先排layerIndex再排pluginSeq
-  //       return a.layerIndex - b.layerIndex || a.pluginSeq - b.pluginSeq
-  //     })
-    
-  //   if (elementType === 'svg') {
-  //     handleElementLifecycle(
-  //       svgElement,
-  //       newLayerInfo.map(info => createElementId(info.pluginName, info.layerName)),
-  //       layerSVGElementsRef,
-  //       (elementId) => createSVGGroup(elementId)
-  //     )
-  //   } else {
-  //     handleElementLifecycle(
-  //       canvasElement,
-  //       newLayerInfo.map(info => createElementId(info.pluginName, info.layerName)),
-  //       layerCanvasElementsRef,
-  //       (elementId) => createCanvas(elementId)
-  //     )
-  //   }
-    
-  // }
-
-
   // data
   const rawData$ = new BehaviorSubject<RawData>(options?.data || [])
   // data encoding
@@ -475,6 +511,9 @@ export const createChart: CreateChart = (element, options) => {
     ? deepOverwrite(DEFAULT_SIZE_CONFIG, options.size)
     : DEFAULT_SIZE_CONFIG
   const sizeConfig$ = new BehaviorSubject<SizeConfig>(defaultSizeConfig)
+  // elements
+  const svgElement$ = new BehaviorSubject<SVGElement | null>(null)
+  const canvasElement$ = new BehaviorSubject<HTMLCanvasElement | null>(null)
 
   // chart context
   const context: ChartContext<{}> = (() => {
@@ -676,13 +715,15 @@ export const createChart: CreateChart = (element, options) => {
       plugins$,
       theme$,
       event$,
-      eventTrigger$
+      eventTrigger$,
+      _updateLayerElements: createLayerElementsUpdater({
+        svgElement$,
+        canvasElement$,
+        pluginsInstance$
+      })
     }
     return _context
   })()
-  
-  const svgElement$ = new BehaviorSubject<SVGElement | null>(null)
-  const canvasElement$ = new BehaviorSubject<HTMLCanvasElement | null>(null)
 
   // inject context into plugins
   pluginsInstance$.subscribe(plugins => {

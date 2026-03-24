@@ -29,9 +29,9 @@ export const DEFAULT_DATA_ENCODING: Encoding = {
     aggregate: 'none'
   },
   multivariate: [
-    { from: 'x', label: 'x' },
-    { from: 'y', label: 'y' },
-    { from: 'z', label: 'z' },
+    { from: 'x', name: 'x' },
+    { from: 'y', name: 'y' },
+    { from: 'z', name: 'z' },
   ],
   color: {
     from: 'series',

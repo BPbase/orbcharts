@@ -10,7 +10,6 @@ import { validateObject } from '../../../../../core/src/utils'
 import { DEFAULT_SERIES_TOOLTIP_PARAMS } from "../defaults"
 import { LAYER_INDEX_OF_TOOLTIP } from '../../../const/layerIndex'
 import { createBaseTooltip } from '../../../baseLayers/BaseTooltip'
-import { ComputedDatum } from '../../..'
 
 const pluginName = 'Tooltip'
 const layerName = 'Tooltip'
@@ -19,6 +18,7 @@ export const Tooltip = defineSVGLayer<TooltipExtendContext, TooltipPluginParams,
   name: layerName,
   defaultParams: DEFAULT_SERIES_TOOLTIP_PARAMS,
   layerIndex: LAYER_INDEX_OF_TOOLTIP,
+  initShow: false,
   validator: (params) => {
     const result = validateObject(params, {
       backgroundColorType: {

@@ -5,8 +5,9 @@ export const defineSVGPlugin = <
   ExtendContext extends ExtendableContext,
   PluginParams extends Record<string, any>,
   AllLayerParams extends Record<string, any>,
->(config: DefinePluginConfig<'svg', ExtendContext, PluginParams, AllLayerParams>) => {
+>(config: DefinePluginConfig<ExtendContext, PluginParams, AllLayerParams>) => {
   return class Plugin implements PluginEntity<'svg', PluginParams, AllLayerParams> {
+    id: string
     name: string
     elementType: 'svg'
     show: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => void

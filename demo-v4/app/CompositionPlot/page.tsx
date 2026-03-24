@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import type { RawData } from '@orbcharts/core/types'
 import { OrbCharts } from '@orbcharts/core/index'
-import { CompositionPlot } from '@orbcharts/plugins-basic/index'
+import { CompositionPlot, Tooltip, Legend } from '@orbcharts/plugins-basic/index'
 
 const pieData: RawData = [
   { series: 'A', value: 30, name: 'a' },
@@ -38,32 +38,40 @@ export default function Series() {
         cornerRadius: 0
       },
       // Bubbles: {},
-      styles: {
-        padding: {
-          top: 60,
-          right: 60,
-          bottom: 60,
-          left: 60
-        },
-        highlightTarget: 'datum',
-        highlightDefault: null,
-        unhighlightedOpacity: 0.3,
-        transitionDuration: 800,
-        transitionEase: 'easeCubic'
-      },
-      visibleFilter: (datum: any) => true,
-      sort: null,
-      // seriesLabels: [],
-      container: {
-        columnAmount: 1,
-        rowAmount: 1,
-        columnGap: 'auto',
-        rowGap: 'auto',
-      },
-      separateSeries: false,
-      separateName: false,
-      // sumSeries: false,
-      datasetIndex: 0
+      // styles: {
+      //   padding: {
+      //     top: 60,
+      //     right: 60,
+      //     bottom: 60,
+      //     left: 60
+      //   },
+      //   highlightTarget: 'datum',
+      //   highlightDefault: null,
+      //   unhighlightedOpacity: 0.3,
+      //   transitionDuration: 800,
+      //   transitionEase: 'easeCubic'
+      // },
+      // visibleFilter: (datum: any) => true,
+      // sort: null,
+      // // seriesLabels: [],
+      // container: {
+      //   columnAmount: 1,
+      //   rowAmount: 1,
+      //   columnGap: 'auto',
+      //   rowGap: 'auto',
+      // },
+      // separateSeries: false,
+      // separateName: false,
+      // // sumSeries: false,
+      // datasetIndex: 0
+    })
+
+    const tooltip = new Tooltip({
+      Tooltip: {}
+    })
+
+    const legend = new Legend({
+      Legend: {}
     })
 
     const chart = new OrbCharts(domRef.current!, {
@@ -119,7 +127,7 @@ export default function Series() {
         // },
         // fontSize: '0.875rem'
       },
-      plugins: [seriesPlugin]
+      plugins: [seriesPlugin, tooltip, legend]
     })
 
     // seriesPlugin.updateParams({

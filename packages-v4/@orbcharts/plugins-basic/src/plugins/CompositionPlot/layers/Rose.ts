@@ -448,6 +448,7 @@ export const Rose = defineSVGLayer<CompositionPlotExtendContext, CompositionPlot
   name: layerName,
   defaultParams: DEFAULT_ROSE_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
+  initShow: false,
   validator: (params) => {
     const result = validateObject(params, {
       outerRadius: {
@@ -478,6 +479,15 @@ export const Rose = defineSVGLayer<CompositionPlotExtendContext, CompositionPlot
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
 
     const destroy$ = new Subject()
+
+    context.layout$
+      .pipe(
+        takeUntil(destroy$)
+      )
+      .subscribe(layout => {
+        d3.select(svgG)
+          .attr('transform', `translate(${layout.left}, ${layout.top})`)
+      })
 
     const { seriesCenterSelection$ } = seriesCenterSelectionObservable({
       selection: d3.select(svgG),
