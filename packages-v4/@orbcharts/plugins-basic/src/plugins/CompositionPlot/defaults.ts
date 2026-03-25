@@ -1,6 +1,7 @@
 import type { IndicatorParams, PieEventTextsParams, PieLabelsParams, RoseLabelsParams, RoseParams, CompositionPlotPluginParams, } from './types'
 import type { EventData, ModelDatumSeries } from '../../../../core/src/types'
 import type { BubblesParams, PieParams } from './types'
+import { DEFAULT_CONTAINER } from '../../const/sharedPluginParams'
 
 export const DEFAULT_COMPOSITION_PLOT_PARAMS: CompositionPlotPluginParams = {
   styles: {
@@ -20,10 +21,7 @@ export const DEFAULT_COMPOSITION_PLOT_PARAMS: CompositionPlotPluginParams = {
   sort: null,
   // seriesLabels: [],
   container: {
-    columnAmount: 1,
-    rowAmount: 1,
-    columnGap: 'auto',
-    rowGap: 'auto',
+    ...DEFAULT_CONTAINER
   },
   separateSeries: false,
   separateName: false,

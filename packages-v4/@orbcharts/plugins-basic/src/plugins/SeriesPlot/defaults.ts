@@ -1,4 +1,5 @@
-import type { BarsParams, BarsTriangleParams, DotsParams, GridLegendParams, SeriesPlotPluginParams, GridTooltipParams, CategoryAuxParams, CategoryAxisParams, CategoryZoomParams, LineAreasParams, LinesParams, StackedBarsParams, StackedValueAxisParams, ValueAxisParams } from './types'
+import type { BarsParams, BarsTriangleParams, DotsParams, SeriesPlotPluginParams, CategoryAuxParams, CategoryAxisParams, CategoryZoomParams, LineAreasParams, LinesParams, StackedBarsParams, StackedValueAxisParams, ValueAxisParams } from './types'
+import { DEFAULT_CATEGORY_AXIS, DEFAULT_CONTAINER, DEFAULT_VALUE_AXIS } from '../../const/sharedPluginParams'
 
 export const DEFAULT_SERIES_PLOT_PARAMS: SeriesPlotPluginParams = {
   styles: {
@@ -15,24 +16,9 @@ export const DEFAULT_SERIES_PLOT_PARAMS: SeriesPlotPluginParams = {
     transitionEase: 'easeCubic'
   },
   visibleFilter: (datum) => true,
-  container: {
-    columnAmount: 1,
-    rowAmount: 1,
-    columnGap: 'auto',
-    rowGap: 'auto'
-  },
-  valueAxis: {
-    position: 'left',
-    scaleDomain: ['auto', 'auto'],
-    scaleRange: [0, 0.9],
-    label: '',
-  },
-  categoryAxis: {
-    position: 'bottom',
-    scaleDomain: [0, 'max'],
-    scalePadding: 0.5,
-    label: ''
-  },
+  container: { ...DEFAULT_CONTAINER },
+  valueAxis: { ...DEFAULT_VALUE_AXIS },
+  categoryAxis: { ...DEFAULT_CATEGORY_AXIS},
   separateSeries: false,
   datasetIndex: 0
 }
@@ -154,86 +140,3 @@ export const DEFAULT_STACKED_VALUE_AXIS_PARAMS: StackedValueAxisParams = {
 export const DEFAULT_CATEGORY_ZOOM_PARAMS: CategoryZoomParams = {
 
 }
-
-export const DEFAULT_GRID_LEGEND_PARAMS: GridLegendParams = {
-  placement: 'bottom',
-  padding: 28,
-  // offset: [0, 0],
-  backgroundFill: 'none',
-  backgroundStroke: 'none',
-  gap: 10,
-  listRectWidth: 14,
-  listRectHeight: 14,
-  listRectRadius: 0,
-  // highlightEvent: false
-  textColorType: 'primary'
-}
-
-export const DEFAULT_GRID_TOOLTIP_PARAMS: GridTooltipParams = {
-  backgroundColorType: 'background',
-  strokeColorType: 'primary',
-  backgroundOpacity: 0.8,
-  textColorType: 'primary',
-  offset: [20, 5],
-  padding: 10,
-  renderFn: (eventData, { styles, utils, categoryData }) => {
-    const bulletWidth = styles.textSizePx * 0.7
-    const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
-
-    const titleSvg = `<g><text dominant-baseline="hanging" font-size="${styles.textSizePx}" fill="${styles.textColor}">${eventData.target.category}</text></g>`
-    const categoryLabelTextWidth = utils.measureTextWidth(eventData.target.category, styles.textSizePx)
-    const listTextWidth = categoryData.reduce((acc, category) => {
-      const text = `${category.series}${utils.toCurrency(category.value)}`
-      const _maxTextWidth = utils.measureTextWidth(text, styles.textSizePx)
-      return _maxTextWidth > acc ? _maxTextWidth : acc
-    }, 0)
-    const maxTextWidth = Math.max(categoryLabelTextWidth, listTextWidth)
-    const lineEndX = maxTextWidth + styles.textSizePx * 3
-    const contentSvg = categoryData
-      .map((category, i) => {
-        const y = i * styles.textSizePx * 1.5
-        const isHighlight = category.id === (eventData.target && eventData.target.id)
-        return `<g transform="translate(0, ${styles.textSizePx * 2})">
-  <rect width="${bulletWidth}" height="${bulletWidth}" x="${offset}" y="${y + offset}" rx="${bulletWidth / 2}" fill="${category.color}"></rect>
-  <text x="${styles.textSizePx * 1.5}" y="${y}" font-size="${styles.textSizePx}" dominant-baseline="hanging" fill="${styles.textColor}">
-    <tspan font-weight="${isHighlight ? 'bold' : ''}">${category.series}</tspan>
-    <tspan font-weight="bold" text-anchor="end" x="${lineEndX}">${utils.toCurrency(category.value)}</tspan>
-  </text>
-</g>`
-      })
-      .join('')
-    return `${titleSvg}
-${contentSvg}`
-  }
-}
-DEFAULT_GRID_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils, categoryData }) => {
-    const bulletWidth = styles.textSizePx * 0.7
-    const offset = (styles.textSizePx / 2) - (bulletWidth / 2)
-
-    const titleSvg = \`<g><text dominant-baseline="hanging" font-size="\${styles.textSizePx}" fill="\${styles.textColor}">\${eventData.target.category}</text></g>\`
-    const categoryLabelTextWidth = utils.measureTextWidth(eventData.target.category, styles.textSizePx)
-    const listTextWidth = categoryData.reduce((acc, category) => {
-      const text = \`\${category.series}\${utils.toCurrency(category.value)}\`
-      const _maxTextWidth = utils.measureTextWidth(text, styles.textSizePx)
-      return _maxTextWidth > acc ? _maxTextWidth : acc
-    }, 0)
-    const maxTextWidth = Math.max(categoryLabelTextWidth, listTextWidth)
-    const lineEndX = maxTextWidth + styles.textSizePx * 3
-    const contentSvg = categoryData
-      .map((category, i) => {
-        const y = i * styles.textSizePx * 1.5
-        const isHighlight = category.id === (eventData.target && eventData.target.id)
-        return \`<g transform="translate(0, \${styles.textSizePx * 2})">
-  <rect width="\${bulletWidth}" height="\${bulletWidth}" x="\${offset}" y="\${y + offset}" rx="\${bulletWidth / 2}" fill="\${category.color}"></rect>
-  <text x="\${styles.textSizePx * 1.5}" y="\${y}" font-size="\${styles.textSizePx}" dominant-baseline="hanging" fill="\${styles.textColor}">
-    <tspan font-weight="\${isHighlight ? 'bold' : ''}">\${category.series}</tspan>
-    <tspan font-weight="bold" text-anchor="end" x="\${lineEndX}">\${utils.toCurrency(category.value)}</tspan>
-  </text>
-</g>\`
-      })
-      .join('')
-    return \`\${titleSvg}
-\${contentSvg}\`
-}`
-
-

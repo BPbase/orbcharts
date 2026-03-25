@@ -18,7 +18,7 @@ export const DEFAULT_X_Y_AXIS: XYAxis = {
   scaleDomain: ['auto', 'auto'],
   scaleRange: [0, 0.9],
   label: '',
-  valueIndex: 0
+  // valueIndex: 0
 }
 
 export const DEFAULT_CONTAINER: Container = {

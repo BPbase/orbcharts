@@ -7,7 +7,7 @@ export interface XYAxis {
     scaleDomain: [number | 'min' | 'auto', number | 'max' | 'auto'];
     scaleRange: [number, number];
     label: string;
-    valueIndex: number;
+    // valueIndex: number;
 }
 export interface ValueAxis {
     position: AxisPosition;

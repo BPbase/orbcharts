@@ -91,8 +91,6 @@ export interface SeriesPlotAllLayerParams {
   ValueAxis: ValueAxisParams
   StackedValueAxis: StackedValueAxisParams
   CategoryZoom: CategoryZoomParams
-  GridLegend: GridLegendParams
-  GridTooltip: GridTooltipParams
 }
 
 // -- layer params --
@@ -200,40 +198,4 @@ export interface StackedValueAxisParams extends ValueAxisParams {}
 
 export interface CategoryZoomParams {
 
-}
-
-export interface GridLegendParams {
-  // position: 'top' | 'bottom' | 'left' | 'right'
-  // justify: 'start' | 'center' | 'end'
-  placement: Placement
-  padding: number
-  backgroundFill: ColorType
-  backgroundStroke: ColorType
-  gap: number
-  listRectWidth: number
-  listRectHeight: number
-  listRectRadius: number
-  textColorType: ColorType
-}
-
-export interface GridTooltipParams {
-  backgroundColorType: ColorType
-  backgroundOpacity: number
-  strokeColorType: ColorType
-  textColorType: ColorType
-  offset: [number, number]
-  padding: number
-  // textRenderFn: (<T extends ChartType>(eventData: EventTypeMap<T>) => string[] | string) | null
-  // svgRenderFn: (<T extends ChartType>(eventData: EventTypeMap<T>) => string) | null
-  renderFn: (
-    (
-      eventData: EventData<'grid'>,
-      context: {
-        styles: BaseTooltipStyle
-        utils: BaseTooltipUtils
-        categoryData: ComputedDatumGrid[]
-        seriesData: ComputedDatumGrid[]
-      }
-    ) => string[] | string
-  )
 }
