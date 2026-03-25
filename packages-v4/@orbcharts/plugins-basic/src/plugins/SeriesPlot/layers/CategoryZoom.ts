@@ -205,7 +205,16 @@ export const CategoryZoom = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPl
           // }
           
           // pluginParams$.next(newPluginParams)
-          context.updateScaleDomain$.next(zoomedDomain as [number, number | "max"])
+          // context.updateScaleDomain$.next(zoomedDomain as [number, number | "max"])
+          context.eventTrigger$.next({
+            eventName: 'zoom',
+            pluginName,
+            layerName,
+            target: null,
+            data: {
+              scaleDomain: zoomedDomain
+            }
+          })
         })
 
       // 傳入外層selection

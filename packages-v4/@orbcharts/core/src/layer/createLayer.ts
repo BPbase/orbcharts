@@ -80,20 +80,20 @@ export const createLayer = <
   })
 
   return {
-    name: config.name,
-    defaultParams: config.defaultParams,
-    layerIndex: config.layerIndex,
-    initShow: config.initShow,
-    enable: (enableProps) => {
+    _name: config.name,
+    _defaultParams: config.defaultParams,
+    _layerIndex: config.layerIndex,
+    _initShow: config.initShow,
+    _enable: (enableProps) => {
       enableProps$.next(enableProps)
     },
-    disable: () => {
+    _disable: () => {
       enableProps$.next(null)
     },
     // setParams: (partial) => {
     //   previousParams$.next(deepOverwrite(defaultParams$.getValue(), partial))
     // },
-    updateParams: (patch) => {
+    _updateParams: (patch) => {
       try {
         // 檢查 data$ 資料格式是否正確
         const { status, columnName, expectToBe } = config.validator(patch)
@@ -118,10 +118,10 @@ export const createLayer = <
       const layerParams = deepOverwrite(layerParams$.getValue(), patch)
       layerParams$.next(layerParams)
     },
-    forceReplaceParams: (full) => {
+    _forceReplaceParams: (full) => {
       layerParams$.next(full)
     },
-    getParams: () => {
+    _getParams: () => {
       return layerParams$.getValue()
     },
     // injectContext: (context) => {
@@ -129,7 +129,7 @@ export const createLayer = <
     //   // re-setup layer with new context
     //   enableProps$.next(true)
     // },
-    destroy: () => {
+    _destroy: () => {
       enableProps$.next(null)
       enableProps$.complete()
       layerParams$.complete()

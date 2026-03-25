@@ -1,7 +1,8 @@
 import * as d3 from 'd3'
 import {
   shareReplay,
-  map, 
+  map,
+  filter,
   combineLatest,
   debounceTime,
   distinctUntilChanged,
@@ -72,18 +73,17 @@ export const SeriesPlot = defineSVGPlugin<
   defaultParams: DEFAULT_SERIES_PLOT_PARAMS,
   layers: [bars, barsTriangle, categoryAux, categoryAxis, categoryZoom, dots, lineAreas, lines, stackedBars, stackedValueAxis, valueAxis],
   setup: (props) => {
-
-    // const updateScaleDomain$ = props.pluginParams$.pipe(
-    //   map(params => params.categoryAxis.scaleDomain),
-    //   distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-    //   shareReplay(1)
-    // )
     
-    const updateScaleDomain$ = new BehaviorSubject<[number, number | "max"] | undefined>(undefined)
+    const zoomedScaleDomain$ = new BehaviorSubject<[number, number | "max"] | undefined>(undefined)
+    props.context.event$.subscribe(event => {
+      if (event.eventName === 'zoom' && event.data && event.data.scaleDomain) {
+        zoomedScaleDomain$.next(event.data.scaleDomain)
+      }
+    })
 
-    const categoryAxis$ = props.pluginParams$.pipe(
+    const zoomedCategoryAxis$ = props.pluginParams$.pipe(
       map(params => params.categoryAxis),
-      switchMap(categoryAxis => updateScaleDomain$.pipe(
+      switchMap(categoryAxis => zoomedScaleDomain$.pipe(
         map(scaleDomain => {
           if (!scaleDomain) {
             return categoryAxis
@@ -174,7 +174,7 @@ export const SeriesPlot = defineSVGPlugin<
     )
 
     const gridAxesSize$ = gridAxesSizeObservable({
-      categoryAxis$,
+      categoryAxis$: zoomedCategoryAxis$,
       valueAxis$,
       layout$: layout$
     }).pipe(
@@ -182,7 +182,7 @@ export const SeriesPlot = defineSVGPlugin<
     )
 
     const gridAxesContainerSize$ = gridAxesContainerSizeObservable({
-      categoryAxis$,
+      categoryAxis$: zoomedCategoryAxis$,
       valueAxis$,
       containerSize$
     }).pipe(
@@ -223,7 +223,7 @@ export const SeriesPlot = defineSVGPlugin<
 
     const computedAxesData$ = gridComputedAxesDataObservable({
       computedData$: computedData$,
-      categoryAxis$,
+      categoryAxis$: zoomedCategoryAxis$,
       valueAxis$,
       layout$: layout$,
     }).pipe(
@@ -251,7 +251,7 @@ export const SeriesPlot = defineSVGPlugin<
 
     const categoryScaleDomainValue$ = categoryScaleDomainValueObservable({
       selectedGridData$: selectedGridData$,
-      categoryAxis$
+      categoryAxis$: zoomedCategoryAxis$
     }).pipe(
       shareReplay(1)
     )
@@ -271,7 +271,7 @@ export const SeriesPlot = defineSVGPlugin<
     )
 
     const gridAxesTransform$ = gridAxesTransformObservable({
-      categoryAxis$,
+      categoryAxis$: zoomedCategoryAxis$,
       valueAxis$,
       layout$: layout$
     }).pipe(
@@ -288,7 +288,7 @@ export const SeriesPlot = defineSVGPlugin<
       computedData$: computedData$,
       categoryScaleDomainValue$: categoryScaleDomainValue$,
       filteredMinMaxValue$: filteredMinMaxValue$,
-      categoryAxis$,
+      categoryAxis$: zoomedCategoryAxis$,
       valueAxis$,
       layout$: layout$
     }).pipe(
@@ -327,7 +327,8 @@ export const SeriesPlot = defineSVGPlugin<
       gridAxesReverseTransform$,
       gridGraphicTransform$,
       gridGraphicReverseScale$,
-      updateScaleDomain$
+      zoomedCategoryAxis$
+      // updateScaleDomain$
     }
 
     props.context = {

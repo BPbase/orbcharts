@@ -7,18 +7,16 @@ export const defineCanvasLayer = <
   LayerParams extends Record<string, any>,
 >(config: DefineLayerConfig<'canvas', ExtendContext, PluginParams, LayerParams>) => {
   return class Layer implements LayerEntity<ExtendContext, PluginParams, LayerParams> {
-    name: string
-    defaultParams: LayerParams
-    layerIndex: number
-    initShow: boolean
-    enable: (enableProps: LayerEnableProps<'canvas', ExtendContext, PluginParams, LayerParams>) => void
-    disable: () => void
-    // setParams: (params: Partial<LayerParams>) => void
-    updateParams: (params: Partial<LayerParams>) => void
-    forceReplaceParams: (params: LayerParams) => void
-    getParams: () => Readonly<LayerParams>
-    // injectContext: (context: ChartContext<ExtendContext>) => void
-    destroy: () => void
+    _name: string
+    _defaultParams: LayerParams
+    _layerIndex: number
+    _initShow: boolean
+    _enable: (enableProps: LayerEnableProps<'canvas', ExtendContext, PluginParams, LayerParams>) => void
+    _disable: () => void
+    _updateParams: (params: Partial<LayerParams>) => void
+    _forceReplaceParams: (params: LayerParams) => void
+    _getParams: () => Readonly<LayerParams>
+    _destroy: () => void
     constructor () {
       return createLayer<ExtendContext, PluginParams, LayerParams>('canvas', config)
     }

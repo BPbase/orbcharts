@@ -39,7 +39,8 @@ export interface SeriesPlotExtendContext {
   gridAxesReverseTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>
   gridGraphicReverseScale$: Observable<[number, number][]>
-  updateScaleDomain$: Subject<[number, number | "max"]> // zoom後要更新categoryAxis的scaleDomain
+  zoomedCategoryAxis$: Observable<CategoryAxis>
+  // updateScaleDomain$: Subject<[number, number | "max"]> // zoom後要更新categoryAxis的scaleDomain
 }
 
 // plugin params

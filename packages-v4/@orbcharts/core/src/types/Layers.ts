@@ -20,9 +20,8 @@ import type { DeepPartial, ChartContext, ExtendableContext, ValidatorResult } fr
 // }
 
 export interface LayerInfo {
-  // id: string
+  pluginId: string
   pluginName: string
-  // pluginSeq: number
   layerName: string
   layerIndex: number
 }
@@ -79,18 +78,16 @@ export interface DefineLayerConfig<ElementType extends 'svg' | 'canvas', ExtendC
 }
 
 export interface LayerEntity<ExtendContext extends ExtendableContext, PluginParams, LayerParams> {
-  name: Readonly<string>
-  defaultParams: Readonly<LayerParams>
-  layerIndex: Readonly<number>
-  initShow: boolean
-  // enable(el: { svg: SVGSVGElement; canvas: HTMLCanvasElement }, context: ChartContext<ExtendContext>): void
-  enable(enableProps: LayerEnableProps<'svg' | 'canvas', ExtendContext, PluginParams, LayerParams>): void
-  disable(): void
-  // setParams(params: DeepPartial<LayerParams>): void
-  updateParams(params: DeepPartial<LayerParams>): void
-  forceReplaceParams(params: LayerParams): void
-  getParams: () => Readonly<LayerParams>
-
-  // injectContext(): void
-  destroy(): void
+  readonly _name: string
+  readonly _defaultParams: LayerParams
+  readonly _layerIndex: number
+  readonly _initShow: boolean
+  // _enable(el: { svg: SVGSVGElement; canvas: HTMLCanvasElement }, context: ChartContext<ExtendContext>): void
+  _enable(enableProps: LayerEnableProps<'svg' | 'canvas', ExtendContext, PluginParams, LayerParams>): void
+  _disable(): void
+  // _setParams(params: DeepPartial<LayerParams>): void
+  _updateParams(params: DeepPartial<LayerParams>): void
+  _forceReplaceParams(params: LayerParams): void
+  _getParams: () => LayerParams
+  _destroy(): void
 }

@@ -7,9 +7,11 @@ export const defineSVGPlugin = <
   AllLayerParams extends Record<string, any>,
 >(config: DefinePluginConfig<ExtendContext, PluginParams, AllLayerParams>) => {
   return class Plugin implements PluginEntity<'svg', PluginParams, AllLayerParams> {
-    id: string
-    name: string
-    elementType: 'svg'
+    _name: string
+    _elementType: 'svg'
+    _getId: () => string
+    _setId: (id: string) => void
+    _injectContext: (context: ChartContext<{}>) => void
     show: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => void
     showOnly: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => void
     showAll: () => void
@@ -29,7 +31,6 @@ export const defineSVGPlugin = <
     //   hide: () => void
     //   toggle: () => void
     // }
-    injectContext: (context: ChartContext<{}>) => void
     destroy: () => void
     constructor (params?: DeepPartial<PluginParams | AllLayerParams>) {
       return createPlugin('svg', config, params)

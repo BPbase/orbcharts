@@ -29,6 +29,9 @@ export const createPlugin = <
   // const svgGClassName = `${createPluginClassName(config.name)}__g`
   // const canvasClassName = `${createPluginClassName(config.name)}__canvas`
 
+  // 內部保存起來的 id
+  let _id = config.name
+  
   let destroySetup = () => {}
 
   const context$ = new BehaviorSubject<ChartContext<ExtendContext> | null>(null)
@@ -44,11 +47,11 @@ export const createPlugin = <
   const allLayerInstances = {
     // 將陣列轉成字典
     ...config.layers.reduce((acc, layer) => {
-      acc[layer.name as keyof AllLayerParams] = layer
+      acc[layer._name as keyof AllLayerParams] = layer
       return acc
     }, {} as Record<keyof AllLayerParams, typeof config.layers[number]>)
   }
-  const getAllLayerNamesSet = () => new Set(config.layers.map(l => l.name as keyof AllLayerParams))
+  const getAllLayerNamesSet = () => new Set(config.layers.map(l => l._name as keyof AllLayerParams))
   // const getParamsKeySet = (params: DeepPartial<PluginParams | AllLayerParams>): Set<keyof AllLayerParams> => {
   //   // 取得有設定 params 的 layer name
   //   if (params) {
@@ -70,8 +73,8 @@ export const createPlugin = <
 
   // config 設定顯示的 layers
   const systemInitLayerNames = config.layers.reduce((prev, current) => {
-    if (current.initShow) {
-      prev.push(current.name as keyof AllLayerParams)
+    if (current._initShow) {
+      prev.push(current._name as keyof AllLayerParams)
     }
     return prev
   }, [] as (keyof AllLayerParams)[])
@@ -104,7 +107,7 @@ export const createPlugin = <
       const shownLayerNamesSeq: string[] = Array.from(ShownLayerNameSet)
         .map(name => [
           name,
-          config.layers.find(l => l.name === name)?.layerIndex ?? -1
+          config.layers.find(l => l._name === name)?._layerIndex ?? -1
         ])
         .filter(([, index]) => index !== -1)
         .sort((a, b) => (a[1] as number) - (b[1] as number))
@@ -137,7 +140,7 @@ export const createPlugin = <
 
   // update plugin params
   const patchPluginParams$ = new BehaviorSubject<DeepPartial<AllLayerParams | PluginParams> | undefined>(
-    initPluginParams
+    initPluginParams ?? {}
   )
 
   // force replace plugin params
@@ -239,11 +242,12 @@ export const createPlugin = <
     // 更新 layer elements
     const layerElements = pluginSetupProps.context._updateLayerElements(
       elementType,
-      config.name,
+      _id,
       shownLayerNamesSeq.map(layer => ({
+        pluginId: _id,
         pluginName: config.name,
         layerName: layer,
-        layerIndex: allLayerInstances[layer as keyof AllLayerParams].layerIndex
+        layerIndex: allLayerInstances[layer as keyof AllLayerParams]._layerIndex
       }))
     )
 
@@ -276,40 +280,39 @@ export const createPlugin = <
 
     // init layers
     config.layers.forEach((layer) => {
-      if (ShownLayerNameSet.has(layer.name as keyof AllLayerParams)) {
+      if (ShownLayerNameSet.has(layer._name as keyof AllLayerParams)) {
         const layerEnableProps: LayerEnableProps<'svg' | 'canvas', ExtendContext, PluginParams, unknown> = 
           elementType === 'svg' ? 
             {
               // svgG: (pluginSetupProps as PluginSetupProps<'svg', ExtendContext, PluginParams>).svgG.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
-              svgG: layerElements[layer.name as keyof AllLayerParams] as SVGGElement,
+              svgG: layerElements[layer._name as keyof AllLayerParams] as SVGGElement,
               // canvas: context.root.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
               // context: Object.assign({}, context) as ChartContext<ExtendContext>,
               context: pluginSetupProps.context,
               pluginParams$,
-              initLayerParams: patchPluginParams$.getValue()?.[layer.name as keyof AllLayerParams] as unknown || {}
+              initLayerParams: patchPluginParams$.getValue()?.[layer._name as keyof AllLayerParams] as unknown || {}
             }
           : {
               // svgG: context.root.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
               // canvas: (pluginSetupProps as PluginSetupProps<'canvas', ExtendContext, PluginParams>).canvas.querySelector(`.${createLayerClassName(config.name, layer.name)}`),
-              canvas: layerElements[layer.name as keyof AllLayerParams] as HTMLCanvasElement,
+              canvas: layerElements[layer._name as keyof AllLayerParams] as HTMLCanvasElement,
               // context: Object.assign({}, context) as ChartContext<ExtendContext>,
               context: pluginSetupProps.context,
               pluginParams$,
-              initLayerParams: patchPluginParams$.getValue()?.[layer.name as keyof AllLayerParams] as unknown || {}
+              initLayerParams: patchPluginParams$.getValue()?.[layer._name as keyof AllLayerParams] as unknown || {}
             }
             
-        layer.enable(layerEnableProps)
+        layer._enable(layerEnableProps)
       } else {
-        layer.destroy()
+        layer._disable()
       }
     })
   })
 
   return {
     // name: `${config.name}-${Math.random().toString(36).substr(2, 9)}`,
-    id: config.name,
-    name: config.name,
-    elementType,
+    _name: config.name,
+    _elementType: elementType,
     // info: {
     //   name: config.name,
     //   layers: [config.name]
@@ -317,6 +320,42 @@ export const createPlugin = <
     // layerIndex: config.layerIndex,
     // contextExtension,
     // layer visibility controls
+    _getId: () => _id,
+    _setId: (id: string) => {
+      _id = id
+    },
+    // 由 chart 注入 context
+    _injectContext: (context) => {
+
+      context$.next(Object.assign({}, context) as ChartContext<ExtendContext>)
+
+      // context.size$.subscribe(size => {
+      //   const svgGElement: SVGGElement | null = context.root.querySelector(`.${svgGClassName}`)
+      //   const canvasElement: HTMLCanvasElement | null = context.root.querySelector(`.${canvasClassName}`)
+      //   if (svgGElement) {
+      //     svgGElement.setAttribute('width', size.width.toString())
+      //     svgGElement.setAttribute('height', size.height.toString())
+      //   }
+      //   if (canvasElement) {
+      //     canvasElement.width = size.width
+      //     canvasElement.height = size.height
+      //   }
+      // })
+
+      // if (config.setup) {
+      //   // const extension: ExtendContext = config.setup(context)
+      //   // Object.assign(context, extension)
+      //   config.setup({
+      //     context: context as ChartContext<ExtendContext>,
+      //     svg: mainSvgElement!,
+      //     canvas: mainCanvasElement!,
+      //     pluginParams$
+      //   })
+      // }
+      
+      // 顯示全部 layers
+      // IsShowLayerNameSet$.next(getAllLayerNamesSet())
+    },
     show: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => {
       names = Array.isArray(names) ? names : [names]
       ShownLayerNameSet$.next(new Set([...Array.from(ShownLayerNameSet$.getValue()), ...names]))
@@ -364,7 +403,7 @@ export const createPlugin = <
       Object.keys(patch).forEach((key) => {
         const layer = allLayerInstances[key as keyof AllLayerParams]
         if (layer) {
-          layer.updateParams((patch as Record<string, any>)[key])
+          layer._updateParams((patch as Record<string, any>)[key])
         }
       })
       
@@ -377,14 +416,14 @@ export const createPlugin = <
       Object.keys(full).forEach((key) => {
         const layer = allLayerInstances[key as keyof AllLayerParams]
         if (layer) {
-          layer.forceReplaceParams((full as Record<string, any>)[key])
+          layer._forceReplaceParams((full as Record<string, any>)[key])
         }
       })
       // InitLayerNameSet$.next(getParamsKeySet(full))
     },
     getParams: () => {
       return config.layers.reduce((acc, layer) => {
-        acc[layer.name] = layer.getParams()
+        acc[layer._name] = layer._getParams()
         return acc
       }, {} as Record<string, any>) as PluginParams | AllLayerParams
     },
@@ -412,38 +451,6 @@ export const createPlugin = <
     //     // implementation for toggling this layer
     //   }
     // }),
-    // 由 chart 注入 context
-    injectContext: (context) => {
-
-      context$.next(Object.assign({}, context) as ChartContext<ExtendContext>)
-
-      // context.size$.subscribe(size => {
-      //   const svgGElement: SVGGElement | null = context.root.querySelector(`.${svgGClassName}`)
-      //   const canvasElement: HTMLCanvasElement | null = context.root.querySelector(`.${canvasClassName}`)
-      //   if (svgGElement) {
-      //     svgGElement.setAttribute('width', size.width.toString())
-      //     svgGElement.setAttribute('height', size.height.toString())
-      //   }
-      //   if (canvasElement) {
-      //     canvasElement.width = size.width
-      //     canvasElement.height = size.height
-      //   }
-      // })
-
-      // if (config.setup) {
-      //   // const extension: ExtendContext = config.setup(context)
-      //   // Object.assign(context, extension)
-      //   config.setup({
-      //     context: context as ChartContext<ExtendContext>,
-      //     svg: mainSvgElement!,
-      //     canvas: mainCanvasElement!,
-      //     pluginParams$
-      //   })
-      // }
-      
-      // 顯示全部 layers
-      // IsShowLayerNameSet$.next(getAllLayerNamesSet())
-    },
     destroy: () => {
       destroySetup()
       // subscription.unsubscribe()
@@ -452,7 +459,7 @@ export const createPlugin = <
       ShownLayerNameSet$.complete()
       
       config.layers.forEach((layer) => {
-        layer.destroy()
+        layer._destroy()
       })
     },
     // // outputs

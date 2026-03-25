@@ -10,7 +10,8 @@ export type EventType = 'click'
   | 'dragstart'
   | 'drag'
   | 'dragend'
-  | 'resize'
+  // | 'resize'
+  | 'zoom'
   | 'transitionMove'
   | 'transitionEnd'
 
@@ -19,6 +20,7 @@ export interface EventData<T extends ModelType = ModelType, ExtendTypes extends 
   pluginName: string
   layerName: string
   target: RenderDatumBase<T, ExtendTypes> | null
+  data?: any
   tween?: number
   event?: Event
 }

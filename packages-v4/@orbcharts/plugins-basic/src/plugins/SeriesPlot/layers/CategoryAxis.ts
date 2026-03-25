@@ -76,7 +76,7 @@ export const CategoryAxis = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPl
       gridContainerPosition$: context.gridContainerPosition$,
       isSeriesSeprate$: context.isSeriesSeprate$,
       fontSizePx$: context.fontSizePx$,
-      categoryAxis$: pluginParams$.pipe(map(params => params.categoryAxis)),
+      categoryAxis$: context.zoomedCategoryAxis$,
       valueAxis$: pluginParams$.pipe(map(params => params.valueAxis)),
       styles$: pluginParams$.pipe(
         map(params => params.styles),

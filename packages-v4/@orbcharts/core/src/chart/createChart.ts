@@ -299,7 +299,7 @@ function pluginsValidator (plugins: PluginEntity<any, any, any>[]): ValidatorRes
       toBe: `PluginEntity[]`,
       test: (value: PluginEntity<any, any, any>[]) => {
         return Array.isArray(value)
-          && value.every((v) => isPlainObject(v) && typeof v.name === 'string' && typeof v.injectContext === 'function')
+          && value.every((v) => isPlainObject(v) && typeof v._name === 'string' && typeof v._injectContext === 'function')
       }
     }
   })
@@ -330,7 +330,7 @@ function chartOptionsValidator (chartOptionsPartial: PartialChartOptions): Valid
       toBe: `PluginEntity[]`,
       test: (value: PluginEntity<any, any, any>[]) => {
         return Array.isArray(value)
-          && value.every((v) => isPlainObject(v) && typeof v.name === 'string' && typeof v.injectContext === 'function')
+          && value.every((v) => isPlainObject(v) && typeof v._name === 'string' && typeof v._injectContext === 'function')
       }
     }
   })
@@ -379,21 +379,21 @@ function createLayerElementsUpdater ({ svgElement$, canvasElement$, pluginsInsta
   let svgLayerInfo: LayerMakerInfo[] = []
   let canvasLayerInfo: LayerMakerInfo[] = []
   // 產生新的 layer 資訊
-  const createLayerInfo = (elementType: 'svg' | 'canvas', fromPluginName: string, fetchLayerInfo: LayerInfo[]) => {
+  const createLayerInfo = (elementType: 'svg' | 'canvas', fromPluginId: string, fetchLayerInfo: LayerInfo[]) => {
     const pluginSeq = pluginsInstance$.getValue().reduce((acc, plugin, index) => {
-      acc[plugin.name] = index
+      acc[plugin._getId()] = index
       return acc
     }, {} as Record<string, number>)
     const addedLayerInfo: LayerMakerInfo[] = fetchLayerInfo.map(layerInfo => ({
       ...layerInfo,
-      pluginSeq: pluginSeq[layerInfo.pluginName]
+      pluginSeq: pluginSeq[layerInfo.pluginId]
     }))
     const newLayerInfo = (elementType === 'svg' ? svgLayerInfo : canvasLayerInfo)
-      .filter((layerInfo) => layerInfo.pluginName !== fromPluginName)
+      .filter((layerInfo) => layerInfo.pluginId !== fromPluginId)
       .map(layerInfo => {
         return {
           ...layerInfo,
-          pluginSeq: pluginSeq[layerInfo.pluginName]
+          pluginSeq: pluginSeq[layerInfo.pluginId]
         }
       })
       .concat(addedLayerInfo)
@@ -407,7 +407,7 @@ function createLayerElementsUpdater ({ svgElement$, canvasElement$, pluginsInsta
   const layerSVGElementsRef: Record<string, SVGGElement> = {}
   const layerCanvasElementsRef: Record<string, HTMLCanvasElement> = {}
   
-  return <ElementType extends 'svg' | 'canvas'>(elementType: ElementType, fromPluginName: string, fetchLayerInfo: LayerInfo[])
+  return <ElementType extends 'svg' | 'canvas'>(elementType: ElementType, fromPluginId: string, fetchLayerInfo: LayerInfo[])
     : Record<string, ElementType extends 'svg' ? SVGGElement : HTMLCanvasElement> => {
     
     const element = elementType === 'svg' ? svgElement$.getValue() : canvasElement$.getValue()
@@ -417,8 +417,8 @@ function createLayerElementsUpdater ({ svgElement$, canvasElement$, pluginsInsta
     }
     
     const layerElementsRef = elementType === 'svg' ? layerSVGElementsRef : layerCanvasElementsRef
-    const newLayerInfo = createLayerInfo(elementType, fromPluginName, fetchLayerInfo)
-    const sortedLayerClassNames = newLayerInfo.map(info => createLayerClassName(info.pluginName, info.layerName))
+    const newLayerInfo = createLayerInfo(elementType, fromPluginId, fetchLayerInfo)
+    const sortedLayerClassNames = newLayerInfo.map(info => createLayerClassName(info.pluginId, info.layerName))
 
     // 根據新的 layerInfo 來更新 DOM 結構
     if (elementType === 'svg') {
@@ -439,11 +439,11 @@ function createLayerElementsUpdater ({ svgElement$, canvasElement$, pluginsInsta
       canvasLayerInfo = newLayerInfo
     }
     
-    // 回傳目前pluginName的elements (Record<layerName, element>)
+    // 回傳目前pluginId的elements (Record<layerName, element>)
     const currentLayerElementsRef = Object.entries(layerElementsRef as Record<string, ElementType extends 'svg' ? SVGGElement : HTMLCanvasElement>)
       .reduce((prev, [key, layerElement]) => {
-        const [orbchartsPrefix, pluginName, layerName] = key.split('-')
-        if (pluginName === fromPluginName) {
+        const [orbchartsPrefix, pluginId, layerName] = key.split('-')
+        if (pluginId === fromPluginId) {
           prev[layerName] = layerElement
         }
         return prev
@@ -505,7 +505,7 @@ export const createChart: CreateChart = (element, options) => {
   // const previousTheme$ = new BehaviorSubject<Theme>(defaultTheme)
   const currentTheme$ = new BehaviorSubject<Theme>(defaultTheme)
   // plugins
-  const pluginsInstance$ = new BehaviorSubject<PluginEntity<any, unknown, unknown>[]>(options?.plugins || [])
+  const pluginsInstance$ = new BehaviorSubject<PluginEntity<'svg' | 'canvas', unknown, unknown>[]>(options?.plugins || [])
   // size
   const defaultSizeConfig = options && options.size
     ? deepOverwrite(DEFAULT_SIZE_CONFIG, options.size)
@@ -514,6 +514,7 @@ export const createChart: CreateChart = (element, options) => {
   // elements
   const svgElement$ = new BehaviorSubject<SVGElement | null>(null)
   const canvasElement$ = new BehaviorSubject<HTMLCanvasElement | null>(null)
+
 
   // chart context
   const context: ChartContext<{}> = (() => {
@@ -667,17 +668,32 @@ export const createChart: CreateChart = (element, options) => {
       }),
       shareReplay(1)
     )
-    const plugins$ = new Observable<readonly PluginInfo[]>(subscriber => {
-      pluginsInstance$.subscribe(plugins => {
-        const pluginInfos = plugins.map(plugin => {
-          return {
-            name: plugin.name,
-            elementType: plugin.elementType,
-            shownLayers: plugin.getShownLayerNames()
-          }
-        })
-        subscriber.next(pluginInfos)
+    const plugins$ = new BehaviorSubject<PluginInfo[]>([])
+    pluginsInstance$.subscribe(plugins => {
+      const pluginIdRecord: Record<string, string> = {}
+      const pluginIds = plugins.map(plugin => {
+        let id = plugin._getId()
+        if (pluginIdRecord[id]) {
+          // 原本id加上序號
+          const prevNo = pluginIdRecord[id].split('[')[1]?.split(']')[0] || '0'
+          const newNo = parseInt(prevNo) + 1
+          id = `${id.split('[')[0]}[${newNo}]`
+        }
+        pluginIdRecord[id] = plugin._getId()
+        return id
       })
+      // 更新 plugin 實例的 id（確保唯一性）
+      plugins.forEach((plugin, index) => plugin._setId(pluginIds[index]))
+
+      const pluginInfos = plugins.map(plugin => {
+        return {
+          id: plugin._getId(),
+          name: plugin._name,
+          elementType: plugin._elementType,
+          shownLayers: plugin.getShownLayerNames()
+        }
+      })
+      plugins$.next(pluginInfos)
     })
     // const theme$ = new Observable<Theme>(subscriber => {
     //   currentTheme$.subscribe(data => {
@@ -731,9 +747,9 @@ export const createChart: CreateChart = (element, options) => {
     let hasSVGPlugin = false
     let hasCanvasPlugin = false
     plugins.forEach(plugin => {
-      if (plugin.elementType === 'svg') {
+      if (plugin._elementType === 'svg') {
         hasSVGPlugin = true
-      } else if (plugin.elementType === 'canvas') {
+      } else if (plugin._elementType === 'canvas') {
         hasCanvasPlugin = true
       }
     })
@@ -758,7 +774,7 @@ export const createChart: CreateChart = (element, options) => {
 
     // inject context
     plugins.forEach(plugin => {
-      plugin.injectContext(context)
+      plugin._injectContext(context)
     })
   })
 
@@ -910,9 +926,9 @@ export const createChart: CreateChart = (element, options) => {
       // add one
       pluginsInstance$.next([...pluginsInstance$.getValue(), plugin])
     }
-    function removePlugin (name: string) {
-      // remove one by name
-      pluginsInstance$.next(pluginsInstance$.getValue().filter(plugin => plugin.name !== name))
+    function removePlugin (id: string) {
+      // remove one by id
+      pluginsInstance$.next(pluginsInstance$.getValue().filter(plugin => plugin._getId() !== id))
     }
     // function setTheme (theme: DeepPartial<Theme>) {
     //   // replace all

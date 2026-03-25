@@ -63,7 +63,7 @@ export default function Grid() {
       // Dots: {},
       ValueAxis: {},
       CategoryAxis: {},
-      // CategoryZoom: {},
+      CategoryZoom: {},
       // styles: {
       //   padding: {
       //     top: 60,
@@ -147,9 +147,12 @@ export default function Grid() {
         // },
         // fontSize: '0.875rem'
       },
-      plugins: [seriesPlot, tooltip, legend]
+      plugins: [seriesPlot, seriesPlot2, tooltip, legend]
     })
 
+    chart.context.plugins$.subscribe(plugins => {
+      console.log('Current plugins:', plugins)
+    })
     // seriesPlugin.updateParams({
     //   Pie: {
     //     outerRadius: 0.85,

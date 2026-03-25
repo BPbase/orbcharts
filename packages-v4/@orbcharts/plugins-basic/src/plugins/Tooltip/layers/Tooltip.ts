@@ -18,7 +18,7 @@ export const Tooltip = defineSVGLayer<TooltipExtendContext, TooltipPluginParams,
   name: layerName,
   defaultParams: DEFAULT_SERIES_TOOLTIP_PARAMS,
   layerIndex: LAYER_INDEX_OF_TOOLTIP,
-  initShow: false,
+  initShow: true,
   validator: (params) => {
     const result = validateObject(params, {
       backgroundColorType: {
