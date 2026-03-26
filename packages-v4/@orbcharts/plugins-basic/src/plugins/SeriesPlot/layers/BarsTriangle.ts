@@ -10,7 +10,7 @@ import {
 import type { BarsTriangleParams, SeriesPlotPluginParams } from '../types'
 import { DEFAULT_BARS_TRIANGLE_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../../const/layerIndex'
-import { createBaseBarsTriangle } from '../baseLayers/BaseBarsTriangle'
+import { createBaseBarsTriangle } from '../../../baseLayers/BaseBarsTriangle'
 import { defineSVGLayer } from '../../../../../core/src'
 import { SeriesPlotExtendContext } from '../types'
 import { validateObject } from '../../../../../core/src/utils'

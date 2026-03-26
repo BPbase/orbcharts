@@ -11,7 +11,7 @@ import {
   shareReplay,
   Observable,
   Subject } from 'rxjs'
-import type { ColorType, Theme } from '../../../../../core/src/types'
+import type { ColorType, Theme } from '../../../core/src/types'
 import type {
   ComputedData,
   ContainerPositionScaled,
@@ -20,11 +20,11 @@ import type {
   ValueAxis,
   CategoryAxis,
   GraphicStyles,
-} from '../../../types'
-import type { BaseLayerFn } from '../../../types/BaseLayer'
-import { parseTickFormatValue } from '../../../utils/d3Utils'
-import { getColor, createClassName } from '../../../utils/orbchartsUtils'
-import { renderTspansOnAxis } from '../../../utils/d3Graphics'
+} from '../types'
+import type { BaseLayerFn } from '../types/BaseLayer'
+import { parseTickFormatValue } from '../utils/d3Utils'
+import { getColor, createClassName } from '../utils/orbchartsUtils'
+import { renderTspansOnAxis } from '../utils/d3Graphics'
 
 export interface BaseCategoryAxisParams {
     labelOffset: [number, number];

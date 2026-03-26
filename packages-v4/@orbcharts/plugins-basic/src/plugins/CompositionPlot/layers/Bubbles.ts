@@ -18,7 +18,7 @@ import type { CompositionPlotExtendContext, CompositionPlotPluginParams, Bubbles
 import { defineSVGLayer } from "../../../../../core/src"
 import { validateObject } from '../../../../../core/src/utils'
 import { DEFAULT_BUBBLES_PARAMS } from "../defaults"
-import { seriesCenterSelectionObservable } from "../sharedObservables"
+import { seriesCenterSelectionObservable } from "../../../utils/seriesObservables"
 import { getDatumColor } from '../../../utils/orbchartsUtils'
 import { createClassName } from '../../../utils/orbchartsUtils'
 import type { ComputedDatumSeries } from '../../../types/ComputedData'

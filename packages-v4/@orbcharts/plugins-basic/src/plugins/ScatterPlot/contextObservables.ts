@@ -358,7 +358,7 @@ export const containerPositionObservable = ({ computedData$, pluginParams$, layo
     pluginParams: pluginParams$,
     layout: layout$,
   }).pipe(
-    switchMap(async (d) => d),
+    debounceTime(0),
     map(data => {
       // 無資料時回傳預設container位置
       if (data.computedData.length === 0) {
@@ -655,7 +655,7 @@ export const graphicTransformObservable = ({ xyMinMax$, xyValueIndex$, filteredX
       layout: layout$
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async (d) => d),
+      debounceTime(0),
     ).subscribe(data => {
       if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
         || data.filteredXYMinMaxData.minXDatum.multivariate[data.xyValueIndex[0]].value == null || data.filteredXYMinMaxData.maxXDatum.multivariate[data.xyValueIndex[0]].value == null
@@ -695,7 +695,7 @@ export const graphicReverseScaleObservable = ({ containerPosition$, graphicTrans
     // multivariateAxesTransform: multivariateAxesTransform$,
     graphicTransform: graphicTransform$,
   }).pipe(
-    switchMap(async (d) => d),
+    debounceTime(0),
     map(data => {
       // if (data.multivariateAxesTransform.rotate == 0 || data.multivariateAxesTransform.rotate == 180) {
         return data.containerPosition.map((series, seriesIndex) => {
@@ -737,7 +737,7 @@ export const xScaleObservable = ({ visibleComputedSumData$, filteredXYMinMaxData
     // xyMinMax: xyMinMax$
     filteredXYMinMaxData: filteredXYMinMaxData$
   }).pipe(
-    switchMap(async (d) => d),
+    debounceTime(0),
     map(data => {
       // const valueIndex = data.xAxis.valueIndex
       if (!data.filteredXYMinMaxData.minXDatum || !data.filteredXYMinMaxData.maxXDatum
@@ -780,7 +780,7 @@ export const yScaleObservable = ({ yAxis$, filteredXYMinMaxData$, containerSize$
     // xyMinMax: observer.xyMinMax$
     filteredXYMinMaxData: filteredXYMinMaxData$
   }).pipe(
-    switchMap(async (d) => d),
+    debounceTime(0),
     map(data => {
       // const valueIndex = data.yAxis.valueIndex
       if (!data.filteredXYMinMaxData.minYDatum || !data.filteredXYMinMaxData.maxYDatum
@@ -819,7 +819,7 @@ export const ordinalPaddingObservable = ({ ordinalScaleDomain$, computedData$, c
     containerSize: containerSize$,
     computedData: computedData$
   }).pipe(
-    switchMap(async (d) => d),
+    debounceTime(0),
     map(data => {
       let maxValue: number = data.computedData[0] && data.computedData[0][0] && data.computedData[0][0].multivariate.length
         ? data.computedData[0][0].multivariate.length - 1
@@ -861,7 +861,7 @@ export const ordinalScaleObservable = ({ ordinalScaleDomain$, computedData$, con
     containerSize: containerSize$,
     ordinalPadding: ordinalPadding$,
   }).pipe(
-    switchMap(async (d) => d),
+    debounceTime(0),
     map(data => {
       let maxValue: number = data.computedData[0] && data.computedData[0][0] && data.computedData[0][0].multivariate.length
         ? data.computedData[0][0].multivariate.length - 1

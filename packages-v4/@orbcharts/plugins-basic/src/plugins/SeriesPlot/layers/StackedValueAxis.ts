@@ -13,7 +13,7 @@ import { LAYER_INDEX_OF_AXIS } from '../../../const/layerIndex'
 import { defineSVGLayer } from '../../../../../core/src'
 import { SeriesPlotExtendContext } from '../types'
 import { validateObject } from '../../../../../core/src/utils'
-import { createBaseValueAxis } from '../baseLayers/BaseValueAxis'
+import { createBaseValueAxis } from '../../../baseLayers/BaseValueAxis'
 
 const pluginName = 'SeriesPlot'
 const layerName = 'StackedValueAxis'

@@ -18,11 +18,11 @@ import type {
   ContainerSize,
   TransformData,
   ContainerPositionScaled,
-  Layout } from '../../types'
-import { createAxisToLabelIndexScale } from '../../utils/d3Scale'
-import { createClassName } from '../../utils/orbchartsUtils'
-import { d3EventObservable } from '../../utils/observables'
-import { SeriesPlotPluginParams } from './types'
+  Layout } from '../types'
+import { createAxisToLabelIndexScale } from './d3Scale'
+import { createClassName } from './orbchartsUtils'
+import { d3EventObservable } from './observables'
+import { SeriesPlotPluginParams } from '../plugins/SeriesPlot/types'
 
 // 建立 grid 主要的 selection 
 export const gridSelectionsObservable = ({ selection, pluginName, layerName, clipPathID, seriesLabels$, gridContainerPosition$, gridAxesTransform$, gridGraphicTransform$ }: {

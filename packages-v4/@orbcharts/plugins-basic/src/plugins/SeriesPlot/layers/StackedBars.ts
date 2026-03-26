@@ -9,7 +9,7 @@ import {
 import type { SeriesPlotPluginParams, StackedBarsParams } from '../types'
 import { DEFAULT_STACKED_BARS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../../const/layerIndex'
-import { createBaseStackedBars } from '../baseLayers/BaseStackedBars'
+import { createBaseStackedBars } from '../../../baseLayers/BaseStackedBars'
 import { defineSVGLayer } from '../../../../../core/src'
 import { SeriesPlotExtendContext } from '../types'
 import { validateObject } from '../../../../../core/src/utils'

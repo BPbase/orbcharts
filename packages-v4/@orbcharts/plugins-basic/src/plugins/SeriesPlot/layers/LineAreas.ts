@@ -5,7 +5,7 @@ import { defineSVGLayer } from '../../../../../core/src'
 import { SeriesPlotExtendContext } from '../types'
 import { validateObject } from '../../../../../core/src/utils'
 import { DEFAULT_LINE_AREAS_PARAMS } from '../defaults'
-import { createBaseLineAreas } from '../baseLayers/BaseLineAreas'
+import { createBaseLineAreas } from '../../../baseLayers/BaseLineAreas'
 import { LAYER_INDEX_OF_GRAPHIC_GROUND } from '../../../const/layerIndex'
 
 const pluginName = 'SeriesPlot'

@@ -14,10 +14,10 @@ import {
   distinctUntilChanged
 } from 'rxjs'
 import type {
-  ContainerPosition } from '../../types/PluginParams'
+  ContainerPosition } from '../types/PluginParams'
 import type {
-  ComputedDatumSeries } from '../../types/ComputedData'
-import { createClassName } from '../../utils/orbchartsUtils'
+  ComputedDatumSeries } from '../types/ComputedData'
+import { createClassName } from './orbchartsUtils'
 
 function createSeriesSelection ({ selection, pluginName, layerName, visibleComputedSortedData$ }: {
   selection: d3.Selection<any, unknown, any, unknown>

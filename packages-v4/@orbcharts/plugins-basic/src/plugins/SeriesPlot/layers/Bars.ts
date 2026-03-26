@@ -10,7 +10,7 @@ import {
 import type { BarsParams, SeriesPlotPluginParams } from '../types'
 import { DEFAULT_BARS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../../const/layerIndex'
-import { createBaseBars } from '../baseLayers/BaseBars'
+import { createBaseBars } from '../../../baseLayers/BaseBars'
 import { defineSVGLayer } from '../../../../../core/src'
 import { SeriesPlotExtendContext } from '../types'
 import { validateObject } from '../../../../../core/src/utils'

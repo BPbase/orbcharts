@@ -17,7 +17,7 @@ import type { PieDatum } from '../utils'
 import { defineSVGLayer } from "../../../../../core/src"
 import { validateObject } from '../../../../../core/src/utils'
 import { DEFAULT_ROSE_LABELS_PARAMS, DEFAULT_ROSE_PARAMS } from "../defaults"
-import { seriesCenterSelectionObservable } from "../sharedObservables"
+import { seriesCenterSelectionObservable } from "../../../utils/seriesObservables"
 import { getDatumColor } from '../../../utils/orbchartsUtils'
 import { createClassName } from '../../../utils/orbchartsUtils'
 import { makeD3Arc } from '../../../utils/d3Utils'

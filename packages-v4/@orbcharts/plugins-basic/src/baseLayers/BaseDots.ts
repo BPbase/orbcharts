@@ -8,12 +8,12 @@ import {
   distinctUntilChanged,
   Observable,
   Subject } from 'rxjs'
-import type { BaseLayerFn } from '../../../types/BaseLayer'
+import type { BaseLayerFn } from '../types/BaseLayer'
 import type {
   EventData,
   ColorType,
   Theme
-} from '../../../../../core/src/types'
+} from '../../../core/src/types'
 import type {
   ComputedData,
   ComputedDatumGrid,
@@ -21,10 +21,10 @@ import type {
   TransformData,
   Layout,
   GraphicStyles
-} from '../../../types'
-import type { ComputedAxesDataGrid } from '../types'
-import { getDatumColor, createClassName, createUniID } from '../../../utils/orbchartsUtils'
-import { gridSelectionsObservable } from '../sharedObservables'
+} from '../types'
+import type { ComputedAxesDataGrid } from '../plugins/SeriesPlot/types'
+import { getDatumColor, createClassName, createUniID } from '../utils/orbchartsUtils'
+import { gridSelectionsObservable } from '../utils/gridObservables'
 
 export interface BaseDotsParams {
     radius: number;

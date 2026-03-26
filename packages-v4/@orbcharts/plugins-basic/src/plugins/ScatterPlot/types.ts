@@ -16,6 +16,8 @@ export interface ScatterPlotExtendContext {
   layout$: Observable<Layout>
   computedData$: Observable<ComputedDatumMultivariate[][]>
   fontSizePx$: Observable<number>
+  isSeriesSeprate$: Observable<boolean>
+  containerPosition$: Observable<ContainerPositionScaled[]>
   containerSize$: Observable<ContainerSize>
   highlight$: Observable<ComputedDatumMultivariate[]>
   
@@ -46,7 +48,7 @@ export interface ScatterPlotExtendContext {
   yScale$: Observable<d3.ScaleLinear<number, number>>
   
   zoomedXAxis$: Observable<XYAxis>
-  zoomedYAxis$: Observable<XYAxis>
+  yAxis$: Observable<XYAxis>
   
 }
 
@@ -67,6 +69,7 @@ export interface ScatterPlotAllLayerParams {
   ScatterBubbles: ScatterBubblesParams
   XYAux: XYAuxParams
   XYAxes: XYAxesParams
+  XZoom: XZoomParams
 }
 
 // -- layer params --

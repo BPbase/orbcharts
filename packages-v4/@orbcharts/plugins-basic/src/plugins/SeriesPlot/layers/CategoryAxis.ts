@@ -13,7 +13,7 @@ import { LAYER_INDEX_OF_INFO } from '../../../const/layerIndex'
 import { defineSVGLayer } from '../../../../../core/src'
 import { SeriesPlotExtendContext } from '../types'
 import { validateObject } from '../../../../../core/src/utils'
-import { createBaseCategoryAxis } from '../baseLayers/BaseCategoryAxis'
+import { createBaseCategoryAxis } from '../../../baseLayers/BaseCategoryAxis'
 
 const pluginName = 'SeriesPlot'
 const layerName = 'CategoryAxis'

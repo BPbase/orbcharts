@@ -53,29 +53,16 @@ import {
   multivariateComputedDataObservable,
   // valueLabelsObservable
 } from './contextObservables'
-// import { Bars } from './layers/Bars'
-// import { BarsTriangle } from './layers/BarsTriangle'
-// import { CategoryAux } from './layers/CategoryAux'
-// import { CategoryAxis } from './layers/CategoryAxis'
-// import { CategoryZoom } from './layers/CategoryZoom'
-// import { Dots } from './layers/Dots'
-// import { LineAreas } from './layers/LineAreas'
-// import { Lines } from './layers/Lines'
-// import { StackedBars } from './layers/StackedBars'
-// import { StackedValueAxis } from './layers/StackedValueAxis'
-// import { ValueAxis } from './layers/ValueAxis'
-
-// const bars = new Bars()
-// const barsTriangle = new BarsTriangle()
-// const categoryAux = new CategoryAux()
-// const categoryAxis = new CategoryAxis()
-// const categoryZoom = new CategoryZoom()
-// const dots = new Dots()
-// const lineAreas = new LineAreas()
-// const lines = new Lines()
-// const stackedBars = new StackedBars()
-// const stackedValueAxis = new StackedValueAxis()
-// const valueAxis = new ValueAxis()
+import { Scatter } from './layers/Scatter'
+import { ScatterBubbles } from './layers/ScatterBubbles'
+import { XYAux } from './layers/XYAux'
+import { XYAxes } from './layers/XYAxes'
+import { XZoom } from './layers/XZoom'
+const scatter = new Scatter()
+const scatterBubbles = new ScatterBubbles()
+const xyAux = new XYAux()
+const xyAxes = new XYAxes()
+const xZoom = new XZoom()
 
 export const ScatterPlot = defineSVGPlugin<
   ScatterPlotExtendContext,
@@ -84,17 +71,14 @@ export const ScatterPlot = defineSVGPlugin<
 >({
   name: 'ScatterPlot',
   defaultParams: DEFAULT_SCATTER_PLOT_PARAMS,
-  layers: [],
+  layers: [scatter, scatterBubbles, xyAux, xyAxes, xZoom],
   setup: (props) => {
     
     const zoomedScaleDomain$ = new BehaviorSubject<[number, number | "max"] | undefined>(undefined)
     props.context.event$.subscribe(event => {
       if (event.eventName === 'zoom' && event.data) {
-        if (event.data.xScaleDomain) {
-          zoomedScaleDomain$.next(event.data.xScaleDomain)
-        }
-        if (event.data.yScaleDomain) {
-          zoomedScaleDomain$.next(event.data.yScaleDomain)
+        if (event.data.scaleDomain) {
+          zoomedScaleDomain$.next(event.data.scaleDomain)
         }
       }
     })
@@ -114,18 +98,22 @@ export const ScatterPlot = defineSVGPlugin<
       shareReplay(1)
     )
 
-    const zoomedYAxis$ = props.pluginParams$.pipe(
-      switchMap(({ yAxis }) => zoomedScaleDomain$.pipe(
-        map(scaleDomain => {
-          if (!scaleDomain) {
-            return yAxis
-          }
-          return {
-            ...yAxis,
-            scaleDomain
-          }
-        })
-      )),
+    // const zoomedYAxis$ = props.pluginParams$.pipe(
+    //   switchMap(({ yAxis }) => zoomedScaleDomain$.pipe(
+    //     map(scaleDomain => {
+    //       if (!scaleDomain) {
+    //         return yAxis
+    //       }
+    //       return {
+    //         ...yAxis,
+    //         scaleDomain
+    //       }
+    //     })
+    //   )),
+    //   shareReplay(1)
+    // )
+    const yAxis$ = props.pluginParams$.pipe(
+      map(params => params.yAxis),
       shareReplay(1)
     )
 
@@ -313,7 +301,7 @@ export const ScatterPlot = defineSVGPlugin<
       xyMinMax$,
       xyValueIndex$,
       xAxis$: zoomedXAxis$,
-      yAxis$: zoomedYAxis$
+      yAxis$
     }).pipe(
       shareReplay(1)
     )
@@ -357,8 +345,8 @@ export const ScatterPlot = defineSVGPlugin<
       xyValueIndex$,
       filteredXYMinMaxData$,
       xAxis$: zoomedXAxis$,
-      yAxis$: zoomedYAxis$,
-      layout$: props.context.layout$
+      yAxis$,
+      layout$: layout$
     }).pipe(
       shareReplay(1)
     )
@@ -389,7 +377,7 @@ export const ScatterPlot = defineSVGPlugin<
     // )
 
     const yScale$ = yScaleObservable({
-      yAxis$: zoomedYAxis$,
+      yAxis$,
       filteredXYMinMaxData$,
       containerSize$: containerSize$,
     }).pipe(
@@ -417,6 +405,8 @@ export const ScatterPlot = defineSVGPlugin<
       layout$,
       computedData$,
       fontSizePx$,
+      isSeriesSeprate$,
+      containerPosition$,
       containerSize$,
       highlight$,
       seriesLabels$,
@@ -433,7 +423,7 @@ export const ScatterPlot = defineSVGPlugin<
       xScale$,
       yScale$,
       zoomedXAxis$,
-      zoomedYAxis$
+      yAxis$
     }
 
     props.context = {

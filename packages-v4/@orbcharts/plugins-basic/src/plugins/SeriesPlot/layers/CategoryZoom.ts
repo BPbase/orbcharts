@@ -62,7 +62,7 @@ export const CategoryZoom = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPl
     //     .attr('y', d.top)
     // })
 
-    const groupMaxIndex$ = context.computedData$.pipe(
+    const categoryMaxIndex$ = context.computedData$.pipe(
       map(d => d[0] ? d[0].length - 1 : 0),
       distinctUntilChanged()
     )
@@ -77,59 +77,59 @@ export const CategoryZoom = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPl
     //     store.fullDataFormatter$.next(fullDataFormatter)
     //   })
 
-    const initGroupAxis$ = pluginParams$.pipe(
+    const initCategoryAxis$ = pluginParams$.pipe(
       map(d => d.categoryAxis),
-      // 只用第一次資料來計算scale才不會造成每次變動都受到影響
-      first()
+      // // 只用第一次資料來計算scale才不會造成每次變動都受到影響
+      // first()
     )
 
 
     const initGroupScale$ = combineLatest({
-      initGroupAxis: initGroupAxis$,
+      initCategoryAxis: initCategoryAxis$,
       // fullDataFormatter: context.fullDataFormatter$,
-      groupMaxIndex: groupMaxIndex$,
+      categoryMaxIndex: categoryMaxIndex$,
       layout: context.layout$,
       axisSize: context.gridAxesSize$
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async (d) => d),
+      debounceTime(0),
       map(data => {
-        // const groupMin = 0
-        const groupScaleDomainMin = data.initGroupAxis.scaleDomain[0] - data.initGroupAxis.scalePadding
-        const groupScaleDomainMax = data.initGroupAxis.scaleDomain[1] === 'max'
-          ? data.groupMaxIndex + data.initGroupAxis.scalePadding
-          : data.initGroupAxis.scaleDomain[1] as number + data.initGroupAxis.scalePadding
+        // const categoryMin = 0
+        const categoryScaleDomainMin = data.initCategoryAxis.scaleDomain[0] - data.initCategoryAxis.scalePadding
+        const categoryScaleDomainMax = data.initCategoryAxis.scaleDomain[1] === 'max'
+          ? data.categoryMaxIndex + data.initCategoryAxis.scalePadding
+          : data.initCategoryAxis.scaleDomain[1] as number + data.initCategoryAxis.scalePadding
 
-        const groupScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-          maxValue: data.groupMaxIndex,
+        const categoryScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
+          maxValue: data.categoryMaxIndex,
           minValue: 0,
           axisWidth: data.axisSize.width,
-          scaleDomain: [groupScaleDomainMin, groupScaleDomainMax],
+          scaleDomain: [categoryScaleDomainMin, categoryScaleDomainMax],
           scaleRange: [0, 1]
         })
 
-        return groupScale
+        return categoryScale
       })
     )
 
     combineLatest({
       initGroupScale: initGroupScale$,
-      // initGroupAxis: initGroupAxis$,
+      // initCategoryAxis: initCategoryAxis$,
       // fullDataFormatter: fullDataFormatter$.pipe(first()), // 只用第一次資料來計算scale才不會造成每次變動都受到影響
       pluginParams: pluginParams$,
-      groupMaxIndex: groupMaxIndex$,
+      categoryMaxIndex: categoryMaxIndex$,
       // layout: context.layout$,
       // axisSize: context.gridAxesSize$
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async (d) => d),
+      debounceTime(0),
     ).subscribe(data => {
-      const groupMinIndex = 0
+      const categoryMinIndex = 0
 
       const shadowScale = data.initGroupScale.copy()
 
       const zoom = d3.zoom()
-        // .scaleExtent([1, data.groupMaxIndex])
+        // .scaleExtent([1, data.categoryMaxIndex])
         // .translateExtent([[0, 0], [data.layout.rootWidth, data.layout.rootWidth]])
         .on("zoom", function zoomed(event) {
           // debugger
@@ -155,7 +155,7 @@ export const CategoryZoom = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPl
           // console.log('t.x', t.x)
           const mapGroupindex = (d: number) => {
             const n = Math.round(d)
-            return Math.min(data.groupMaxIndex, Math.max(groupMinIndex, n));
+            return Math.min(data.categoryMaxIndex, Math.max(categoryMinIndex, n));
           }
           
           const zoomedDomain = data.pluginParams.categoryAxis.position === 'bottom' || data.pluginParams.categoryAxis.position === 'top'
@@ -168,7 +168,7 @@ export const CategoryZoom = defineSVGLayer<SeriesPlotExtendContext, SeriesPlotPl
 
 
           // domain超過極限值
-          if (zoomedDomain[0] <= groupMinIndex && zoomedDomain[1] >= data.groupMaxIndex) {
+          if (zoomedDomain[0] <= categoryMinIndex && zoomedDomain[1] >= data.categoryMaxIndex) {
             // 繼續縮小
             if (t.k < lastTransform.k) {
               // 維持前一次的transform

@@ -10,7 +10,7 @@ import {
 import type { DotsParams, SeriesPlotPluginParams } from '../types'
 import { DEFAULT_DOTS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_GRAPHIC } from '../../../const/layerIndex'
-import { createBaseDots } from '../baseLayers/BaseDots'
+import { createBaseDots } from '../../../baseLayers/BaseDots'
 import { defineSVGLayer } from '../../../../../core/src'
 import { SeriesPlotExtendContext } from '../types'
 import { validateObject } from '../../../../../core/src/utils'

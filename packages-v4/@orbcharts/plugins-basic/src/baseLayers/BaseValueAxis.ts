@@ -9,8 +9,8 @@ import {
   takeUntil,
   Observable,
   Subject } from 'rxjs'
-import type { ColorType, Theme } from '../../../../../core/src/types'
-import type { BaseLayerFn } from '../../../types/BaseLayer'
+import type { ColorType, Theme } from '../../../core/src/types'
+import type { BaseLayerFn } from '../types/BaseLayer'
 import type {
   CategoryAxis,
   ValueAxis,
@@ -20,11 +20,11 @@ import type {
   TransformData,
   ComputedData,
   GraphicStyles
-} from '../../../types'
-import { createValueToAxisScale } from '../../../utils/d3Scale'
-import { parseTickFormatValue } from '../../../utils/d3Utils'
-import { getColor, getMinMaxValue, createClassName } from '../../../utils/orbchartsUtils'
-import { gridContainerSelectionsObservable } from '../sharedObservables'
+} from '../types'
+import { createValueToAxisScale } from '../utils/d3Scale'
+import { parseTickFormatValue } from '../utils/d3Utils'
+import { getColor, getMinMaxValue, createClassName } from '../utils/orbchartsUtils'
+import { gridContainerSelectionsObservable } from '../utils/gridObservables'
 
 export interface BaseValueAxisParams {
     labelOffset: [number, number];
