@@ -6,14 +6,14 @@ import { OrbCharts } from '@orbcharts/core/index'
 import { ScatterPlot, Tooltip, Legend } from '@orbcharts/plugins-basic/index'
 
 const pieData: RawData = [
-  { series: 'A', x: 30, y: 10, name: 'a' },
-  { series: 'A', x: 50, y: 20 },
-  { series: 'B', x: 70, y: 30 },
-  { series: 'A', x: 20, y: 40 },
-  { series: 'C', x: 45, y: 50 },
-  { series: 'D', x: 85, y: 60 },
-  { series: 'C', x: 45, y: 50 },
-  { series: 'D', x: 85, y: 60 },
+  { series: 'A', x: 30, y: 10, z: 10, name: 'a' },
+  { series: 'A', x: 50, y: 20, z: 20, name: 'b' },
+  { series: 'B', x: 70, y: 30, z: 30, name: 'c' },
+  { series: 'A', x: 20, y: 40, z: 40, name: 'd' },
+  { series: 'C', x: 45, y: 50, z: 50, name: 'e' },
+  { series: 'D', x: 85, y: 60, z: 60, name: 'f' },
+  { series: 'C', x: 45, y: 50, z: 50, name: 'g' },
+  { series: 'D', x: 85, y: 60, z: 60, name: 'h' },
 ]
 
 export default function Series() {
@@ -26,7 +26,7 @@ export default function Series() {
     // console.log(domRef.current)
 
     const scatterPlugin = new ScatterPlot({
-      Scatter: {},
+      ScatterBubbles: {},
       XYAxes: {},
       XYAux: {},
       XZoom: {}

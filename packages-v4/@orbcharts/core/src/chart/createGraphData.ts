@@ -252,6 +252,32 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
       }
     })
 
+    // 建立 series/category 名稱到索引的映射（基於 nodes，共用相同的 seriesIndex/categoryIndex）
+    const seriesNameToIndexMap = new Map<string, number>()
+    const categoryNameToIndexMap = new Map<string, number>()
+    nodes.forEach((node) => {
+      if (!seriesNameToIndexMap.has(node.series)) {
+        seriesNameToIndexMap.set(node.series, node.seriesIndex)
+      }
+      if (!categoryNameToIndexMap.has(node.category)) {
+        categoryNameToIndexMap.set(node.category, node.categoryIndex)
+      }
+    })
+    let nextSeriesIndex = seriesNameToIndexMap.size
+    let nextCategoryIndex = categoryNameToIndexMap.size
+    const getEdgeSeriesIndex = (name: string): number => {
+      if (!seriesNameToIndexMap.has(name)) {
+        seriesNameToIndexMap.set(name, nextSeriesIndex++)
+      }
+      return seriesNameToIndexMap.get(name)!
+    }
+    const getEdgeCategoryIndex = (name: string): number => {
+      if (!categoryNameToIndexMap.has(name)) {
+        categoryNameToIndexMap.set(name, nextCategoryIndex++)
+      }
+      return categoryNameToIndexMap.get(name)!
+    }
+
     // 依據 dataset 分組處理 edges（這裡使用所有邊的資料，但只處理目前 dataset 的邊）
     const datasetEdges = edgeData.filter(d => {
       const datasetKey = (d as any)[encoding.dataset.from] || 'default'
@@ -286,6 +312,10 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
           // 不聚合，保持原始資料結構
           groupEdges.forEach((d, index) => {
             const value = (d as any)[encoding.value.from]
+            const edgeSeries = (d as any)[encoding.series.from] || 'default'
+            const edgeCategory = (d as any)[encoding.category.from] || 'default'
+            const edgeSeriesIndex = getEdgeSeriesIndex(edgeSeries)
+            const edgeCategoryIndex = getEdgeCategoryIndex(edgeCategory)
             const edge: ModelDatumGraphEdge = {
               id: d.id || `edge-${edgeIndex}-${index}`,
               index: edges.length,
@@ -295,10 +325,14 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
               value: typeof value === 'number' ? value : null,
               color: getColorByFrom(encoding.color.from, { 
                 index: edges.length,
-                seriesIndex: 0, // edges 沒有明確的 seriesIndex
-                categoryIndex: 0, // edges 沒有明確的 categoryIndex
+                seriesIndex: edgeSeriesIndex,
+                categoryIndex: edgeCategoryIndex,
                 datasetIndex
               }, theme),
+              series: edgeSeries,
+              seriesIndex: edgeSeriesIndex,
+              category: edgeCategory,
+              categoryIndex: edgeCategoryIndex,
               source,
               sourceIndex,
               target,
@@ -317,7 +351,12 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
           })
           
           const aggregatedValue = aggregate(values, encoding.value.aggregate)
-          
+
+          const edgeSeries = (firstEdge as any)[encoding.series.from] || 'default'
+          const edgeCategory = (firstEdge as any)[encoding.category.from] || 'default'
+          const edgeSeriesIndex = getEdgeSeriesIndex(edgeSeries)
+          const edgeCategoryIndex = getEdgeCategoryIndex(edgeCategory)
+
           const edge: ModelDatumGraphEdge = {
             id: firstEdge.id || `edge-${edgeIndex}-aggregated`,
             index: edges.length,
@@ -327,10 +366,14 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
             value: aggregatedValue,
             color: getColorByFrom(encoding.color.from, { 
               index: edges.length,
-              seriesIndex: 0,
-              categoryIndex: 0,
+              seriesIndex: edgeSeriesIndex,
+              categoryIndex: edgeCategoryIndex,
               datasetIndex
             }, theme),
+            series: edgeSeries,
+            seriesIndex: edgeSeriesIndex,
+            category: edgeCategory,
+            categoryIndex: edgeCategoryIndex,
             source,
             sourceIndex,
             target,

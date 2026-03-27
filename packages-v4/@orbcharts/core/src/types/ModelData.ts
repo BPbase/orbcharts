@@ -45,6 +45,10 @@ export interface ModelDatumGraphNode extends ModelDatumBase {
 }
 
 export interface ModelDatumGraphEdge extends ModelDatumBase {
+  series: string
+  seriesIndex: number
+  category: string
+  categoryIndex: number
   source: string // 來源節點名稱
   sourceIndex: number // 來源節點在所有節點中的索引
   target: string // 目標節點名稱

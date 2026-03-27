@@ -1,6 +1,7 @@
 import type {
   ModelType,
-  ModelDatum
+  ModelDatum,
+  ModelDatumGraphEdge
 } from './index'
 
 // 基礎型別，其他欄位留給 Plugin 擴充
@@ -12,3 +13,4 @@ export type RenderDatumBase<
   ExtendTypes extends Record<string, any> = {}
 > = ModelDatum<T> & ExtendTypes
 
+export type RenderDatumGraphEdge<ExtendTypes extends Record<string, any> = {}> = ModelDatumGraphEdge & ExtendTypes

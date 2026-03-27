@@ -1,4 +1,4 @@
-import type { ModelType } from '../../../core/src/types'
+import type { ModelType, RenderDatumGraphEdge } from '../../../core/src/types'
 import type {
   ModelDatumBase,
   ModelDatumSeries,
@@ -28,7 +28,7 @@ export interface ComputedDatumGraphNode extends RenderDatumBase<'graph'> {
   visible: boolean
 }
 
-export interface ComputedDatumGraphEdge extends RenderDatumBase<'graph'> {
+export interface ComputedDatumGraphEdge extends RenderDatumGraphEdge {
   visible: boolean
 }
 

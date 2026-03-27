@@ -433,7 +433,7 @@ export const XYAux = defineSVGLayer<ScatterPlotExtendContext, ScatterPlotPluginP
       defsSelection$,
       graphicGSelection$
     } = multivariateSelectionsObservable({
-      selection: d3.select(context.svg),
+      selection: d3.select(svgG),
       pluginName,
       layerName,
       clipPathID: 'XYAuxClipPath',
@@ -541,7 +541,7 @@ export const XYAux = defineSVGLayer<ScatterPlotExtendContext, ScatterPlotPluginP
       rowAmount: rowAmount$
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async d => d),
+      debounceTime(0),
     ).subscribe(data => {
       // 依event的座標取得group資料
       const { x, y, xValue, yValue } = data.xyPosition
@@ -665,7 +665,7 @@ export const XYAux = defineSVGLayer<ScatterPlotExtendContext, ScatterPlotPluginP
       axesSelection: axesSelection$,
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async d => d)
+      debounceTime(0)
     ).subscribe(data => {
       setTimeout(() => {
         // // @Q@ workaround - 不知為何和 label 會有衝突，當滑鼠移動到 label 上時，會觸發 mouseout 事件

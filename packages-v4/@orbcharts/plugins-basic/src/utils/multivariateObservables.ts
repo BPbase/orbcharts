@@ -107,7 +107,7 @@ export const multivariateSelectionsObservable = ({ selection, pluginName, layerN
     seriesSelection: seriesSelection$,
     containerPosition: containerPosition$                                                                                                                                                                                       
   }).pipe(
-    switchMap(async d => d)
+    debounceTime(0)
   ).subscribe(data => {
     data.seriesSelection
       .transition()
@@ -141,7 +141,7 @@ export const multivariateSelectionsObservable = ({ selection, pluginName, layerN
     axesSelection: axesSelection$,
     graphicTransform: graphicTransform$
   }).pipe(
-    switchMap(async d => d),
+    debounceTime(0),
     map(data => {
       const graphicGSelection = data.axesSelection
         .select<SVGGElement>(`g.${graphicClassName}`)
@@ -206,7 +206,7 @@ export const multivariateContainerSelectionsObservable = ({ selection, pluginNam
     containerSelection: containerSelection$,
     gridContainerPosition: containerPosition$
   }).pipe(
-    switchMap(async d => d)
+    debounceTime(0)
   ).subscribe(data => {
     data.containerSelection
       .attr('transform', (d, i) => {
@@ -275,7 +275,7 @@ export const multivariateXYPositionObservable = ({ rootSelection, xAxis$, yAxis$
   //   columnAmount: columnAmount$,
   //   rowAmount: rowAmount$
   // }).pipe(
-  //   switchMap(async d => d),
+  //   debounceTime(0),
   //   map(data => {
   //     const xScale = createAxisToValueScale({
   //       maxValue: data.filteredXYMinMaxData.maxXDatum.value[0],
@@ -310,7 +310,7 @@ export const multivariateXYPositionObservable = ({ rootSelection, xAxis$, yAxis$
       // columnAmount: columnAmount$,
       // rowAmount: rowAmount$
     }).pipe(
-      switchMap(async d => d),
+      debounceTime(0),
     ).subscribe(data => {
       // const xValueIndex = data.xAxis.valueIndex
       // const yValueIndex = data.yAxis.valueIndex
@@ -348,7 +348,7 @@ export const multivariateXYPositionObservable = ({ rootSelection, xAxis$, yAxis$
     layout: layout$,
     containerPosition: containerPosition$
   }).pipe(
-    switchMap(async d => d),
+    debounceTime(0),
     map(data => {
       // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
       // return {
@@ -390,7 +390,7 @@ export const multivariateXYPositionObservable = ({ rootSelection, xAxis$, yAxis$
     axisValue: axisValue$,
     containerPosition: containerPosition$
   }).pipe(
-    switchMap(async d => d),
+    debounceTime(0),
     map(data => {
       return {
         x: data.axisValue.x / data.containerPosition[0].scale[0],
@@ -433,7 +433,7 @@ export const ordinalPositionObservable = ({ rootSelection, ordinalScaleDomain$, 
     // containerSize: containerSize$,
     containerPosition: containerPosition$,
   }).pipe(
-    switchMap(async d => d),
+    debounceTime(0),
     map(data => {
       // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
       // return ((data.rootMousemove.offsetX - data.layout.left) / data.containerPosition[0].scale[0])
@@ -468,7 +468,7 @@ export const ordinalPositionObservable = ({ rootSelection, ordinalScaleDomain$, 
     ordinalScaleDomain: ordinalScaleDomain$,
     containerPosition: containerPosition$
   }).pipe(
-    switchMap(async d => d),
+    debounceTime(0),
     map(data => {
       // 比例尺座標對應非連續資料索引
       const xIndexScale = createAxisToLabelIndexScale({
@@ -567,7 +567,7 @@ export const computedRankingAmountObservable = ({ containerSize$, visibleCompute
           visibleComputedData: visibleComputedData$,
           rankingAmountLimit: rankingAmountLimit$,
         }).pipe(
-          switchMap(async d => d),
+          debounceTime(0),
           map(data => {
             const rankingAmountArr = data.visibleComputedData.map(categoryData => {
               return Math.min(data.rankingAmountLimit, categoryData.length)
@@ -724,7 +724,7 @@ export const rankingScaleListObservable = ({ visibleComputedRankingData$, rankin
 //     xyValueIndex: xyValueIndex$,
 //     layout: layout$
 //   }).pipe(
-//     switchMap(async d => d),
+//     debounceTime(0),
 //     map(data => {
       
 //       // const maxX = data.visibleComputedRankingData
@@ -771,7 +771,7 @@ export const rankingScaleListObservable = ({ visibleComputedRankingData$, rankin
 //     visibleComputedRankingData: visibleComputedRankingData$,
 //     rankingScaleList: rankingScaleList$
 //   }).pipe(
-//     switchMap(async d => d),
+//     debounceTime(0),
 //     map(data => {
 //       return data.visibleComputedRankingData
 //         .map((categoryData, categoryIndex) => {
