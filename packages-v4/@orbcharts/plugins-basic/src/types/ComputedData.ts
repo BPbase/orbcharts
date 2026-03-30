@@ -34,6 +34,7 @@ export interface ComputedDatumGraphEdge extends RenderDatumGraphEdge {
 
 export interface ComputedDatumTree extends RenderDatumBase<'tree'> {
   visible: boolean
+  children: ComputedDatumTree[]
 }
 
 export type ComputedDatum<T extends ModelType> = T extends 'series' ? ComputedDatumSeries

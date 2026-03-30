@@ -2,10 +2,14 @@ import * as d3 from 'd3'
 import {
   combineLatest,
   map,
+  first,
   switchMap,
   debounceTime,
   takeUntil,
   distinctUntilChanged,
+  shareReplay,
+  iif,
+  EMPTY,
   Observable,
   Subject,
   BehaviorSubject
@@ -42,9 +46,9 @@ type Zoom = {
 type RenderNode = d3.SimulationNodeDatum & ComputedDatumGraphNode
 
 // d3 forceSimulation使用的edge資料
-type RenderEdge = ComputedDatumGraphEdge & {
-  source: RenderNode
-  target: RenderNode
+interface RenderEdge extends ComputedDatumGraphEdge {
+  _source: RenderNode
+  _target: RenderNode
 }
 
 // d3 forceSimulation使用的資料
@@ -88,10 +92,10 @@ const nodeLabelGClassName = createClassName(pluginName, layerName, 'node-label-g
 const nodeLabelClassName = createClassName(pluginName, layerName, 'node-label')
 
 
-function createSimulation (layout: Layout, fullParams: ForceDirectedParams) {
+function createSimulation (layout: Layout, layerParams: ForceDirectedParams) {
   return d3.forceSimulation()
-    .velocityDecay(fullParams.force.velocityDecay)
-    .alphaDecay(fullParams.force.alphaDecay)
+    .velocityDecay(layerParams.force.velocityDecay)
+    .alphaDecay(layerParams.force.alphaDecay)
     .force(
       "link",
       d3.forceLink()
@@ -103,24 +107,24 @@ function createSimulation (layout: Layout, fullParams: ForceDirectedParams) {
           // } else {
           //   return 250
           // }
-          return fullParams.force.linkDistance
+          return layerParams.force.linkDistance
         })
     )
-    .force("charge", d3.forceManyBody().strength(fullParams.force.nodeStrength))
-    .force("collision", d3.forceCollide(fullParams.dot.radius).strength(1))
+    .force("charge", d3.forceManyBody().strength(layerParams.force.nodeStrength))
+    .force("collision", d3.forceCollide(layerParams.dot.radius).strength(1))
     .force("center", d3.forceCenter(layout.width / 2, layout.height / 2))
 
 }
 
-function translateFn (d: any): string {
+function translateFn (d: RenderNode): string {
   // console.log('translateFn', d)
   return "translate(" + d.x + "," + d.y + ")";
 }
 
-function translateCenterFn (d: any): string {
+function translateCenterFn (d: RenderEdge): string {
   // console.log('translateCenterFn', d)
-  const x = d.source.x + ((d.target.x - d.source.x) / 2) // 置中的話除2
-  const y = d.source.y + ((d.target.y - d.source.y) / 2) // 置中的話除2
+  const x = d._source.x + ((d._target.x - d._source.x) / 2) // 置中的話除2
+  const y = d._source.y + ((d._target.y - d._source.y) / 2) // 置中的話除2
   return "translate(" + x + "," + y + ")";
 }
 
@@ -134,24 +138,24 @@ function linkArcFn (d: RenderEdge): string {
   // return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
   
   // 直線
-  return "M" + d.source.x + "," + d.source.y + " L" + d.target.x + "," + d.target.y;
+  return "M" + d._source.x + "," + d._source.y + " L" + d._target.x + "," + d._target.y;
 
 
 }
 
 
 
-function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any, unknown>, fullParams: ForceDirectedParams, fullChartParams: ChartParams) {
+function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any, unknown>, layerParams: ForceDirectedParams, theme: Theme) {
   return defsSelection
     .selectAll<SVGMarkerElement, any>(`marker.${defsArrowMarkerClassName}`)
-    .data([fullParams])
+    .data([layerParams])
     .join(
       enter => {
         const enterSelection = enter
           .append("marker")
           .classed(defsArrowMarkerClassName, true)
           .attr('id', defsArrowMarkerId)
-          .attr('fill', d => getColor(fullParams.arrow.colorType, fullChartParams ))
+          .attr('fill', d => getColor(layerParams.arrow.colorType, theme ))
           .attr("viewBox", d => `-${d.arrow.pointerWidth} -${d.arrow.pointerHeight / 2} ${d.arrow.pointerWidth} ${d.arrow.pointerHeight}`)
           .attr("orient", "auto")
         enterSelection.append("path")
@@ -172,7 +176,7 @@ function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any
     (2)circle半徑需除以 path 寬度是因為「marker 的位置會受到 path 的stroke-width影響」，所以要進行修正
     (3)- 1 是要修正奇怪的誤差（不知原因）
     */
-    .attr('refX', d => ((d.dot.radius + (fullParams.dot.strokeWidth / 2)) / d.arrow.strokeWidth) - 1)
+    .attr('refX', d => ((d.dot.radius + (layerParams.dot.strokeWidth / 2)) / d.arrow.strokeWidth) - 1)
     .attr("refY", 0)
     
 }
@@ -288,10 +292,10 @@ function renderNodeG ({ nodeListGSelection, nodes }: {
     )
 }
 
-function renderNodeCircle ({ nodeGSelection, fullParams, fullChartParams }: {
+function renderNodeCircle ({ nodeGSelection, layerParams, theme }: {
   nodeGSelection: d3.Selection<SVGGElement, RenderNode, any, unknown>
-  fullParams: ForceDirectedParams
-  fullChartParams: ChartParams
+  layerParams: ForceDirectedParams
+  theme: Theme
 }) {
   nodeGSelection.each((data,i,g) => {
     const gSelection = d3.select(g[i])
@@ -312,19 +316,19 @@ function renderNodeCircle ({ nodeGSelection, fullParams, fullChartParams }: {
           return exit.remove()
         }
       )
-      .attr('r', fullParams.dot.radius)
-      .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.dot.fillColorType, fullChartParams }))
-      .attr('stroke', d => getDatumColor({ datum: d, colorType: fullParams.dot.strokeColorType, fullChartParams }))
-      .attr('stroke-width', fullParams.dot.strokeWidth)
-      .attr('style', d => fullParams.dot.styleFn(d))
+      .attr('r', layerParams.dot.radius)
+      .attr('fill', d => getDatumColor({ datum: d, colorType: layerParams.dot.fillColorType, theme }))
+      .attr('stroke', d => getDatumColor({ datum: d, colorType: layerParams.dot.strokeColorType, theme }))
+      .attr('stroke-width', layerParams.dot.strokeWidth)
+      .attr('style', d => layerParams.dot.styleFn(d))
   })
 
   return nodeGSelection.select<SVGCircleElement>(`circle.${nodeCircleClassName}`)
 }
 
-function renderNodeLabelG ({ nodeGSelection, fullParams }: {
+function renderNodeLabelG ({ nodeGSelection, layerParams }: {
   nodeGSelection: d3.Selection<SVGGElement, any, any, unknown>
-  fullParams: ForceDirectedParams
+  layerParams: ForceDirectedParams
 }) {
   nodeGSelection.each((data,i,g) => {
     const gSelection = d3.select(g[i])
@@ -345,16 +349,16 @@ function renderNodeLabelG ({ nodeGSelection, fullParams }: {
           return exit.remove()
         }
       )
-      .attr('transform', `translate(0, ${- fullParams.dot.radius - 10})`)
+      .attr('transform', `translate(0, ${- layerParams.dot.radius - 10})`)
   })
 
   return nodeGSelection.select<SVGTextElement>(`g.${nodeLabelGClassName}`)
 }
 
-function renderNodeLabel ({ nodeLabelGSelection, fullParams, fullChartParams }: {
+function renderNodeLabel ({ nodeLabelGSelection, layerParams, theme }: {
   nodeLabelGSelection: d3.Selection<SVGGElement, RenderNode, any, unknown>
-  fullParams: ForceDirectedParams
-  fullChartParams: ChartParams
+  layerParams: ForceDirectedParams
+  theme: Theme
 }) {
   nodeLabelGSelection.each((data,i,g) => {
     const gSelection = d3.select(g[i])
@@ -378,9 +382,9 @@ function renderNodeLabel ({ nodeLabelGSelection, fullParams, fullChartParams }: 
         }
       )
       .text(d => d.name)
-      .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.dotLabel.colorType, fullChartParams }))
-      .attr('font-size', fullChartParams.styles.textSize)
-      .attr('style', d => fullParams.dotLabel.styleFn(d))
+      .attr('fill', d => getDatumColor({ datum: d, colorType: layerParams.dotLabel.colorType, theme }))
+      .attr('font-size', theme.fontSize)
+      .attr('style', d => layerParams.dotLabel.styleFn(d))
   })
 
   return nodeLabelGSelection.select<SVGTextElement>(`text.${nodeLabelClassName}`)
@@ -409,10 +413,10 @@ function renderEdgeG ({ edgeListGSelection, edges }: {
     )
 }
 
-function renderEdgeArrowPath ({ edgeGSelection, fullParams, fullChartParams }: {
+function renderEdgeArrowPath ({ edgeGSelection, layerParams, theme }: {
   edgeGSelection: d3.Selection<SVGGElement, RenderEdge, any, unknown>
-  fullParams: ForceDirectedParams
-  fullChartParams: ChartParams
+  layerParams: ForceDirectedParams
+  theme: Theme
 }) {
   edgeGSelection.each((data,i,g) => {
     const gSelection = d3.select(g[i])
@@ -432,9 +436,9 @@ function renderEdgeArrowPath ({ edgeGSelection, fullParams, fullChartParams }: {
           return exit.remove()
         }
       )
-      .attr('stroke', d => getDatumColor({ datum: d.data, colorType: fullParams.arrow.colorType, fullChartParams }))
-      .attr('stroke-width', fullParams.arrow.strokeWidth)
-      .attr('style', d => fullParams.arrow.styleFn(d))
+      .attr('stroke', d => getDatumColor({ datum: d.data, colorType: layerParams.arrow.colorType, theme }))
+      .attr('stroke-width', layerParams.arrow.strokeWidth)
+      .attr('style', d => layerParams.arrow.styleFn(d))
   })
 
   return edgeGSelection.select<SVGPathElement>(`path.${edgeArrowPathClassName}`)
@@ -467,10 +471,10 @@ function renderEdgeLabelG ({ edgeGSelection }: {
   return edgeGSelection.select<SVGTextElement>(`g.${edgeLabelGClassName}`)
 }
 
-function renderEdgeLabel ({ edgeLabelGSelection, fullParams, fullChartParams }: {
+function renderEdgeLabel ({ edgeLabelGSelection, layerParams, theme }: {
   edgeLabelGSelection: d3.Selection<SVGGElement, RenderEdge, any, unknown>
-  fullParams: ForceDirectedParams
-  fullChartParams: ChartParams
+  layerParams: ForceDirectedParams
+  theme: Theme
 }) {
   edgeLabelGSelection.each((data,i,g) => {
     const gSelection = d3.select(g[i])
@@ -493,19 +497,19 @@ function renderEdgeLabel ({ edgeLabelGSelection, fullParams, fullChartParams }: 
           return exit.remove()
         }
       )
-      .text(d => d.label)
-      .attr('fill', d => getDatumColor({ datum: d, colorType: fullParams.arrowLabel.colorType, fullChartParams }))
-      .attr('font-size', fullChartParams.styles.textSize)
-      .attr('style', d => fullParams.arrowLabel.styleFn(d))
+      .text(d => d.name)
+      .attr('fill', d => getDatumColor({ datum: d, colorType: layerParams.arrowLabel.colorType, theme }))
+      .attr('font-size', theme.fontSize)
+      .attr('style', d => layerParams.arrowLabel.styleFn(d))
   })
 
   return edgeLabelGSelection.select<SVGTextElement>(`text.${edgeLabelClassName}`)
 }
 
-function highlightNodes ({ nodeGSelection, edgeGSelection, highlightIds, fullChartParams }: {
+function highlightNodes ({ nodeGSelection, edgeGSelection, highlightIds, styles }: {
   nodeGSelection: d3.Selection<SVGGElement, RenderNode, SVGGElement, any>
   edgeGSelection: d3.Selection<SVGGElement, RenderEdge, SVGGElement, any>
-  fullChartParams: ChartParams
+  styles: GraphicStyles
   highlightIds: string[]
 }) {
   nodeGSelection.interrupt('highlight')
@@ -522,7 +526,7 @@ function highlightNodes ({ nodeGSelection, edgeGSelection, highlightIds, fullCha
   }
 
   edgeGSelection
-    .style('opacity', fullChartParams.styles.unhighlightedOpacity)  
+    .style('opacity', styles.unhighlightedOpacity)  
 
   nodeGSelection.each((d, i, n) => {
     const segment = d3.select(n[i])
@@ -536,12 +540,12 @@ function highlightNodes ({ nodeGSelection, edgeGSelection, highlightIds, fullCha
     } else {
       // 取消
       segment
-        .style('opacity', fullChartParams.styles.unhighlightedOpacity)        
+        .style('opacity', styles.unhighlightedOpacity)        
     }
   })
 }
 
-export const Scatter = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPluginParams, ForceDirectedParams>({
+export const ForceDirected = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPluginParams, ForceDirectedParams>({
   name: layerName,
   defaultParams: DEFAULT_FORCE_DIRECTED_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
@@ -703,6 +707,8 @@ export const Scatter = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPlugi
 
     const destroy$ = new Subject()
 
+    const rootSelection = d3.select(context.svg)
+    const selection = d3.select(svgG)
     const gSelection = selection.append('g').classed(gSelectionClassName, true)
     const defsSelection = gSelection.append('defs')
     const edgeListGSelection = gSelection.append('g').classed(edgeListGClassName, true)
@@ -718,22 +724,31 @@ export const Scatter = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPlugi
     let edgeLabelSelection: d3.Selection<SVGTextElement, RenderEdge, SVGGElement, any> | undefined
 
     const dragStatus$ = new BehaviorSubject<DragStatus>('end') // start, drag, end
-    const mouseEvent$ = new Subject<EventRelationship>()
+    const mouseEvent$ = new Subject<EventData>()
+
+    context.layout$
+      .pipe(
+        takeUntil(destroy$)
+      )
+      .subscribe(layout => {
+        selection
+          .attr('transform', `translate(${layout.left}, ${layout.top})`)
+      })
 
     // <marker> marker selection
     combineLatest({
-      fullParams: observer.fullParams$,
-      fullChartParams: observer.fullChartParams$
+      layerParams: layerParams$,
+      theme: context.theme$
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async d => d),
-      map(({ fullParams, fullChartParams }) => {
-        return renderArrowMarker(defsSelection, fullParams, fullChartParams)
+      debounceTime(0),
+      map(({ layerParams, theme }) => {
+        return renderArrowMarker(defsSelection, layerParams, theme)
       })
     ).subscribe()
 
     // init zoom
-    const d3Zoom$ = observer.fullParams$.pipe(
+    const d3Zoom$ = layerParams$.pipe(
       takeUntil(destroy$),
       // map(d => d.scaleExtent),
       // distinctUntilChanged((a, b) => String(a) === String(b)),
@@ -778,13 +793,13 @@ export const Scatter = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPlugi
     // zoom transform
     combineLatest({
       d3Zoom: d3Zoom$,
-      transform: observer.fullParams$.pipe(
+      transform: layerParams$.pipe(
         takeUntil(destroy$),
         map(d => d.transform),
       )
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async d => d)
+      debounceTime(0)
     ).subscribe(data => {
       // console.log('call')
       selection.call(
@@ -796,26 +811,31 @@ export const Scatter = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPlugi
 
     
     const simulation$: Observable<d3.Simulation<d3.SimulationNodeDatum, undefined>> = combineLatest({
-      layout: observer.layout$.pipe(
+      layout: context.layout$.pipe(
         first() // 只使用第一次的尺寸（置中）
       ),
-      fullParams: observer.fullParams$
+      layerParams: layerParams$
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async d => d),
-      map(data => createSimulation(data.layout, data.fullParams)),
+      debounceTime(0),
+      map(data => createSimulation(data.layout, data.layerParams)),
       shareReplay(1)
     )
 
-    const renderData$: Observable<RenderData> = observer.visibleComputedData$.pipe(
+    const renderData$: Observable<RenderData> = combineLatest({
+      visibleComputedData: context.visibleComputedData$,
+      NodeMap: context.NodeMap$,
+    }).pipe(
       takeUntil(destroy$),
       map(data => {
         return {
-          nodes: data.nodes,
-          edges: data.edges.map(_d => {
+          nodes: data.visibleComputedData.nodes,
+          edges: data.visibleComputedData.edges.map(_d => {
             let d: RenderEdge = _d as RenderEdge
-            d.source = _d.startNode // reference
-            d.target = _d.endNode
+            // d.source = _d.startNode
+            // d.target = _d.endNode
+            d._source = data.NodeMap.get(_d.source)! as RenderNode
+            d._target = data.NodeMap.get(_d.target)! as RenderNode
             return d
           })
         }
@@ -825,14 +845,14 @@ export const Scatter = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPlugi
 
     combineLatest({
       renderData: renderData$,
-      computedData: observer.computedData$,
-      CategoryNodeMap: observer.CategoryNodeMap$,
+      // computedData: context.computedData$,
+      // CategoryNodeMap: context.CategoryNodeMap$,
       simulation: simulation$,
-      fullParams: observer.fullParams$,
-      fullChartParams: observer.fullChartParams$
+      layerParams: layerParams$,
+      theme: context.theme$
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async d => d),
+      debounceTime(0),
     ).subscribe(data => {
 
       nodeGSelection = renderNodeG({
@@ -842,20 +862,20 @@ export const Scatter = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPlugi
 
       nodeCircleSelection = renderNodeCircle({
         nodeGSelection: nodeGSelection,
-        fullParams: data.fullParams,
-        fullChartParams: data.fullChartParams
+        layerParams: data.layerParams,
+        theme: data.theme
       })
       nodeGSelection.call(drag(data.simulation, dragStatus$))
 
       nodeLabelGSelection = renderNodeLabelG({
         nodeGSelection: nodeGSelection,
-        fullParams: data.fullParams
+        layerParams: data.layerParams
       })
 
       nodeLabelSelection = renderNodeLabel({
         nodeLabelGSelection: nodeLabelGSelection,
-        fullParams: data.fullParams,
-        fullChartParams: data.fullChartParams
+        layerParams: data.layerParams,
+        theme: data.theme
       })
 
       edgeGSelection = renderEdgeG({
@@ -865,8 +885,8 @@ export const Scatter = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPlugi
 
       edgeArrowSelection = renderEdgeArrowPath({
         edgeGSelection: edgeGSelection,
-        fullParams: data.fullParams,
-        fullChartParams: data.fullChartParams
+        layerParams: data.layerParams,
+        theme: data.theme
       })
 
       edgeLabelGSelection = renderEdgeLabelG({
@@ -875,8 +895,8 @@ export const Scatter = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPlugi
 
       edgeLabelSelection = renderEdgeLabel({
         edgeLabelGSelection: edgeLabelGSelection,
-        fullParams: data.fullParams,
-        fullChartParams: data.fullChartParams
+        layerParams: data.layerParams,
+        theme: data.theme
       })
 
       data.simulation.nodes(data.renderData.nodes)
@@ -885,7 +905,7 @@ export const Scatter = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPlugi
           nodeGSelection.attr('transform', translateFn)
           // nodeLabelGSelection.attr('transform', d => translateFn({
           //   x: d.x,
-          //   y: d.y - data.fullParams.dot.radius - 10
+          //   y: d.y - data.layerParams.dot.radius - 10
           // }))
           edgeLabelGSelection.attr('transform', d => translateCenterFn(d))
         })
@@ -898,64 +918,84 @@ export const Scatter = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPlugi
           event.stopPropagation()
 
           mouseEvent$.next({
-            type: 'relationship',
+            // type: 'relationship',
+            // eventName: 'mouseover',
+            // pluginName,
+            // highlightTarget: data.fullChartParams.highlightTarget,
+            // datum: datum,
+            // category: data.CategoryNodeMap.get(datum.categoryLabel)!,
+            // categoryIndex: datum.categoryIndex,
+            // categoryLabel: datum.categoryLabel,
+            // event,
+            // data: data.computedData
             eventName: 'mouseover',
             pluginName,
-            highlightTarget: data.fullChartParams.highlightTarget,
-            datum: datum,
-            category: data.CategoryNodeMap.get(datum.categoryLabel)!,
-            categoryIndex: datum.categoryIndex,
-            categoryLabel: datum.categoryLabel,
+            layerName,
+            target: datum,
             event,
-            data: data.computedData
           })
         })
         .on('mousemove', (event, datum) => {
           event.stopPropagation()
 
           mouseEvent$.next({
-            type: 'relationship',
+            // type: 'relationship',
+            // eventName: 'mousemove',
+            // pluginName,
+            // highlightTarget: data.fullChartParams.highlightTarget,
+            // datum: datum,
+            // category: data.CategoryNodeMap.get(datum.categoryLabel)!,
+            // categoryIndex: datum.categoryIndex,
+            // categoryLabel: datum.categoryLabel,
+            // event,
+            // data: data.computedData
             eventName: 'mousemove',
             pluginName,
-            highlightTarget: data.fullChartParams.highlightTarget,
-            datum: datum,
-            category: data.CategoryNodeMap.get(datum.categoryLabel)!,
-            categoryIndex: datum.categoryIndex,
-            categoryLabel: datum.categoryLabel,
+            layerName,
+            target: datum,
             event,
-            data: data.computedData
           })
         })
         .on('mouseout', (event, datum) => {
           event.stopPropagation()
 
           mouseEvent$.next({
-            type: 'relationship',
+            // type: 'relationship',
+            // eventName: 'mouseout',
+            // pluginName,
+            // highlightTarget: data.fullChartParams.highlightTarget,
+            // datum: datum,
+            // category: data.CategoryNodeMap.get(datum.categoryLabel)!,
+            // categoryIndex: datum.categoryIndex,
+            // categoryLabel: datum.categoryLabel,
+            // event,
+            // data: data.computedData
             eventName: 'mouseout',
             pluginName,
-            highlightTarget: data.fullChartParams.highlightTarget,
-            datum: datum,
-            category: data.CategoryNodeMap.get(datum.categoryLabel)!,
-            categoryIndex: datum.categoryIndex,
-            categoryLabel: datum.categoryLabel,
+            layerName,
+            target: datum,
             event,
-            data: data.computedData
           })
         })
         .on('click', (event, datum) => {
           event.stopPropagation()
 
           mouseEvent$.next({
-            type: 'relationship',
+            // type: 'relationship',
+            // eventName: 'click',
+            // pluginName,
+            // highlightTarget: data.fullChartParams.highlightTarget,
+            // datum: datum,
+            // category: data.CategoryNodeMap.get(datum.categoryLabel)!,
+            // categoryIndex: datum.categoryIndex,
+            // categoryLabel: datum.categoryLabel,
+            // event,
+            // data: data.computedData
             eventName: 'click',
             pluginName,
-            highlightTarget: data.fullChartParams.highlightTarget,
-            datum: datum,
-            category: data.CategoryNodeMap.get(datum.categoryLabel)!,
-            categoryIndex: datum.categoryIndex,
-            categoryLabel: datum.categoryLabel,
+            layerName,
+            target: datum,
             event,
-            data: data.computedData
           })
         })
     })
@@ -965,22 +1005,24 @@ export const Scatter = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPlugi
       // 只有沒有托曳時才執行
       switchMap(d => iif(() => d === 'end', mouseEvent$, EMPTY))
     ).subscribe(data => {
-      subject.event$.next(data)
+      context.eventTrigger$.next(data)
     })
 
     combineLatest({
       renderData: renderData$,
-      highlightNodes: observer.relationshipHighlightNodes$.pipe(
+      highlightNodes: context.graphHighlightNodes$.pipe(
         map(data => data.map(d => d.id))
       ),
-      highlightEdges: observer.relationshipHighlightEdges$.pipe(
-        map(data => data.map(d => d.id))
+      // highlightEdges: context.graphHighlightEdges$.pipe(
+      //   map(data => data.map(d => d.id))
+      // ),
+      styles: pluginParams$.pipe(
+        map(d => d.styles)
       ),
-      fullChartParams: observer.fullChartParams$,
-      fullParams: observer.fullParams$,
+      // layerParams: layerParams$,
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async d => d)
+      debounceTime(0)
     ).subscribe(data => {
       if (!nodeGSelection || !edgeGSelection) {
         return 
@@ -989,8 +1031,8 @@ export const Scatter = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPlugi
       highlightNodes({
         nodeGSelection,
         edgeGSelection,
+        styles: data.styles,
         highlightIds: data.highlightNodes,
-        fullChartParams: data.fullChartParams
       })
       // highlightEdges({
       //   edgeGSelection,

@@ -26,7 +26,7 @@ const data: RawData = [
   // { series: 'D', category: 'category3', value: 75 },
 ]
 
-export default function Grid() {
+export default function SeriesPlotPage() {
 
   const domRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<OrbCharts | null>(null)

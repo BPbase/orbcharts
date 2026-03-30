@@ -5,7 +5,7 @@ import type { RawData } from '@orbcharts/core/types'
 import { OrbCharts } from '@orbcharts/core/index'
 import { ScatterPlot, Tooltip, Legend } from '@orbcharts/plugins-basic/index'
 
-const pieData: RawData = [
+const rawData: RawData = [
   { series: 'A', x: 30, y: 10, z: 10, name: 'a' },
   { series: 'A', x: 50, y: 20, z: 20, name: 'b' },
   { series: 'B', x: 70, y: 30, z: 30, name: 'c' },
@@ -16,7 +16,7 @@ const pieData: RawData = [
   { series: 'D', x: 85, y: 60, z: 60, name: 'h' },
 ]
 
-export default function Series() {
+export default function ScatterPlotPage() {
 
   const domRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<OrbCharts | null>(null)
@@ -67,7 +67,7 @@ export default function Series() {
     })
 
     const chart = new OrbCharts(domRef.current!, {
-      data: pieData,
+      data: rawData,
       encoding: {
         // value: {
         //   sort: 'asc'
@@ -141,7 +141,7 @@ export default function Series() {
     // chart.updateEncoding({})
     // chart.updateTheme({})
     // chart.setPlugins([seriesPlugin])
-    // chart.setData(pieData)
+    // chart.setData(rawData)
     const subscription = chart.context.seriesData$.subscribe(data => {
       console.log('Series Data Updated:', data)
     })

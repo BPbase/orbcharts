@@ -1,6 +1,8 @@
 
 export * from './ScatterPlot'
 export * from './SeriesPlot'
+export * from './HierarchyPlot'
 export * from './Legend'
+export * from './NetworkPlot'
 export * from './Tooltip'
 export * from './CompositionPlot'

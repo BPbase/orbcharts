@@ -31,16 +31,10 @@ import {
   EdgeMapObservable,
   graphVisibleComputedDataObservable
 } from './contextObservables'
-// import { Scatter } from './layers/Scatter'
-// import { ScatterBubbles } from './layers/ScatterBubbles'
-// import { XYAux } from './layers/XYAux'
-// import { XYAxes } from './layers/XYAxes'
-// import { XZoom } from './layers/XZoom'
-// const scatter = new Scatter()
-// const scatterBubbles = new ScatterBubbles()
-// const xyAux = new XYAux()
-// const xyAxes = new XYAxes()
-// const xZoom = new XZoom()
+import { ForceDirected } from './layers/ForceDirected'
+import { ForceDirectedBubbles } from './layers/ForceDirectedBubbles'
+const forceDirected = new ForceDirected()
+const forceDirectedBubbles = new ForceDirectedBubbles()
 
 export const NetworkPlot = defineSVGPlugin<
   NetworkPlotExtendContext,
@@ -49,7 +43,7 @@ export const NetworkPlot = defineSVGPlugin<
 >({
   name: 'NetworkPlot',
   defaultParams: DEFAULT_NETWORK_PLOT_PARAMS,
-  layers: [],
+  layers: [forceDirected, forceDirectedBubbles],
   setup: (props) => {
 
     const selectedGraphData$ = combineLatest({

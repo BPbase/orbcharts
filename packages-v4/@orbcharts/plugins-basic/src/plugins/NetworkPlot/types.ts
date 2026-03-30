@@ -2,8 +2,6 @@
 import { Observable, Subject } from 'rxjs'
 import type { ColorType, ModelDatumSeries, EventData } from '../../../../core/src/types'
 import type { AxisPosition, ContainerPosition, ContainerPositionScaled, Container, GraphicStyles, Layout, VisibleFilter, XYAxis, CategoryAxis } from '../../types/PluginParams'
-import { ComputedDatumMultivariate  } from '../../types/ComputedData'
-import type { ArcScaleType, ContainerSize, Placement, TransformData } from '../../types/Common'
 import type { ComputedData, ComputedDatumGraphNode, ComputedDatumGraphEdge } from '../../types/'
 
 export interface NetworkPlotExtendContext {
@@ -29,11 +27,8 @@ export interface NetworkPlotPluginParams {
 
 // all layer params
 export interface NetworkPlotAllLayerParams {
-  // Scatter: ScatterParams
-  // ScatterBubbles: ScatterBubblesParams
-  // XYAux: XYAuxParams
-  // XYAxes: XYAxesParams
-  // XZoom: XZoomParams
+  ForceDirected: ForceDirectedParams
+  ForceDirectedBubbles: ForceDirectedBubblesParams
 }
 
 // -- layer params --

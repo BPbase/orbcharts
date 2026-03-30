@@ -6,10 +6,10 @@ import { DEFAULT_CONTAINER } from '../../const/sharedPluginParams'
 export const DEFAULT_COMPOSITION_PLOT_PARAMS: CompositionPlotPluginParams = {
   styles: {
     padding: {
-      top: 60,
-      right: 60,
+      top: 20,
+      right: 20,
       bottom: 60,
-      left: 60
+      left: 20
     },
     highlightTarget: 'datum',
     highlightDefault: null,

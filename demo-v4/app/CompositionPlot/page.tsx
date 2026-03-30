@@ -16,7 +16,7 @@ const pieData: RawData = [
   { series: 'D', value: 85 },
 ]
 
-export default function Series() {
+export default function CompositionPlotPage() {
 
   const domRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<OrbCharts | null>(null)

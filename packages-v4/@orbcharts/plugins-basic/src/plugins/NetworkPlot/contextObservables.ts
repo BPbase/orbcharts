@@ -11,9 +11,6 @@ import {
   Subject,
   Observable } from 'rxjs'
 import type { ModelData, ModelDatumSeries } from '../../../../core/src/types'
-import type { ColorType, EventData } from '../../../../core/src/types'
-import type { AxisPosition, ContainerPosition, ContainerPositionScaled, Container, GraphicStyles, Layout, VisibleFilter, XYAxis, CategoryAxis } from '../../types/PluginParams'
-import type { ArcScaleType, ContainerSize, Placement, TransformData } from '../../types/Common'
 import type {
   ComputedData,
   ComputedDatumGraphNode,
