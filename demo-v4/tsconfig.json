@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -19,7 +20,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@orbcharts/core": ["../packages-v4/@orbcharts/core/src/index.ts"],
+      "@orbcharts/plugin-basic": ["../packages-v4/@orbcharts/plugin-basic/src/index.ts"]
     }
   },
   "include": [

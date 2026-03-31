@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "./dist/",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "esnext",
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": true,
+    "moduleResolution": "node",
+    "paths": {
+      "@orbcharts/core": [
+        "../@orbcharts/core/src/index.ts"
+      ],
+      "@orbcharts/plugin-basic": [
+        "../@orbcharts/plugin-basic/src/index.ts"
+      ]
+    },
+    "allowSyntheticDefaultImports" : true,
+    "esModuleInterop" : true
+  }
+}

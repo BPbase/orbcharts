@@ -1,3 +1,4 @@
 packages:
   - 'packages-v4/@orbcharts/*'
+  - 'packages-v4/orbcharts'
   - 'demo-v4'

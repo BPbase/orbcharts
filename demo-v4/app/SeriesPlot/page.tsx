@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import type { RawData } from '@orbcharts/core/types'
-import { OrbCharts } from '@orbcharts/core/index'
-import { SeriesPlot, Tooltip, Legend } from '@orbcharts/plugins-basic/index'
+import type { RawData } from '@orbcharts/core'
+import { OrbCharts } from '@orbcharts/core'
+import { SeriesPlot, Tooltip, Legend } from '@orbcharts/plugin-basic'
 
 const data: RawData = [
   { series: 'A', category: 'category1', value: 30, name: 'a' },

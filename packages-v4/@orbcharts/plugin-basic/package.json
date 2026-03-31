@@ -1,0 +1,63 @@
+{
+  "name": "@orbcharts/plugin-basic",
+  "version": "4.0.0-pre-alpha.1",
+  "description": "Core codes for OrbCharts",
+  "author": "Blue Planet Inc.",
+  "license": "Apache-2.0",
+  "keywords": [
+    "d3",
+    "rxjs",
+    "typescript",
+    "svg",
+    "visualization",
+    "infographic",
+    "graph",
+    "chart"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/orbcharts-plugin-basic.es.js",
+      "default": "./dist/orbcharts-plugin-basic.umd.js"
+    },
+    "./types": {
+      "development": "./src/types/index.ts",
+      "types": "./dist/src/types/index.d.ts",
+      "default": "./src/types/index.ts"
+    },
+    "./types/*": "./src/types/*.ts",
+    "./*": "./src/*.ts"
+  },
+  "main": "./dist/orbcharts-plugin-basic.umd.js",
+  "module": "./dist/orbcharts-plugin-basic.es.js",
+  "types": "./dist/src/index.d.ts",
+  "unpkg": "./dist/orbcharts-plugin-basic.umd.js",
+  "jsdelivr": "./dist/orbcharts-plugin-basic.umd.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build --mode production",
+    "prepublishOnly": "echo '請使用 pnpm publish，不要用 npm publish' && exit 1"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.9.2",
+    "vite": "^5.3.5",
+    "vite-plugin-dts": "^3.7.3"
+  },
+  "dependencies": {
+    "@orbcharts/core": "workspace:*",
+    "d3": "^7.9.0",
+    "rxjs": "^7.8.2"
+  }
+}
