@@ -46,7 +46,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build --mode production",
-    "prepublishOnly": "echo '請使用 pnpm publish，不要用 npm publish' && exit 1"
+    "prepublishOnly": "echo $npm_config_user_agent | grep -q '^pnpm' || { echo '請使用 pnpm publish，不要用 npm publish'; exit 1; }"
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",
