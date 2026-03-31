@@ -1,6 +1,6 @@
 {
   "name": "@orbcharts/plugin-basic",
-  "version": "4.0.0-pre-alpha.2",
+  "version": "4.0.0-pre-alpha.3",
   "description": "Core codes for OrbCharts",
   "author": "Blue Planet Inc.",
   "license": "Apache-2.0",
@@ -25,7 +25,6 @@
   "type": "module",
   "exports": {
     ".": {
-      "development": "./dist/orbcharts-plugin-basic.es.js",
       "types": "./dist/src/index.d.ts",
       "import": "./dist/orbcharts-plugin-basic.es.js",
       "default": "./dist/orbcharts-plugin-basic.umd.js"
