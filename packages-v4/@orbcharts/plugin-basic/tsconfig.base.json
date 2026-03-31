@@ -9,11 +9,6 @@
     "jsx": "react",
     "allowJs": true,
     "moduleResolution": "node",
-    "paths": {
-      "@orbcharts/core": [
-        "../core/src/index.ts"
-      ]
-    },
     "allowSyntheticDefaultImports" : true,
     "esModuleInterop" : true
   }
