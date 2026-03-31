@@ -1,6 +1,6 @@
 {
   "name": "@orbcharts/core",
-  "version": "4.0.0-pre-alpha.1",
+  "version": "4.0.0-pre-alpha.2",
   "description": "Core codes for OrbCharts",
   "author": "Blue Planet Inc.",
   "license": "Apache-2.0",
@@ -25,18 +25,17 @@
   "type": "module",
   "exports": {
     ".": {
-      "development": "./src/index.ts",
+      "development": "./dist/orbcharts-core.es.js",
       "types": "./dist/src/index.d.ts",
       "import": "./dist/orbcharts-core.es.js",
       "default": "./dist/orbcharts-core.umd.js"
     },
     "./types": {
-      "development": "./src/types/index.ts",
       "types": "./dist/src/types/index.d.ts",
-      "default": "./src/types/index.ts"
+      "default": "./dist/src/types/index.d.ts"
     },
-    "./types/*": "./src/types/*.ts",
-    "./*": "./src/*.ts"
+    "./types/*": "./dist/src/types/*.d.ts",
+    "./*": "./dist/src/*.d.ts"
   },
   "main": "./dist/orbcharts-core.umd.js",
   "module": "./dist/orbcharts-core.es.js",
