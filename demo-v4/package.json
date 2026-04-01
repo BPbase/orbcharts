@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "orbcharts": "workspace:*",
     "@orbcharts/core": "workspace:*",
     "@orbcharts/plugin-basic": "workspace:*",
     "next": "16.1.1",
