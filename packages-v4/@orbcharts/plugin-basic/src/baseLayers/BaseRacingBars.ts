@@ -267,7 +267,6 @@ export function createBaseRacingBars ({
           pluginName,
           layerName,
           target: datum,
-          data: data.computedData,
           event
         })
       })
@@ -277,7 +276,6 @@ export function createBaseRacingBars ({
           pluginName,
           layerName,
           target: datum,
-          data: data.computedData,
           event
         })
       })
@@ -287,7 +285,6 @@ export function createBaseRacingBars ({
           pluginName,
           layerName,
           target: datum,
-          data: data.computedData,
           event
         })
       })
@@ -297,7 +294,6 @@ export function createBaseRacingBars ({
           pluginName,
           layerName,
           target: datum,
-          data: data.computedData,
           event
         })
       })

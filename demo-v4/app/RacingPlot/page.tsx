@@ -3,12 +3,12 @@
 import { useEffect, useRef } from 'react'
 import type { RawData } from '@orbcharts/core'
 import { OrbCharts } from '@orbcharts/core'
-import { RacingPlot } from '@orbcharts/plugin-basic'
+import { RacingPlot, Tooltip } from '@orbcharts/plugin-basic'
 
 // v3 multiValue 原始資料
 // 格式: { id, label, categoryLabel, value: (number | null)[] }
 // 來源: packages/orbcharts-demo/src/data/multiValueData_brand.ts
-import rawBrandData from '../../../packages/orbcharts-demo/src/data/multiValueData_brand'
+import rawBrandData from './multiValueData_brand'
 
 // -------------------------------------------------------
 // 產生幀標籤 (frame labels)
@@ -114,6 +114,8 @@ export default function RacingPlotPage() {
     //     unhighlightedOpacity: 0.3,
     //   },
     })
+
+    const tooltip = new Tooltip()
 
     const chart = new OrbCharts(domRef.current, {
       data,

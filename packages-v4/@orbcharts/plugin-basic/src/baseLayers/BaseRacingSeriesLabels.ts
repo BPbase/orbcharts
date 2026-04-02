@@ -11,7 +11,7 @@ import type { Theme } from '@orbcharts/core'
 import type { ComputedDatumGrid } from '../types/ComputedData'
 import type { ContainerPositionScaled, ContainerSize, GraphicStyles } from '../types'
 import type { RacingSeriesLabelsParams } from '../plugins/RacingPlot/types'
-import { createClassName, createUniID, getColor } from '../utils/orbchartsUtils'
+import { createClassName, createUniID, getColor, getDatumColor } from '../utils/orbchartsUtils'
 import { getD3TransitionEase } from '../utils/d3Utils'
 
 // ---- Types ----
@@ -159,7 +159,11 @@ function renderSeriesLabels ({
   textSelection
     .attr('text-anchor', textAnchor)
     .attr('dominant-baseline', 'middle')
-    .style('fill', getColor(fullParams.seriesLabel.colorType, theme))
+    .style('fill', d => getDatumColor({
+      datum: d,
+      colorType: fullParams.seriesLabel.colorType,
+      theme
+    }))
     .text(d => d.series)
 
   textSelection

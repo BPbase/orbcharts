@@ -391,7 +391,6 @@ export function createBaseRankedBubbles ({
           pluginName,
           layerName,
           target: valueDatum._refDatum,
-          data: data.computedData,
           event
         })
       })
@@ -401,7 +400,6 @@ export function createBaseRankedBubbles ({
           pluginName,
           layerName,
           target: valueDatum._refDatum,
-          data: data.computedData,
           event
         })
       })
@@ -411,7 +409,6 @@ export function createBaseRankedBubbles ({
           pluginName,
           layerName,
           target: valueDatum._refDatum,
-          data: data.computedData,
           event
         })
       })
@@ -421,7 +418,6 @@ export function createBaseRankedBubbles ({
           pluginName,
           layerName,
           target: valueDatum._refDatum,
-          data: data.computedData,
           event
         })
       })

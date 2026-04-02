@@ -14,7 +14,7 @@ import type { Theme } from '@orbcharts/core'
 import type { ComputedDatumGrid } from '../types/ComputedData'
 import type { ContainerPositionScaled, ContainerSize, GraphicStyles } from '../types'
 import type { RacingValueLabelsParams } from '../plugins/RacingPlot/types'
-import { createClassName, createUniID, getColor } from '../utils/orbchartsUtils'
+import { createClassName, createUniID, getColor, getDatumColor } from '../utils/orbchartsUtils'
 import { getD3TransitionEase, parseTickFormatValue } from '../utils/d3Utils'
 
 type ClipPathDatum = {
@@ -200,7 +200,11 @@ export function createBaseRacingValueLabels ({
           )
           .attr('text-anchor', 'start')
           .attr('dominant-baseline', 'middle')
-          .style('fill', getColor(data.fullParams.valueLabel.colorType, data.theme))
+          .style('fill', d => getDatumColor({
+            datum: d,
+            colorType: data.fullParams.valueLabel.colorType,
+            theme: data.theme
+          }))
           .transition()
           .duration(data.transitionDuration)
           .ease(d3.easeLinear)

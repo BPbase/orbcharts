@@ -32,13 +32,13 @@ export const Tooltip = defineSVGPlugin<
   setup: (props) => {
 
     const selectedSeriesData$ = combineLatest({
-      seriesData: props.context.seriesData$,
+      gridData: props.context.gridData$,
       datasetIndex: props.pluginParams$.pipe(
         map(pluginParams => pluginParams.datasetIndex)
       )
     }).pipe(
       debounceTime(0),
-      map(({ seriesData, datasetIndex }) => seriesData[datasetIndex]),
+      map(({ gridData, datasetIndex }) => gridData[datasetIndex]),
       shareReplay(1)
     )
 
