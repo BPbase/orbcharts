@@ -10,6 +10,7 @@ import { LAYER_INDEX_OF_GRAPHIC } from '../../../const/layerIndex'
 import { defineSVGLayer } from '@orbcharts/core'
 import type { RacingPlotExtendContext } from '../types'
 import { createBaseRacingBar } from '../../../baseLayers/BaseRacingBar'
+import { validateObject } from '@orbcharts/core'
 
 const pluginName = 'RacingPlot'
 const layerName = 'RacingBar'
@@ -20,7 +21,18 @@ export const RacingBar = defineSVGLayer<RacingPlotExtendContext, RacingPlotPlugi
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
   initShow: true,
   validator: (params) => {
-    return { status: 'success', columnName: '', expectToBe: '' }
+    const result = validateObject(params, {
+      barWidth: {
+        toBeTypes: ['number', 'null']
+      },
+      barPadding: {
+        toBeTypes: ['number']
+      },
+      barRadius: {
+        toBeTypes: ['number', 'boolean']
+      }
+    })
+    return result
   },
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
     const destroy$ = new Subject<void>()

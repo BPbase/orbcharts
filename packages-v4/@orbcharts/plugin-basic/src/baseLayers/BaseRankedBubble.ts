@@ -240,7 +240,7 @@ export function createBaseRankedBubble ({
 
   // ---- derived scales ----
   const maxRadius$ = combineLatest({
-    sizeAdjust: fullParams$.pipe(map(p => p.bubble.sizeAdjust), distinctUntilChanged()),
+    sizeAdjust: fullParams$.pipe(map(p => p.sizeAdjust), distinctUntilChanged()),
     rankingItemHeight: rankingItemHeight$
   }).pipe(
     takeUntil(destroy$),
@@ -269,7 +269,7 @@ export function createBaseRankedBubble ({
     takeUntil(destroy$),
     map(data => d3.scaleLinear<number>()
       .domain(data.minMaxValue)
-      .range(data.fullParams.bubble.valueLinearOpacity)
+      .range(data.fullParams.valueLinearOpacity)
     ),
     shareReplay(1)
   )
@@ -277,7 +277,7 @@ export function createBaseRankedBubble ({
   const radiusScale$ = combineLatest({
     maxRadius: maxRadius$,
     minMaxValue: minMaxValue$,
-    arcScaleType: fullParams$.pipe(map(p => p.bubble.arcScaleType), distinctUntilChanged())
+    arcScaleType: fullParams$.pipe(map(p => p.arcScaleType), distinctUntilChanged())
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),
@@ -296,7 +296,7 @@ export function createBaseRankedBubble ({
     rankingScaleList: rankingScaleList$,
     ordinalScale: ordinalScale$,
     opacityScale: opacityScale$,
-    showZeroValue: fullParams$.pipe(map(p => p.bubble.showZeroValue), distinctUntilChanged())
+    showZeroValue: fullParams$.pipe(map(p => p.showZeroValue), distinctUntilChanged())
   }).pipe(
     takeUntil(destroy$),
     switchMap(async d => d),

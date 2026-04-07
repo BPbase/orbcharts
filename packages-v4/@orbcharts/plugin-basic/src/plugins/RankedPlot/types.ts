@@ -74,16 +74,10 @@ export interface RankedPlotAllLayerParams {
 // ---- layer params ----
 
 export interface RankedPlotRankedBubbleParams {
-  bubble: {
-    sizeAdjust: number
-    arcScaleType: 'area' | 'radius'
-    valueLinearOpacity: [number, number]
-    showZeroValue: boolean
-  }
-  itemLabel: {
-    padding: number
-    colorType: ColorType
-  }
+  sizeAdjust: number
+  arcScaleType: 'area' | 'radius'
+  valueLinearOpacity: [number, number]
+  showZeroValue: boolean
 }
 
 export interface RankedPlotRankAxisParams {

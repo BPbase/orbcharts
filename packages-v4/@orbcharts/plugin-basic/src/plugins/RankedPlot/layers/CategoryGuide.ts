@@ -32,7 +32,33 @@ export const CategoryGuide = defineSVGLayer<RankedPlotExtendContext, RankedPlotP
   layerIndex: LAYER_INDEX_OF_AUX,
   initShow: false,
   validator: (params) => {
-    return { status: 'success', columnName: '', expectToBe: '' }
+    const result = validateObject(params, {
+      showLine: {
+        toBeTypes: ['boolean']
+      },
+      showLabel: {
+        toBeTypes: ['boolean']
+      },
+      lineDashArray: {
+        toBeTypes: ['string']
+      },
+      lineColorType: {
+        toBeOption: 'ColorType'
+      },
+      labelColorType: {
+        toBeOption: 'ColorType'
+      },
+      labelTextColorType: {
+        toBeOption: 'ColorType'
+      },
+      labelTextFormat: {
+        toBeTypes: ['string', 'Function']
+      },
+      labelPadding: {
+        toBeTypes: ['number']
+      },
+    })
+    return result
   },
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
     const destroy$ = new Subject()

@@ -10,6 +10,7 @@ import { LAYER_INDEX_OF_LABEL } from '../../../const/layerIndex'
 import { defineSVGLayer } from '@orbcharts/core'
 import type { RacingPlotExtendContext } from '../types'
 import { createBaseRacingValueLabel } from '../../../baseLayers/BaseRacingValueLabel'
+import { validateObject } from '@orbcharts/core'
 
 const pluginName = 'RacingPlot'
 const layerName = 'ValueLabel'
@@ -20,7 +21,18 @@ export const ValueLabel = defineSVGLayer<RacingPlotExtendContext, RacingPlotPlug
   layerIndex: LAYER_INDEX_OF_LABEL,
   initShow: true,
   validator: (params) => {
-    return { status: 'success', columnName: '', expectToBe: '' }
+    const result = validateObject(params, {
+      padding: {
+        toBeTypes: ['number']
+      },
+      colorType: {
+        toBeOption: 'ColorType',
+      },
+      format: {
+        toBeTypes: ['string', 'Function']
+      }
+    })
+    return result
   },
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
     const destroy$ = new Subject<void>()

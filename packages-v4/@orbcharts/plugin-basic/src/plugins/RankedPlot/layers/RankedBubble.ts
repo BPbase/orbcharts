@@ -20,7 +20,30 @@ export const RankedBubble = defineSVGLayer<RankedPlotExtendContext, RankedPlotPl
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
   initShow: true,
   validator: (params) => {
-    return { status: 'success', columnName: '', expectToBe: '' }
+    const result = validateObject(params, {
+      sizeAdjust: {
+        toBeTypes: ['number']
+      },
+      arcScaleType: {
+        toBe: '"area" | "radius"',
+        test: (value: any) => {
+          return value === 'area' || value === 'radius'
+        }
+      },
+      valueLinearOpacity: {
+        toBe: '[number, number]',
+        test: (value: any) => {
+          return Array.isArray(value)
+            && value.length === 2
+            && typeof value[0] === 'number'
+            && typeof value[1] === 'number'
+        }
+      },
+      showZeroValue: {
+        toBeTypes: ['boolean']
+      }
+    })
+    return result
   },
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
     const destroy$ = new Subject()

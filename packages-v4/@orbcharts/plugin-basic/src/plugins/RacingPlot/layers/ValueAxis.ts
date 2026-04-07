@@ -10,6 +10,7 @@ import { LAYER_INDEX_OF_AXIS } from '../../../const/layerIndex'
 import { defineSVGLayer } from '@orbcharts/core'
 import type { RacingPlotExtendContext } from '../types'
 import { createBaseValueAxisRacing } from '../../../baseLayers/BaseValueAxisRacing'
+import { validateObject } from '@orbcharts/core'
 
 const pluginName = 'RacingPlot'
 const layerName = 'ValueAxis'
@@ -20,7 +21,51 @@ export const ValueAxis = defineSVGLayer<RacingPlotExtendContext, RacingPlotPlugi
   layerIndex: LAYER_INDEX_OF_AXIS,
   initShow: true,
   validator: (params) => {
-    return { status: 'success', columnName: '', expectToBe: '' }
+    const result = validateObject(params, {
+      labelOffset: {
+        toBe: '[number, number]',
+        test: (value: any) => {
+          return Array.isArray(value)
+            && value.length === 2
+            && typeof value[0] === 'number'
+            && typeof value[1] === 'number'
+        }
+      },
+      labelColorType: {
+        toBeOption: 'ColorType',
+      },
+      axisLineVisible: {
+        toBeTypes: ['boolean']
+      },
+      axisLineColorType: {
+        toBeOption: 'ColorType',
+      },
+      ticks: {
+        toBeTypes: ['number', 'null']
+      },
+      tickFormat: {
+        toBeTypes: ['string', 'Function']
+      },
+      tickLineVisible: {
+        toBeTypes: ['boolean']
+      },
+      tickPadding: {
+        toBeTypes: ['number']
+      },
+      tickFullLine: {
+        toBeTypes: ['boolean']
+      },
+      tickFullLineDasharray: {
+        toBeTypes: ['string']
+      },
+      tickColorType: {
+        toBeOption: 'ColorType',
+      },
+      tickTextColorType: {
+        toBeOption: 'ColorType',
+      }
+    })
+    return result
   },
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
     const destroy$ = new Subject<void>()

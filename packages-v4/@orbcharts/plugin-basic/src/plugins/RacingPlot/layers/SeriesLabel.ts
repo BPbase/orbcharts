@@ -10,6 +10,7 @@ import { LAYER_INDEX_OF_LABEL } from '../../../const/layerIndex'
 import { defineSVGLayer } from '@orbcharts/core'
 import type { RacingPlotExtendContext } from '../types'
 import { createBaseRacingSeriesLabel } from '../../../baseLayers/BaseRacingSeriesLabel'
+import { validateObject } from '@orbcharts/core'
 
 const pluginName = 'RacingPlot'
 const layerName = 'SeriesLabel'
@@ -20,7 +21,56 @@ export const SeriesLabel = defineSVGLayer<RacingPlotExtendContext, RacingPlotPlu
   layerIndex: LAYER_INDEX_OF_LABEL,
   initShow: true,
   validator: (params) => {
-    return { status: 'success', columnName: '', expectToBe: '' }
+    const result = validateObject(params, {
+      axisLabel: {
+        toBeTypes: ['object']
+      },
+      seriesLabel: {
+        toBeTypes: ['object']
+      }
+    })
+    if (result.status === 'error') {
+      return result
+    }
+    if (params.axisLabel) {
+      const axisLabelResult = validateObject(params.axisLabel, {
+        offset: {
+          toBe: '[number, number]',
+          test: (value: any) => {
+            return Array.isArray(value)
+              && value.length === 2
+              && typeof value[0] === 'number'
+              && typeof value[1] === 'number'
+          }
+        },
+        colorType: {
+          toBeOption: 'ColorType',
+        },
+      })
+      if (axisLabelResult.status === 'error') {
+        return axisLabelResult
+      }
+    }
+    if (params.seriesLabel) {
+      const seriesLabelResult = validateObject(params.seriesLabel, {
+        position: {
+          toBe: '"inside-left" | "inside-right" | "outside"',
+          test: (value: any) => {
+            return value === 'inside-left' || value === 'inside-right' || value === 'outside'
+          }
+        },
+        padding: {
+          toBeTypes: ['number']
+        },
+        colorType: {
+          toBeOption: 'ColorType',
+        }
+      })
+      if (seriesLabelResult.status === 'error') {
+        return seriesLabelResult
+      }
+    }
+    return result
   },
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
     const destroy$ = new Subject<void>()

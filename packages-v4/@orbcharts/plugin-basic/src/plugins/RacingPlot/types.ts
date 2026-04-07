@@ -65,19 +65,15 @@ export interface RacingPlotAllLayerParams {
 // ---- layer params ----
 
 export interface RacingPlotRacingBarParams {
-  bar: {
-    barWidth: number | null
-    barPadding: number
-    barRadius: number | boolean
-  }
+  barWidth: number | null
+  barPadding: number
+  barRadius: number | boolean
 }
 
 export interface RacingPlotValueLabelParams {
-  valueLabel: {
-    padding: number
-    colorType: ColorType
-    format: string | ((n: number | d3.NumberValue) => string | d3.NumberValue)
-  }
+  padding: number
+  colorType: ColorType
+  format: string | ((n: number | d3.NumberValue) => string | d3.NumberValue)
 }
 
 export interface RacingPlotSeriesLabelParams {

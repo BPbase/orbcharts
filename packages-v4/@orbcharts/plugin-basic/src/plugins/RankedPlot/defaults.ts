@@ -36,16 +36,10 @@ export const DEFAULT_RANKED_PLOT_PLUGIN_PARAMS: RankedPlotPluginParams = {
 DEFAULT_RANKED_PLOT_PLUGIN_PARAMS.visibleFilter.toString = () => '(datum) => true'
 
 export const DEFAULT_RANKED_PLOT_RANKED_BUBBLE_PARAMS: RankedPlotRankedBubbleParams = {
-  bubble: {
-    sizeAdjust: 0.8,
-    arcScaleType: 'area',
-    valueLinearOpacity: [0.5, 1],
-    showZeroValue: false
-  },
-  itemLabel: {
-    padding: 6,
-    colorType: 'primary'
-  }
+  sizeAdjust: 0.8,
+  arcScaleType: 'area',
+  valueLinearOpacity: [0.5, 1],
+  showZeroValue: false
 }
 
 export const DEFAULT_RANKED_PLOT_RANK_AXIS_PARAMS: RankedPlotRankAxisParams = {

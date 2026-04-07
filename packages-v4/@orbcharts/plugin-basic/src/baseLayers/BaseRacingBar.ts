@@ -136,10 +136,10 @@ export function createBaseRacingBar ({
   }).pipe(
     takeUntil(destroy$),
     map(data => {
-      if (data.fullParams.bar.barWidth != null) {
-        return data.fullParams.bar.barWidth
+      if (data.fullParams.barWidth != null) {
+        return data.fullParams.barWidth
       }
-      return Math.max(1, data.rankedItemHeight - data.fullParams.bar.barPadding)
+      return Math.max(1, data.rankedItemHeight - data.fullParams.barPadding)
     }),
     distinctUntilChanged()
   )
@@ -210,9 +210,9 @@ export function createBaseRacingBar ({
     switchMap(async d => d),
     map(data => {
       const barHalfWidth = data.barWidth / 2
-      const radius = data.fullParams.bar.barRadius === true ? barHalfWidth
-        : data.fullParams.bar.barRadius === false ? 0
-        : typeof data.fullParams.bar.barRadius === 'number' ? data.fullParams.bar.barRadius
+      const radius = data.fullParams.barRadius === true ? barHalfWidth
+        : data.fullParams.barRadius === false ? 0
+        : typeof data.fullParams.barRadius === 'number' ? data.fullParams.barRadius
         : 0
 
       data.barGSelection.each((seriesData: ComputedDatumGrid[], _i: number, g: SVGGElement[]) => {

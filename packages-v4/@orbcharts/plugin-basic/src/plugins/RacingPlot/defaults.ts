@@ -37,21 +37,17 @@ export const DEFAULT_RACING_PLOT_PLUGIN_PARAMS: RacingPlotPluginParams = {
 DEFAULT_RACING_PLOT_PLUGIN_PARAMS.visibleFilter.toString = () => '(datum) => true'
 
 export const DEFAULT_RACING_PLOT_RACING_BAR_PARAMS: RacingPlotRacingBarParams = {
-  bar: {
-    barWidth: null,
-    barPadding: 4,
-    barRadius: 4
-  }
+  barWidth: null,
+  barPadding: 4,
+  barRadius: 4
 }
 
 export const DEFAULT_RACING_PLOT_VALUE_LABEL_PARAMS: RacingPlotValueLabelParams = {
-  valueLabel: {
-    padding: 8,
-    colorType: 'primary',
-    format: text => text
-  }
+  padding: 8,
+  colorType: 'primary',
+  format: text => text
 }
-;(DEFAULT_RACING_PLOT_VALUE_LABEL_PARAMS.valueLabel.format as Function).toString = () => 'text => text'
+;(DEFAULT_RACING_PLOT_VALUE_LABEL_PARAMS.format as Function).toString = () => 'text => text'
 
 export const DEFAULT_RACING_PLOT_SERIES_LABEL_PARAMS: RacingPlotSeriesLabelParams = {
   axisLabel: {

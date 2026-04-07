@@ -20,7 +20,50 @@ export const RankAxis = defineSVGLayer<RankedPlotExtendContext, RankedPlotPlugin
   layerIndex: LAYER_INDEX_OF_AXIS,
   initShow: true,
   validator: (params) => {
-    return { status: 'success', columnName: '', expectToBe: '' }
+    const result = validateObject(params, {
+      axisLabel: {
+        toBeTypes: ['object']
+      },
+      seriesLabel: {
+        toBeTypes: ['object']
+      }
+    })
+    if (result.status === 'error') {
+      return result
+    }
+    if (params.axisLabel) {
+      const axisLabelResult = validateObject(params.axisLabel, {
+        offset: {
+          toBe: '[number, number]',
+          test: (value: any) => {
+            return Array.isArray(value)
+              && value.length === 2
+              && typeof value[0] === 'number'
+              && typeof value[1] === 'number'
+          }
+        },
+        colorType: {
+          toBeOption: 'ColorType',
+        }
+      })
+      if (axisLabelResult.status === 'error') {
+        return axisLabelResult
+      }
+    }
+    if (params.seriesLabel) {
+      const seriesLabelResult = validateObject(params.seriesLabel, {
+        padding: {
+          toBeTypes: ['number']
+        },
+        colorType: {
+          toBeOption: 'ColorType',
+        }
+      })
+      if (seriesLabelResult.status === 'error') {
+        return seriesLabelResult
+      }
+    }
+    return result
   },
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
     const destroy$ = new Subject()

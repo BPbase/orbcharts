@@ -9,6 +9,7 @@ import { LAYER_INDEX_OF_LABEL } from '../../../const/layerIndex'
 import { defineSVGLayer } from '@orbcharts/core'
 import type { RacingPlotExtendContext } from '../types'
 import { createBaseCounterText } from '../../../baseLayers/BaseCounterText'
+import { validateObject } from '@orbcharts/core'
 
 const pluginName = 'RacingPlot'
 const layerName = 'CounterText'
@@ -19,7 +20,42 @@ export const CounterText = defineSVGLayer<RacingPlotExtendContext, RacingPlotPlu
   layerIndex: LAYER_INDEX_OF_LABEL,
   initShow: true,
   validator: (params) => {
-    return { status: 'success', columnName: '', expectToBe: '' }
+    const result = validateObject(params, {
+      renderFn: {
+        toBeTypes: ['Function']
+      },
+      textAttrs: {
+        toBe: 'Array<{ [key: string]: string | number }>',
+        test: (value: any) => {
+          return Array.isArray(value)
+            && value.every((item: any) => {
+              return typeof item === 'object'
+                && item !== null
+                && !Array.isArray(item)
+                && Object.values(item).every(v => typeof v === 'string' || typeof v === 'number')
+            })
+        }
+      },
+      textStyles: {
+        toBe: 'Array<{ [key: string]: string | number }>',
+        test: (value: any) => {
+          return Array.isArray(value)
+            && value.every((item: any) => {
+              return typeof item === 'object'
+                && item !== null
+                && !Array.isArray(item)
+                && Object.values(item).every(v => typeof v === 'string' || typeof v === 'number')
+            })
+        }
+      },
+      paddingRight: {
+        toBeTypes: ['number']
+      },
+      paddingBottom: {
+        toBeTypes: ['number']
+      }
+    })
+    return result
   },
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
     const destroy$ = new Subject<void>()

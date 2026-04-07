@@ -193,7 +193,7 @@ export function createBaseRacingValueLabel ({
               .append('text')
               .attr('class', valueLabelClassName)
               .style('pointer-events', 'none')
-              .attr('x', data.xScale(currentValue) + data.fullParams.valueLabel.padding)
+              .attr('x', data.xScale(currentValue) + data.fullParams.padding)
               .attr('y', 0),
             update => update,
             exit => exit.remove()
@@ -202,19 +202,19 @@ export function createBaseRacingValueLabel ({
           .attr('dominant-baseline', 'middle')
           .style('fill', d => getDatumColor({
             datum: d,
-            colorType: data.fullParams.valueLabel.colorType,
+            colorType: data.fullParams.colorType,
             theme: data.theme
           }))
           .transition()
           .duration(data.transitionDuration)
           .ease(d3.easeLinear)
-          .attr('x', data.xScale(currentValue) + data.fullParams.valueLabel.padding)
+          .attr('x', data.xScale(currentValue) + data.fullParams.padding)
           .textTween(() => {
             return (t: number) => {
               const tweenNumber = t === 1
                 ? d3.interpolateNumber(prevValue, currentValue)(t)
                 : d3.interpolateRound(prevValue, currentValue)(t)
-              return parseTickFormatValue(tweenNumber, data.fullParams.valueLabel.format as any)
+              return parseTickFormatValue(tweenNumber, data.fullParams.format as any)
             }
           })
       })
