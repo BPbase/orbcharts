@@ -12,7 +12,7 @@ import {
 
 import type { RankedPlotExtendContext, RankedPlotPluginParams, RankedPlotAllLayerParams } from './types'
 import { defineSVGPlugin, validateObject } from '@orbcharts/core'
-import { DEFAULT_RANKED_PLOT_PARAMS } from './defaults'
+import { DEFAULT_RANKED_PLOT_PLUGIN_PARAMS } from './defaults'
 import { DEFAULT_CONTAINER } from '../../const/sharedPluginParams'
 import {
   categoryDataMapObservable,
@@ -38,16 +38,16 @@ import {
   rankedScaleListObservable
 } from './contextObservables'
 import { CategoryAxis } from './layers/CategoryAxis'
-import { CategoryAux } from './layers/CategoryAux'
+import { CategoryGuide } from './layers/CategoryGuide'
 import { CategoryZoom } from './layers/CategoryZoom'
-import { RankedBubbles } from './layers/RankedBubbles'
-import { RankedSeriesAxis } from './layers/RankedSeriesAxis'
+import { RankedBubble } from './layers/RankedBubble'
+import { RankAxis } from './layers/RankAxis'
 
 const categoryAxis = new CategoryAxis()
-const categoryAux = new CategoryAux()
+const categoryAux = new CategoryGuide()
 const categoryZoom = new CategoryZoom()
-const rankedBubbles = new RankedBubbles()
-const rankedSeriesAxis = new RankedSeriesAxis()
+const rankedBubbles = new RankedBubble()
+const rankedSeriesAxis = new RankAxis()
 
 export const RankedPlot = defineSVGPlugin<
   RankedPlotExtendContext,
@@ -55,7 +55,7 @@ export const RankedPlot = defineSVGPlugin<
   RankedPlotAllLayerParams
 >({
   name: 'RankedPlot',
-  defaultParams: DEFAULT_RANKED_PLOT_PARAMS,
+  defaultParams: DEFAULT_RANKED_PLOT_PLUGIN_PARAMS,
   layers: [categoryAxis, categoryAux, categoryZoom, rankedBubbles, rankedSeriesAxis],
   setup: (props) => {
 

@@ -10,7 +10,7 @@ import {
 } from 'rxjs'
 import type { ComputedDatumGrid } from '../types/ComputedData'
 import type { ContainerPositionScaled, ContainerSize } from '../types'
-import type { CounterTextParams } from '../plugins/RacingPlot/types'
+import type { RacingPlotCounterTextParams } from '../plugins/RacingPlot/types'
 import { createClassName } from '../utils/orbchartsUtils'
 
 // ---- Types ----
@@ -28,7 +28,7 @@ export interface BaseCounterTextContext {
   computedData$: Observable<ComputedDatumGrid[][]>
   currentFrameIndex$: BehaviorSubject<number>
   currentFrameLabel$: Observable<string>
-  fullParams$: Observable<CounterTextParams>
+  fullParams$: Observable<RacingPlotCounterTextParams>
   containerPosition$: Observable<ContainerPositionScaled[]>
   containerSize$: Observable<ContainerSize>
 }
@@ -70,7 +70,7 @@ function renderText ({
   textClassName: string
   textData: TextDatum[]
   containerSize: ContainerSize
-  fullParams: CounterTextParams
+  fullParams: RacingPlotCounterTextParams
 }) {
   const x = containerSize.width - fullParams.paddingRight
   const y = containerSize.height - fullParams.paddingBottom

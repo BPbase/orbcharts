@@ -11,19 +11,19 @@ import {
   Observable,
   Subject, 
   BehaviorSubject} from 'rxjs'
-import type { LegendExtendContext, LegendPluginParams, LegendParams } from "../types"
+import type { LegendExtendContext, LegendPluginParams, LegendLegendParams } from "../types"
 import { defineSVGLayer } from '@orbcharts/core'
 import { validateObject } from '@orbcharts/core'
 import { createBaseLegend } from "../../../baseLayers/BaseLegend"
-import { DEFAULT_SERIES_LEGEND_PARAMS } from "../defaults"
+import { DEFAULT_LEGEND_LEGEND_PARAMS } from "../defaults"
 import { LAYER_INDEX_OF_INFO } from '../../../const/layerIndex'
 
 const pluginName = 'Legend'
 const layerName = 'Legend'
 
-export const Legend = defineSVGLayer<LegendExtendContext, LegendPluginParams, LegendParams>({
+export const Legend = defineSVGLayer<LegendExtendContext, LegendPluginParams, LegendLegendParams>({
   name: layerName,
-  defaultParams: DEFAULT_SERIES_LEGEND_PARAMS,
+  defaultParams: DEFAULT_LEGEND_LEGEND_PARAMS,
   layerIndex: LAYER_INDEX_OF_INFO,
   initShow: true,
   validator: (params) => {

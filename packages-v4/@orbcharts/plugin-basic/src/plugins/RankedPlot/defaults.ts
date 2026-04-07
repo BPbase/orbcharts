@@ -1,14 +1,14 @@
 import type {
   RankedPlotPluginParams,
-  RankedBubblesParams,
-  RankedSeriesAxisParams,
-  RankedCategoryAuxParams,
-  RankedCategoryAxisParams,
-  CategoryZoomParams
+  RankedPlotRankedBubbleParams,
+  RankedPlotRankAxisParams,
+  RankedPlotCategoryGuideParams,
+  RankedPlotCategoryAxisParams,
+  RankedPlotCategoryZoomParams
 } from './types'
 import { DEFAULT_CATEGORY_AXIS } from '../../const/sharedPluginParams'
 
-export const DEFAULT_RANKED_PLOT_PARAMS: RankedPlotPluginParams = {
+export const DEFAULT_RANKED_PLOT_PLUGIN_PARAMS: RankedPlotPluginParams = {
   styles: {
     padding: {
       top: 60,
@@ -33,9 +33,9 @@ export const DEFAULT_RANKED_PLOT_PARAMS: RankedPlotPluginParams = {
   },
   datasetIndex: 0
 }
-DEFAULT_RANKED_PLOT_PARAMS.visibleFilter.toString = () => '(datum) => true'
+DEFAULT_RANKED_PLOT_PLUGIN_PARAMS.visibleFilter.toString = () => '(datum) => true'
 
-export const DEFAULT_RANKED_BUBBLES_PARAMS: RankedBubblesParams = {
+export const DEFAULT_RANKED_PLOT_RANKED_BUBBLE_PARAMS: RankedPlotRankedBubbleParams = {
   bubble: {
     sizeAdjust: 0.8,
     arcScaleType: 'area',
@@ -48,7 +48,7 @@ export const DEFAULT_RANKED_BUBBLES_PARAMS: RankedBubblesParams = {
   }
 }
 
-export const DEFAULT_RANKED_SERIES_AXIS_PARAMS: RankedSeriesAxisParams = {
+export const DEFAULT_RANKED_PLOT_RANK_AXIS_PARAMS: RankedPlotRankAxisParams = {
   axisLabel: {
     offset: [0, 0],
     colorType: 'primary'
@@ -59,7 +59,7 @@ export const DEFAULT_RANKED_SERIES_AXIS_PARAMS: RankedSeriesAxisParams = {
   }
 }
 
-export const DEFAULT_RANKED_CATEGORY_AUX_PARAMS: RankedCategoryAuxParams = {
+export const DEFAULT_RANKED_PLOT_CATEGORY_GUIDE_PARAMS: RankedPlotCategoryGuideParams = {
   showLine: true,
   showLabel: true,
   lineDashArray: '3, 3',
@@ -69,9 +69,9 @@ export const DEFAULT_RANKED_CATEGORY_AUX_PARAMS: RankedCategoryAuxParams = {
   labelTextFormat: text => text,
   labelPadding: 20
 }
-DEFAULT_RANKED_CATEGORY_AUX_PARAMS.labelTextFormat.toString = () => `text => text`
+DEFAULT_RANKED_PLOT_CATEGORY_GUIDE_PARAMS.labelTextFormat.toString = () => `text => text`
 
-export const DEFAULT_RANKED_CATEGORY_AXIS_PARAMS: RankedCategoryAxisParams = {
+export const DEFAULT_RANKED_PLOT_CATEGORY_AXIS_PARAMS: RankedPlotCategoryAxisParams = {
   labelOffset: [0, 0],
   labelColorType: 'primary',
   axisLineVisible: true,
@@ -86,6 +86,6 @@ export const DEFAULT_RANKED_CATEGORY_AXIS_PARAMS: RankedCategoryAxisParams = {
   tickTextRotate: 0,
   tickTextColorType: 'primary'
 }
-DEFAULT_RANKED_CATEGORY_AXIS_PARAMS.tickFormat.toString = () => `text => text`
+DEFAULT_RANKED_PLOT_CATEGORY_AXIS_PARAMS.tickFormat.toString = () => `text => text`
 
-export const DEFAULT_CATEGORY_ZOOM_PARAMS: CategoryZoomParams = {}
+export const DEFAULT_RANKED_PLOT_CATEGORY_ZOOM_PARAMS: RankedPlotCategoryZoomParams = {}

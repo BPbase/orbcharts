@@ -7,7 +7,7 @@ import {
 import type { TooltipExtendContext, TooltipPluginParams, TooltipAllLayerParams } from './types'
 import { defineSVGPlugin } from '@orbcharts/core'
 import { validateObject } from '@orbcharts/core'
-import { DEFAULT_SERIES_TOOLTIP_PLUGIN_PARAMS } from './defaults'
+import { DEFAULT_TOOLTIP_PLUGIN_PARAMS } from './defaults'
 import {
   layoutObservable,
   fontSizePxObservable,
@@ -27,7 +27,7 @@ export const Tooltip = defineSVGPlugin<
   TooltipAllLayerParams
 >({
   name: 'Tooltip',
-  defaultParams: DEFAULT_SERIES_TOOLTIP_PLUGIN_PARAMS,
+  defaultParams: DEFAULT_TOOLTIP_PLUGIN_PARAMS,
   layers: [seriesTooltip],
   setup: (props) => {
 

@@ -55,16 +55,16 @@ export interface RacingPlotPluginParams {
 // ---- all layer params ----
 
 export interface RacingPlotAllLayerParams {
-  RacingBars: RacingBarsParams
-  RacingValueLabels: RacingValueLabelsParams
-  RacingSeriesLabels: RacingSeriesLabelsParams
-  CounterText: CounterTextParams
-  ValueAxis: ValueAxisParams
+  RacingBars: RacingPlotRacingBarParams
+  ValueLabel: RacingPlotValueLabelParams
+  SeriesLabel: RacingPlotSeriesLabelParams
+  CounterText: RacingPlotCounterTextParams
+  ValueAxis: RacingPlotValueAxisParams
 }
 
 // ---- layer params ----
 
-export interface RacingBarsParams {
+export interface RacingPlotRacingBarParams {
   bar: {
     barWidth: number | null
     barPadding: number
@@ -72,7 +72,7 @@ export interface RacingBarsParams {
   }
 }
 
-export interface RacingValueLabelsParams {
+export interface RacingPlotValueLabelParams {
   valueLabel: {
     padding: number
     colorType: ColorType
@@ -80,7 +80,7 @@ export interface RacingValueLabelsParams {
   }
 }
 
-export interface RacingSeriesLabelsParams {
+export interface RacingPlotSeriesLabelParams {
   axisLabel: {
     offset: [number, number]
     colorType: ColorType
@@ -92,7 +92,7 @@ export interface RacingSeriesLabelsParams {
   }
 }
 
-export interface CounterTextParams {
+export interface RacingPlotCounterTextParams {
   renderFn: (
     categoryLabel: string,
     frameIndex: number,
@@ -104,7 +104,7 @@ export interface CounterTextParams {
   paddingBottom: number
 }
 
-export interface ValueAxisParams {
+export interface RacingPlotValueAxisParams {
   labelOffset: [number, number]
   labelColorType: ColorType
   axisLineVisible: boolean

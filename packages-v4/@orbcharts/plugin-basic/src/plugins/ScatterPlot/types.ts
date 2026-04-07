@@ -65,42 +65,42 @@ export interface ScatterPlotPluginParams {
 
 // all layer params
 export interface ScatterPlotAllLayerParams {
-  Scatter: ScatterParams
-  ScatterBubbles: ScatterBubblesParams
-  XYAux: XYAuxParams
-  XYAxes: XYAxesParams
-  XZoom: XZoomParams
+  Point: ScatterPlotPointParams
+  Bubble: ScatterPlotBubbleParams
+  XYGuide: ScatterPlotXYGuideParams
+  XYAxes: ScatterPlotXYAxesParams
+  XZoom: ScatterPlotXZoomParams
 }
 
 // -- layer params --
-export interface OrdinalBubblesParams {
-  bubble: {
-    // radiusMin: number // 對應value最小值
-    // radiusMax: number // 對應value最大值
-    sizeAdjust: number
-    arcScaleType: 'area' | 'radius',
-    valueLinearOpacity: [number, number]
-  }
-  itemLabel: {
-    padding: number
-    // rotate: number
-    colorType: ColorType
-  }
-  axisLabel: {
-    offset: [number, number]
-    colorType: ColorType
-  }
-  rankingAmount: 'auto' | number
-}
+// export interface ScatterPlotBubbleParams {
+//   bubble: {
+//     // radiusMin: number // 對應value最小值
+//     // radiusMax: number // 對應value最大值
+//     sizeAdjust: number
+//     arcScaleType: 'area' | 'radius',
+//     valueLinearOpacity: [number, number]
+//   }
+//   itemLabel: {
+//     padding: number
+//     // rotate: number
+//     colorType: ColorType
+//   }
+//   axisLabel: {
+//     offset: [number, number]
+//     colorType: ColorType
+//   }
+//   rankingAmount: 'auto' | number
+// }
 
-export interface ScatterParams {
+export interface ScatterPlotPointParams {
   radius: number
   fillColorType: ColorType
   strokeColorType: ColorType
   strokeWidth: number
 }
 
-export interface ScatterBubblesParams {
+export interface ScatterPlotBubbleParams {
   // radius: number
   fillColorType: ColorType
   strokeColorType: ColorType
@@ -110,7 +110,7 @@ export interface ScatterBubblesParams {
   sizeAdjust: number
 }
 
-export interface XYAuxParams {
+export interface ScatterPlotXYGuideParams {
   xAxis: {
     showLine: boolean
     showLabel: boolean
@@ -135,7 +135,7 @@ export interface XYAuxParams {
   }
 }
 
-export interface XYAxesParams {
+export interface ScatterPlotXYAxesParams {
   xAxis: {
     labelOffset: [number, number]
     labelColorType: ColorType
@@ -173,7 +173,7 @@ export interface XYAxesParams {
 }
 
 
-export interface XZoomParams {
+export interface ScatterPlotXZoomParams {
 
 }
 

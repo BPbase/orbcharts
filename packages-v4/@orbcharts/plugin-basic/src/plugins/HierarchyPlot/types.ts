@@ -23,11 +23,11 @@ export interface HierarchyPlotPluginParams {
 
 // all layer params
 export interface HierarchyPlotAllLayerParams {
-  TreeMap: TreeMapParams
+  TreeMap: HierarchyPlotTreeMapParams
 }
 
 // -- layer params --
-export interface TreeMapParams {
+export interface HierarchyPlotTreeMapParams {
   paddingInner: number
   paddingOuter: number
   labelColorType: ColorType

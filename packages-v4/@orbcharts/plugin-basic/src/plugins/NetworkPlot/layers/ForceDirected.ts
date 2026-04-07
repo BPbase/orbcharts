@@ -18,7 +18,7 @@ import type { Theme, EventData } from '@orbcharts/core'
 import type { NetworkPlotPluginParams, NetworkPlotExtendContext, ForceDirectedParams } from '../types'
 import { defineSVGLayer } from '@orbcharts/core'
 import { validateObject } from '@orbcharts/core'
-import { DEFAULT_FORCE_DIRECTED_PARAMS } from "../defaults"
+import { DEFAULT_NETWORK_PLOT_FORCE_DIRECTED_PARAMS } from "../defaults"
 import { multivariateSelectionsObservable } from "../../../utils/multivariateObservables"
 import { getColor, getDatumColor } from '../../../utils/orbchartsUtils'
 import { createClassName, createUniID } from '../../../utils/orbchartsUtils'
@@ -111,7 +111,7 @@ function createSimulation (layout: Layout, layerParams: ForceDirectedParams) {
         })
     )
     .force("charge", d3.forceManyBody().strength(layerParams.force.nodeStrength))
-    .force("collision", d3.forceCollide(layerParams.dot.radius).strength(1))
+    .force("collision", d3.forceCollide(layerParams.point.radius).strength(1))
     .force("center", d3.forceCenter(layout.width / 2, layout.height / 2))
 
 }
@@ -176,7 +176,7 @@ function renderArrowMarker (defsSelection: d3.Selection<SVGDefsElement, any, any
     (2)circle半徑需除以 path 寬度是因為「marker 的位置會受到 path 的stroke-width影響」，所以要進行修正
     (3)- 1 是要修正奇怪的誤差（不知原因）
     */
-    .attr('refX', d => ((d.dot.radius + (layerParams.dot.strokeWidth / 2)) / d.arrow.strokeWidth) - 1)
+    .attr('refX', d => ((d.point.radius + (layerParams.point.strokeWidth / 2)) / d.arrow.strokeWidth) - 1)
     .attr("refY", 0)
     
 }
@@ -316,11 +316,11 @@ function renderNodeCircle ({ nodeGSelection, layerParams, theme }: {
           return exit.remove()
         }
       )
-      .attr('r', layerParams.dot.radius)
-      .attr('fill', d => getDatumColor({ datum: d, colorType: layerParams.dot.fillColorType, theme }))
-      .attr('stroke', d => getDatumColor({ datum: d, colorType: layerParams.dot.strokeColorType, theme }))
-      .attr('stroke-width', layerParams.dot.strokeWidth)
-      .attr('style', d => layerParams.dot.styleFn(d))
+      .attr('r', layerParams.point.radius)
+      .attr('fill', d => getDatumColor({ datum: d, colorType: layerParams.point.fillColorType, theme }))
+      .attr('stroke', d => getDatumColor({ datum: d, colorType: layerParams.point.strokeColorType, theme }))
+      .attr('stroke-width', layerParams.point.strokeWidth)
+      .attr('style', d => layerParams.point.styleFn(d))
   })
 
   return nodeGSelection.select<SVGCircleElement>(`circle.${nodeCircleClassName}`)
@@ -349,7 +349,7 @@ function renderNodeLabelG ({ nodeGSelection, layerParams }: {
           return exit.remove()
         }
       )
-      .attr('transform', `translate(0, ${- layerParams.dot.radius - 10})`)
+      .attr('transform', `translate(0, ${- layerParams.point.radius - 10})`)
   })
 
   return nodeGSelection.select<SVGTextElement>(`g.${nodeLabelGClassName}`)
@@ -382,9 +382,9 @@ function renderNodeLabel ({ nodeLabelGSelection, layerParams, theme }: {
         }
       )
       .text(d => d.name)
-      .attr('fill', d => getDatumColor({ datum: d, colorType: layerParams.dotLabel.colorType, theme }))
+      .attr('fill', d => getDatumColor({ datum: d, colorType: layerParams.pointLabel.colorType, theme }))
       .attr('font-size', theme.fontSize)
-      .attr('style', d => layerParams.dotLabel.styleFn(d))
+      .attr('style', d => layerParams.pointLabel.styleFn(d))
   })
 
   return nodeLabelGSelection.select<SVGTextElement>(`text.${nodeLabelClassName}`)
@@ -547,15 +547,15 @@ function highlightNodes ({ nodeGSelection, edgeGSelection, highlightIds, styles 
 
 export const ForceDirected = defineSVGLayer<NetworkPlotExtendContext, NetworkPlotPluginParams, ForceDirectedParams>({
   name: layerName,
-  defaultParams: DEFAULT_FORCE_DIRECTED_PARAMS,
+  defaultParams: DEFAULT_NETWORK_PLOT_FORCE_DIRECTED_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
   initShow: true,
   validator: (params) => {
     const result = validateObject(params, {
-      dot: {
+      point: {
         toBeTypes: ['object']
       },
-      dotLabel: {
+      pointLabel: {
         toBeTypes: ['object']
       },
       arrow: {
@@ -577,8 +577,8 @@ export const ForceDirected = defineSVGLayer<NetworkPlotExtendContext, NetworkPlo
         toBeTypes: ['object']
       }
     })
-    if (params.dot) {
-      const dotResult = validateObject(params.dot, {
+    if (params.point) {
+      const pointResult = validateObject(params.point, {
         radius: {
           toBeTypes: ['number']
         },
@@ -595,12 +595,12 @@ export const ForceDirected = defineSVGLayer<NetworkPlotExtendContext, NetworkPlo
           toBeTypes: ['Function']
         },
       })
-      if (dotResult.status === 'error') {
-        return dotResult
+      if (pointResult.status === 'error') {
+        return pointResult
       }
     }
-    if (params.dotLabel) {
-      const dotLabelResult = validateObject(params.dotLabel, {
+    if (params.pointLabel) {
+      const pointLabelResult = validateObject(params.pointLabel, {
         colorType: {
           toBeOption: 'ColorType'
         },
@@ -611,8 +611,8 @@ export const ForceDirected = defineSVGLayer<NetworkPlotExtendContext, NetworkPlo
           toBeTypes: ['Function']
         },
       })
-      if (dotLabelResult.status === 'error') {
-        return dotLabelResult
+      if (pointLabelResult.status === 'error') {
+        return pointLabelResult
       }
     }
     if (params.arrow) {
@@ -770,7 +770,7 @@ export const ForceDirected = defineSVGLayer<NetworkPlotExtendContext, NetworkPlo
               ${event.transform.k}
             )`)
 
-            if (data.dotLabel.sizeFixed && nodeLabelSelection) {
+            if (data.pointLabel.sizeFixed && nodeLabelSelection) {
               // 反向 scale 抵消掉放大縮小
               nodeLabelSelection.attr('transform', `scale(${1 / event.transform.k})`)
             }

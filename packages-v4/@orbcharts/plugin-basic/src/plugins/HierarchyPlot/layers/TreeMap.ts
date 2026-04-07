@@ -16,10 +16,10 @@ import {
   BehaviorSubject
 } from 'rxjs'
 import type { Theme, EventData } from '@orbcharts/core'
-import type { HierarchyPlotPluginParams, HierarchyPlotExtendContext, TreeMapParams } from '../types'
+import type { HierarchyPlotPluginParams, HierarchyPlotExtendContext, HierarchyPlotTreeMapParams } from '../types'
 import { defineSVGLayer } from '@orbcharts/core'
 import { validateObject } from '@orbcharts/core'
-import { DEFAULT_TREE_MAP_PARAMS } from "../defaults"
+import { DEFAULT_HIERARCHY_PLOT_TREE_MAP_PARAMS } from "../defaults"
 import { multivariateSelectionsObservable } from "../../../utils/multivariateObservables"
 import { getColor, getDatumColor } from '../../../utils/orbchartsUtils'
 import { createClassName, createUniID } from '../../../utils/orbchartsUtils'
@@ -36,7 +36,7 @@ const tileClassName = createClassName(pluginName, layerName, 'tile')
 function renderTree ({ selection, treeData, layerParams, theme, fontSizePx }: {
   selection: d3.Selection<any, any, any, any>
   treeData: d3.HierarchyRectangularNode<ComputedData<'tree'>>[]
-  layerParams: TreeMapParams
+  layerParams: HierarchyPlotTreeMapParams
   theme: Theme
   fontSizePx: number
 }) {
@@ -165,9 +165,9 @@ function highlight ({ selection, ids, styles }: {
     })
 }
 
-export const TreeMap = defineSVGLayer<HierarchyPlotExtendContext, HierarchyPlotPluginParams, TreeMapParams>({
+export const TreeMap = defineSVGLayer<HierarchyPlotExtendContext, HierarchyPlotPluginParams, HierarchyPlotTreeMapParams>({
   name: layerName,
-  defaultParams: DEFAULT_TREE_MAP_PARAMS,
+  defaultParams: DEFAULT_HIERARCHY_PLOT_TREE_MAP_PARAMS,
   layerIndex: LAYER_INDEX_OF_GRAPHIC,
   initShow: true,
   validator: (params) => {

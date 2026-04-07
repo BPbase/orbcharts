@@ -4,8 +4,8 @@ import {
   map,
   takeUntil
 } from 'rxjs'
-import type { ValueAxisParams, RacingPlotPluginParams } from '../types'
-import { DEFAULT_VALUE_AXIS_PARAMS } from '../defaults'
+import type { RacingPlotValueAxisParams, RacingPlotPluginParams } from '../types'
+import { DEFAULT_RACING_PLOT_VALUE_AXIS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_AXIS } from '../../../const/layerIndex'
 import { defineSVGLayer } from '@orbcharts/core'
 import type { RacingPlotExtendContext } from '../types'
@@ -14,9 +14,9 @@ import { createBaseValueAxisRacing } from '../../../baseLayers/BaseValueAxisRaci
 const pluginName = 'RacingPlot'
 const layerName = 'ValueAxis'
 
-export const ValueAxis = defineSVGLayer<RacingPlotExtendContext, RacingPlotPluginParams, ValueAxisParams>({
+export const ValueAxis = defineSVGLayer<RacingPlotExtendContext, RacingPlotPluginParams, RacingPlotValueAxisParams>({
   name: layerName,
-  defaultParams: DEFAULT_VALUE_AXIS_PARAMS,
+  defaultParams: DEFAULT_RACING_PLOT_VALUE_AXIS_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
   initShow: true,
   validator: (params) => {

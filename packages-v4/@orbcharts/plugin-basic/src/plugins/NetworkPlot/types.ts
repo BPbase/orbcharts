@@ -28,7 +28,7 @@ export interface NetworkPlotPluginParams {
 // all layer params
 export interface NetworkPlotAllLayerParams {
   ForceDirected: ForceDirectedParams
-  ForceDirectedBubbles: ForceDirectedBubblesParams
+  ForceDirectedBubble: ForceDirectedBubbleParams
 }
 
 // -- layer params --
@@ -43,14 +43,14 @@ export interface ForceDirectedParams {
   //   labelSizeFixed: boolean
   //   labelStyleFn: (node: ComputedDatumGraphNode) => string
   // }
-  dot: {
+  point: {
     radius: number
     fillColorType: ColorType
     strokeColorType: ColorType
     strokeWidth: number
     styleFn: (node: ComputedDatumGraphNode) => string
   }
-  dotLabel: {
+  pointLabel: {
     colorType: ColorType
     sizeFixed: boolean
     styleFn: (node: ComputedDatumGraphNode) => string
@@ -95,7 +95,7 @@ export interface ForceDirectedParams {
   }
 }
 
-export interface ForceDirectedBubblesParams {
+export interface ForceDirectedBubbleParams {
   bubble: {
     radiusMin: number // 對應value最小值
     radiusMax: number // 對應value最大值

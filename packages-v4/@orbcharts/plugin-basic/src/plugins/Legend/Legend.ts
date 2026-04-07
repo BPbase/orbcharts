@@ -7,7 +7,7 @@ import {
 import type { LegendExtendContext, LegendPluginParams, LegendAllLayerParams } from './types'
 import { defineSVGPlugin } from '@orbcharts/core'
 import { validateObject } from '@orbcharts/core'
-import { DEFAULT_SERIES_LEGEND_PLUGIN_PARAMS } from './defaults'
+import { DEFAULT_LEGEND_PLUGIN_PARAMS } from './defaults'
 import {
   layoutObservable,
   fontSizePxObservable,
@@ -26,7 +26,7 @@ export const Legend = defineSVGPlugin<
   LegendAllLayerParams
 >({
   name: 'Legend',
-  defaultParams: DEFAULT_SERIES_LEGEND_PLUGIN_PARAMS,
+  defaultParams: DEFAULT_LEGEND_PLUGIN_PARAMS,
   layers: [seriesLegend],
   setup: (props) => {
 

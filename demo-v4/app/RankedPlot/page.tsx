@@ -3929,7 +3929,7 @@ const data: RawData = [
     }
 ]
 
-export default function SeriesPlotPage() {
+export default function GridPlotPage() {
 
   const domRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<OrbCharts | null>(null)
@@ -3939,18 +3939,18 @@ export default function SeriesPlotPage() {
     // console.log(domRef.current)
 
     const rankedPlot = new RankedPlot({
-        RankedBubbles: {
+        RankedBubble: {
             // bubble: {
             //     showZeroValue: true
             // }
         },
-        RankedSeriesAxis: {},
+        RankAxis: {},
         CategoryAxis: {},
         CategoryZoom: {},
         categoryAxis: {
             position: 'top',
         },
-        CategoryAux: {}
+        CategoryGuide: {}
       // Bars: {},
       // Lines: {},
       // Dots: {},

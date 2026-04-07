@@ -1,10 +1,10 @@
 import type {
   ForceDirectedParams,
-  ForceDirectedBubblesParams,
+  ForceDirectedBubbleParams,
 } from './types'
 import { NetworkPlotPluginParams } from './types'
 
-export const DEFAULT_NETWORK_PLOT_PARAMS: NetworkPlotPluginParams = {
+export const DEFAULT_NETWORK_PLOT_PLUGIN_PARAMS: NetworkPlotPluginParams = {
   styles: {
     padding: {
       top: 20,
@@ -22,13 +22,13 @@ export const DEFAULT_NETWORK_PLOT_PARAMS: NetworkPlotPluginParams = {
   datasetIndex: 0
 }
 
-export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
+export const DEFAULT_NETWORK_PLOT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
   // node: {
-  //   dotRadius: 10,
-  //   dotFillColorType: 'label',
-  //   dotStrokeColorType: 'label',
-  //   dotStrokeWidth: 1,
-  //   dotStyleFn: (node) => '',
+  //   pointRadius: 10,
+  //   pointFillColorType: 'label',
+  //   pointStrokeColorType: 'label',
+  //   pointStrokeWidth: 1,
+  //   pointStyleFn: (node) => '',
   //   labelColorType: 'primary',
   //   labelSizeFixed: false,
   //   labelStyleFn: (node) => 'text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff'
@@ -43,14 +43,14 @@ export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
   //   labelSizeFixed: false,
   //   labelStyleFn: (node) => ''
   // },
-  dot: {
+  point: {
     radius: 10,
     fillColorType: 'data',
     strokeColorType: 'data',
     strokeWidth: 1,
     styleFn: (node) => '',
   },
-  dotLabel: {
+  pointLabel: {
     colorType: 'primary',
     sizeFixed: false,
     // styleFn: (node) => 'text-shadow:0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff'
@@ -86,12 +86,12 @@ export const DEFAULT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
     max: Infinity
   }
 }
-DEFAULT_FORCE_DIRECTED_PARAMS.dot.styleFn.toString = () => `(node) => ''`
-DEFAULT_FORCE_DIRECTED_PARAMS.dotLabel.styleFn.toString = () => `(node) => ''`
-DEFAULT_FORCE_DIRECTED_PARAMS.arrow.styleFn.toString = () => `(edge) => ''`
-DEFAULT_FORCE_DIRECTED_PARAMS.arrowLabel.styleFn.toString = () => `(edge) => ''`
+DEFAULT_NETWORK_PLOT_FORCE_DIRECTED_PARAMS.point.styleFn.toString = () => `(node) => ''`
+DEFAULT_NETWORK_PLOT_FORCE_DIRECTED_PARAMS.pointLabel.styleFn.toString = () => `(node) => ''`
+DEFAULT_NETWORK_PLOT_FORCE_DIRECTED_PARAMS.arrow.styleFn.toString = () => `(edge) => ''`
+DEFAULT_NETWORK_PLOT_FORCE_DIRECTED_PARAMS.arrowLabel.styleFn.toString = () => `(edge) => ''`
 
-export const DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS: ForceDirectedBubblesParams = {
+export const DEFAULT_NETWORK_PLOT_FORCE_DIRECTED_BUBBLE_PARAMS: ForceDirectedBubbleParams = {
   bubble: {
     radiusMin: 15,
     radiusMax: 45,
@@ -140,8 +140,8 @@ export const DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS: ForceDirectedBubblesParams =
     max: Infinity
   }
 }
-DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS.bubble.styleFn.toString = () => `(node) => ''`
-DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS.bubbleLabel.styleFn.toString = () => `(node) => ''`
-DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS.arrow.styleFn.toString = () => `(edge) => ''`
-DEFAULT_FORCE_DIRECTED_BUBBLES_PARAMS.arrowLabel.styleFn.toString = () => `(edge) => ''`
+DEFAULT_NETWORK_PLOT_FORCE_DIRECTED_BUBBLE_PARAMS.bubble.styleFn.toString = () => `(node) => ''`
+DEFAULT_NETWORK_PLOT_FORCE_DIRECTED_BUBBLE_PARAMS.bubbleLabel.styleFn.toString = () => `(node) => ''`
+DEFAULT_NETWORK_PLOT_FORCE_DIRECTED_BUBBLE_PARAMS.arrow.styleFn.toString = () => `(edge) => ''`
+DEFAULT_NETWORK_PLOT_FORCE_DIRECTED_BUBBLE_PARAMS.arrowLabel.styleFn.toString = () => `(edge) => ''`
 

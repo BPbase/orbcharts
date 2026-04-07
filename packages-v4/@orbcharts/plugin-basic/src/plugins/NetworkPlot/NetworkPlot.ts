@@ -15,7 +15,7 @@ import {
 import type { NetworkPlotExtendContext, NetworkPlotPluginParams, NetworkPlotAllLayerParams } from './types'
 import { defineSVGPlugin } from '@orbcharts/core'
 import { validateObject } from '@orbcharts/core'
-import { DEFAULT_NETWORK_PLOT_PARAMS } from './defaults'
+import { DEFAULT_NETWORK_PLOT_PLUGIN_PARAMS } from './defaults'
 import {
   categoryDataMapObservable,
   containerSizeObservable,
@@ -32,9 +32,9 @@ import {
   graphVisibleComputedDataObservable
 } from './contextObservables'
 import { ForceDirected } from './layers/ForceDirected'
-import { ForceDirectedBubbles } from './layers/ForceDirectedBubbles'
+import { ForceDirectedBubble } from './layers/ForceDirectedBubble'
 const forceDirected = new ForceDirected()
-const forceDirectedBubbles = new ForceDirectedBubbles()
+const forceDirectedBubble = new ForceDirectedBubble()
 
 export const NetworkPlot = defineSVGPlugin<
   NetworkPlotExtendContext,
@@ -42,8 +42,8 @@ export const NetworkPlot = defineSVGPlugin<
   NetworkPlotAllLayerParams
 >({
   name: 'NetworkPlot',
-  defaultParams: DEFAULT_NETWORK_PLOT_PARAMS,
-  layers: [forceDirected, forceDirectedBubbles],
+  defaultParams: DEFAULT_NETWORK_PLOT_PLUGIN_PARAMS,
+  layers: [forceDirected, forceDirectedBubble],
   setup: (props) => {
 
     const selectedGraphData$ = combineLatest({

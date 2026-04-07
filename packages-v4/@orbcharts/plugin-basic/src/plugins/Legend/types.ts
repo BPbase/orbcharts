@@ -25,12 +25,12 @@ export interface LegendPluginParams {
 
 // all layer params
 export interface LegendAllLayerParams {
-  Legend: LegendParams
+  Legend: LegendLegendParams
 }
 
 // -- layer params --
 
-export interface LegendParams {
+export interface LegendLegendParams {
   // position: 'top' | 'bottom' | 'left' | 'right'
   // justify: 'start' | 'center' | 'end'
   placement: Placement

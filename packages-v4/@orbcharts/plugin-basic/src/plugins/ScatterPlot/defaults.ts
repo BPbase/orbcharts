@@ -1,4 +1,4 @@
-import type { ScatterPlotPluginParams, XZoomParams, XYAxesParams, XYAuxParams, ScatterBubblesParams, ScatterParams } from './types'
+import type { ScatterPlotPluginParams, ScatterPlotXZoomParams, ScatterPlotXYAxesParams, ScatterPlotXYGuideParams, ScatterPlotBubbleParams, ScatterPlotPointParams } from './types'
 import { DEFAULT_X_Y_AXIS, DEFAULT_CONTAINER } from '../../const/sharedPluginParams'
 
 export const DEFAULT_SCATTER_PLOT_PARAMS: ScatterPlotPluginParams = {
@@ -25,14 +25,14 @@ export const DEFAULT_SCATTER_PLOT_PARAMS: ScatterPlotPluginParams = {
 DEFAULT_SCATTER_PLOT_PARAMS.visibleFilter.toString = () => '(datum) => true'
 
 
-export const DEFAULT_SCATTER_PARAMS: ScatterParams = {
+export const DEFAULT_SCATTER_PLOT_POINT_PARAMS: ScatterPlotPointParams = {
   radius: 5,
   fillColorType: 'data',
   strokeColorType: 'data',
   strokeWidth: 0,
 }
 
-export const DEFAULT_SCATTER_BUBBLES_PARAMS: ScatterBubblesParams = {
+export const DEFAULT_SCATTER_PLOT_BUBBLE_PARAMS: ScatterPlotBubbleParams = {
   // radius: 5,
   fillColorType: 'data',
   strokeColorType: 'data',
@@ -42,7 +42,7 @@ export const DEFAULT_SCATTER_BUBBLES_PARAMS: ScatterBubblesParams = {
   sizeAdjust: 0.5
 }
 
-export const DEFAULT_X_Y_AUX_PARAMS: XYAuxParams = {
+export const DEFAULT_SCATTER_PLOT_X_Y_GUIDE_PARAMS: ScatterPlotXYGuideParams = {
   xAxis: {
     showLine: true,
     showLabel: true,
@@ -104,7 +104,7 @@ export const DEFAULT_X_Y_AUX_PARAMS: XYAuxParams = {
     // labelRotate: 0
   }
 }
-DEFAULT_X_Y_AUX_PARAMS.xAxis.labelTextFormat.toString = () => `num => {
+DEFAULT_SCATTER_PLOT_X_Y_GUIDE_PARAMS.xAxis.labelTextFormat.toString = () => `num => {
   if (num === null || Number.isNaN(num) == true) {
     return num || 0
   }
@@ -122,7 +122,7 @@ DEFAULT_X_Y_AUX_PARAMS.xAxis.labelTextFormat.toString = () => `num => {
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   return parts[0]
 }`
-DEFAULT_X_Y_AUX_PARAMS.yAxis.labelTextFormat.toString = () => `num => {
+DEFAULT_SCATTER_PLOT_X_Y_GUIDE_PARAMS.yAxis.labelTextFormat.toString = () => `num => {
   if (num === null || Number.isNaN(num) == true) {
     return num || 0
   }
@@ -142,7 +142,7 @@ DEFAULT_X_Y_AUX_PARAMS.yAxis.labelTextFormat.toString = () => `num => {
 }`
 
 
-export const DEFAULT_X_Y_AXES_PARAMS: XYAxesParams = {
+export const DEFAULT_SCATTER_PLOT_X_Y_AXES_PARAMS: ScatterPlotXYAxesParams = {
   xAxis: {
     labelOffset: [0, 0],
     labelColorType: 'primary',
@@ -190,7 +190,7 @@ export const DEFAULT_X_Y_AXES_PARAMS: XYAxesParams = {
     tickTextColorType: 'primary'
   }
 }
-DEFAULT_X_Y_AXES_PARAMS.xAxis.tickFormat.toString = () => `num => {
+DEFAULT_SCATTER_PLOT_X_Y_AXES_PARAMS.xAxis.tickFormat.toString = () => `num => {
   if (num === null || Number.isNaN(num) == true) {
     return num || 0
   }
@@ -198,7 +198,7 @@ DEFAULT_X_Y_AXES_PARAMS.xAxis.tickFormat.toString = () => `num => {
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   return parts.join('.')
 }`
-DEFAULT_X_Y_AXES_PARAMS.yAxis.tickFormat.toString = () => `num => {
+DEFAULT_SCATTER_PLOT_X_Y_AXES_PARAMS.yAxis.tickFormat.toString = () => `num => {
   if (num === null || Number.isNaN(num) == true) {
     return num || 0
   }
@@ -207,6 +207,6 @@ DEFAULT_X_Y_AXES_PARAMS.yAxis.tickFormat.toString = () => `num => {
   return parts.join('.')
 }`
 
-export const DEFAULT_X_ZOOM_PARAMS: XZoomParams = {
+export const DEFAULT_SCATTER_PLOT_X_ZOOM_PARAMS: ScatterPlotXZoomParams = {
 
 }

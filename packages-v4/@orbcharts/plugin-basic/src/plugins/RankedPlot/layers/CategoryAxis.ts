@@ -5,8 +5,8 @@ import {
   map,
   takeUntil
 } from 'rxjs'
-import type { RankedCategoryAxisParams, RankedPlotPluginParams } from '../types'
-import { DEFAULT_RANKED_CATEGORY_AXIS_PARAMS } from '../defaults'
+import type { RankedPlotCategoryAxisParams, RankedPlotPluginParams } from '../types'
+import { DEFAULT_RANKED_PLOT_CATEGORY_AXIS_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_AXIS } from '../../../const/layerIndex'
 import { defineSVGLayer, validateObject } from '@orbcharts/core'
 import type { RankedPlotExtendContext } from '../types'
@@ -15,9 +15,9 @@ import { createBaseCategoryAxis } from '../../../baseLayers/BaseCategoryAxis'
 const pluginName = 'RankedPlot'
 const layerName = 'CategoryAxis'
 
-export const CategoryAxis = defineSVGLayer<RankedPlotExtendContext, RankedPlotPluginParams, RankedCategoryAxisParams>({
+export const CategoryAxis = defineSVGLayer<RankedPlotExtendContext, RankedPlotPluginParams, RankedPlotCategoryAxisParams>({
   name: layerName,
-  defaultParams: DEFAULT_RANKED_CATEGORY_AXIS_PARAMS,
+  defaultParams: DEFAULT_RANKED_PLOT_CATEGORY_AXIS_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
   initShow: false,
   validator: (params) => {

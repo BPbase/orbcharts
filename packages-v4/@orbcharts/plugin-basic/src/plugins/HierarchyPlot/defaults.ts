@@ -1,9 +1,9 @@
 import type {
-  TreeMapParams
+  HierarchyPlotTreeMapParams
 } from './types'
 import { HierarchyPlotPluginParams } from './types'
 
-export const DEFAULT_HIERARCHY_PLOT_PARAMS: HierarchyPlotPluginParams = {
+export const DEFAULT_HIERARCHY_PLOT_PLUGIN_PARAMS: HierarchyPlotPluginParams = {
   styles: {
     padding: {
       top: 20,
@@ -21,11 +21,11 @@ export const DEFAULT_HIERARCHY_PLOT_PARAMS: HierarchyPlotPluginParams = {
   datasetIndex: 0
 }
 
-export const DEFAULT_TREE_MAP_PARAMS: TreeMapParams = {
+export const DEFAULT_HIERARCHY_PLOT_TREE_MAP_PARAMS: HierarchyPlotTreeMapParams = {
   paddingInner: 2,
   paddingOuter: 2,
   labelColorType: 'dataContrast',
   squarifyRatio: 1.618034, // 黃金比例
   sort: (a, b) => b.value - a.value
 }
-DEFAULT_TREE_MAP_PARAMS.sort.toString = () => `(a, b) => b.value - a.value`
+DEFAULT_HIERARCHY_PLOT_TREE_MAP_PARAMS.sort.toString = () => `(a, b) => b.value - a.value`

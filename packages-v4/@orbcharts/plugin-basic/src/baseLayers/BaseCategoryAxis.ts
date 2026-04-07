@@ -42,7 +42,7 @@ export interface BaseCategoryAxisParams {
     tickTextColorType: ColorType;
 }
 
-interface BaseGroupAxisContext {
+interface BaseCategoryAxisContext {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
   layerName: string
@@ -298,7 +298,7 @@ function renderAxis ({ selection, xAxisClassName, baseCategoryAxisParams, tickTe
 }
 
 
-export const createBaseCategoryAxis: BaseLayerFn<BaseGroupAxisContext> = (({
+export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
   selection,
   pluginName,
   layerName,

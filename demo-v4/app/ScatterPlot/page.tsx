@@ -26,9 +26,9 @@ export default function ScatterPlotPage() {
     // console.log(domRef.current)
 
     const scatterPlugin = new ScatterPlot({
-      ScatterBubbles: {},
+      Bubble: {},
       XYAxes: {},
-      XYAux: {},
+      XYGuide: {},
       XZoom: {}
       // styles: {
       //   padding: {

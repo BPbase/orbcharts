@@ -3,8 +3,8 @@ import {
   Subject,
   takeUntil
 } from 'rxjs'
-import type { CounterTextParams, RacingPlotPluginParams } from '../types'
-import { DEFAULT_COUNTER_TEXT_PARAMS } from '../defaults'
+import type { RacingPlotCounterTextParams, RacingPlotPluginParams } from '../types'
+import { DEFAULT_RACING_PLOT_COUNTER_TEXT_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_LABEL } from '../../../const/layerIndex'
 import { defineSVGLayer } from '@orbcharts/core'
 import type { RacingPlotExtendContext } from '../types'
@@ -13,9 +13,9 @@ import { createBaseCounterText } from '../../../baseLayers/BaseCounterText'
 const pluginName = 'RacingPlot'
 const layerName = 'CounterText'
 
-export const CounterText = defineSVGLayer<RacingPlotExtendContext, RacingPlotPluginParams, CounterTextParams>({
+export const CounterText = defineSVGLayer<RacingPlotExtendContext, RacingPlotPluginParams, RacingPlotCounterTextParams>({
   name: layerName,
-  defaultParams: DEFAULT_COUNTER_TEXT_PARAMS,
+  defaultParams: DEFAULT_RACING_PLOT_COUNTER_TEXT_PARAMS,
   layerIndex: LAYER_INDEX_OF_LABEL,
   initShow: true,
   validator: (params) => {

@@ -53,14 +53,14 @@ import {
   multivariateComputedDataObservable,
   // valueLabelsObservable
 } from './contextObservables'
-import { Scatter } from './layers/Scatter'
-import { ScatterBubbles } from './layers/ScatterBubbles'
-import { XYAux } from './layers/XYAux'
+import { Point } from './layers/Point'
+import { Bubble } from './layers/Bubble'
+import { XYGuide } from './layers/XYGuide'
 import { XYAxes } from './layers/XYAxes'
 import { XZoom } from './layers/XZoom'
-const scatter = new Scatter()
-const scatterBubbles = new ScatterBubbles()
-const xyAux = new XYAux()
+const point = new Point()
+const bubble = new Bubble()
+const xyGuide = new XYGuide()
 const xyAxes = new XYAxes()
 const xZoom = new XZoom()
 
@@ -71,7 +71,7 @@ export const ScatterPlot = defineSVGPlugin<
 >({
   name: 'ScatterPlot',
   defaultParams: DEFAULT_SCATTER_PLOT_PARAMS,
-  layers: [scatter, scatterBubbles, xyAux, xyAxes, xZoom],
+  layers: [point, bubble, xyGuide, xyAxes, xZoom],
   setup: (props) => {
     
     const zoomedScaleDomain$ = new BehaviorSubject<[number, number | "max"] | undefined>(undefined)

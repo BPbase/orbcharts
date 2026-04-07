@@ -9,7 +9,7 @@ import {
 } from 'rxjs'
 import type { RacingPlotExtendContext, RacingPlotPluginParams, RacingPlotAllLayerParams } from './types'
 import { defineSVGPlugin, validateObject } from '@orbcharts/core'
-import { DEFAULT_RACING_PLOT_PARAMS } from './defaults'
+import { DEFAULT_RACING_PLOT_PLUGIN_PARAMS } from './defaults'
 import { DEFAULT_CONTAINER } from '../../const/sharedPluginParams'
 import {
   categoryDataMapObservable,
@@ -32,15 +32,15 @@ import {
   rankedItemHeightObservable,
   rankedScaleListObservable
 } from './contextObservables'
-import { RacingBars } from './layers/RacingBars'
-import { RacingSeriesLabels } from './layers/RacingSeriesLabels'
+import { RacingBar } from './layers/RacingBar'
+import { SeriesLabel } from './layers/SeriesLabel'
 import { CounterText } from './layers/CounterText'
 import { ValueAxis } from './layers/ValueAxis'
-import { RacingValueLabels } from './layers/RacingValueLabels'
+import { ValueLabel } from './layers/ValueLabel'
 
-const racingBars = new RacingBars()
-const racingValueLabels = new RacingValueLabels()
-const racingSeriesLabels = new RacingSeriesLabels()
+const racingBar = new RacingBar()
+const valueLabel = new ValueLabel()
+const seriesLabel = new SeriesLabel()
 const counterText = new CounterText()
 const valueAxis = new ValueAxis()
 
@@ -50,8 +50,8 @@ export const RacingPlot = defineSVGPlugin<
   RacingPlotAllLayerParams
 >({
   name: 'RacingPlot',
-  defaultParams: DEFAULT_RACING_PLOT_PARAMS,
-  layers: [valueAxis, racingBars, racingValueLabels, racingSeriesLabels, counterText],
+  defaultParams: DEFAULT_RACING_PLOT_PLUGIN_PARAMS,
+  layers: [valueAxis, racingBar, valueLabel, seriesLabel, counterText],
   setup: (props) => {
     const destroy$ = new Subject<void>()
 

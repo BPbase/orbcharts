@@ -1,6 +1,6 @@
-import type { LegendParams, LegendPluginParams } from './types'
+import type { LegendLegendParams, LegendPluginParams } from './types'
 
-export const DEFAULT_SERIES_LEGEND_PLUGIN_PARAMS: LegendPluginParams = {
+export const DEFAULT_LEGEND_PLUGIN_PARAMS: LegendPluginParams = {
   styles: {
     padding: {
       top: 60,
@@ -18,9 +18,9 @@ export const DEFAULT_SERIES_LEGEND_PLUGIN_PARAMS: LegendPluginParams = {
   sort: null,
   datasetIndex: 0
 }
-DEFAULT_SERIES_LEGEND_PLUGIN_PARAMS.visibleFilter.toString = () => '(datum) => true'
+DEFAULT_LEGEND_PLUGIN_PARAMS.visibleFilter.toString = () => '(datum) => true'
 
-export const DEFAULT_SERIES_LEGEND_PARAMS: LegendParams = {
+export const DEFAULT_LEGEND_LEGEND_PARAMS: LegendLegendParams = {
   // position: 'right',
   // justify: 'end',
   placement: 'bottom',

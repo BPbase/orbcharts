@@ -7,8 +7,8 @@ import {
   takeUntil,
   Subject
 } from 'rxjs'
-import type { CategoryZoomParams, RankedPlotPluginParams } from '../types'
-import { DEFAULT_CATEGORY_ZOOM_PARAMS } from '../defaults'
+import type { RankedPlotCategoryZoomParams, RankedPlotPluginParams } from '../types'
+import { DEFAULT_RANKED_PLOT_CATEGORY_ZOOM_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_ROOT } from '../../../const/layerIndex'
 import { defineSVGLayer, validateObject } from '@orbcharts/core'
 import type { RankedPlotExtendContext } from '../types'
@@ -17,9 +17,9 @@ import { createValueToAxisScale } from '../../../utils/d3Scale'
 const pluginName = 'RankedPlot'
 const layerName = 'CategoryZoom'
 
-export const CategoryZoom = defineSVGLayer<RankedPlotExtendContext, RankedPlotPluginParams, CategoryZoomParams>({
+export const CategoryZoom = defineSVGLayer<RankedPlotExtendContext, RankedPlotPluginParams, RankedPlotCategoryZoomParams>({
   name: layerName,
-  defaultParams: DEFAULT_CATEGORY_ZOOM_PARAMS,
+  defaultParams: DEFAULT_RANKED_PLOT_CATEGORY_ZOOM_PARAMS,
   layerIndex: LAYER_INDEX_OF_ROOT,
   initShow: false,
   validator: (params) => {

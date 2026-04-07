@@ -11,10 +11,10 @@ import {
   Subject,
   iif
 } from 'rxjs'
-import type { ScatterPlotPluginParams, ScatterPlotExtendContext, XYAxesParams, ComputedXYDataMultivariate } from '../types'
+import type { ScatterPlotPluginParams, ScatterPlotExtendContext, ScatterPlotXYAxesParams, ComputedXYDataMultivariate } from '../types'
 import { defineSVGLayer } from '@orbcharts/core'
 import { validateObject } from '@orbcharts/core'
-import { DEFAULT_X_Y_AUX_PARAMS, DEFAULT_X_Y_AXES_PARAMS } from "../defaults"
+import { DEFAULT_SCATTER_PLOT_X_Y_GUIDE_PARAMS, DEFAULT_SCATTER_PLOT_X_Y_AXES_PARAMS } from "../defaults"
 import { LAYER_INDEX_OF_AUX, LAYER_INDEX_OF_AXIS } from '../../../const/layerIndex'
 import { createBaseXAxis } from '../../../baseLayers/BaseXAxis'
 import { createBaseYAxis } from '../../../baseLayers/BaseYAxis'
@@ -22,9 +22,9 @@ import { createBaseYAxis } from '../../../baseLayers/BaseYAxis'
 const pluginName = 'ScatterPlot'
 const layerName = 'XYAxes'
 
-export const XYAxes = defineSVGLayer<ScatterPlotExtendContext, ScatterPlotPluginParams, XYAxesParams>({
+export const XYAxes = defineSVGLayer<ScatterPlotExtendContext, ScatterPlotPluginParams, ScatterPlotXYAxesParams>({
   name: layerName,
-  defaultParams: DEFAULT_X_Y_AXES_PARAMS,
+  defaultParams: DEFAULT_SCATTER_PLOT_X_Y_AXES_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
   initShow: true,
   validator: (params) => {

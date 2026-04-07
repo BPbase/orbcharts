@@ -26,12 +26,12 @@ export interface TooltipPluginParams {
 
 // all layer params
 export interface TooltipAllLayerParams {
-  Tooltip: TooltipParams
+  Tooltip: TooltipTooltipParams
 }
 
 // -- layer params --
 
-export interface TooltipParams {
+export interface TooltipTooltipParams {
   backgroundColorType: ColorType
   backgroundOpacity: number
   strokeColorType: ColorType

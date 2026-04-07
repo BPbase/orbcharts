@@ -64,16 +64,16 @@ export interface RankedPlotPluginParams {
 // ---- all layer params ----
 
 export interface RankedPlotAllLayerParams {
-  RankedBubbles: RankedBubblesParams
-  RankedSeriesAxis: RankedSeriesAxisParams
-  CategoryAux: RankedCategoryAuxParams
-  CategoryAxis: RankedCategoryAxisParams
-  CategoryZoom: CategoryZoomParams
+  RankedBubble: RankedPlotRankedBubbleParams
+  RankAxis: RankedPlotRankAxisParams
+  CategoryGuide: RankedPlotCategoryGuideParams
+  CategoryAxis: RankedPlotCategoryAxisParams
+  CategoryZoom: RankedPlotCategoryZoomParams
 }
 
 // ---- layer params ----
 
-export interface RankedBubblesParams {
+export interface RankedPlotRankedBubbleParams {
   bubble: {
     sizeAdjust: number
     arcScaleType: 'area' | 'radius'
@@ -86,7 +86,7 @@ export interface RankedBubblesParams {
   }
 }
 
-export interface RankedSeriesAxisParams {
+export interface RankedPlotRankAxisParams {
   axisLabel: {
     offset: [number, number]
     colorType: ColorType
@@ -97,7 +97,7 @@ export interface RankedSeriesAxisParams {
   }
 }
 
-export interface RankedCategoryAuxParams {
+export interface RankedPlotCategoryGuideParams {
   showLine: boolean
   showLabel: boolean
   lineDashArray: string
@@ -108,7 +108,7 @@ export interface RankedCategoryAuxParams {
   labelPadding: number
 }
 
-export interface RankedCategoryAxisParams {
+export interface RankedPlotCategoryAxisParams {
   labelOffset: [number, number]
   labelColorType: ColorType
   axisLineVisible: boolean
@@ -124,6 +124,6 @@ export interface RankedCategoryAxisParams {
   tickTextColorType: ColorType
 }
 
-export interface CategoryZoomParams {
+export interface RankedPlotCategoryZoomParams {
   // empty
 }

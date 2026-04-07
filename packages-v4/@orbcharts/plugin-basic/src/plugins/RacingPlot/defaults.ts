@@ -1,13 +1,13 @@
 import type {
   RacingPlotPluginParams,
-  RacingBarsParams,
-  RacingValueLabelsParams,
-  RacingSeriesLabelsParams,
-  CounterTextParams,
-  ValueAxisParams
+  RacingPlotRacingBarParams,
+  RacingPlotValueLabelParams,
+  RacingPlotSeriesLabelParams,
+  RacingPlotCounterTextParams,
+  RacingPlotValueAxisParams
 } from './types'
 
-export const DEFAULT_RACING_PLOT_PARAMS: RacingPlotPluginParams = {
+export const DEFAULT_RACING_PLOT_PLUGIN_PARAMS: RacingPlotPluginParams = {
   styles: {
     padding: {
       top: 60,
@@ -34,9 +34,9 @@ export const DEFAULT_RACING_PLOT_PARAMS: RacingPlotPluginParams = {
   loop: false,
   frameInterval: 1000
 }
-DEFAULT_RACING_PLOT_PARAMS.visibleFilter.toString = () => '(datum) => true'
+DEFAULT_RACING_PLOT_PLUGIN_PARAMS.visibleFilter.toString = () => '(datum) => true'
 
-export const DEFAULT_RACING_BARS_PARAMS: RacingBarsParams = {
+export const DEFAULT_RACING_PLOT_RACING_BAR_PARAMS: RacingPlotRacingBarParams = {
   bar: {
     barWidth: null,
     barPadding: 4,
@@ -44,16 +44,16 @@ export const DEFAULT_RACING_BARS_PARAMS: RacingBarsParams = {
   }
 }
 
-export const DEFAULT_RACING_VALUE_LABELS_PARAMS: RacingValueLabelsParams = {
+export const DEFAULT_RACING_PLOT_VALUE_LABEL_PARAMS: RacingPlotValueLabelParams = {
   valueLabel: {
     padding: 8,
     colorType: 'primary',
     format: text => text
   }
 }
-;(DEFAULT_RACING_VALUE_LABELS_PARAMS.valueLabel.format as Function).toString = () => 'text => text'
+;(DEFAULT_RACING_PLOT_VALUE_LABEL_PARAMS.valueLabel.format as Function).toString = () => 'text => text'
 
-export const DEFAULT_RACING_SERIES_LABELS_PARAMS: RacingSeriesLabelsParams = {
+export const DEFAULT_RACING_PLOT_SERIES_LABEL_PARAMS: RacingPlotSeriesLabelParams = {
   axisLabel: {
     offset: [0, 0],
     colorType: 'primary'
@@ -65,17 +65,17 @@ export const DEFAULT_RACING_SERIES_LABELS_PARAMS: RacingSeriesLabelsParams = {
   }
 }
 
-export const DEFAULT_COUNTER_TEXT_PARAMS: CounterTextParams = {
+export const DEFAULT_RACING_PLOT_COUNTER_TEXT_PARAMS: RacingPlotCounterTextParams = {
   renderFn: (categoryLabel, frameIndex, data) => categoryLabel,
   textAttrs: [{}],
   textStyles: [{ 'font-size': '3em', 'font-weight': 'bold' }],
   paddingRight: 0,
   paddingBottom: 0
 }
-DEFAULT_COUNTER_TEXT_PARAMS.renderFn.toString = () =>
+;(DEFAULT_RACING_PLOT_COUNTER_TEXT_PARAMS.renderFn as Function).toString = () =>
   '(categoryLabel, frameIndex, data) => categoryLabel'
 
-export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
+export const DEFAULT_RACING_PLOT_VALUE_AXIS_PARAMS: RacingPlotValueAxisParams = {
   labelOffset: [0, 0],
   labelColorType: 'primary',
   axisLineVisible: true,
@@ -89,4 +89,4 @@ export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
   tickColorType: 'secondary',
   tickTextColorType: 'primary'
 }
-;(DEFAULT_VALUE_AXIS_PARAMS.tickFormat as Function).toString = () => 'text => text'
+;(DEFAULT_RACING_PLOT_VALUE_AXIS_PARAMS.tickFormat as Function).toString = () => 'text => text'

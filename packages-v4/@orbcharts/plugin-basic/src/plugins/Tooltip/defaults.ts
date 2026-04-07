@@ -1,7 +1,7 @@
-import type { TooltipParams, TooltipPluginParams } from './types'
+import type { TooltipTooltipParams, TooltipPluginParams } from './types'
 import type { EventData, ModelDatumMultivariate, ModelDatumSeries } from '@orbcharts/core'
 
-export const DEFAULT_SERIES_TOOLTIP_PLUGIN_PARAMS: TooltipPluginParams = {
+export const DEFAULT_TOOLTIP_PLUGIN_PARAMS: TooltipPluginParams = {
   styles: {
     padding: {
       top: 60,
@@ -19,9 +19,9 @@ export const DEFAULT_SERIES_TOOLTIP_PLUGIN_PARAMS: TooltipPluginParams = {
   sort: null,
   datasetIndex: 0
 }
-DEFAULT_SERIES_TOOLTIP_PLUGIN_PARAMS.visibleFilter.toString = () => '(datum) => true'
+DEFAULT_TOOLTIP_PLUGIN_PARAMS.visibleFilter.toString = () => '(datum) => true'
 
-export const DEFAULT_SERIES_TOOLTIP_PARAMS: TooltipParams = {
+export const DEFAULT_TOOLTIP_TOOLTIP_PARAMS: TooltipTooltipParams = {
   backgroundColorType: 'background',
   strokeColorType: 'primary',
   backgroundOpacity: 0.8,
@@ -260,7 +260,7 @@ ${datumDetailSvg}`
     return ''
   }
 }
-DEFAULT_SERIES_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils }) => {
+DEFAULT_TOOLTIP_TOOLTIP_PARAMS.renderFn.toString = () => `(eventData, { styles, utils }) => {
   function renderSeriesData () {
     const hasSeriesLabel = eventData.target.series.slice(0, 7) === 'series_' ? false : true
     const hasDatumLabel = eventData.target.name.slice(0, 7) === 'series_' ? false : true

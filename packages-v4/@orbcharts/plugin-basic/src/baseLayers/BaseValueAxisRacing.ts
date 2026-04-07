@@ -10,7 +10,7 @@ import {
 } from 'rxjs'
 import type { Theme } from '@orbcharts/core'
 import type { ContainerPositionScaled, ContainerSize } from '../types'
-import type { ValueAxisParams } from '../plugins/RacingPlot/types'
+import type { RacingPlotValueAxisParams } from '../plugins/RacingPlot/types'
 import { createClassName, createUniID, getColor } from '../utils/orbchartsUtils'
 import { parseTickFormatValue } from '../utils/d3Utils'
 
@@ -20,7 +20,7 @@ export interface BaseValueAxisRacingContext {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
   layerName: string
-  fullParams$: Observable<ValueAxisParams>
+  fullParams$: Observable<RacingPlotValueAxisParams>
   position$: Observable<'top' | 'bottom'>
   xScale$: Observable<(n: number) => number>
   containerPosition$: Observable<ContainerPositionScaled[]>

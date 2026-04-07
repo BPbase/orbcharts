@@ -65,12 +65,12 @@ export default function RacingPlotPage() {
           barRadius: 4,
         }
       },
-      RacingValueLabels: {
+      ValueLabel: {
         valueLabel: {
           format: (n: number) => Math.round(n).toLocaleString()
         }
       },
-      RacingSeriesLabels: {
+      SeriesLabel: {
         // seriesLabel: {
         //   position: 'inside-right',
         //   padding: 16,

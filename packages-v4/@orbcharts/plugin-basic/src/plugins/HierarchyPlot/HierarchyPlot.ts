@@ -15,7 +15,7 @@ import {
 import type { HierarchyPlotExtendContext, HierarchyPlotPluginParams, HierarchyPlotAllLayerParams } from './types'
 import { defineSVGPlugin } from '@orbcharts/core'
 import { validateObject } from '@orbcharts/core'
-import { DEFAULT_HIERARCHY_PLOT_PARAMS } from './defaults'
+import { DEFAULT_HIERARCHY_PLOT_PLUGIN_PARAMS } from './defaults'
 import {
   categoryDataMapObservable,
   containerSizeObservable,
@@ -39,7 +39,7 @@ export const HierarchyPlot = defineSVGPlugin<
   HierarchyPlotAllLayerParams
 >({
   name: 'HierarchyPlot',
-  defaultParams: DEFAULT_HIERARCHY_PLOT_PARAMS,
+  defaultParams: DEFAULT_HIERARCHY_PLOT_PLUGIN_PARAMS,
   layers: [treeMap],
   setup: (props) => {
 

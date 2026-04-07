@@ -22,7 +22,7 @@ import type {
 import { createAxisToLabelIndexScale } from './d3Scale'
 import { createClassName } from './orbchartsUtils'
 import { d3EventObservable } from './observables'
-import { SeriesPlotPluginParams } from '../plugins/SeriesPlot/types'
+import { GridPlotPluginParams } from '../plugins/GridPlot/types'
 
 // 建立 grid 主要的 selection 
 export const gridSelectionsObservable = ({ selection, pluginName, layerName, clipPathID, seriesLabels$, gridContainerPosition$, gridAxesTransform$, gridGraphicTransform$ }: {
@@ -215,7 +215,7 @@ export const gridContainerSelectionsObservable = ({ selection, pluginName, layer
 
 // 由事件取得category data的function
 export const gridCategoryPositionFnObservable = ({ pluginParams$, gridAxesSize$, computedData$, gridContainerPosition$, layout$ }: {
-  pluginParams$: Observable<SeriesPlotPluginParams>
+  pluginParams$: Observable<GridPlotPluginParams>
   gridAxesSize$: Observable<{
     width: number;
     height: number;
@@ -402,7 +402,7 @@ export const gridCategoryPositionFnObservable = ({ pluginParams$, gridAxesSize$,
 
 export const gridCategoryPositionObservable = ({ rootSelection, pluginParams$, gridAxesContainerSize$, computedData$, gridContainerPosition$, layout$ }: {
   rootSelection: d3.Selection<any, unknown, any, unknown>
-  pluginParams$: Observable<SeriesPlotPluginParams>
+  pluginParams$: Observable<GridPlotPluginParams>
   // gridAxesSize$: Observable<ContainerSize>
   // containerSize$: Observable<ContainerSize>
   gridAxesContainerSize$: Observable<ContainerSize>

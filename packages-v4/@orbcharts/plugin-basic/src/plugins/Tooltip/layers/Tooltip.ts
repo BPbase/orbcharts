@@ -3,20 +3,20 @@ import {
   Subject, 
   Observable,
   BehaviorSubject} from 'rxjs'
-import type { TooltipExtendContext, TooltipPluginParams, TooltipParams } from "../types"
+import type { TooltipExtendContext, TooltipPluginParams, TooltipTooltipParams } from "../types"
 import type { ColorType } from '@orbcharts/core'
 import { defineSVGLayer } from '@orbcharts/core'
 import { validateObject } from '@orbcharts/core'
-import { DEFAULT_SERIES_TOOLTIP_PARAMS } from "../defaults"
+import { DEFAULT_TOOLTIP_TOOLTIP_PARAMS } from "../defaults"
 import { LAYER_INDEX_OF_TOOLTIP } from '../../../const/layerIndex'
 import { createBaseTooltip } from '../../../baseLayers/BaseTooltip'
 
 const pluginName = 'Tooltip'
 const layerName = 'Tooltip'
 
-export const Tooltip = defineSVGLayer<TooltipExtendContext, TooltipPluginParams, TooltipParams>({
+export const Tooltip = defineSVGLayer<TooltipExtendContext, TooltipPluginParams, TooltipTooltipParams>({
   name: layerName,
-  defaultParams: DEFAULT_SERIES_TOOLTIP_PARAMS,
+  defaultParams: DEFAULT_TOOLTIP_TOOLTIP_PARAMS,
   layerIndex: LAYER_INDEX_OF_TOOLTIP,
   initShow: true,
   validator: (params) => {
