@@ -7,9 +7,9 @@ import {
   shareReplay,
   takeUntil
 } from 'rxjs'
-import type { CategoryAxisParams, GridPlotPluginParams } from '../types'
+import type { GridPlotCategoryAxisParams, GridPlotPluginParams } from '../types'
 import { DEFAULT_CATEGORY_AXIS_PARAMS } from '../defaults'
-import { LAYER_INDEX_OF_INFO } from '../../../const/layerIndex'
+import { LAYER_INDEX_OF_AXIS } from '../../../const/layerIndex'
 import { defineSVGLayer } from '@orbcharts/core'
 import { GridPlotExtendContext } from '../types'
 import { validateObject } from '@orbcharts/core'
@@ -18,10 +18,10 @@ import { createBaseCategoryAxis } from '../../../baseLayers/BaseCategoryAxis'
 const pluginName = 'GridPlot'
 const layerName = 'CategoryAxis'
 
-export const CategoryAxis = defineSVGLayer<GridPlotExtendContext, GridPlotPluginParams, CategoryAxisParams>({
+export const CategoryAxis = defineSVGLayer<GridPlotExtendContext, GridPlotPluginParams, GridPlotCategoryAxisParams>({
   name: layerName,
   defaultParams: DEFAULT_CATEGORY_AXIS_PARAMS,
-  layerIndex: LAYER_INDEX_OF_INFO,
+  layerIndex: LAYER_INDEX_OF_AXIS,
   initShow: false,
   validator: (params) => {
     const result = validateObject(params, {
@@ -82,6 +82,8 @@ export const CategoryAxis = defineSVGLayer<GridPlotExtendContext, GridPlotPlugin
         map(params => params.styles),
       ),
       theme$: context.theme$,
+      categoryAxisPosition$: context.categoryAxisPosition$,
+      // valueAxisPosition$: context.valueAxisPosition$,
     })
 
     return () => {

@@ -20,6 +20,7 @@ import type {
   ValueAxis,
   CategoryAxis,
   GraphicStyles,
+  AxisPosition,
 } from '../types'
 import type { BaseLayerFn } from '../types/BaseLayer'
 import { parseTickFormatValue } from '../utils/d3Utils'
@@ -61,6 +62,9 @@ interface BaseCategoryAxisContext {
   gridContainerPosition$: Observable<ContainerPositionScaled[]>
   isSeriesSeprate$: Observable<boolean>
   fontSizePx$: Observable<number>
+  // Optional: when provided, overrides reading position from axis objects
+  categoryAxisPosition$?: Observable<AxisPosition>
+  // valueAxisPosition$?: Observable<AxisPosition>
 }
 
 interface TextAlign {
@@ -92,14 +96,14 @@ function createGroupLabelData (categoryLabels: string[], tickFormat: string | ((
   })
 }
 
-function renderAxisLabel ({ selection, categoryLabelClassName, baseCategoryAxisParams, axisLabelAlign, gridAxesSize, categoryAxis, valueAxis, styles, theme, textReverseTransform }: {
+function renderAxisLabel ({ selection, categoryLabelClassName, baseCategoryAxisParams, axisLabelAlign, gridAxesSize, categoryAxisPosition, categoryAxisLabel, styles, theme, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   categoryLabelClassName: string
   baseCategoryAxisParams: BaseCategoryAxisParams
   axisLabelAlign: TextAlign
   gridAxesSize: { width: number, height: number }
-  categoryAxis: CategoryAxis
-  valueAxis: ValueAxis
+  categoryAxisPosition: AxisPosition
+  categoryAxisLabel: string
   styles: GraphicStyles
   theme: Theme
   textReverseTransform: string
@@ -109,34 +113,18 @@ function renderAxisLabel ({ selection, categoryLabelClassName, baseCategoryAxisP
   const offsetY = baseCategoryAxisParams.tickPadding + baseCategoryAxisParams.labelOffset[1]
   let labelX = 0
   let labelY = 0
-  if (categoryAxis.position === 'bottom') {
+  if (categoryAxisPosition === 'bottom') {
     labelY = offsetY
-    if (valueAxis.position === 'left') {
-      labelX = offsetX
-    } else if (valueAxis.position === 'right') {
-      labelX = - offsetX
-    }
-  } else if (categoryAxis.position === 'top') {
-    labelY = - offsetY
-    if (valueAxis.position === 'left') {
-      labelX = offsetX
-    } else if (valueAxis.position === 'right') {
-      labelX = - offsetX
-    }
-  } else if (categoryAxis.position === 'left') {
-    labelX = - offsetX
-    if (valueAxis.position === 'bottom') {
-      labelY = - offsetY
-    } else if (valueAxis.position === 'top') {
-      labelY = offsetY
-    }
-  } else if (categoryAxis.position === 'right') {
     labelX = offsetX
-    if (valueAxis.position === 'bottom') {
-      labelY = - offsetY
-    } else if (valueAxis.position === 'top') {
-      labelY = offsetY
-    }
+  } else if (categoryAxisPosition === 'top') {
+    labelY = - offsetY
+    labelX = offsetX
+  } else if (categoryAxisPosition === 'left') {
+    labelX = - offsetX
+    labelY = - offsetY
+  } else if (categoryAxisPosition === 'right') {
+    labelX = offsetX
+    labelY = - offsetY
   }
 
   const axisLabelSelection = selection
@@ -165,23 +153,22 @@ function renderAxisLabel ({ selection, categoryLabelClassName, baseCategoryAxisP
         // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
         .attr('x', labelX)
         .attr('y', labelY)
-        .text(d => categoryAxis.label)
+        .text(d => categoryAxisLabel)
     })
     .attr('transform', d => `translate(${gridAxesSize.width}, 0)`)
     // .attr('transform', d => `translate(${gridAxesSize.width + d.tickPadding + baseCategoryAxisParams.labelOffset[0]}, ${- d.tickPadding - baseCategoryAxisParams.labelOffset[1]})`)
 
 }
 
-function renderAxis ({ selection, xAxisClassName, baseCategoryAxisParams, tickTextAlign, gridAxesSize, categoryAxis, categoryScale, categoryScaleDomain, categoryLabelData, textReverseTransformWithRotate, theme, fontSizePx }: {
+function renderAxis ({ selection, xAxisClassName, baseCategoryAxisParams, tickTextAlign, gridAxesSize, categoryAxisPosition, categoryScale, categoryScaleDomain, categoryLabelData, textReverseTransformWithRotate, theme, fontSizePx }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   xAxisClassName: string
   baseCategoryAxisParams: BaseCategoryAxisParams
   tickTextAlign: TextAlign
   gridAxesSize: { width: number, height: number }
-  categoryAxis: CategoryAxis
+  categoryAxisPosition: AxisPosition
   categoryScale: d3.ScaleLinear<number, number>
   categoryScaleDomain: number[]
-  // categoryLabels: string[]
   categoryLabelData: GroupLabelData[]
   textReverseTransformWithRotate: string
   theme: Theme
@@ -200,20 +187,20 @@ function renderAxis ({ selection, xAxisClassName, baseCategoryAxisParams, tickTe
   // 刻度文字偏移
   let tickPadding = 0
   let textX = 0
-  if (categoryAxis.position === 'left') {
+  if (categoryAxisPosition === 'left') {
     tickPadding = 0
     textX = - baseCategoryAxisParams.tickPadding
-  } else if (categoryAxis.position === 'right') {
+  } else if (categoryAxisPosition === 'right') {
     tickPadding = 0
     textX = baseCategoryAxisParams.tickPadding
-  } else if (categoryAxis.position === 'bottom') {
+  } else if (categoryAxisPosition === 'bottom') {
     if (baseCategoryAxisParams.tickFullLine == true) {
       tickPadding = - baseCategoryAxisParams.tickPadding
     } else {
       tickPadding = - baseCategoryAxisParams.tickPadding - defaultTickSize
     }
     textX = 0
-  } else if (categoryAxis.position === 'top') {
+  } else if (categoryAxisPosition === 'top') {
     if (baseCategoryAxisParams.tickFullLine == true) {
       tickPadding = baseCategoryAxisParams.tickPadding
     } else {
@@ -261,7 +248,7 @@ function renderAxis ({ selection, xAxisClassName, baseCategoryAxisParams, tickTe
           renderTspansOnAxis(d3.select(n[i]), {
             textArr,
             textSizePx: fontSizePx,
-            categoryAxisPosition: categoryAxis.position,
+            categoryAxisPosition: categoryAxisPosition,
             isContainerRotated: true
           })
         })
@@ -314,9 +301,19 @@ export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
   gridContainerPosition$,
   isSeriesSeprate$,
   fontSizePx$,
+  categoryAxisPosition$: _categoryAxisPosition$,
+  // valueAxisPosition$: _valueAxisPosition$,
 }) => {
   
   const destroy$ = new Subject()
+
+  // Derive effective axis positions: use provided observables if available,
+  // otherwise fall back to reading from axis objects (backward compat)
+  const effectiveCategoryAxisPosition$: Observable<AxisPosition> = _categoryAxisPosition$
+    ?? categoryAxis$.pipe(map(ca => ((ca as any).position ?? 'bottom') as AxisPosition))
+
+  // const effectiveValueAxisPosition$: Observable<AxisPosition> = _valueAxisPosition$
+  //   ?? valueAxis$.pipe(map(va => ((va as any).position ?? 'left') as AxisPosition))
 
   const containerClassName = createClassName(pluginName, layerName, 'container')
   const xAxisGClassName = createClassName(pluginName, layerName, 'xAxisG')
@@ -553,14 +550,16 @@ export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
 
   const categoryScale$ = combineLatest({
     categoryScaleDomain: categoryScaleDomain$,
-    gridAxesSize: gridAxesSize$
+    gridAxesSize: gridAxesSize$,
+    categoryAxis: categoryAxis$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
     map(data => {
+      const reverse = data.categoryAxis.reverse ?? false
       const categoryScale: d3.ScaleLinear<number, number> = d3.scaleLinear()
         .domain(data.categoryScaleDomain)
-        .range([0, data.gridAxesSize.width])
+        .range(reverse ? [data.gridAxesSize.width, 0] : [0, data.gridAxesSize.width])
       return categoryScale
     })
   )
@@ -570,7 +569,7 @@ export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
   )
 
   const tickTextAlign$: Observable<TextAlign> = combineLatest({
-    categoryAxis: categoryAxis$,
+    categoryAxisPosition: effectiveCategoryAxisPosition$,
     baseCategoryAxisParams: baseCategoryAxisParams$
   }).pipe(
     takeUntil(destroy$),
@@ -579,20 +578,20 @@ export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
       let textAnchor: 'start' | 'middle' | 'end' = 'middle'
       let dominantBaseline: 'auto' | 'middle' | 'hanging' = 'hanging'
 
-      if (data.categoryAxis.position === 'bottom') {
+      if (data.categoryAxisPosition === 'bottom') {
         textAnchor = data.baseCategoryAxisParams.tickTextRotate
           ? 'end'
           : 'middle'
         dominantBaseline = 'hanging'
-      } else if (data.categoryAxis.position === 'top') {
+      } else if (data.categoryAxisPosition === 'top') {
         textAnchor = data.baseCategoryAxisParams.tickTextRotate
           ? 'start'
           : 'middle'
         dominantBaseline = 'auto'
-      } else if (data.categoryAxis.position === 'left') {
+      } else if (data.categoryAxisPosition === 'left') {
         textAnchor = 'end'
         dominantBaseline = 'middle'
-      } else if (data.categoryAxis.position === 'right') {
+      } else if (data.categoryAxisPosition === 'right') {
         textAnchor = 'start'
         dominantBaseline = 'middle'
       }
@@ -603,33 +602,25 @@ export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
     })
   )
 
-  const axisLabelAlign$: Observable<TextAlign> = combineLatest({
-    categoryAxis: categoryAxis$,
-    valueAxis: valueAxis$
-  }).pipe(
+  const axisLabelAlign$: Observable<TextAlign> = effectiveCategoryAxisPosition$.pipe(
     takeUntil(destroy$),
     debounceTime(0),
-    map(data => {
+    map(categoryAxisPosition => {
       let textAnchor: 'start' | 'middle' | 'end' = 'start'
       let dominantBaseline: 'auto' | 'middle' | 'hanging' = 'hanging'
 
-      if (data.categoryAxis.position === 'bottom') {
-        dominantBaseline = 'hanging'
-      } else if (data.categoryAxis.position === 'top') {
-        dominantBaseline = 'auto'
-      } else if (data.categoryAxis.position === 'left') {
-        textAnchor = 'end'
-      } else if (data.categoryAxis.position === 'right') {
+      if (categoryAxisPosition === 'bottom') {
         textAnchor = 'start'
-      }
-      if (data.valueAxis.position === 'left') {
-        textAnchor = 'start'
-      } else if (data.valueAxis.position === 'right') {
-        textAnchor = 'end'
-      } else if (data.valueAxis.position === 'bottom') {
-        dominantBaseline = 'auto'
-      } else if (data.valueAxis.position === 'top') {
         dominantBaseline = 'hanging'
+      } else if (categoryAxisPosition === 'top') {
+        textAnchor = 'start'
+        dominantBaseline = 'auto'
+      } else if (categoryAxisPosition === 'left') {
+        textAnchor = 'end'
+        dominantBaseline = 'middle'
+      } else if (categoryAxisPosition === 'right') {
+        textAnchor = 'start'
+        dominantBaseline = 'middle'
       }
       return {
         textAnchor,
@@ -656,17 +647,15 @@ export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
     axisLabelAlign: axisLabelAlign$,
     gridAxesSize: gridAxesSize$,
     categoryAxis: categoryAxis$,
-    valueAxis: valueAxis$,
+    categoryAxisPosition: effectiveCategoryAxisPosition$,
     theme: theme$,
     styles: styles$,
     categoryScale: categoryScale$,
     categoryScaleDomain: categoryScaleDomain$,
-    // categoryLabels: categoryLabels$,
     categoryLabelData: categoryLabelData$,
     textReverseTransform: textReverseTransform$,
     textReverseTransformWithRotate: textReverseTransformWithRotate$,
     fontSizePx: fontSizePx$
-    // tickTextFormatter: tickTextFormatter$
   }).pipe(
     takeUntil(destroy$),
     switchMap(async (d) => d),
@@ -678,11 +667,10 @@ export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
       baseCategoryAxisParams: data.baseCategoryAxisParams,
       tickTextAlign: data.tickTextAlign,
       gridAxesSize: data.gridAxesSize,
-      categoryAxis: data.categoryAxis,
+      categoryAxisPosition: data.categoryAxisPosition,
       theme: data.theme,
       categoryScale: data.categoryScale,
       categoryScaleDomain: data.categoryScaleDomain,
-      // categoryLabels: data.categoryLabels,
       categoryLabelData: data.categoryLabelData,
       textReverseTransformWithRotate: data.textReverseTransformWithRotate,
       fontSizePx: data.fontSizePx
@@ -694,8 +682,8 @@ export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
       baseCategoryAxisParams: data.baseCategoryAxisParams,
       axisLabelAlign: data.axisLabelAlign,
       gridAxesSize: data.gridAxesSize,
-      categoryAxis: data.categoryAxis,
-      valueAxis: data.valueAxis,
+      categoryAxisPosition: data.categoryAxisPosition,
+      categoryAxisLabel: data.categoryAxis.label,
       theme: data.theme,
       styles: data.styles,
       textReverseTransform: data.textReverseTransform,

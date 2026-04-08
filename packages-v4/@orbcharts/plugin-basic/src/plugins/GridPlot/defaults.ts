@@ -1,4 +1,4 @@
-import type { BarsParams, BarsTriangleParams, DotsParams, GridPlotPluginParams, CategoryGuideParams, CategoryAxisParams, CategoryZoomParams, LineAreasParams, LinesParams, StackedBarsParams, StackedValueAxisParams, ValueAxisParams } from './types'
+import type { GridPlotBarParams, GridPlotTriangleBarParams, GridPlotPointParams, GridPlotPluginParams, GridPlotCategoryGuideParams, GridPlotCategoryAxisParams, GridPlotCategoryZoomParams, GridPlotLineAreaParams, GridPlotLineParams, GridPlotStackedBarParams, GridPlotStackedValueAxisParams, GridPlotValueAxisParams } from './types'
 import { DEFAULT_CATEGORY_AXIS, DEFAULT_CONTAINER, DEFAULT_VALUE_AXIS } from '../../const/sharedPluginParams'
 
 export const DEFAULT_SERIES_PLOT_PARAMS: GridPlotPluginParams = {
@@ -17,6 +17,7 @@ export const DEFAULT_SERIES_PLOT_PARAMS: GridPlotPluginParams = {
   },
   visibleFilter: (datum) => true,
   container: { ...DEFAULT_CONTAINER },
+  direction: 'bottom-up',
   valueAxis: { ...DEFAULT_VALUE_AXIS },
   categoryAxis: { ...DEFAULT_CATEGORY_AXIS},
   separateSeries: false,
@@ -24,17 +25,17 @@ export const DEFAULT_SERIES_PLOT_PARAMS: GridPlotPluginParams = {
 }
 DEFAULT_SERIES_PLOT_PARAMS.visibleFilter.toString = () => '(datum) => true'
 
-export const DEFAULT_LINES_PARAMS: LinesParams = {
+export const DEFAULT_LINES_PARAMS: GridPlotLineParams = {
   lineCurve: 'curveLinear',
   lineWidth: 2
 }
 
-export const DEFAULT_LINE_AREAS_PARAMS: LineAreasParams = {
+export const DEFAULT_LINE_AREAS_PARAMS: GridPlotLineAreaParams = {
   lineCurve: 'curveLinear',
   linearGradientOpacity: [1, 0]
 }
 
-export const DEFAULT_DOTS_PARAMS: DotsParams = {
+export const DEFAULT_DOTS_PARAMS: GridPlotPointParams = {
   radius: 4,
   fillColorType: 'background',
   strokeColorType: 'data',
@@ -43,7 +44,7 @@ export const DEFAULT_DOTS_PARAMS: DotsParams = {
   onlyShowHighlighted: false
 }
 
-export const DEFAULT_CATEGORY_AUX_PARAMS: CategoryGuideParams = {
+export const DEFAULT_CATEGORY_AUX_PARAMS: GridPlotCategoryGuideParams = {
   showLine: true,
   showLabel: true,
   lineDashArray: '3, 3',
@@ -56,7 +57,7 @@ export const DEFAULT_CATEGORY_AUX_PARAMS: CategoryGuideParams = {
 }
 DEFAULT_CATEGORY_AUX_PARAMS.labelTextFormat.toString = () => `text => text`
 
-export const DEFAULT_BARS_PARAMS: BarsParams = {
+export const DEFAULT_BARS_PARAMS: GridPlotBarParams = {
   // barType: 'rect',
   barWidth: 0,
   barPadding: 1,
@@ -64,24 +65,24 @@ export const DEFAULT_BARS_PARAMS: BarsParams = {
   barRadius: false,
 }
 
-export const DEFAULT_BARS_DIVERGING_PARAMS: BarsParams = {
+export const DEFAULT_BARS_DIVERGING_PARAMS: GridPlotBarParams = {
   ...DEFAULT_BARS_PARAMS
 }
 
-export const DEFAULT_STACKED_BARS_PARAMS: StackedBarsParams = {
+export const DEFAULT_STACKED_BARS_PARAMS: GridPlotStackedBarParams = {
   barWidth: 0,
   barGroupPadding: 10,
   barRadius: false,
 }
 
-export const DEFAULT_BARS_TRIANGLE_PARAMS: BarsTriangleParams = {
+export const DEFAULT_BARS_TRIANGLE_PARAMS: GridPlotTriangleBarParams = {
   barWidth: 0,
   barPadding: 1,
   barGroupPadding: 20,
   linearGradientOpacity: [1, 0]
 }
 
-export const DEFAULT_CATEGORY_AXIS_PARAMS: CategoryAxisParams = {
+export const DEFAULT_CATEGORY_AXIS_PARAMS: GridPlotCategoryAxisParams = {
   // labelAnchor: 'start',
   labelOffset: [0, 0],
   labelColorType: 'primary',
@@ -99,7 +100,7 @@ export const DEFAULT_CATEGORY_AXIS_PARAMS: CategoryAxisParams = {
 }
 DEFAULT_CATEGORY_AXIS_PARAMS.tickFormat.toString = () => `text => text`
 
-export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
+export const DEFAULT_VALUE_AXIS_PARAMS: GridPlotValueAxisParams = {
   // labelAnchor: 'end',
   labelOffset: [0, 0],
   labelColorType: 'primary',
@@ -122,7 +123,8 @@ export const DEFAULT_VALUE_AXIS_PARAMS: ValueAxisParams = {
   tickFullLineDasharray: 'none',
   tickColorType: 'secondary',
   tickTextRotate: 0,
-  tickTextColorType: 'primary'
+  tickTextColorType: 'primary',
+  opposite: false
 }
 DEFAULT_VALUE_AXIS_PARAMS.tickFormat.toString = () => `num => {
   if (num === null || Number.isNaN(num) == true) {
@@ -133,10 +135,10 @@ DEFAULT_VALUE_AXIS_PARAMS.tickFormat.toString = () => `num => {
   return parts.join('.')
 }`
 
-export const DEFAULT_STACKED_VALUE_AXIS_PARAMS: StackedValueAxisParams = {
+export const DEFAULT_STACKED_VALUE_AXIS_PARAMS: GridPlotStackedValueAxisParams = {
   ...DEFAULT_VALUE_AXIS_PARAMS
 }
 
-export const DEFAULT_CATEGORY_ZOOM_PARAMS: CategoryZoomParams = {
+export const DEFAULT_CATEGORY_ZOOM_PARAMS: GridPlotCategoryZoomParams = {
 
 }

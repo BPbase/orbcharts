@@ -37,6 +37,17 @@ export default function GridPlotPage() {
     // console.log(domRef.current)
 
     const gridPlot = new GridPlot({
+      Bar: {},
+      CategoryAxis: {},
+      ValueAxis: {
+        opposite: true
+      },
+      CategoryGuide: {},
+      CategoryZoom: {},
+      direction: 'bottom-up',
+      categoryAxis: {
+        reverse: false,
+      },
       // Bars: {},
       // Lines: {},
       // Dots: {},

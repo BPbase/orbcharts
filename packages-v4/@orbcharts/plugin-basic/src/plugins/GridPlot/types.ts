@@ -1,9 +1,9 @@
 
 import { Observable, Subject } from 'rxjs'
 import type { ColorType, ModelDatumSeries, EventData } from '@orbcharts/core'
-import type { AxisPosition, ContainerPosition, ContainerPositionScaled, Container, GraphicStyles, Layout, VisibleFilter, ValueAxis, CategoryAxis } from '../../types/PluginParams'
+import type { ContainerPosition, ContainerPositionScaled, Container, GraphicStyles, Layout, VisibleFilter, ValueAxis, CategoryAxis, AxisPosition } from '../../types/PluginParams'
 import { ComputedDatumGrid,  } from '../../types/ComputedData'
-import type { ContainerSize, Placement, TransformData } from '../../types/Common'
+import type { ContainerSize, TransformData } from '../../types/Common'
 import { BaseTooltipStyle, BaseTooltipUtils } from '../../baseLayers/types'
 
 // context
@@ -40,6 +40,8 @@ export interface GridPlotExtendContext {
   gridGraphicTransform$: Observable<TransformData>
   gridGraphicReverseScale$: Observable<[number, number][]>
   zoomedCategoryAxis$: Observable<CategoryAxis>
+  categoryAxisPosition$: Observable<AxisPosition>
+  // valueAxisPosition$: Observable<AxisPosition>
   // updateScaleDomain$: Subject<[number, number | "max"]> // zoom後要更新categoryAxis的scaleDomain
 }
 
@@ -68,9 +70,8 @@ export interface GridPlotPluginParams {
   styles: GraphicStyles
   visibleFilter: VisibleFilter<'grid'>
   container: Container
-  // seriesDirection: SeriesDirection
-  // rowLabels: string[]
-  // columnLabels: string[]
+  // direction: 'vertical' | 'horizontal'
+  direction: 'bottom-up' | 'top-down' | 'left-right' | 'right-left'
   valueAxis: ValueAxis
   categoryAxis: CategoryAxis
   separateSeries: boolean
@@ -79,14 +80,14 @@ export interface GridPlotPluginParams {
 
 // all layer params
 export interface GridPlotAllLayerParams {
-  Lines: GridPlotLineParams
-  LineAreas: GridPlotLineAreaParams
-  Dots: GridPlotPointParams
-  CategoryAux: GridPlotCategoryGuideParams
-  Bars: GridPlotBarParams
-  BarsPN: GridPlotBarPNParams
-  StackedBars: GridPlotStackedBarParams
-  BarsTriangle: GridPlotTriangleBarParams
+  Line: GridPlotLineParams
+  LineArea: GridPlotLineAreaParams
+  Point: GridPlotPointParams
+  CategoryGuide: GridPlotCategoryGuideParams
+  Bar: GridPlotBarParams
+  // BarsPN: GridPlotBarPNParams
+  StackedBar: GridPlotStackedBarParams
+  TriangleBar: GridPlotTriangleBarParams
   CategoryAxis: GridPlotCategoryAxisParams
   ValueAxis: GridPlotValueAxisParams
   StackedValueAxis: GridPlotStackedValueAxisParams
@@ -192,6 +193,7 @@ export interface GridPlotValueAxisParams {
   // axisLabelColor: string
   tickTextRotate: number
   tickTextColorType: ColorType
+  opposite: boolean
 }
 
 export interface GridPlotStackedValueAxisParams extends GridPlotValueAxisParams {}

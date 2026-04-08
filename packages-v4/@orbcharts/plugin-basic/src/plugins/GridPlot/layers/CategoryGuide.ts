@@ -15,6 +15,7 @@ import {
   Subject,
   Observable } from 'rxjs'
 import type { GridPlotCategoryGuideParams, GridPlotPluginParams } from '../types'
+import type { AxisPosition } from '../../../types'
 import { DEFAULT_CATEGORY_AUX_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_AUX } from '../../../const/layerIndex'
 import { defineSVGLayer } from '@orbcharts/core'
@@ -148,10 +149,10 @@ function removeLine (selection: d3.Selection<any, string, any, unknown>) {
   update.exit().remove()
 }
 
-function renderLabel ({ selection, labelData, pluginParams, layerParams, theme, textReverseTransformWithRotate, fontSizePx }: {
+function renderLabel ({ selection, labelData, categoryAxisPosition, layerParams, theme, textReverseTransformWithRotate, fontSizePx }: {
   selection: d3.Selection<any, string, any, unknown>
   labelData: LabelDatum[]
-  pluginParams: GridPlotPluginParams
+  categoryAxisPosition: AxisPosition
   layerParams: GridPlotCategoryGuideParams
   theme: Theme
   // gridAxesReverseTransformValue: string
@@ -195,14 +196,14 @@ function renderLabel ({ selection, labelData, pluginParams, layerParams, theme, 
       let rectY = -2
       let x = rectX
       let y = rectY - 3 // 奇怪的偏移修正
-      if (pluginParams.categoryAxis.position === 'bottom') {
+      if (categoryAxisPosition === 'bottom') {
         rectX = layerParams.labelRotate
           ? - rectWidth + rectHeight // 有傾斜時以末端對齊（+height是為了修正移動太多）
           : - rectWidth / 2
         rectY = 2
         x = rectX
         y = rectY - 3 // 奇怪的偏移修正
-      } else if (pluginParams.categoryAxis.position === 'left') {
+      } else if (categoryAxisPosition === 'left') {
         rectX = - rectWidth + 2
         rectY = - rectHeight / 2
         x = rectX
@@ -210,7 +211,7 @@ function renderLabel ({ selection, labelData, pluginParams, layerParams, theme, 
         if (layerParams.labelRotate) {
           y += rectHeight
         }
-      } else if (pluginParams.categoryAxis.position === 'right') {
+      } else if (categoryAxisPosition === 'right') {
         rectX = - 2
         rectY = - rectHeight / 2
         x = rectX
@@ -218,7 +219,7 @@ function renderLabel ({ selection, labelData, pluginParams, layerParams, theme, 
         if (layerParams.labelRotate) {
           y += rectHeight
         }
-      } else if (pluginParams.categoryAxis.position === 'top') {
+      } else if (categoryAxisPosition === 'top') {
         rectX = layerParams.labelRotate
           ? - rectWidth + rectHeight // 有傾斜時以末端對齊（+height是為了修正移動太多）
           : - rectWidth / 2
@@ -266,7 +267,7 @@ function renderLabel ({ selection, labelData, pluginParams, layerParams, theme, 
           renderTspansOnAxis(d3.select(n[i]), {
             textArr: datum.textArr,
             textSizePx: fontSizePx,
-            categoryAxisPosition: pluginParams.categoryAxis.position,
+            categoryAxisPosition: categoryAxisPosition,
             isContainerRotated: false
           })
         })
@@ -351,7 +352,7 @@ export const CategoryGuide = defineSVGLayer<GridPlotExtendContext, GridPlotPlugi
     let isLabelMouseover = false
 
     // const rootSelection = d3.select(`svg.orbcharts-${pluginName}__svg`)
-    const rootSelection = d3.select(svgG.parentElement)
+    const rootSelection = d3.select(context.svg)
 
     const rootRectSelection: d3.Selection<SVGRectElement, any, any, any> = rootSelection
       .insert('rect', 'g')
@@ -706,7 +707,7 @@ export const CategoryGuide = defineSVGLayer<GridPlotExtendContext, GridPlotPlugi
     //   gridGroupPositionFn: gridGroupPositionFn$,
     // }).pipe(
     //   takeUntil(destroy$),
-    //   switchMap(async d => d),
+    //   debounceTime(0),
     //   map(data => {
     //     const { categoryIndex, categoryLabel } = data.gridGroupPositionFn(data.rootMousemove)
     //     return { categoryIndex, categoryLabel }
@@ -781,26 +782,27 @@ export const CategoryGuide = defineSVGLayer<GridPlotExtendContext, GridPlotPlugi
 
     combineLatest({
       axesSelection: axesSelection$,
-      columnAmount: columnAmount$,
+      // columnAmount: columnAmount$,
       rowAmount: rowAmount$,
-      layout: context.layout$,
-      rootMousemove: rootMousemove$,
+      // layout: context.layout$,
+      // rootMousemove: rootMousemove$,
       // gridGroupPositionFn: gridGroupPositionFn$,
       gridGroupPosition: gridGroupPosition$,
-      computedData: context.computedData$,
+      // computedData: context.computedData$,
       groupScale: groupScale$,
       gridAxesSize: context.gridAxesSize$,
-      pluginParams: pluginParams$,
+      // pluginParams: pluginParams$,
+      categoryAxisPosition: context.categoryAxisPosition$,
       layerParams: layerParams$,
       theme: context.theme$,
-      highlightTarget: highlightTarget$,
+      // highlightTarget: highlightTarget$,
       // gridAxesReverseTransform: context.gridAxesReverseTransform$,
       textReverseTransformWithRotate: textReverseTransformWithRotate$,
       // CategoryDataMap: context.CategoryDataMap$,
       fontSizePx: context.fontSizePx$
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async d => d),
+      debounceTime(0),
     ).subscribe(data => {
       // // 由於event座標是基於底層的，但是container會有多欄，所以要重新計算
       // const eventData = {
@@ -838,7 +840,7 @@ export const CategoryGuide = defineSVGLayer<GridPlotExtendContext, GridPlotPlugi
         // selection: axisSelection,
         selection: data.axesSelection,
         labelData,
-        pluginParams: data.pluginParams,
+        categoryAxisPosition: data.categoryAxisPosition,
         layerParams: data.layerParams,
         // gridAxesReverseTransformValue: data.gridAxesReverseTransform.value,
         textReverseTransformWithRotate: data.textReverseTransformWithRotate,
@@ -976,7 +978,7 @@ export const CategoryGuide = defineSVGLayer<GridPlotExtendContext, GridPlotPlugi
     //   textSizePx: context.textSizePx$
     // }).pipe(
     //   takeUntil(destroy$),
-    //   switchMap(async d => d)
+    //   debounceTime(0)
     // ).subscribe(data => {
     //   // const group = data.event.eventName === 'mouseover' || data.event.eventName === 'mousemove'
     //   //   ? data.event.group
@@ -1110,7 +1112,7 @@ export const CategoryGuide = defineSVGLayer<GridPlotExtendContext, GridPlotPlugi
       axesSelection: axesSelection$,
     }).pipe(
       takeUntil(destroy$),
-      switchMap(async d => d)
+      debounceTime(0)
     ).subscribe(data => {
       setTimeout(() => {
         // @Q@ workaround - 不知為何和 label 會有衝突，當滑鼠移動到 label 上時，會觸發 mouseout 事件

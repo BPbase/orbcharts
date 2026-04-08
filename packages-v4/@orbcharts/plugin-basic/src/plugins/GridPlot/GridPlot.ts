@@ -1,6 +1,6 @@
-import * as d3 from 'd3'
 import {
   shareReplay,
+  of,
   map,
   filter,
   combineLatest,
@@ -39,6 +39,8 @@ import {
   gridAxesReverseTransformObservable,
   gridGraphicTransformObservable,
   gridGraphicReverseScaleObservable,
+  getCategoryAxisPositionFromDirection,
+  getValueAxisPositionFromDirection,
 } from './contextObservables'
 import { Bar } from './layers/Bar'
 import { TriangleBar } from './layers/TriangleBar'
@@ -101,6 +103,28 @@ export const GridPlot = defineSVGPlugin<
       map(params => params.valueAxis),
       shareReplay(1)
     )
+
+    const direction$ = props.pluginParams$.pipe(
+      map(params => params.direction),
+      distinctUntilChanged(),
+      shareReplay(1)
+    )
+
+    const categoryAxisPosition$ = direction$.pipe(
+      map(direction => getCategoryAxisPositionFromDirection(direction)),
+      distinctUntilChanged(),
+      shareReplay(1)
+    )
+
+    // const valueAxisPosition$ = combineLatest({
+    //   direction: direction$,
+    //   // opposite: valueAxis$.pipe(map(va => va.opposite))
+    //   opposite: of(false)
+    // }).pipe(
+    //   map(({ direction, opposite }) => getValueAxisPositionFromDirection(direction, opposite)),
+    //   distinctUntilChanged(),
+    //   shareReplay(1)
+    // )
 
     const selectedGridData$ = combineLatest({
       gridData: props.context.gridData$,
@@ -174,16 +198,14 @@ export const GridPlot = defineSVGPlugin<
     )
 
     const gridAxesSize$ = gridAxesSizeObservable({
-      categoryAxis$: zoomedCategoryAxis$,
-      valueAxis$,
+      direction$,
       layout$: layout$
     }).pipe(
       shareReplay(1)
     )
 
     const gridAxesContainerSize$ = gridAxesContainerSizeObservable({
-      categoryAxis$: zoomedCategoryAxis$,
-      valueAxis$,
+      direction$,
       containerSize$
     }).pipe(
       shareReplay(1)
@@ -225,6 +247,7 @@ export const GridPlot = defineSVGPlugin<
       computedData$: computedData$,
       categoryAxis$: zoomedCategoryAxis$,
       valueAxis$,
+      direction$,
       layout$: layout$,
     }).pipe(
       shareReplay(1)
@@ -271,8 +294,9 @@ export const GridPlot = defineSVGPlugin<
     )
 
     const gridAxesTransform$ = gridAxesTransformObservable({
-      categoryAxis$: zoomedCategoryAxis$,
-      valueAxis$,
+      direction$,
+      // opposite$: valueAxis$.pipe(map(va => va.opposite)),
+      opposite$: of(false),
       layout$: layout$
     }).pipe(
       shareReplay(1)
@@ -290,6 +314,7 @@ export const GridPlot = defineSVGPlugin<
       filteredMinMaxValue$: filteredMinMaxValue$,
       categoryAxis$: zoomedCategoryAxis$,
       valueAxis$,
+      direction$,
       layout$: layout$
     }).pipe(
       shareReplay(1)
@@ -327,7 +352,9 @@ export const GridPlot = defineSVGPlugin<
       gridAxesReverseTransform$,
       gridGraphicTransform$,
       gridGraphicReverseScale$,
-      zoomedCategoryAxis$
+      zoomedCategoryAxis$,
+      categoryAxisPosition$,
+      // valueAxisPosition$
       // updateScaleDomain$
     }
 
@@ -447,17 +474,16 @@ export const GridPlot = defineSVGPlugin<
     }
     if (params.valueAxis) {
       const valueAxisResult = validateObject(params.valueAxis, {
-        position: {
-          toBe: '"bottom" | "left" | "top" | "right"',
-          test: (value) => value === 'bottom' || value === 'left' || value === 'top' || value === 'right'
-        },
+        // opposite: {
+        //   toBeTypes: ['boolean']
+        // },
         scaleDomain: {
           toBe: '[number | "min" | "auto", number | "max" | "auto"]',
-          test: (value) => Array.isArray(value) && value.length === 2 && (typeof value[0] === 'number' || value[0] === 'min' || value[0] === 'auto') && (typeof value[1] === 'number' || value[1] === 'max' || value[1] === 'auto')
+          test: (value: any) => Array.isArray(value) && value.length === 2 && (typeof value[0] === 'number' || value[0] === 'min' || value[0] === 'auto') && (typeof value[1] === 'number' || value[1] === 'max' || value[1] === 'auto')
         },
         scaleRange: {
           toBe: '[number, number]',
-          test: (value) => Array.isArray(value) && value.length === 2 && typeof value[0] === 'number' && typeof value[1] === 'number'
+          test: (value: any) => Array.isArray(value) && value.length === 2 && typeof value[0] === 'number' && typeof value[1] === 'number'
         },
         label: {
           toBeTypes: ['string']
@@ -469,13 +495,12 @@ export const GridPlot = defineSVGPlugin<
     }
     if (params.categoryAxis) {
       const categoryAxisResult = validateObject(params.categoryAxis, {
-        position: {
-          toBe: '"bottom" | "left" | "top" | "right"',
-          test: (value) => value === 'bottom' || value === 'left' || value === 'top' || value === 'right'
+        reverse: {
+          toBeTypes: ['boolean']
         },
         scaleDomain: {
           toBe: '[number, number | "max"]',
-          test: (value) => Array.isArray(value) && value.length === 2 && typeof value[0] === 'number' && (typeof value[1] === 'number' || value[1] === 'max')
+          test: (value: any) => Array.isArray(value) && value.length === 2 && typeof value[0] === 'number' && (typeof value[1] === 'number' || value[1] === 'max')
         },
         scalePadding: {
           toBeTypes: ['number']

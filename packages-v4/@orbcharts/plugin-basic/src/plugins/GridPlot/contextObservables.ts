@@ -21,14 +21,39 @@ import type {
 } from '@orbcharts/core'
 import type { ComputedData, ComputedDatumGrid } from '../../types/ComputedData'
 import type { ComputedLayoutDatumGrid, ComputedAxesDataGrid, GridPlotPluginParams } from './types'
-import type { ValueAxis, CategoryAxis } from '../../types/PluginParams'
-import type { Layout, ContainerPosition, AxisPosition, ContainerPositionScaled } from '../../types/PluginParams'
+import type { ValueAxis, CategoryAxis, AxisPosition, AxisDirection } from '../../types/PluginParams'
+import type { Layout, ContainerPosition, ContainerPositionScaled } from '../../types/PluginParams'
 // import { getMinMaxGrid } from '../../utils/orbchartsUtils'
 import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from '../../utils/d3Scale'
 import { calcContainerPositionScaled } from '../../utils/orbchartsUtils'
 import { getMinMaxValue } from '../../utils/orbchartsUtils'
 import { calcContainerPosition } from '../../utils/orbchartsUtils'
 import { ContainerSize, TransformData } from '../..'
+
+// ---- helper functions ----
+
+export function isDirectionHorizontal (direction: AxisDirection): boolean {
+  return direction === 'left-right' || direction === 'right-left'
+}
+
+export function getCategoryAxisPositionFromDirection (direction: AxisDirection): AxisPosition {
+  switch (direction) {
+    case 'bottom-up': return 'bottom'
+    case 'top-down': return 'top'
+    case 'left-right': return 'left'
+    case 'right-left': return 'right'
+    default: return 'bottom'
+  }
+}
+
+export function getValueAxisPositionFromDirection (direction: AxisDirection, opposite: boolean): AxisPosition {
+  const isHorizontal = isDirectionHorizontal(direction)
+  if (isHorizontal) {
+    return opposite ? 'bottom' : 'top'
+  } else {
+    return opposite ? 'right' : 'left'
+  }
+}
 
 export const gridComputedDataObservable = ({ selectedGridData$, pluginParams$ }: {
   selectedGridData$: Observable<ModelDataGrid>
@@ -54,19 +79,19 @@ export const gridComputedDataObservable = ({ selectedGridData$, pluginParams$ }:
   )
 }
 
-export const gridComputedAxesDataObservable = ({ computedData$, categoryAxis$, valueAxis$, layout$ }: {
+export const gridComputedAxesDataObservable = ({ computedData$, categoryAxis$, valueAxis$, direction$, layout$ }: {
   computedData$: Observable<ComputedDatumGrid[][]>
-  // pluginParams$: Observable<GridPlotPluginParams>
   categoryAxis$: Observable<CategoryAxis>
   valueAxis$: Observable<ValueAxis>
+  direction$: Observable<AxisDirection>
   layout$: Observable<Layout>
 }): Observable<ComputedLayoutDatumGrid[][]> => {
 
   // 未篩選category範圍前的category scale（ * 不受到dataFormatter設定影響）
-  function createOriginGroupScale (computedData: ComputedDatumGrid[][], categoryAxis: CategoryAxis, layout: Layout) {
-    const categoryAxisWidth = (categoryAxis.position === 'top' || categoryAxis.position === 'bottom')
-      ? layout.width
-      : layout.height
+  function createOriginGroupScale (computedData: ComputedDatumGrid[][], direction: AxisDirection, layout: Layout) {
+    const categoryAxisWidth = isDirectionHorizontal(direction)
+      ? layout.height
+      : layout.width
     const categoryEndIndex = computedData[0] ? computedData[0].length - 1 : 0
     const categoryScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue: categoryEndIndex,
@@ -80,10 +105,10 @@ export const gridComputedAxesDataObservable = ({ computedData$, categoryAxis$, v
   }
 
   // 未篩選category範圍及visible前的value scale（ * 不受到dataFormatter設定影響）
-  function createOriginValueScale (computedData: ComputedDatumGrid[][], valueAxis: ValueAxis, layout: Layout) {
-    const valueAxisWidth = (valueAxis.position === 'left' || valueAxis.position === 'right')
-      ? layout.height
-      : layout.width
+  function createOriginValueScale (computedData: ComputedDatumGrid[][], direction: AxisDirection, layout: Layout) {
+    const valueAxisWidth = isDirectionHorizontal(direction)
+      ? layout.width
+      : layout.height
   
     const listData = computedData.flat()
     let [minValue, maxValue] = getMinMaxValue(listData)
@@ -96,8 +121,7 @@ export const gridComputedAxesDataObservable = ({ computedData$, categoryAxis$, v
       maxValue,
       minValue,
       axisWidth: valueAxisWidth,
-      // scaleDomain: [minValue, maxValue], // 不使用dataFormatter設定
-      scaleDomain: ['auto', 'auto'], // 不使用dataFormatter設定 --> 以0為基準到最大或最小值為範圍（ * 如果是使用[minValue, maxValue]的話，在兩者很接近的情況下有可能造成scale倍率過高而svg變型時失真的情況）
+      scaleDomain: ['auto', 'auto'], // 不使用dataFormatter設定
       scaleRange: [0, 1] // 不使用dataFormatter設定
     })
     
@@ -108,12 +132,13 @@ export const gridComputedAxesDataObservable = ({ computedData$, categoryAxis$, v
     computedData: computedData$,
     categoryAxis: categoryAxis$,
     valueAxis: valueAxis$,
+    direction: direction$,
     layout: layout$
   }).pipe(
     debounceTime(0),
     map(data => {
-      const categoryScale = createOriginGroupScale(data.computedData, data.categoryAxis, data.layout)
-      const valueScale = createOriginValueScale(data.computedData, data.valueAxis, data.layout)
+      const categoryScale = createOriginGroupScale(data.computedData, data.direction, data.layout)
+      const valueScale = createOriginValueScale(data.computedData, data.direction, data.layout)
       const zeroY = valueScale(0)
 
       return data.computedData.map((seriesData, seriesIndex) => {
@@ -132,79 +157,33 @@ export const gridComputedAxesDataObservable = ({ computedData$, categoryAxis$, v
   )
 }
 
-export const gridAxesSizeObservable = ({ categoryAxis$, valueAxis$, layout$ }: {
-  categoryAxis$: Observable<CategoryAxis>
-  valueAxis$: Observable<ValueAxis>
+export const gridAxesSizeObservable = ({ direction$, layout$ }: {
+  direction$: Observable<AxisDirection>
   layout$: Observable<Layout>
 }): Observable<{
   width: number;
   height: number;
 }> => {
-  const destroy$ = new Subject()
-
-  function calcAxesSize ({ xAxisPosition, yAxisPosition, width, height }: {
-    xAxisPosition: AxisPosition
-    yAxisPosition: AxisPosition
-    width: number
-    height: number
-  }) {
-    if ((xAxisPosition === 'bottom' || xAxisPosition === 'top') && (yAxisPosition === 'left' || yAxisPosition === 'right')) {
-      return { width, height }
-    } else if ((xAxisPosition === 'left' || xAxisPosition === 'right') && (yAxisPosition === 'bottom' || yAxisPosition === 'top')) {
-      return {
-        width: height,
-        height: width
+  return combineLatest({
+    direction: direction$,
+    layout: layout$
+  }).pipe(
+    debounceTime(0),
+    map(({ direction, layout }) => {
+      if (isDirectionHorizontal(direction)) {
+        return { width: layout.height, height: layout.width }
       }
-    } else {
-      // default
-      return { width, height }
-    }
-  }
-
-  const categoryAxisPosition$ = categoryAxis$.pipe(
-    map(d => d.position),
-    distinctUntilChanged()
-  )
-
-  const valueAxisPosition$ = valueAxis$.pipe(
-    map(d => d.position),
-    distinctUntilChanged()
-  )
-
-  return new Observable(subscriber => {
-    combineLatest({
-      categoryAxisPosition: categoryAxisPosition$,
-      valueAxisPosition: valueAxisPosition$,
-      layout: layout$
-    }).pipe(
-      takeUntil(destroy$),
-      debounceTime(0),
-    ).subscribe(data => {
-      
-      const axisSize = calcAxesSize({
-        xAxisPosition: data.categoryAxisPosition,
-        yAxisPosition: data.valueAxisPosition,
-        width: data.layout.width,
-        height: data.layout.height,
-      })
-
-      subscriber.next(axisSize)
-
-      return function unsubscribe () {
-        destroy$.next(undefined)
-      }
+      return { width: layout.width, height: layout.height }
     })
-  })
+  )
 }
 
-export const gridAxesContainerSizeObservable = ({ categoryAxis$, valueAxis$, containerSize$ }: {
+export const gridAxesContainerSizeObservable = ({ direction$, containerSize$ }: {
   containerSize$: Observable<ContainerSize>
-  categoryAxis$: Observable<CategoryAxis>
-  valueAxis$: Observable<ValueAxis>
+  direction$: Observable<AxisDirection>
 }): Observable<ContainerSize> => {
   return gridAxesSizeObservable({
-    categoryAxis$,
-    valueAxis$,
+    direction$,
     layout$: containerSize$ as Observable<Layout>
   })
 }
@@ -400,95 +379,62 @@ export const filteredMinMaxValueObservable = ({ computedData$, categoryScaleDoma
   )
 }
 
-export const gridAxesTransformObservable = ({ categoryAxis$, valueAxis$, layout$ }: {
-  categoryAxis$: Observable<CategoryAxis>
-  valueAxis$: Observable<ValueAxis>
+export const gridAxesTransformObservable = ({ direction$, opposite$, layout$ }: {
+  direction$: Observable<AxisDirection>
+  opposite$: Observable<boolean>
   layout$: Observable<Layout>
 }): Observable<TransformData> => {
-  const destroy$ = new Subject()
 
-  function calcAxesTransform ({ xAxis, yAxis, width, height }: {
-    xAxis: CategoryAxis | ValueAxis,
-    yAxis: ValueAxis,
-    width: number,
+  function calcAxesTransform ({ direction, opposite, width, height }: {
+    direction: AxisDirection
+    opposite: boolean
+    width: number
     height: number
   }): TransformData {
-    if (!xAxis || !yAxis) {
-      return {
-        translate: [0, 0],
-        scale: [1, 1],
-        rotate: 0,
-        rotateX: 0,
-        rotateY: 0,
-        value: ''
-      }
-    }
-    // const width = size.width - fullChartParams.layout.left - fullChartParams.layout.right
-    // const height = size.height - fullChartParams.layout.top - fullChartParams.layout.bottom
     let translateX = 0
     let translateY = 0
     let rotate = 0
     let rotateX = 0
     let rotateY = 0
-    if (xAxis.position === 'bottom') {
-      if (yAxis.position === 'left') {
-        rotateX = 180
-        translateY = height
-      } else if (yAxis.position === 'right') {
-        rotateX = 180
+
+    if (direction === 'bottom-up') {
+      rotateX = 180
+      translateY = height
+      if (opposite) {
         rotateY = 180
         translateX = width
-        translateY = height
-      } else {
-        // 預設
-        rotateX = 180
-        translateY = height
       }
-    } else if (xAxis.position === 'top') {
-      if (yAxis.position === 'left') {
-      } else if (yAxis.position === 'right') {
+    } else if (direction === 'top-down') {
+      if (opposite) {
         rotateY = 180
         translateX = width
-      } else {
-        // 預設
-        rotateX = 180
-        translateY = height
       }
-    } else if (xAxis.position === 'left') {
-      if (yAxis.position === 'bottom') {
-        rotate = -90
+    } else if (direction === 'left-right') {
+      rotate = -90
+      if (opposite) {
+        // valueAxis at bottom
         translateY = height
-      } else if (yAxis.position === 'top') {
-        rotate = -90
-        rotateY = 180
       } else {
-        // 預設
-        rotateX = 180
-        translateY = height
+        // valueAxis at top
+        rotateY = 180
       }
-    } else if (xAxis.position === 'right') {
-      if (yAxis.position === 'bottom') {
-        rotate = -90
-        rotateX = 180
+    } else if (direction === 'right-left') {
+      rotate = -90
+      rotateX = 180
+      translateX = width
+      if (opposite) {
+        // valueAxis at bottom
         translateY = height
-        translateX = width
-      } else if (yAxis.position === 'top') {
-        rotate = -90
-        rotateX = 180
-        rotateY = 180
-        translateX = width
       } else {
-        // 預設
-        rotateX = 180
-        translateY = height
+        // valueAxis at top
+        rotateY = 180
       }
     } else {
-      // 預設
+      // 預設 bottom-up
       rotateX = 180
       translateY = height
     }
-    // selection.style('transform', `translate(${translateX}px, ${translateY}px) rotate(${rotate}deg) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`)
-  
+
     return {
       translate: [translateX, translateY],
       scale: [1, 1],
@@ -499,29 +445,19 @@ export const gridAxesTransformObservable = ({ categoryAxis$, valueAxis$, layout$
     }
   }
 
-  return new Observable(subscriber => {
-    combineLatest({
-      categoryAxis: categoryAxis$,
-      valueAxis: valueAxis$,
-      layout: layout$
-    }).pipe(
-      takeUntil(destroy$),
-      debounceTime(0),
-    ).subscribe(data => {
-      const axesTransformData = calcAxesTransform({
-        xAxis: data.categoryAxis,
-        yAxis: data.valueAxis,
-        width: data.layout.width,
-        height: data.layout.height
-      })
-    
-      subscriber.next(axesTransformData)
-    })
-
-    return function unscbscribe () {
-      destroy$.next(undefined)
-    }
-  })
+  return combineLatest({
+    direction: direction$,
+    opposite: opposite$,
+    layout: layout$
+  }).pipe(
+    debounceTime(0),
+    map(data => calcAxesTransform({
+      direction: data.direction,
+      opposite: data.opposite,
+      width: data.layout.width,
+      height: data.layout.height
+    }))
+  )
 }
 
 export const gridAxesReverseTransformObservable = ({ gridAxesTransform$ }: {
@@ -547,20 +483,22 @@ export const gridAxesReverseTransformObservable = ({ gridAxesTransform$ }: {
   )
 }
 
-export const gridGraphicTransformObservable = ({ computedData$, categoryScaleDomainValue$, filteredMinMaxValue$, categoryAxis$, valueAxis$, layout$ }: {
+export const gridGraphicTransformObservable = ({ computedData$, categoryScaleDomainValue$, filteredMinMaxValue$, categoryAxis$, valueAxis$, direction$, layout$ }: {
   computedData$: Observable<ComputedData<'grid'>>
   categoryScaleDomainValue$: Observable<[number, number]>
   filteredMinMaxValue$: Observable<[number, number]>
   categoryAxis$: Observable<CategoryAxis>
   valueAxis$: Observable<ValueAxis>
+  direction$: Observable<AxisDirection>
   layout$: Observable<Layout>
 }): Observable<TransformData> => {
   const destroy$ = new Subject()
 
-  function calcGridDataAreaTransform ({ data, categoryAxis, valueAxis, categoryScaleDomainValue, filteredMinMaxValue, width, height }: {
+  function calcGridDataAreaTransform ({ data, categoryAxis, valueAxis, direction, categoryScaleDomainValue, filteredMinMaxValue, width, height }: {
     data: ComputedData<'grid'>
     categoryAxis: CategoryAxis
     valueAxis: ValueAxis
+    direction: AxisDirection
     categoryScaleDomainValue: [number, number],
     filteredMinMaxValue: [number, number],
     width: number
@@ -571,24 +509,20 @@ export const gridGraphicTransformObservable = ({ computedData$, categoryScaleDom
     let scaleX = 0
     let scaleY = 0
   
+    const isHorizontal = isDirectionHorizontal(direction)
+
     // -- categoryScale --
-    const categoryAxisWidth = (categoryAxis.position === 'top' || categoryAxis.position === 'bottom')
-      ? width
-      : height
+    const categoryAxisWidth = isHorizontal ? height : width
     const categoryMin = 0
     const categoryMax = data[0] ? data[0].length - 1 : 0
-    // const categoryScaleDomainMin = categoryAxis.scaleDomain[0] - categoryAxis.scalePadding
-    // const categoryScaleDomainMax = categoryAxis.scaleDomain[1] === 'max'
-    //   ? categoryMax + categoryAxis.scalePadding
-    //   : categoryAxis.scaleDomain[1] as number + categoryAxis.scalePadding
     
     const categoryScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue: categoryMax,
       minValue: categoryMin,
       axisWidth: categoryAxisWidth,
-      // scaleDomain: categoryAxis.scaleDomain,
       scaleDomain: categoryScaleDomainValue,
-      scaleRange: [0, 1]
+      scaleRange: [0, 1],
+      reverse: categoryAxis.reverse
     })
   
     // -- translateX, scaleX --
@@ -605,23 +539,13 @@ export const gridGraphicTransformObservable = ({ computedData$, categoryScaleDom
     }
 
     // -- valueScale --
-    // const filteredData = data.map((d, i) => {
-    //   return d.filter((_d, _i) => {
-    //     return _i >= categoryScaleDomainMin && _i <= categoryScaleDomainMax && _d.visible == true
-    //   })
-    // })
-  
-    // const filteredMinMax = getMinMaxGrid(filteredData)
     const filteredMin = filteredMinMaxValue[0]
     let filteredMax = filteredMinMaxValue[1]
     if (filteredMin === filteredMax && filteredMax === 0) {
-      // filteredMinMaxValue[0] = filteredMinMaxValue[1] - 1 // 避免最大及最小值相同造成無法計算scale
       filteredMax = 1 // 避免最大及最小值同等於 0 造成無法計算scale
     }
   
-    const valueAxisWidth = (valueAxis.position === 'left' || valueAxis.position === 'right')
-      ? height
-      : width
+    const valueAxisWidth = isHorizontal ? width : height
   
     const valueScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
       maxValue: filteredMax,
@@ -630,24 +554,16 @@ export const gridGraphicTransformObservable = ({ computedData$, categoryScaleDom
       scaleDomain: valueAxis.scaleDomain,
       scaleRange: valueAxis.scaleRange
     })
-  // console.log({
-  //   maxValue: filteredMinMaxValue[1],
-  //   minValue: filteredMinMaxValue[0],
-  //   axisWidth: valueAxisWidth,
-  //   scaleDomain: valueAxis.scaleDomain,
-  //   scaleRange: valueAxis.scaleRange
-  // })
+
     // -- translateY, scaleY --
     const minMax = getMinMaxValue(data.flat())
     const min = minMax[0]
     let max = minMax[1]
     if (min === max && max === 0) {
-      // minMax[0] = minMax[1] - 1 // 避免最大及最小值相同造成無法計算scale
       max = 1 // 避免最大及最小值同等於 0 造成無法計算scale
     }
-    // const rangeMinY = valueScale(minMax[0])
-    const rangeMinY = valueScale(minMax[0] > 0 ? 0 : minMax[0]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
-    const rangeMaxY = valueScale(minMax[1] < 0 ? 0 : minMax[1]) // * 因為原本的座標就是以 0 到最大值或最小值範範圍計算的，所以這邊也是用同樣的方式計算
+    const rangeMinY = valueScale(minMax[0] > 0 ? 0 : minMax[0])
+    const rangeMaxY = valueScale(minMax[1] < 0 ? 0 : minMax[1])
     translateY = rangeMinY
     const gHeight = rangeMaxY - rangeMinY
     scaleY = gHeight / valueAxisWidth
@@ -669,6 +585,7 @@ export const gridGraphicTransformObservable = ({ computedData$, categoryScaleDom
       filteredMinMaxValue: filteredMinMaxValue$,
       categoryAxis: categoryAxis$,
       valueAxis: valueAxis$,
+      direction: direction$,
       layout: layout$
     }).pipe(
       takeUntil(destroy$),
@@ -678,6 +595,7 @@ export const gridGraphicTransformObservable = ({ computedData$, categoryScaleDom
         data: data.computedData,
         categoryAxis: data.categoryAxis,
         valueAxis: data.valueAxis,
+        direction: data.direction,
         categoryScaleDomainValue: data.categoryScaleDomainValue,
         filteredMinMaxValue: data.filteredMinMaxValue,
         width: data.layout.width,

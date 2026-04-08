@@ -118,6 +118,7 @@ export const CategoryZoom = defineSVGLayer<GridPlotExtendContext, GridPlotPlugin
       // fullDataFormatter: fullDataFormatter$.pipe(first()), // 只用第一次資料來計算scale才不會造成每次變動都受到影響
       pluginParams: pluginParams$,
       categoryMaxIndex: categoryMaxIndex$,
+      categoryAxisPosition: context.categoryAxisPosition$,
       // layout: context.layout$,
       // axisSize: context.gridAxesSize$
     }).pipe(
@@ -158,13 +159,15 @@ export const CategoryZoom = defineSVGLayer<GridPlotExtendContext, GridPlotPlugin
             return Math.min(data.categoryMaxIndex, Math.max(categoryMinIndex, n));
           }
           
-          const zoomedDomain = data.pluginParams.categoryAxis.position === 'bottom' || data.pluginParams.categoryAxis.position === 'top'
+          // Vertical chart (bottom-up/top-down): category is along screen X → rescaleX
+          // Horizontal chart (left-right/right-left): category is along screen Y → rescaleY
+          const zoomedDomain = data.categoryAxisPosition === 'bottom' || data.categoryAxisPosition === 'top'
             ? t.rescaleX(shadowScale)
               .domain()
               .map(mapGroupindex)
             : t.rescaleY(shadowScale)
-            .domain()
-            .map(mapGroupindex)
+              .domain()
+              .map(mapGroupindex)
 
 
           // domain超過極限值

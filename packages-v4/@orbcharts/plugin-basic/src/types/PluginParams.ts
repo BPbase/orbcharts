@@ -3,6 +3,8 @@ import type { ModelType, ModelDatum } from '@orbcharts/core'
 
 export type AxisPosition = 'top' | 'bottom' | 'left' | 'right'
 
+export type AxisDirection = 'bottom-up' | 'top-down' | 'left-right' | 'right-left'
+
 export interface XYAxis {
   scaleDomain: [number | 'min' | 'auto', number | 'max' | 'auto'];
   scaleRange: [number, number];
@@ -10,13 +12,14 @@ export interface XYAxis {
   // valueIndex: number;
 }
 export interface ValueAxis {
-  position: AxisPosition;
+  // position: AxisPosition;
   scaleDomain: [number | 'min' | 'auto', number | 'max' | 'auto'];
   scaleRange: [number, number];
   label: string;
 }
 export interface CategoryAxis {
   // position: AxisPosition;
+  reverse: boolean
   scaleDomain: [number, number | 'max'];
   scalePadding: number;
   label: string;

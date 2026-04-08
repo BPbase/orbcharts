@@ -1,14 +1,15 @@
 import type { Container, CategoryAxis, ValueAxis, XYAxis } from '../types/PluginParams'
 
 export const DEFAULT_VALUE_AXIS: ValueAxis = {
-  position: 'left',
+  // position: 'left',
   scaleDomain: ['auto', 'auto'],
   scaleRange: [0, 0.9],
   label: '',
 }
 
 export const DEFAULT_CATEGORY_AXIS: CategoryAxis = {
-  position: 'bottom',
+  // position: 'bottom',
+  reverse: false,
   scaleDomain: [0, 'max'],
   scalePadding: 0.5,
   label: ''

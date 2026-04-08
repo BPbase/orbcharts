@@ -2,6 +2,8 @@ import * as d3 from 'd3'
 import {
   Subject,
   Observable,
+  combineLatest,
+  debounceTime,
   map,
   distinctUntilChanged,
   shareReplay,
@@ -14,6 +16,7 @@ import { defineSVGLayer } from '@orbcharts/core'
 import { GridPlotExtendContext } from '../types'
 import { validateObject } from '@orbcharts/core'
 import { createBaseValueAxis } from '../../../baseLayers/BaseValueAxis'
+import { getValueAxisPositionFromDirection, gridAxesReverseTransformObservable, gridAxesTransformObservable } from '../contextObservables'
 
 const pluginName = 'GridPlot'
 const layerName = 'StackedValueAxis'
@@ -86,6 +89,38 @@ export const StackedValueAxis = defineSVGLayer<GridPlotExtendContext, GridPlotPl
           .attr('transform', `translate(${layout.left}, ${layout.top})`)
       })
 
+    const direction$ = pluginParams$.pipe(
+      map(params => params.direction),
+      distinctUntilChanged(),
+      shareReplay(1)
+    )
+
+    const opposite$ = layerParams$.pipe(
+      map(params => params.opposite),
+      distinctUntilChanged(),
+      shareReplay(1)
+    )
+
+    const valueAxisPosition$ = combineLatest({
+      direction: direction$,
+      opposite: opposite$
+    }).pipe(
+      debounceTime(0),
+      map(({ direction, opposite }) => getValueAxisPositionFromDirection(direction, opposite)),
+      distinctUntilChanged(),
+      shareReplay(1)
+    )
+
+    const gridAxesTransform$ = gridAxesTransformObservable({
+      direction$,
+      opposite$,
+      layout$: context.layout$
+    })
+
+    const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({
+      gridAxesTransform$
+    })
+
     const unsubscribeBaseValueAxis = createBaseValueAxis({
       selection: d3.select(svgG),
       pluginName,
@@ -96,11 +131,13 @@ export const StackedValueAxis = defineSVGLayer<GridPlotExtendContext, GridPlotPl
       categoryAxis$: pluginParams$.pipe(map(params => params.categoryAxis)),
       valueAxis$: pluginParams$.pipe(map(params => params.valueAxis)),
       theme$: context.theme$,
-      gridAxesTransform$: context.gridAxesTransform$,
-      gridAxesReverseTransform$: context.gridAxesReverseTransform$,
+      gridAxesTransform$: gridAxesTransform$,
+      gridAxesReverseTransform$: gridAxesReverseTransform$,
       gridAxesSize$: context.gridAxesSize$,
       gridContainerPosition$: context.gridContainerPosition$,
       isSeriesSeprate$: context.isSeriesSeprate$,
+      categoryAxisPosition$: context.categoryAxisPosition$,
+      valueAxisPosition$: valueAxisPosition$,
     })
 
     return () => {
