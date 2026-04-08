@@ -1,4 +1,4 @@
-import type { Container, CategoryAxis, ValueAxis, XYAxis } from '../types/PluginParams'
+import type { Container, ReversibleCategoryAxis, ValueAxis, XYAxis } from '../types/PluginParams'
 
 export const DEFAULT_VALUE_AXIS: ValueAxis = {
   // position: 'left',
@@ -7,7 +7,7 @@ export const DEFAULT_VALUE_AXIS: ValueAxis = {
   label: '',
 }
 
-export const DEFAULT_CATEGORY_AXIS: CategoryAxis = {
+export const DEFAULT_CATEGORY_AXIS: ReversibleCategoryAxis = {
   // position: 'bottom',
   reverse: false,
   scaleDomain: [0, 'max'],

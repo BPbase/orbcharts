@@ -19,6 +19,13 @@ export interface ValueAxis {
 }
 export interface CategoryAxis {
   // position: AxisPosition;
+  scaleDomain: [number, number | 'max'];
+  scalePadding: number;
+  label: string;
+}
+
+export interface ReversibleCategoryAxis {
+  // position: AxisPosition;
   reverse: boolean
   scaleDomain: [number, number | 'max'];
   scalePadding: number;

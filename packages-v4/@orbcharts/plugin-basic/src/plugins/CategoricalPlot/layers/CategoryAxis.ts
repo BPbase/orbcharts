@@ -20,7 +20,7 @@ export const CategoryAxis = defineSVGLayer<CategoricalPlotExtendContext, Categor
   name: layerName,
   defaultParams: DEFAULT_CATEGORICAL_PLOT_CATEGORY_AXIS_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
-  initShow: false,
+  initShow: true,
   validator: (params) => {
     const result = validateObject(params, {
       labelOffset: {
@@ -86,10 +86,15 @@ export const CategoryAxis = defineSVGLayer<CategoricalPlotExtendContext, Categor
       gridContainerPosition$: context.gridContainerPosition$,
       isSeriesSeprate$: of(false),
       fontSizePx$: context.fontSizePx$,
-      categoryAxis$: context.zoomedCategoryAxis$,
+      categoryAxis$: context.zoomedCategoryAxis$.pipe(map(zoomedCategoryAxis => {
+        return {
+          ...zoomedCategoryAxis,
+          reverse: false
+        }
+      })),
       valueAxis$: pluginParams$.pipe(map(params => params.valueAxis)),
       styles$: pluginParams$.pipe(map(params => params.styles)),
-      theme$: context.theme$
+      theme$: context.theme$,
     })
 
     return () => {

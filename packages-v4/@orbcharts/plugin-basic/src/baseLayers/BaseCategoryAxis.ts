@@ -18,7 +18,7 @@ import type {
   ComputedDatumGrid,
   TransformData,
   ValueAxis,
-  CategoryAxis,
+  ReversibleCategoryAxis,
   GraphicStyles,
   AxisPosition,
 } from '../types'
@@ -49,7 +49,7 @@ interface BaseCategoryAxisContext {
   layerName: string
   computedData$: Observable<ComputedData<'grid'>>
   baseCategoryAxisParams$: Observable<BaseCategoryAxisParams>
-  categoryAxis$: Observable<CategoryAxis>
+  categoryAxis$: Observable<ReversibleCategoryAxis>
   valueAxis$: Observable<ValueAxis>
   theme$: Observable<Theme>
   styles$: Observable<GraphicStyles>
@@ -64,7 +64,7 @@ interface BaseCategoryAxisContext {
   fontSizePx$: Observable<number>
   // Optional: when provided, overrides reading position from axis objects
   categoryAxisPosition$?: Observable<AxisPosition>
-  // valueAxisPosition$?: Observable<AxisPosition>
+  valueAxisPosition$?: Observable<AxisPosition>
 }
 
 interface TextAlign {
@@ -96,13 +96,14 @@ function createGroupLabelData (categoryLabels: string[], tickFormat: string | ((
   })
 }
 
-function renderAxisLabel ({ selection, categoryLabelClassName, baseCategoryAxisParams, axisLabelAlign, gridAxesSize, categoryAxisPosition, categoryAxisLabel, styles, theme, textReverseTransform }: {
+function renderAxisLabel ({ selection, categoryLabelClassName, baseCategoryAxisParams, axisLabelAlign, gridAxesSize, categoryAxisPosition, valueAxisPosition, categoryAxisLabel, styles, theme, textReverseTransform }: {
   selection: d3.Selection<SVGGElement, any, any, any>,
   categoryLabelClassName: string
   baseCategoryAxisParams: BaseCategoryAxisParams
   axisLabelAlign: TextAlign
   gridAxesSize: { width: number, height: number }
   categoryAxisPosition: AxisPosition
+  valueAxisPosition: AxisPosition
   categoryAxisLabel: string
   styles: GraphicStyles
   theme: Theme
@@ -115,16 +116,32 @@ function renderAxisLabel ({ selection, categoryLabelClassName, baseCategoryAxisP
   let labelY = 0
   if (categoryAxisPosition === 'bottom') {
     labelY = offsetY
-    labelX = offsetX
+    if (valueAxisPosition === 'left') {
+      labelX = offsetX
+    } else if (valueAxisPosition === 'right') {
+      labelX = - offsetX
+    }
   } else if (categoryAxisPosition === 'top') {
     labelY = - offsetY
-    labelX = offsetX
+    if (valueAxisPosition === 'left') {
+      labelX = offsetX
+    } else if (valueAxisPosition === 'right') {
+      labelX = - offsetX
+    }
   } else if (categoryAxisPosition === 'left') {
     labelX = - offsetX
-    labelY = - offsetY
+    if (valueAxisPosition === 'bottom') {
+      labelY = - offsetY
+    } else if (valueAxisPosition === 'top') {
+      labelY = offsetY
+    }
   } else if (categoryAxisPosition === 'right') {
     labelX = offsetX
-    labelY = - offsetY
+    if (valueAxisPosition === 'bottom') {
+      labelY = - offsetY
+    } else if (valueAxisPosition === 'top') {
+      labelY = offsetY
+    }
   }
 
   const axisLabelSelection = selection
@@ -302,7 +319,7 @@ export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
   isSeriesSeprate$,
   fontSizePx$,
   categoryAxisPosition$: _categoryAxisPosition$,
-  // valueAxisPosition$: _valueAxisPosition$,
+  valueAxisPosition$: _valueAxisPosition$,
 }) => {
   
   const destroy$ = new Subject()
@@ -312,8 +329,8 @@ export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
   const effectiveCategoryAxisPosition$: Observable<AxisPosition> = _categoryAxisPosition$
     ?? categoryAxis$.pipe(map(ca => ((ca as any).position ?? 'bottom') as AxisPosition))
 
-  // const effectiveValueAxisPosition$: Observable<AxisPosition> = _valueAxisPosition$
-  //   ?? valueAxis$.pipe(map(va => ((va as any).position ?? 'left') as AxisPosition))
+  const effectiveValueAxisPosition$: Observable<AxisPosition> = _valueAxisPosition$
+    ?? valueAxis$.pipe(map(va => ((va as any).position ?? 'left') as AxisPosition))
 
   const containerClassName = createClassName(pluginName, layerName, 'container')
   const xAxisGClassName = createClassName(pluginName, layerName, 'xAxisG')
@@ -602,25 +619,33 @@ export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
     })
   )
 
-  const axisLabelAlign$: Observable<TextAlign> = effectiveCategoryAxisPosition$.pipe(
+  const axisLabelAlign$: Observable<TextAlign> = combineLatest({
+    categoryAxisPosition: effectiveCategoryAxisPosition$,
+    valueAxisPosition: effectiveValueAxisPosition$
+  }).pipe(
     takeUntil(destroy$),
     debounceTime(0),
-    map(categoryAxisPosition => {
+    map(data => {
       let textAnchor: 'start' | 'middle' | 'end' = 'start'
       let dominantBaseline: 'auto' | 'middle' | 'hanging' = 'hanging'
 
-      if (categoryAxisPosition === 'bottom') {
-        textAnchor = 'start'
+      if (data.categoryAxisPosition === 'bottom') {
         dominantBaseline = 'hanging'
-      } else if (categoryAxisPosition === 'top') {
-        textAnchor = 'start'
+      } else if (data.categoryAxisPosition === 'top') {
         dominantBaseline = 'auto'
-      } else if (categoryAxisPosition === 'left') {
+      } else if (data.categoryAxisPosition === 'left') {
         textAnchor = 'end'
-        dominantBaseline = 'middle'
-      } else if (categoryAxisPosition === 'right') {
+      } else if (data.categoryAxisPosition === 'right') {
         textAnchor = 'start'
-        dominantBaseline = 'middle'
+      }
+      if (data.valueAxisPosition === 'left') {
+        textAnchor = 'start'
+      } else if (data.valueAxisPosition === 'right') {
+        textAnchor = 'end'
+      } else if (data.valueAxisPosition === 'bottom') {
+        dominantBaseline = 'auto'
+      } else if (data.valueAxisPosition === 'top') {
+        dominantBaseline = 'hanging'
       }
       return {
         textAnchor,
@@ -648,6 +673,7 @@ export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
     gridAxesSize: gridAxesSize$,
     categoryAxis: categoryAxis$,
     categoryAxisPosition: effectiveCategoryAxisPosition$,
+    valueAxisPosition: effectiveValueAxisPosition$,
     theme: theme$,
     styles: styles$,
     categoryScale: categoryScale$,
@@ -683,6 +709,7 @@ export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
       axisLabelAlign: data.axisLabelAlign,
       gridAxesSize: data.gridAxesSize,
       categoryAxisPosition: data.categoryAxisPosition,
+      valueAxisPosition: data.valueAxisPosition,
       categoryAxisLabel: data.categoryAxis.label,
       theme: data.theme,
       styles: data.styles,

@@ -40,11 +40,11 @@ export default function GridPlotPage() {
       Bar: {},
       CategoryAxis: {},
       ValueAxis: {
-        opposite: true
+        opposite: false
       },
       CategoryGuide: {},
       CategoryZoom: {},
-      direction: 'bottom-up',
+      direction: 'top-down',
       categoryAxis: {
         reverse: false,
       },
@@ -54,19 +54,19 @@ export default function GridPlotPage() {
       // ValueAxis: {},
       // CategoryAxis: {},
       // CategoryZoom: {},
-      // styles: {
-      //   padding: {
-      //     top: 60,
-      //     right: 60,
-      //     bottom: 60,
-      //     left: 60
-      //   },
-      //   highlightTarget: 'datum',
-      //   highlightDefault: null,
-      //   unhighlightedOpacity: 0.3,
-      //   transitionDuration: 800,
-      //   transitionEase: 'easeCubic'
-      // },
+      styles: {
+        padding: {
+          top: 60,
+          right: 60,
+          bottom: 80,
+          left: 60
+        },
+        highlightTarget: 'datum',
+        highlightDefault: null,
+        unhighlightedOpacity: 0.3,
+        transitionDuration: 800,
+        transitionEase: 'easeCubic'
+      },
       // visibleFilter: (datum: any) => true,
       // // seriesLabels: [],
       // container: {

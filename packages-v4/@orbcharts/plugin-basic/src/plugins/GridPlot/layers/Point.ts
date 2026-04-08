@@ -9,7 +9,7 @@ import {
 } from 'rxjs'
 import type { GridPlotPointParams, GridPlotPluginParams } from '../types'
 import { DEFAULT_DOTS_PARAMS } from '../defaults'
-import { LAYER_INDEX_OF_GRAPHIC } from '../../../const/layerIndex'
+import { LAYER_INDEX_OF_GRAPHIC_COVER } from '../../../const/layerIndex'
 import { createBasePoint } from '../../../baseLayers/BasePoint'
 import { defineSVGLayer } from '@orbcharts/core'
 import { GridPlotExtendContext } from '../types'
@@ -21,7 +21,7 @@ const layerName = 'Point'
 export const Point = defineSVGLayer<GridPlotExtendContext, GridPlotPluginParams, GridPlotPointParams>({
   name: layerName,
   defaultParams: DEFAULT_DOTS_PARAMS,
-  layerIndex: LAYER_INDEX_OF_GRAPHIC,
+  layerIndex: LAYER_INDEX_OF_GRAPHIC_COVER,
   initShow: false,
   validator: (params) => {
     const result = validateObject(params, {

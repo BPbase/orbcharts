@@ -19,7 +19,7 @@ export const ValueAxis = defineSVGLayer<CategoricalPlotExtendContext, Categorica
   name: layerName,
   defaultParams: DEFAULT_CATEGORICAL_PLOT_VALUE_AXIS_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
-  initShow: false,
+  initShow: true,
   validator: (params) => {
     const result = validateObject(params, {
       labelOffset: {

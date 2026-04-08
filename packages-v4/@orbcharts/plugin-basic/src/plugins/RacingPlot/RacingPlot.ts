@@ -224,7 +224,7 @@ export const RacingPlot = defineSVGPlugin<
     const result = validateObject(params, {
       styles: { toBeTypes: ['object'] },
       visibleFilter: { toBeTypes: ['Function'] },
-      valueAxis: { toBeTypes: ['object'] },
+      // valueAxis: { toBeTypes: ['object'] },
       autorun: { toBeTypes: ['boolean'] },
       loop: { toBeTypes: ['boolean'] },
       frameInterval: { toBeTypes: ['number'] }

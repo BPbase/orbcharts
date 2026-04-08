@@ -60,15 +60,11 @@ export default function RacingPlotPage() {
 
     const racingPlot = new RacingPlot({
       // ---- 各 layer 設定 ----
-      RacingBars: {
-        bar: {
-          barRadius: 4,
-        }
+      RacingBar: {
+        barRadius: 4,
       },
       ValueLabel: {
-        valueLabel: {
-          format: (n: number) => Math.round(n).toLocaleString()
-        }
+        format: (n: number) => Math.round(n).toLocaleString()
       },
       SeriesLabel: {
         // seriesLabel: {
@@ -92,9 +88,6 @@ export default function RacingPlotPage() {
         tickFormat: (n: number) => `${Math.round(n / 1000)}K`,
       },
       // ---- plugin 設定 ----
-      valueAxis: {
-        position: 'top'
-      },
       autorun: true,
       loop: true,
       frameInterval: 300,
@@ -134,7 +127,7 @@ export default function RacingPlotPage() {
   return (
     <div
       ref={domRef}
-      style={{ width: '100%', height: '100vh' }}
+    //   style={{ width: '100%', height: '100vh' }}
     />
   )
 }

@@ -19,7 +19,7 @@ export const DEFAULT_CATEGORICAL_PLOT_PLUGIN_PARAMS: CategoricalPlotPluginParams
     highlightTarget: 'datum',
     highlightDefault: null,
     unhighlightedOpacity: 0.3,
-    transitionDuration: 800,
+    transitionDuration: 200,
     transitionEase: 'easeCubic'
   },
   visibleFilter: (datum) => true,

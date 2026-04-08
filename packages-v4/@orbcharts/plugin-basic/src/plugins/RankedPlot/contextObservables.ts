@@ -363,13 +363,13 @@ export const rankedScaleListObservable = ({
 
 export const rankedCategoryPositionObservable = ({
   rootSelection,
-  pluginParams$,
+  zoomedCategoryAxis$,
   computedData$,
   layout$,
   gridContainerPosition$
 }: {
   rootSelection: d3.Selection<any, unknown, any, unknown>
-  pluginParams$: Observable<RankedPlotPluginParams>
+  zoomedCategoryAxis$: Observable<CategoryAxis>
   computedData$: Observable<ComputedDatumGrid[][]>
   layout$: Observable<Layout>
   gridContainerPosition$: Observable<ContainerPositionScaled[]>
@@ -377,17 +377,18 @@ export const rankedCategoryPositionObservable = ({
   const rootMousemove$ = d3EventObservable(rootSelection, 'mousemove')
 
   const categoryScaleDomain$ = combineLatest({
-    pluginParams: pluginParams$,
+    zoomedCategoryAxis: zoomedCategoryAxis$,
     computedData: computedData$
   }).pipe(
     switchMap(async d => d),
     map(data => {
       const categoryMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      const categoryScaleDomainMin = data.pluginParams.categoryAxis.scaleDomain[0]
-        - data.pluginParams.categoryAxis.scalePadding
-      const categoryScaleDomainMax = data.pluginParams.categoryAxis.scaleDomain[1] === 'max'
-        ? categoryMax + data.pluginParams.categoryAxis.scalePadding
-        : data.pluginParams.categoryAxis.scaleDomain[1] as number + data.pluginParams.categoryAxis.scalePadding
+      const categoryAxis = data.zoomedCategoryAxis
+      const categoryScaleDomainMin = categoryAxis.scaleDomain[0]
+        - categoryAxis.scalePadding
+      const categoryScaleDomainMax = categoryAxis.scaleDomain[1] === 'max'
+        ? categoryMax + categoryAxis.scalePadding
+        : categoryAxis.scaleDomain[1] as number + categoryAxis.scalePadding
       return [categoryScaleDomainMin, categoryScaleDomainMax]
     }),
     shareReplay(1)
@@ -409,14 +410,14 @@ export const rankedCategoryPositionObservable = ({
 
   const xIndexScale$ = combineLatest({
     scaleRangeCategoryLabels: scaleRangeCategoryLabels$,
-    pluginParams: pluginParams$,
+    zoomedCategoryAxis: zoomedCategoryAxis$,
     layout: layout$
   }).pipe(
     switchMap(async d => d),
     map(data => createAxisToLabelIndexScale({
       axisLabels: data.scaleRangeCategoryLabels,
       axisWidth: data.layout.width,
-      padding: data.pluginParams.categoryAxis.scalePadding,
+      padding: data.zoomedCategoryAxis.scalePadding,
       reverse: false
     }))
   )

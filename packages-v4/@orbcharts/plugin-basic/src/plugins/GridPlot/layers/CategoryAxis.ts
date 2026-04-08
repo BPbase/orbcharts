@@ -22,7 +22,7 @@ export const CategoryAxis = defineSVGLayer<GridPlotExtendContext, GridPlotPlugin
   name: layerName,
   defaultParams: DEFAULT_CATEGORY_AXIS_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
-  initShow: false,
+  initShow: true,
   validator: (params) => {
     const result = validateObject(params, {
       labelOffset: {

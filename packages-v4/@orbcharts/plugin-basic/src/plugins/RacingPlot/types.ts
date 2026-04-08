@@ -40,9 +40,9 @@ export interface RacingPlotPluginParams {
   styles: GraphicStyles
   visibleFilter: VisibleFilter<'grid'>
   datasetIndex: number
-  valueAxis: {
-    position: 'top' | 'bottom'
-  }
+  // valueAxis: {
+  //   position: 'top' | 'bottom'
+  // }
   rankedAxis: {
     label: string
     limit: number | 'auto'
@@ -55,7 +55,7 @@ export interface RacingPlotPluginParams {
 // ---- all layer params ----
 
 export interface RacingPlotAllLayerParams {
-  RacingBars: RacingPlotRacingBarParams
+  RacingBar: RacingPlotRacingBarParams
   ValueLabel: RacingPlotValueLabelParams
   SeriesLabel: RacingPlotSeriesLabelParams
   CounterText: RacingPlotCounterTextParams
@@ -113,4 +113,5 @@ export interface RacingPlotValueAxisParams {
   tickFullLineDasharray: string
   tickColorType: ColorType
   tickTextColorType: ColorType
+  placement: 'top' | 'bottom'
 }

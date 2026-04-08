@@ -141,12 +141,12 @@ export const RankedPlot = defineSVGPlugin<
       layout$
     }).pipe(shareReplay(1))
 
-    const gridAxesTransform$ = gridAxesTransformObservable({
-      layout$,
-      categoryAxisPosition$: props.pluginParams$.pipe(map(p => p.categoryAxis.position))
-    }).pipe(shareReplay(1))
+    // const gridAxesTransform$ = gridAxesTransformObservable({
+    //   layout$,
+    //   categoryAxisPosition$: props.pluginParams$.pipe(map(p => p.categoryAxis.position))
+    // }).pipe(shareReplay(1))
 
-    const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({ gridAxesTransform$ }).pipe(shareReplay(1))
+    // const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({ gridAxesTransform$ }).pipe(shareReplay(1))
 
     const rankedSeriesData$ = rankedSeriesDataObservable({ visibleComputedData$ }).pipe(shareReplay(1))
 
@@ -183,8 +183,8 @@ export const RankedPlot = defineSVGPlugin<
       categoryScaleDomainValue$,
       zoomedCategoryAxis$,
       gridAxesSize$,
-      gridAxesTransform$,
-      gridAxesReverseTransform$,
+      // gridAxesTransform$,
+      // gridAxesReverseTransform$,
       rankedSeriesData$,
       computedRankedAmount$,
       rankedItemHeight$,

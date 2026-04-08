@@ -101,7 +101,7 @@ function renderDots ({ graphicGSelection, circleGClassName, circleClassName, bub
               update => {
                 return update
                   .transition()
-                  .duration(50)
+                  .duration(styles.transitionDuration)
                   // .attr('cx', d => d.axisX)
                   // .attr('cy', d => d.axisY)
                   .attr('opacity', _d => _d.opacity)

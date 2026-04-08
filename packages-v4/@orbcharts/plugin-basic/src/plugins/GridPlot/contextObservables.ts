@@ -21,7 +21,7 @@ import type {
 } from '@orbcharts/core'
 import type { ComputedData, ComputedDatumGrid } from '../../types/ComputedData'
 import type { ComputedLayoutDatumGrid, ComputedAxesDataGrid, GridPlotPluginParams } from './types'
-import type { ValueAxis, CategoryAxis, AxisPosition, AxisDirection } from '../../types/PluginParams'
+import type { ValueAxis, ReversibleCategoryAxis, AxisPosition, AxisDirection } from '../../types/PluginParams'
 import type { Layout, ContainerPosition, ContainerPositionScaled } from '../../types/PluginParams'
 // import { getMinMaxGrid } from '../../utils/orbchartsUtils'
 import { createValueToAxisScale, createLabelToAxisScale, createAxisToLabelIndexScale } from '../../utils/d3Scale'
@@ -81,7 +81,7 @@ export const gridComputedDataObservable = ({ selectedGridData$, pluginParams$ }:
 
 export const gridComputedAxesDataObservable = ({ computedData$, categoryAxis$, valueAxis$, direction$, layout$ }: {
   computedData$: Observable<ComputedDatumGrid[][]>
-  categoryAxis$: Observable<CategoryAxis>
+  categoryAxis$: Observable<ReversibleCategoryAxis>
   valueAxis$: Observable<ValueAxis>
   direction$: Observable<AxisDirection>
   layout$: Observable<Layout>
@@ -329,7 +329,7 @@ export const computedStackedDataObservables = ({ isSeriesSeprate$, computedData$
 
 export const categoryScaleDomainValueObservable = ({ selectedGridData$, categoryAxis$ }: {
   selectedGridData$: Observable<ModelDataGrid>
-  categoryAxis$: Observable<CategoryAxis>
+  categoryAxis$: Observable<ReversibleCategoryAxis>
 }): Observable<[number, number]> => {
   return combineLatest({
     selectedGridData: selectedGridData$,
@@ -487,7 +487,7 @@ export const gridGraphicTransformObservable = ({ computedData$, categoryScaleDom
   computedData$: Observable<ComputedData<'grid'>>
   categoryScaleDomainValue$: Observable<[number, number]>
   filteredMinMaxValue$: Observable<[number, number]>
-  categoryAxis$: Observable<CategoryAxis>
+  categoryAxis$: Observable<ReversibleCategoryAxis>
   valueAxis$: Observable<ValueAxis>
   direction$: Observable<AxisDirection>
   layout$: Observable<Layout>
@@ -496,7 +496,7 @@ export const gridGraphicTransformObservable = ({ computedData$, categoryScaleDom
 
   function calcGridDataAreaTransform ({ data, categoryAxis, valueAxis, direction, categoryScaleDomainValue, filteredMinMaxValue, width, height }: {
     data: ComputedData<'grid'>
-    categoryAxis: CategoryAxis
+    categoryAxis: ReversibleCategoryAxis
     valueAxis: ValueAxis
     direction: AxisDirection
     categoryScaleDomainValue: [number, number],

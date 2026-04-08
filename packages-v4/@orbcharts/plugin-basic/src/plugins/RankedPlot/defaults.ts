@@ -19,17 +19,17 @@ export const DEFAULT_RANKED_PLOT_PLUGIN_PARAMS: RankedPlotPluginParams = {
     highlightTarget: 'datum',
     highlightDefault: null,
     unhighlightedOpacity: 0.3,
-    transitionDuration: 800,
+    transitionDuration: 100,
     transitionEase: 'easeCubic'
   },
   visibleFilter: (datum) => true,
   categoryAxis: {
     ...DEFAULT_CATEGORY_AXIS,
-    position: 'top',
+    // position: 'top',
   },
   rankedAxis: {
     label: '',
-    limit: 'auto'
+    limit: 10
   },
   datasetIndex: 0
 }
@@ -78,7 +78,8 @@ export const DEFAULT_RANKED_PLOT_CATEGORY_AXIS_PARAMS: RankedPlotCategoryAxisPar
   tickFullLineDasharray: 'none',
   tickColorType: 'secondary',
   tickTextRotate: 0,
-  tickTextColorType: 'primary'
+  tickTextColorType: 'primary',
+  placement: 'top'
 }
 DEFAULT_RANKED_PLOT_CATEGORY_AXIS_PARAMS.tickFormat.toString = () => `text => text`
 

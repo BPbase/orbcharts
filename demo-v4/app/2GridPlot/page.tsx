@@ -58,7 +58,7 @@ export default function Grid() {
     // console.log(domRef.current)
 
     const seriesPlot = new GridPlot({
-      Bars: {},
+      Bar: {},
       // Lines: {},
       // Dots: {},
       ValueAxis: {},
@@ -90,7 +90,7 @@ export default function Grid() {
     })
 
     const gridPlot2 = new GridPlot({
-      Lines: {},
+      Line: {},
       datasetIndex: 1
     })
 

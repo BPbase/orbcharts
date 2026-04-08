@@ -17,7 +17,7 @@ export const XZoom = defineSVGLayer<ScatterPlotExtendContext, ScatterPlotPluginP
   name: layerName,
   defaultParams: DEFAULT_SCATTER_PLOT_X_ZOOM_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
-  initShow: true,
+  initShow: false,
   validator: (params) => {
     return {
       status: 'success',

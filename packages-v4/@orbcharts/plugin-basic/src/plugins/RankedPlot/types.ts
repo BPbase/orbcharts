@@ -32,8 +32,8 @@ export interface RankedPlotExtendContext {
   zoomedCategoryAxis$: Observable<CategoryAxis>
   // axes transform (category always at bottom, ranking always at left)
   gridAxesSize$: Observable<ContainerSize>
-  gridAxesTransform$: Observable<TransformData>
-  gridAxesReverseTransform$: Observable<TransformData>
+  // gridAxesTransform$: Observable<TransformData>
+  // gridAxesReverseTransform$: Observable<TransformData>
   // ranking
   rankedSeriesData$: Observable<ComputedDatumGrid[][]> // series sorted by sum desc
   computedRankedAmount$: Observable<number>
@@ -51,12 +51,7 @@ export interface RankedAxis {
 export interface RankedPlotPluginParams {
   styles: GraphicStyles
   visibleFilter: VisibleFilter<'grid'>
-  categoryAxis: {
-    position: 'top' | 'bottom';
-    scaleDomain: [number, number | 'max'];
-    scalePadding: number;
-    label: string;
-  }
+  categoryAxis: CategoryAxis
   rankedAxis: RankedAxis
   datasetIndex: number
 }
@@ -116,6 +111,7 @@ export interface RankedPlotCategoryAxisParams {
   tickColorType: ColorType
   tickTextRotate: number
   tickTextColorType: ColorType
+  placement: 'top' | 'bottom'
 }
 
 export interface RankedPlotCategoryZoomParams {

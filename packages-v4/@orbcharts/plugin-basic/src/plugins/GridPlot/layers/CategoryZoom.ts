@@ -1,22 +1,15 @@
 import * as d3 from 'd3'
 import {
-  Observable,
-  combineLatest,
-  switchMap,
-  distinctUntilChanged,
-  first,
-  map, 
-  takeUntil,
-  debounceTime,
-  Subject
+  map,
+  distinctUntilChanged
 } from 'rxjs'
 import type { GridPlotCategoryZoomParams, GridPlotPluginParams } from '../types'
 import { DEFAULT_CATEGORY_ZOOM_PARAMS } from '../defaults'
 import { LAYER_INDEX_OF_ROOT } from '../../../const/layerIndex'
 import { defineSVGLayer } from '@orbcharts/core'
-import { GridPlotExtendContext } from '../types'
-import { validateObject } from '@orbcharts/core'
-import { createValueToAxisScale } from '../../../utils/d3Scale'
+import type { GridPlotExtendContext } from '../types'
+import { isDirectionHorizontal } from '../contextObservables'
+import { createBaseCategoryZoom } from '../../../baseLayers/BaseCategoryZoom'
 
 const pluginName = 'GridPlot'
 const layerName = 'CategoryZoom'
@@ -27,210 +20,46 @@ export const CategoryZoom = defineSVGLayer<GridPlotExtendContext, GridPlotPlugin
   layerIndex: LAYER_INDEX_OF_ROOT,
   initShow: false,
   validator: (params) => {
-    return {
-      status: 'success',
-      columnName: '',
-      expectToBe: ''
-    }
+    return { status: 'success', columnName: '', expectToBe: '' }
   },
   setup: ({ svgG, pluginParams$, layerParams$, context }) => {
-    const destroy$ = new Subject()
-
-    // const rootSelection = d3.select(svgG.parentElement)
     const rootSelection = d3.select(context.svg)
-
-    // const rootRectSelection: d3.Selection<SVGRectElement, any, any, any> = rootSelection
-    //   .append('rect')
-    //   .classed(rectClassName, true)
-    //   .attr('opacity', 0)
-
-    // 紀錄zoom最後一次的transform
-    let lastTransform = {
-      k: 1,
-      x: 0,
-      y: 0
-    }
-    // let lastDomain: [number, number] = [0, 0]
-
-    // context.layout$.pipe(
-    //   takeUntil(destroy$),
-    // ).subscribe(d => {
-    //   rootRectSelection
-    //     .attr('width', d.width)
-    //     .attr('height', d.height)
-    //     .attr('x', d.left)
-    //     .attr('y', d.top)
-    // })
 
     const categoryMaxIndex$ = context.computedData$.pipe(
       map(d => d[0] ? d[0].length - 1 : 0),
       distinctUntilChanged()
     )
 
-    // const fullDataFormatterEvent$: Subject<DataFormatterGrid> = new Subject()
-    // fullDataFormatterEvent$
-    //   .pipe(
-    //     takeUntil(destroy$),
-    //     debounceTime(50)
-    //   )
-    //   .subscribe(fullDataFormatter => {
-    //     store.fullDataFormatter$.next(fullDataFormatter)
-    //   })
-
     const initCategoryAxis$ = pluginParams$.pipe(
-      map(d => d.categoryAxis),
-      // // 只用第一次資料來計算scale才不會造成每次變動都受到影響
-      // first()
+      map(d => d.categoryAxis)
     )
 
-
-    const initGroupScale$ = combineLatest({
-      initCategoryAxis: initCategoryAxis$,
-      // fullDataFormatter: context.fullDataFormatter$,
-      categoryMaxIndex: categoryMaxIndex$,
-      layout: context.layout$,
-      axisSize: context.gridAxesSize$
-    }).pipe(
-      takeUntil(destroy$),
-      debounceTime(0),
-      map(data => {
-        // const categoryMin = 0
-        const categoryScaleDomainMin = data.initCategoryAxis.scaleDomain[0] - data.initCategoryAxis.scalePadding
-        const categoryScaleDomainMax = data.initCategoryAxis.scaleDomain[1] === 'max'
-          ? data.categoryMaxIndex + data.initCategoryAxis.scalePadding
-          : data.initCategoryAxis.scaleDomain[1] as number + data.initCategoryAxis.scalePadding
-
-        const categoryScale: d3.ScaleLinear<number, number> = createValueToAxisScale({
-          maxValue: data.categoryMaxIndex,
-          minValue: 0,
-          axisWidth: data.axisSize.width,
-          scaleDomain: [categoryScaleDomainMin, categoryScaleDomainMax],
-          scaleRange: [0, 1]
-        })
-
-        return categoryScale
-      })
+    // gridAxesSize.width is always the category-axis length
+    // (transposed for horizontal chart: width = layout.height)
+    const axisWidth$ = context.gridAxesSize$.pipe(
+      map(d => d.width)
     )
 
-    combineLatest({
-      initGroupScale: initGroupScale$,
-      // initCategoryAxis: initCategoryAxis$,
-      // fullDataFormatter: fullDataFormatter$.pipe(first()), // 只用第一次資料來計算scale才不會造成每次變動都受到影響
-      pluginParams: pluginParams$,
-      categoryMaxIndex: categoryMaxIndex$,
-      categoryAxisPosition: context.categoryAxisPosition$,
-      // layout: context.layout$,
-      // axisSize: context.gridAxesSize$
-    }).pipe(
-      takeUntil(destroy$),
-      debounceTime(0),
-    ).subscribe(data => {
-      const categoryMinIndex = 0
+    // 'bottom-up'/'top-down': category on X -> rescaleX -> isHorizontal = true
+    // 'left-right'/'right-left': category on Y -> rescaleY -> isHorizontal = false
+    const isHorizontal$ = pluginParams$.pipe(
+      map(d => !isDirectionHorizontal(d.direction)),
+      distinctUntilChanged()
+    )
 
-      const shadowScale = data.initGroupScale.copy()
-
-      const zoom = d3.zoom()
-        // .scaleExtent([1, data.categoryMaxIndex])
-        // .translateExtent([[0, 0], [data.layout.rootWidth, data.layout.rootWidth]])
-        .on("zoom", function zoomed(event) {
-          // debugger
-          // console.log('event', event)
-          const t = event.transform;
-
-          // if (event.sourceEvent.type === 'mousemove') {
-          //   // 當進行平移時，反向計算 x 軸
-          //   const dx = event.transform.x - currentTransform.x; // 本次平移增量
-          //   const reversedX = currentTransform.x - dx;         // 反向累積平移
-          //   // 更新變換狀態
-          //   currentTransform = d3.zoomIdentity
-          //     .translate(reversedX, event.transform.y)
-          //     .scale(event.transform.k);
-          // } else {
-          //   // 縮放操作：只更新縮放比例
-          //   currentTransform = d3.zoomIdentity
-          //     .translate(currentTransform.x, currentTransform.y)
-          //     .scale(event.transform.k);
-          // }
-          // console.log('currentTransform', currentTransform)
-
-          // console.log('t.x', t.x)
-          const mapGroupindex = (d: number) => {
-            const n = Math.round(d)
-            return Math.min(data.categoryMaxIndex, Math.max(categoryMinIndex, n));
-          }
-          
-          // Vertical chart (bottom-up/top-down): category is along screen X → rescaleX
-          // Horizontal chart (left-right/right-left): category is along screen Y → rescaleY
-          const zoomedDomain = data.categoryAxisPosition === 'bottom' || data.categoryAxisPosition === 'top'
-            ? t.rescaleX(shadowScale)
-              .domain()
-              .map(mapGroupindex)
-            : t.rescaleY(shadowScale)
-              .domain()
-              .map(mapGroupindex)
-
-
-          // domain超過極限值
-          if (zoomedDomain[0] <= categoryMinIndex && zoomedDomain[1] >= data.categoryMaxIndex) {
-            // 繼續縮小
-            if (t.k < lastTransform.k) {
-              // 維持前一次的transform
-              t.k = lastTransform.k
-              t.x = lastTransform.x
-              t.y = lastTransform.y
-            }
-          // domain間距小於1
-          } else if ((zoomedDomain[1] - zoomedDomain[0]) <= 1) {
-            // 繼續放大
-            if (t.k > lastTransform.k) {
-              // 維持前一次的transform
-              t.k = lastTransform.k
-              t.x = lastTransform.x
-              t.y = lastTransform.y
-            }
-          }
-
-          // 紀錄transform
-          lastTransform.k = t.k
-          lastTransform.x = t.x
-          lastTransform.y = t.y
-
-
-          // const newPluginParams: GridPlotPluginParams = {
-          //   ...data.pluginParams,
-          //   // grid: {
-          //     // ...data.fullDataFormatter.grid,
-          //     categoryAxis: {
-          //       ...data.pluginParams.categoryAxis,
-          //       scaleDomain: zoomedDomain
-          //     }
-          //   // }
-          // }
-          
-          // pluginParams$.next(newPluginParams)
-          // context.updateScaleDomain$.next(zoomedDomain as [number, number | "max"])
-          context.eventTrigger$.next({
-            eventName: 'zoom',
-            pluginName,
-            layerName,
-            target: null,
-            data: {
-              scaleDomain: zoomedDomain
-            }
-          })
-        })
-
-      // 傳入外層selection
-      // subject.selection.call(zoom as any)
-      rootSelection.call(zoom)
-
+    const unsubscribe = createBaseCategoryZoom({
+      rootSelection,
+      pluginName,
+      layerName,
+      initCategoryAxis$,
+      categoryMaxIndex$,
+      axisWidth$,
+      isHorizontal$,
+      eventTrigger$: context.eventTrigger$
     })
-    
+
     return () => {
-      destroy$.next(undefined)
-      // rootRectSelection.remove()
-      
-      rootSelection.call(d3.zoom().on('zoom', null))
+      unsubscribe()
     }
   }
 })

@@ -29,7 +29,7 @@ export const ValueAxis = defineSVGLayer<GridPlotExtendContext, GridPlotPluginPar
   name: layerName,
   defaultParams: DEFAULT_VALUE_AXIS_PARAMS,
   layerIndex: LAYER_INDEX_OF_AXIS,
-  initShow: false,
+  initShow: true,
   validator: (params) => {
     const result = validateObject(params, {
       labelOffset: {
@@ -76,6 +76,9 @@ export const ValueAxis = defineSVGLayer<GridPlotExtendContext, GridPlotPluginPar
       },
       tickTextColorType: {
         toBeOption: 'ColorType',
+      },
+      opposite: {
+        toBeTypes: ['boolean']
       }
     })
     return result

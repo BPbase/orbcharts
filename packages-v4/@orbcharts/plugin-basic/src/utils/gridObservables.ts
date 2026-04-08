@@ -23,6 +23,7 @@ import { createAxisToLabelIndexScale } from './d3Scale'
 import { createClassName } from './orbchartsUtils'
 import { d3EventObservable } from './observables'
 import { GridPlotPluginParams } from '../plugins/GridPlot/types'
+import type { ReversibleCategoryAxis } from '../types/PluginParams'
 
 // 建立 grid 主要的 selection 
 export const gridSelectionsObservable = ({ selection, pluginName, layerName, clipPathID, seriesLabels$, gridContainerPosition$, gridAxesTransform$, gridGraphicTransform$ }: {
@@ -352,9 +353,7 @@ export const gridCategoryPositionFnObservable = ({ pluginParams$, gridAxesSize$,
       switchMap(async (d) => d),
     ).subscribe(data => {
       
-      const reverse = data.pluginParams.valueAxis.position === 'right'
-        || data.pluginParams.valueAxis.position === 'bottom'
-          ? true : false
+      const reverse = data.pluginParams.categoryAxis.reverse ?? false
 
       // 比例尺座標對應非連續資料索引
       const xIndexScale = createAxisToLabelIndexScale({
@@ -365,11 +364,11 @@ export const gridCategoryPositionFnObservable = ({ pluginParams$, gridAxesSize$,
       })
 
       // 依比例尺位置計算座標
+      const isHorizontalCategory = data.pluginParams.direction === 'bottom-up' || data.pluginParams.direction === 'top-down'
       const axisValuePredicate = (event: any) => {
-        return data.pluginParams.categoryAxis.position === 'bottom'
-          || data.pluginParams.categoryAxis.position === 'top'
-            ? event.offsetX - data.pluginParams.styles.padding.left
-            : event.offsetY - data.pluginParams.styles.padding.top
+        return isHorizontalCategory
+          ? event.offsetX - data.pluginParams.styles.padding.left
+          : event.offsetY - data.pluginParams.styles.padding.top
       }
 
       // 比例尺座標取得categoryData的function
@@ -400,11 +399,11 @@ export const gridCategoryPositionFnObservable = ({ pluginParams$, gridAxesSize$,
   })
 }
 
-export const gridCategoryPositionObservable = ({ rootSelection, pluginParams$, gridAxesContainerSize$, computedData$, gridContainerPosition$, layout$ }: {
+export const gridCategoryPositionObservable = ({ rootSelection, pluginParams$, zoomedCategoryAxis$, gridAxesContainerSize$, computedData$, gridContainerPosition$, layout$ }: {
   rootSelection: d3.Selection<any, unknown, any, unknown>
   pluginParams$: Observable<GridPlotPluginParams>
-  // gridAxesSize$: Observable<ContainerSize>
-  // containerSize$: Observable<ContainerSize>
+  // zoomedCategoryAxis$: use the zoom-aware axis so the guide stays in sync after zooming
+  zoomedCategoryAxis$: Observable<ReversibleCategoryAxis>
   gridAxesContainerSize$: Observable<ContainerSize>
   computedData$: Observable<ComputedData<'grid'>>
   gridContainerPosition$: Observable<ContainerPositionScaled[]>
@@ -413,38 +412,24 @@ export const gridCategoryPositionObservable = ({ rootSelection, pluginParams$, g
   const rootMousemove$ = d3EventObservable(rootSelection, 'mousemove')
 
   const categoryScaleDomain$ = combineLatest({
-    pluginParams: pluginParams$,
-    // gridAxesSize: gridAxesSize$,
+    zoomedCategoryAxis: zoomedCategoryAxis$,
     computedData: computedData$
   }).pipe(
     switchMap(async (d) => d),
     map(data => {
-      const categoryMin = 0
       const categoryMax = data.computedData[0] ? data.computedData[0].length - 1 : 0
-      // const categoryScaleDomainMin = data.fullDataFormatter.categoryAxis.scaleDomain[0] === 'auto'
-      //   ? categoryMin - data.fullDataFormatter.categoryAxis.scalePadding
-      //   : data.fullDataFormatter.categoryAxis.scaleDomain[0] as number - data.fullDataFormatter.categoryAxis.scalePadding
-      const categoryScaleDomainMin = data.pluginParams.categoryAxis.scaleDomain[0] - data.pluginParams.categoryAxis.scalePadding
-      const categoryScaleDomainMax = data.pluginParams.categoryAxis.scaleDomain[1] === 'max'
-        ? categoryMax + data.pluginParams.categoryAxis.scalePadding
-        : data.pluginParams.categoryAxis.scaleDomain[1] as number + data.pluginParams.categoryAxis.scalePadding
+      const categoryScaleDomainMin = data.zoomedCategoryAxis.scaleDomain[0] - data.zoomedCategoryAxis.scalePadding
+      const categoryScaleDomainMax = data.zoomedCategoryAxis.scaleDomain[1] === 'max'
+        ? categoryMax + data.zoomedCategoryAxis.scalePadding
+        : data.zoomedCategoryAxis.scaleDomain[1] as number + data.zoomedCategoryAxis.scalePadding
 
       return [categoryScaleDomainMin, categoryScaleDomainMax]
     }),
     shareReplay(1)
   )
 
-  const categoryLabels$ = combineLatest({
-    pluginParams: pluginParams$,
-    computedData: computedData$
-  }).pipe(
-    switchMap(async d => d),
-    map(data => {
-      // return data.pluginParams.seriesDirection === 'row'
-      //   ? (data.computedData[0] ?? []).map(d => d.category)
-      //   : data.computedData.map(d => d[0].category)
-      return (data.computedData[0] ?? []).map(d => d.category)
-    })
+  const categoryLabels$ = computedData$.pipe(
+    map(data => (data[0] ?? []).map(d => d.category))
   )
 
   const scaleRangeCategoryLabels$ = combineLatest({
@@ -460,28 +445,23 @@ export const gridCategoryPositionObservable = ({ rootSelection, pluginParams$, g
     })
   )
 
-  const reverse$ = pluginParams$.pipe(
-    map(d => {
-      return d.valueAxis.position === 'right' || d.valueAxis.position === 'bottom'
-          ? true
-          : false
-    })
+  const reverse$ = zoomedCategoryAxis$.pipe(
+    map(d => d.reverse ?? false)
   )
-  
+
   // 比例尺座標對應非連續資料索引
   const xIndexScale$ = combineLatest({
     reverse: reverse$,
-    // gridAxesSize: gridAxesSize$,
     gridAxesContainerSize: gridAxesContainerSize$,
     scaleRangeCategoryLabels: scaleRangeCategoryLabels$,
-    pluginParams: pluginParams$
+    zoomedCategoryAxis: zoomedCategoryAxis$
   }).pipe(
     switchMap(async d => d),
     map(data => {
       return createAxisToLabelIndexScale({
         axisLabels: data.scaleRangeCategoryLabels,
         axisWidth: data.gridAxesContainerSize.width,
-        padding: data.pluginParams.categoryAxis.scalePadding,
+        padding: data.zoomedCategoryAxis.scalePadding,
         reverse: data.reverse
       })
     })
@@ -528,7 +508,7 @@ export const gridCategoryPositionObservable = ({ rootSelection, pluginParams$, g
       //       ? eventData.offsetX - data.layout.left
       //       : eventData.offsetY - data.layout.top
       
-      if (data.pluginParams.categoryAxis.position === 'bottom' || data.pluginParams.categoryAxis.position === 'top') {
+      if (data.pluginParams.direction === 'bottom-up' || data.pluginParams.direction === 'top-down') {
         let x = data.rootMousemove.offsetX
         const rangeArr = data.gridContainerPosition
           .map((d, i) => [d.translate[0], data.gridContainerPosition[i + 1]?.translate[0] ?? data.layout.rootWidth])

@@ -3945,12 +3945,14 @@ export default function GridPlotPage() {
             // }
         },
         RankAxis: {},
-        CategoryAxis: {},
-        CategoryZoom: {},
-        categoryAxis: {
-            position: 'top',
+        CategoryAxis: {
+            placement: 'top'
         },
-        CategoryGuide: {}
+        CategoryZoom: {},
+        CategoryGuide: {},
+        rankedAxis: {
+            limit: 10
+        }
       // Bars: {},
       // Lines: {},
       // Dots: {},

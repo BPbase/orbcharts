@@ -61,16 +61,26 @@ export const DEFAULT_THEME: Theme = {
   colors: {
     light: {
       data: [
-        "#0088FF",
-        "#FF3232",
-        "#38BEA8",
-        "#6F3BD5",
-        "#314285",
-        "#42C724",
-        "#D52580",
-        "#F4721B",
-        "#D117EA",
-        "#7E7D7D"
+        // "#0088FF",
+        // "#FF3232",
+        // "#38BEA8",
+        // "#6F3BD5",
+        // "#314285",
+        // "#42C724",
+        // "#D52580",
+        // "#F4721B",
+        // "#D117EA",
+        // "#7E7D7D"
+        '#4E79A7', // blue
+        '#F28E2B', // orange
+        '#E15759', // red
+        '#76B7B2', // teal
+        '#59A14F', // green
+        '#EDC948', // yellow (已調過不刺眼)
+        '#B07AA1', // purple
+        '#FF9DA7', // pink
+        '#9C755F', // brown
+        '#BAB0AC', // gray
       ],
       primary: '#000000',
       secondary: '#e0e0e0',
@@ -79,16 +89,26 @@ export const DEFAULT_THEME: Theme = {
     },
     dark: {
       data: [
-        "#4BABFF",
-        "#FF6C6C",
-        "#7DD3C4",
-        "#8E6BC9",
-        "#5366AC",
-        "#86DC72",
-        "#FF72BB",
-        "#F9B052",
-        "#EF76FF",
-        "#C4C4C4"
+        // "#4BABFF",
+        // "#FF6C6C",
+        // "#7DD3C4",
+        // "#8E6BC9",
+        // "#5366AC",
+        // "#86DC72",
+        // "#FF72BB",
+        // "#F9B052",
+        // "#EF76FF",
+        // "#C4C4C4"
+        '#7EA6E0', // blue (亮化)
+        '#FFB86B', // orange
+        '#FF7A7A', // red
+        '#6ED0CC', // teal
+        '#7ED97A', // green
+        '#FFE06E', // yellow
+        '#D4A5D8', // purple
+        '#FFB3BA', // pink
+        '#C89F7A', // brown
+        '#D3D3D3', // gray
       ],
       primary: '#FFFFFF',
       secondary: '#e0e0e0',

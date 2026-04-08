@@ -328,7 +328,7 @@ export const XYGuide = defineSVGLayer<ScatterPlotExtendContext, ScatterPlotPlugi
   name: layerName,
   defaultParams: DEFAULT_SCATTER_PLOT_X_Y_GUIDE_PARAMS,
   layerIndex: LAYER_INDEX_OF_AUX,
-  initShow: true,
+  initShow: false,
   validator: (params) => {
     const result = validateObject(params, {
       xAxis: {

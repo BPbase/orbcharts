@@ -1,7 +1,7 @@
 
 import { Observable, Subject } from 'rxjs'
 import type { ColorType, ModelDatumSeries, EventData } from '@orbcharts/core'
-import type { ContainerPosition, ContainerPositionScaled, Container, GraphicStyles, Layout, VisibleFilter, ValueAxis, CategoryAxis, AxisPosition } from '../../types/PluginParams'
+import type { ContainerPosition, ContainerPositionScaled, Container, GraphicStyles, Layout, VisibleFilter, ValueAxis, ReversibleCategoryAxis, AxisPosition } from '../../types/PluginParams'
 import { ComputedDatumGrid,  } from '../../types/ComputedData'
 import type { ContainerSize, TransformData } from '../../types/Common'
 import { BaseTooltipStyle, BaseTooltipUtils } from '../../baseLayers/types'
@@ -39,7 +39,7 @@ export interface GridPlotExtendContext {
   gridAxesReverseTransform$: Observable<TransformData>
   gridGraphicTransform$: Observable<TransformData>
   gridGraphicReverseScale$: Observable<[number, number][]>
-  zoomedCategoryAxis$: Observable<CategoryAxis>
+  zoomedCategoryAxis$: Observable<ReversibleCategoryAxis>
   categoryAxisPosition$: Observable<AxisPosition>
   // valueAxisPosition$: Observable<AxisPosition>
   // updateScaleDomain$: Subject<[number, number | "max"]> // zoom後要更新categoryAxis的scaleDomain
@@ -73,7 +73,7 @@ export interface GridPlotPluginParams {
   // direction: 'vertical' | 'horizontal'
   direction: 'bottom-up' | 'top-down' | 'left-right' | 'right-left'
   valueAxis: ValueAxis
-  categoryAxis: CategoryAxis
+  categoryAxis: ReversibleCategoryAxis
   separateSeries: boolean
   datasetIndex: number
 }

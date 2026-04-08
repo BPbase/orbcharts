@@ -12,7 +12,7 @@ export const DEFAULT_SCATTER_PLOT_PARAMS: ScatterPlotPluginParams = {
     highlightTarget: 'datum',
     highlightDefault: null,
     unhighlightedOpacity: 0.3,
-    transitionDuration: 800,
+    transitionDuration: 100,
     transitionEase: 'easeCubic'
   },
   visibleFilter: (datum) => true,

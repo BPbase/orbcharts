@@ -63,6 +63,10 @@ export const ValueAxis = defineSVGLayer<RacingPlotExtendContext, RacingPlotPlugi
       },
       tickTextColorType: {
         toBeOption: 'ColorType',
+      },
+      placement: {
+        toBe: '"top" | "bottom"',
+        test: (value: any) => value === 'top' || value === 'bottom'
       }
     })
     return result
@@ -79,7 +83,7 @@ export const ValueAxis = defineSVGLayer<RacingPlotExtendContext, RacingPlotPlugi
       pluginName,
       layerName,
       fullParams$: layerParams$,
-      position$: pluginParams$.pipe(map(p => p.valueAxis.position)),
+      position$: layerParams$.pipe(map(p => p.placement)),
       xScale$: context.xScale$,
       containerPosition$: context.gridContainerPosition$,
       containerSize$: context.containerSize$,

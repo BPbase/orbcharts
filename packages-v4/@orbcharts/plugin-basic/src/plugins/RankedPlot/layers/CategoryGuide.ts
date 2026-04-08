@@ -89,7 +89,7 @@ export const CategoryGuide = defineSVGLayer<RankedPlotExtendContext, RankedPlotP
     // ---- category position from mouse ----
     const categoryPosition$ = rankedCategoryPositionObservable({
       rootSelection: d3.select(context.svg),
-      pluginParams$,
+      zoomedCategoryAxis$: context.zoomedCategoryAxis$,
       computedData$: context.computedData$,
       layout$: context.layout$,
       gridContainerPosition$: context.gridContainerPosition$

@@ -18,17 +18,17 @@ export const DEFAULT_RACING_PLOT_PLUGIN_PARAMS: RacingPlotPluginParams = {
     highlightTarget: 'datum',
     highlightDefault: null,
     unhighlightedOpacity: 0.3,
-    transitionDuration: 800,
+    transitionDuration: 500,
     transitionEase: 'easeLinear'
   },
   visibleFilter: (datum) => true,
   datasetIndex: 0,
-  valueAxis: {
-    position: 'top'
-  },
+  // valueAxis: {
+  //   position: 'top'
+  // },
   rankedAxis: {
     label: '',
-    limit: 'auto'
+    limit: 10
   },
   autorun: true,
   loop: false,
@@ -83,6 +83,7 @@ export const DEFAULT_RACING_PLOT_VALUE_AXIS_PARAMS: RacingPlotValueAxisParams = 
   tickFullLine: true,
   tickFullLineDasharray: 'none',
   tickColorType: 'secondary',
-  tickTextColorType: 'primary'
+  tickTextColorType: 'primary',
+  placement: 'top'
 }
 ;(DEFAULT_RACING_PLOT_VALUE_AXIS_PARAMS.tickFormat as Function).toString = () => 'text => text'

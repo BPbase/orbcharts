@@ -26,18 +26,18 @@ export default function PartitionPlotPage() {
     // console.log(domRef.current)
 
     const partitionPlot = new PartitionPlot({
-      Pie: {
-        outerRadius: 0.85,
-        innerRadius: 0.5,
-        outerRadiusWhileHighlight: 0.9,
-        startAngle: 0,
-        endAngle: 6.283185307179586,
-        padAngle: 0,
-        strokeColorType: "background",
-        strokeWidth: 1,
-        cornerRadius: 0
-      },
-      // Bubbles: {},
+      // Pie: {
+      //   outerRadius: 0.85,
+      //   innerRadius: 0.5,
+      //   outerRadiusWhileHighlight: 0.9,
+      //   startAngle: 0,
+      //   endAngle: 6.283185307179586,
+      //   padAngle: 0,
+      //   strokeColorType: "background",
+      //   strokeWidth: 1,
+      //   cornerRadius: 0
+      // },
+      Bubble: {},
       // styles: {
       //   padding: {
       //     top: 60,
