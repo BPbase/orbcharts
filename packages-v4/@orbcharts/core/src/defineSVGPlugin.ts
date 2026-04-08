@@ -1,0 +1,39 @@
+import type { DeepPartial, DefinePluginConfig, PluginEntity, ChartContext, ExtendableContext } from './types'
+import { createPlugin } from './plugin/createPlugin'
+
+export const defineSVGPlugin = <
+  ExtendContext extends ExtendableContext,
+  PluginParams extends Record<string, any>,
+  AllLayerParams extends Record<string, any>,
+>(config: DefinePluginConfig<ExtendContext, PluginParams, AllLayerParams>) => {
+  return class Plugin implements PluginEntity<'svg', PluginParams, AllLayerParams> {
+    _name: string
+    _elementType: 'svg'
+    _getId: () => string
+    _setId: (id: string) => void
+    _injectContext: (context: ChartContext<{}>) => void
+    show: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => void
+    showOnly: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => void
+    showAll: () => void
+    hide: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => void
+    hideAll: () => void
+    toggle: (names: (keyof AllLayerParams) | (keyof AllLayerParams)[]) => void
+    // setLayers: (partial: DeepPartial<PluginParams>) => void
+    getShownLayerNames: () => (keyof AllLayerParams)[]
+    updateParams: (patch: DeepPartial<PluginParams | AllLayerParams>) => void
+    forceReplaceParams: (full: PluginParams | AllLayerParams) => void
+    getParams: () => Readonly<PluginParams | AllLayerParams>
+    // layer: <LayerName extends keyof PluginParams>(name: LayerName) => {
+    //   // set: (partial: DeepPartial<PluginParams[LayerName]>) => void
+    //   update: (patch: DeepPartial<PluginParams[LayerName]>) => void
+    //   replace: (full: PluginParams[LayerName]) => void
+    //   show: () => void
+    //   hide: () => void
+    //   toggle: () => void
+    // }
+    destroy: () => void
+    constructor (params?: DeepPartial<PluginParams | AllLayerParams>) {
+      return createPlugin('svg', config, params)
+    }
+  }
+}

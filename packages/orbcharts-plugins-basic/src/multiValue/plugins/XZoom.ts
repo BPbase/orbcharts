@@ -27,12 +27,12 @@ export const XZoom = defineMultiValuePlugin(pluginConfig)(({ selection, rootSele
   const destroy$ = new Subject()
 
   const unsubscribeBaseOrdinalBubbles = createBaseXZoom(pluginName, {
-      rootSelection,
-      fullDataFormatter$: observer.fullDataFormatter$,
-      xyMinMax$: observer.xyMinMax$,
-      layout$: observer.layout$,
-      dataFormatter$: subject.dataFormatter$,
-    })
+    rootSelection,
+    fullDataFormatter$: observer.fullDataFormatter$,
+    xyMinMax$: observer.xyMinMax$,
+    layout$: observer.layout$,
+    dataFormatter$: subject.dataFormatter$,
+  })
   
   return () => {
     destroy$.next(undefined)

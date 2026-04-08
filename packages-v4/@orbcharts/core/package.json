@@ -1,0 +1,58 @@
+{
+  "name": "@orbcharts/core",
+  "version": "4.0.0-alpha.0",
+  "description": "Core codes for OrbCharts",
+  "author": "Blue Planet Inc.",
+  "license": "Apache-2.0",
+  "keywords": [
+    "d3",
+    "rxjs",
+    "typescript",
+    "svg",
+    "visualization",
+    "infographic",
+    "graph",
+    "chart"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/orbcharts-core.es.js",
+      "default": "./dist/orbcharts-core.umd.js"
+    },
+    "./types": {
+      "types": "./dist/src/types/index.d.ts",
+      "default": "./dist/src/types/index.d.ts"
+    },
+    "./types/*": "./dist/src/types/*.d.ts",
+    "./*": "./dist/src/*.d.ts"
+  },
+  "main": "./dist/orbcharts-core.umd.js",
+  "module": "./dist/orbcharts-core.es.js",
+  "types": "./dist/src/index.d.ts",
+  "unpkg": "./dist/orbcharts-core.umd.js",
+  "jsdelivr": "./dist/orbcharts-core.umd.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vite build --mode production",
+    "prepublishOnly": "echo $npm_config_user_agent | grep -q '^pnpm' || { echo '請使用 pnpm publish，不要用 npm publish'; exit 1; }"
+  },
+  "devDependencies": {
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.9.2",
+    "vite": "^5.3.5",
+    "vite-plugin-dts": "^3.7.3"
+  },
+  "dependencies": {
+    "rxjs": "^7.8.2"
+  }
+}
