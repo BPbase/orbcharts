@@ -54,18 +54,8 @@ import { StackedBar } from './layers/StackedBar'
 import { StackedValueAxis } from './layers/StackedValueAxis'
 import { ValueAxis } from './layers/ValueAxis'
 
-const bars = new Bar()
-const barsTriangle = new TriangleBar()
-const categoryAux = new CategoryGuide()
-const categoryAxis = new CategoryAxis()
-const categoryZoom = new CategoryZoom()
-const dots = new Point()
-const lineArea = new LineArea()
-const line = new Line()
-const stackedBars = new StackedBar()
-const stackedValueAxis = new StackedValueAxis()
-const valueAxis = new ValueAxis()
-
+// layers 傳入「建構子」，由 createPlugin 在每個 plugin 實例建立時各自實例化
+//（不可在 module 層級共用 layer 單例，否則同頁多個 plugin 實例會互搶 layer）
 export const GridPlot = defineSVGPlugin<
   GridPlotExtendContext,
   GridPlotPluginParams,
@@ -73,7 +63,7 @@ export const GridPlot = defineSVGPlugin<
 >({
   name: 'GridPlot',
   defaultParams: DEFAULT_SERIES_PLOT_PARAMS,
-  layers: [bars, barsTriangle, categoryAux, categoryAxis, categoryZoom, dots, lineArea, line, stackedBars, stackedValueAxis, valueAxis],
+  layers: [Bar, TriangleBar, CategoryGuide, CategoryAxis, CategoryZoom, Point, LineArea, Line, StackedBar, StackedValueAxis, ValueAxis],
   setup: (props) => {
     
     const zoomedScaleDomain$ = new BehaviorSubject<[number, number | "max"] | undefined>(undefined)

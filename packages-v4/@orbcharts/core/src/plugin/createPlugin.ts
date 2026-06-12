@@ -43,15 +43,21 @@ export const createPlugin = <
   // const layerSVGElementsRef: Record<string, SVGElement> = {}
   // const layerCanvasElementsRef: Record<string, HTMLCanvasElement> = {}
 
+  // 每個 plugin 實例建立「自己的」layer 實體。
+  // Layer 內部狀態（enableProps$、setup 訂閱等）一次只能服務一個 plugin 實例，
+  // 若跨實例共用（例如 module 層級的單例），同頁多個 plugin 會互搶 layer，
+  // 造成部分圖表的 layer 不繪製或被銷毀。
+  const layers = config.layers.map((Layer) => new Layer())
+
   // 全部的layers
   const allLayerInstances = {
     // 將陣列轉成字典
-    ...config.layers.reduce((acc, layer) => {
+    ...layers.reduce((acc, layer) => {
       acc[layer._name as keyof AllLayerParams] = layer
       return acc
-    }, {} as Record<keyof AllLayerParams, typeof config.layers[number]>)
+    }, {} as Record<keyof AllLayerParams, typeof layers[number]>)
   }
-  const getAllLayerNamesSet = () => new Set(config.layers.map(l => l._name as keyof AllLayerParams))
+  const getAllLayerNamesSet = () => new Set(layers.map(l => l._name as keyof AllLayerParams))
   // const getParamsKeySet = (params: DeepPartial<PluginParams | AllLayerParams>): Set<keyof AllLayerParams> => {
   //   // 取得有設定 params 的 layer name
   //   if (params) {
@@ -72,7 +78,7 @@ export const createPlugin = <
   }
 
   // config 設定顯示的 layers
-  const systemInitLayerNames = config.layers.reduce((prev, current) => {
+  const systemInitLayerNames = layers.reduce((prev, current) => {
     if (current._initShow) {
       prev.push(current._name as keyof AllLayerParams)
     }
@@ -107,7 +113,7 @@ export const createPlugin = <
       const shownLayerNamesSeq: string[] = Array.from(ShownLayerNameSet)
         .map(name => [
           name,
-          config.layers.find(l => l._name === name)?._layerIndex ?? -1
+          layers.find(l => l._name === name)?._layerIndex ?? -1
         ])
         .filter(([, index]) => index !== -1)
         .sort((a, b) => (a[1] as number) - (b[1] as number))
@@ -279,7 +285,7 @@ export const createPlugin = <
     // }
 
     // init layers
-    config.layers.forEach((layer) => {
+    layers.forEach((layer) => {
       if (ShownLayerNameSet.has(layer._name as keyof AllLayerParams)) {
         const layerEnableProps: LayerEnableProps<'svg' | 'canvas', ExtendContext, PluginParams, unknown> = 
           elementType === 'svg' ? 
@@ -422,7 +428,7 @@ export const createPlugin = <
       // InitLayerNameSet$.next(getParamsKeySet(full))
     },
     getParams: () => {
-      return config.layers.reduce((acc, layer) => {
+      return layers.reduce((acc, layer) => {
         acc[layer._name] = layer._getParams()
         return acc
       }, {} as Record<string, any>) as PluginParams | AllLayerParams
@@ -458,7 +464,8 @@ export const createPlugin = <
       // IsShowLayerNameSet$.complete()
       ShownLayerNameSet$.complete()
       
-      config.layers.forEach((layer) => {
+      // layers 為本實例專屬，destroy 不影響其他 plugin 實例
+      layers.forEach((layer) => {
         layer._destroy()
       })
     },

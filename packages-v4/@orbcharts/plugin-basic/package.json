@@ -1,6 +1,6 @@
 {
   "name": "@orbcharts/plugin-basic",
-  "version": "4.0.0-alpha.0",
+  "version": "4.0.0-beta.0",
   "description": "Core codes for OrbCharts",
   "author": "Blue Planet Inc.",
   "license": "Apache-2.0",
@@ -44,7 +44,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build --mode production",
-    "prepublishOnly": "echo $npm_config_user_agent | grep -q '^pnpm' || { echo '請使用 pnpm publish，不要用 npm publish'; exit 1; }"
+    "prepublishOnly": "echo $npm_config_user_agent | grep -q '^pnpm' || { echo '隢蝙??pnpm publish嚗?閬 npm publish'; exit 1; }"
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",

@@ -58,12 +58,6 @@ import { Bubble } from './layers/Bubble'
 import { XYGuide } from './layers/XYGuide'
 import { XYAxes } from './layers/XYAxes'
 import { XZoom } from './layers/XZoom'
-const point = new Point()
-const bubble = new Bubble()
-const xyGuide = new XYGuide()
-const xyAxes = new XYAxes()
-const xZoom = new XZoom()
-
 export const ScatterPlot = defineSVGPlugin<
   ScatterPlotExtendContext,
   ScatterPlotPluginParams,
@@ -71,7 +65,7 @@ export const ScatterPlot = defineSVGPlugin<
 >({
   name: 'ScatterPlot',
   defaultParams: DEFAULT_SCATTER_PLOT_PARAMS,
-  layers: [point, bubble, xyGuide, xyAxes, xZoom],
+  layers: [Point, Bubble, XYGuide, XYAxes, XZoom],
   setup: (props) => {
     
     const zoomedScaleDomain$ = new BehaviorSubject<[number, number | "max"] | undefined>(undefined)
