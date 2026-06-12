@@ -19,8 +19,6 @@ import {
 } from './contextObservables'
 import { Tooltip as TooltipLayer } from './layers/Tooltip'
 
-const seriesTooltip = new TooltipLayer()
-
 export const Tooltip = defineSVGPlugin<
   TooltipExtendContext,
   TooltipPluginParams,
@@ -28,7 +26,7 @@ export const Tooltip = defineSVGPlugin<
 >({
   name: 'Tooltip',
   defaultParams: DEFAULT_TOOLTIP_PLUGIN_PARAMS,
-  layers: [seriesTooltip],
+  layers: [TooltipLayer],
   setup: (props) => {
 
     const selectedSeriesData$ = combineLatest({

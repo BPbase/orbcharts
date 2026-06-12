@@ -43,12 +43,6 @@ import { CategoryZoom } from './layers/CategoryZoom'
 import { RankedBubble } from './layers/RankedBubble'
 import { RankAxis } from './layers/RankAxis'
 
-const categoryAxis = new CategoryAxis()
-const categoryAux = new CategoryGuide()
-const categoryZoom = new CategoryZoom()
-const rankedBubbles = new RankedBubble()
-const rankedSeriesAxis = new RankAxis()
-
 export const RankedPlot = defineSVGPlugin<
   RankedPlotExtendContext,
   RankedPlotPluginParams,
@@ -56,7 +50,7 @@ export const RankedPlot = defineSVGPlugin<
 >({
   name: 'RankedPlot',
   defaultParams: DEFAULT_RANKED_PLOT_PLUGIN_PARAMS,
-  layers: [categoryAxis, categoryAux, categoryZoom, rankedBubbles, rankedSeriesAxis],
+  layers: [CategoryAxis, CategoryGuide, CategoryZoom, RankedBubble, RankAxis],
   setup: (props) => {
 
     // ---- zoom ----
