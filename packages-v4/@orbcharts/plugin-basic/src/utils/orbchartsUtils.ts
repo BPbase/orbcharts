@@ -209,8 +209,11 @@ export function createUniID (pluginName: string, layerName: string, elementName:
   const textLength = 5
   // 英文+數字
   const randomText: string = Math.random().toString(36).substr(2, textLength)
-  
-  return createClassName(pluginName, layerName, elementName, randomText)
+  // SVG/HTML 的 id 不允許空白等字元（例如 elementName 內嵌的 series label 含空格時，
+  // url(#id) 會解析失敗導致漸層 fill 變黑），將不合法字元替換為底線
+  const safeElementName = elementName.replace(/[^a-zA-Z0-9_-]/g, '_')
+
+  return createClassName(pluginName, layerName, safeElementName, randomText)
 }
 
 

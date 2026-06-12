@@ -49,7 +49,10 @@ export interface DefinePluginConfig<ExtendContext extends ExtendableContext, Plu
   defaultParams?: PluginParams
   validator?: (params: DeepPartial<AllLayerParams | PluginParams>) => ValidatorResult
     // { valid: boolean; errors?: string[] }
-  layers?: LayerEntity<ExtendContext, PluginParams, AllLayerParams[keyof AllLayerParams]>[]
+  // Layer 建構子陣列——由 createPlugin 在「每個 plugin 實例」建立時各自實例化。
+  // （Layer 內部狀態（enableProps$ 等）不可跨 plugin 實例共用，否則同頁多個
+  //   plugin 實例會互搶 layer，造成部分圖表不繪製）
+  layers?: (new () => LayerEntity<ExtendContext, PluginParams, AllLayerParams[keyof AllLayerParams]>)[]
   // extendContext?: (context: Readonly<ChartContext>) => ExtendContext
   setup?: (props: PluginSetupProps<ExtendContext, PluginParams>) => () => void
 }

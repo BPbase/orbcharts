@@ -31,8 +31,6 @@ import {
   treeVisibleComputedDataObservable
 } from './contextObservables'
 import { TreeMap } from './layers/TreeMap'
-const treeMap = new TreeMap()
-
 export const HierarchyPlot = defineSVGPlugin<
   HierarchyPlotExtendContext,
   HierarchyPlotPluginParams,
@@ -40,7 +38,7 @@ export const HierarchyPlot = defineSVGPlugin<
 >({
   name: 'HierarchyPlot',
   defaultParams: DEFAULT_HIERARCHY_PLOT_PLUGIN_PARAMS,
-  layers: [treeMap],
+  layers: [TreeMap],
   setup: (props) => {
 
     const selectedTreeData$ = combineLatest({

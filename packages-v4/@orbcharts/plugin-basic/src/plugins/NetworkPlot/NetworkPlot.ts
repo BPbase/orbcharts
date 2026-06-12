@@ -33,9 +33,6 @@ import {
 } from './contextObservables'
 import { ForceDirected } from './layers/ForceDirected'
 import { ForceDirectedBubble } from './layers/ForceDirectedBubble'
-const forceDirected = new ForceDirected()
-const forceDirectedBubble = new ForceDirectedBubble()
-
 export const NetworkPlot = defineSVGPlugin<
   NetworkPlotExtendContext,
   NetworkPlotPluginParams,
@@ -43,7 +40,7 @@ export const NetworkPlot = defineSVGPlugin<
 >({
   name: 'NetworkPlot',
   defaultParams: DEFAULT_NETWORK_PLOT_PLUGIN_PARAMS,
-  layers: [forceDirected, forceDirectedBubble],
+  layers: [ForceDirected, ForceDirectedBubble],
   setup: (props) => {
 
     const selectedGraphData$ = combineLatest({

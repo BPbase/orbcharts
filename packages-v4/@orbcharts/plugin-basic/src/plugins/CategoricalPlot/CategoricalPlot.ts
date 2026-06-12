@@ -40,11 +40,6 @@ import { CategoryAxis } from './layers/CategoryAxis'
 import { CategoryZoom } from './layers/CategoryZoom'
 import { ValueAxis } from './layers/ValueAxis'
 
-const raisedBubble = new RaisedBubble()
-const categoryAxis = new CategoryAxis()
-const categoryZoom = new CategoryZoom()
-const valueAxis = new ValueAxis()
-
 export const CategoricalPlot = defineSVGPlugin<
   CategoricalPlotExtendContext,
   CategoricalPlotPluginParams,
@@ -52,7 +47,7 @@ export const CategoricalPlot = defineSVGPlugin<
 >({
   name: 'CategoricalPlot',
   defaultParams: DEFAULT_CATEGORICAL_PLOT_PLUGIN_PARAMS,
-  layers: [categoryAxis, categoryZoom, raisedBubble, valueAxis],
+  layers: [CategoryAxis, CategoryZoom, RaisedBubble, ValueAxis],
   setup: (props) => {
 
     // ---- chart position ----

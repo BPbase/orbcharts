@@ -18,8 +18,6 @@ import {
 } from './contextObservables'
 import { Legend as LegendLayer } from './layers/Legend'
 
-const seriesLegend = new LegendLayer()
-
 export const Legend = defineSVGPlugin<
   LegendExtendContext,
   LegendPluginParams,
@@ -27,7 +25,7 @@ export const Legend = defineSVGPlugin<
 >({
   name: 'Legend',
   defaultParams: DEFAULT_LEGEND_PLUGIN_PARAMS,
-  layers: [seriesLegend],
+  layers: [LegendLayer],
   setup: (props) => {
 
     const selectedSeriesData$ = combineLatest({

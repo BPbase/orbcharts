@@ -35,13 +35,6 @@ import { PieLabel } from './layers/PieLabel'
 import { Rose } from './layers/Rose'
 import { RoseLabel } from './layers/RoseLabel'
 
-const bubble = new Bubble()
-const pie = new Pie()
-const pieEventText = new PieEventText()
-const pieLabel = new PieLabel()
-const rose = new Rose()
-const roseLabel = new RoseLabel()
-
 export const PartitionPlot = defineSVGPlugin<
   PartitionPlotExtendContext,
   PartitionPlotPluginParams,
@@ -49,7 +42,7 @@ export const PartitionPlot = defineSVGPlugin<
 >({
   name: 'PartitionPlot',
   defaultParams: DEFAULT_PARTITION_PLOT_PLUGIN_PARAMS,
-  layers: [bubble, pie, pieEventText, pieLabel, rose, roseLabel],
+  layers: [Bubble, Pie, PieEventText, PieLabel, Rose, RoseLabel],
   setup: (props) => {
     // props.context.seriesData$.subscribe(seriesData => {
     //   console.log('PartitionPlot seriesData', seriesData)

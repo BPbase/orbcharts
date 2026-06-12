@@ -38,12 +38,6 @@ import { CounterText } from './layers/CounterText'
 import { ValueAxis } from './layers/ValueAxis'
 import { ValueLabel } from './layers/ValueLabel'
 
-const racingBar = new RacingBar()
-const valueLabel = new ValueLabel()
-const seriesLabel = new SeriesLabel()
-const counterText = new CounterText()
-const valueAxis = new ValueAxis()
-
 export const RacingPlot = defineSVGPlugin<
   RacingPlotExtendContext,
   RacingPlotPluginParams,
@@ -51,7 +45,7 @@ export const RacingPlot = defineSVGPlugin<
 >({
   name: 'RacingPlot',
   defaultParams: DEFAULT_RACING_PLOT_PLUGIN_PARAMS,
-  layers: [valueAxis, racingBar, valueLabel, seriesLabel, counterText],
+  layers: [ValueAxis, RacingBar, ValueLabel, SeriesLabel, CounterText],
   setup: (props) => {
     const destroy$ = new Subject<void>()
 
