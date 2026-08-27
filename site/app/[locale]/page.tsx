@@ -29,7 +29,7 @@ export default async function HomePage({ params }: Props) {
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'Web',
     url: 'https://bpbase.github.io/orbcharts',
-    softwareVersion: '4.0.0-beta.0',
+    softwareVersion: '4.0.0-beta.1',
     offers: { '@type': 'Offer', price: '0' },
   }
 
