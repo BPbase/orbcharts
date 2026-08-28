@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button'
 import { CopyButton } from './CopyButton'
 import { Reveal } from './Reveal'
 
-/** 與文件「安裝」頁一致的安裝指令（v4 為 beta 版需指定 tag；正式發佈後移除 @beta） */
-const INSTALL_COMMAND = 'npm i orbcharts@beta'
+/** 與文件「安裝」頁一致的安裝指令 */
+const INSTALL_COMMAND = 'npm i orbcharts'
 
 export async function CtaSection() {
   const t = await getTranslations('Home.Cta')

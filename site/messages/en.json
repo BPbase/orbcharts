@@ -10,7 +10,6 @@
     "subtitle": "Data-driven JavaScript chart library",
     "description": "One data format for every chart. Data is decoupled from rendering — switch how the same data is visualized at any time.",
     "Hero": {
-      "badge": "v4 Beta now available",
       "subtitle": "Data-driven JavaScript chart library",
       "description": "One data format for every chart. Data is decoupled from rendering — switch how the same data is visualized at any time. Built for dashboards.",
       "ctaStart": "Get Started",

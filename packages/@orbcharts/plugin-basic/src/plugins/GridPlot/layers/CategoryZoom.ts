@@ -31,7 +31,7 @@ export const CategoryZoom = defineSVGLayer<GridPlotExtendContext, GridPlotPlugin
     )
 
     const initCategoryAxis$ = pluginParams$.pipe(
-      map(d => d.categoryAxis)
+      map(d => d.categoryScale)
     )
 
     // gridAxesSize.width is always the category-axis length

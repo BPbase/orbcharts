@@ -4,16 +4,19 @@
 export interface EncodingDataset {
   from: string
   sort: 'original' | 'alphabetical' | string[]
+  ignore?: boolean
 }
 
 export interface EncodingSeries {
   from: string
   sort: 'original' | 'alphabetical' | string[]
+  ignore?: boolean
 }
 
 export interface EncodingCategory {
   from: string
   sort: 'original' | 'alphabetical' | string[]
+  ignore?: boolean
 }
 
 export interface EncodingValue {
@@ -30,7 +33,7 @@ export interface EncodingMultivariateItem {
 export type EncodingMultivariate = EncodingMultivariateItem[]
 
 export interface EncodingColor {
-  from: 'index' | 'series' | 'category' | 'dataset'
+  by: 'index' | 'series' | 'category' | 'dataset'
 }
 
 export interface Encoding {

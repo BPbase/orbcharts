@@ -3950,7 +3950,7 @@ export default function GridPlotPage() {
         },
         CategoryZoom: {},
         CategoryGuide: {},
-        rankedAxis: {
+        rankedScale: {
             limit: 10
         }
       // Bars: {},

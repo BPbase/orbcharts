@@ -79,7 +79,7 @@ export const DEFAULT_NETWORK_PLOT_FORCE_DIRECTED_PARAMS: ForceDirectedParams = {
   transform: {
     x: 0,
     y: 0,
-    k: 1
+    scale: 1
   },
   scaleExtent: {
     min: 0,
@@ -133,7 +133,7 @@ export const DEFAULT_NETWORK_PLOT_FORCE_DIRECTED_BUBBLE_PARAMS: ForceDirectedBub
   transform: {
     x: 0,
     y: 0,
-    k: 1
+    scale: 1
   },
   scaleExtent: {
     min: 0,

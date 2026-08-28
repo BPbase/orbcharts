@@ -94,7 +94,7 @@ export const CategoryGuide = defineSVGLayer<GridPlotExtendContext, GridPlotPlugi
       takeUntil(destroy$),
       debounceTime(0),
       map(data => {
-        const reverse = data.pluginParams.categoryAxis.reverse ?? false
+        const reverse = data.pluginParams.categoryScale.reverse ?? false
         return d3.scaleLinear()
           .domain(data.categoryScaleDomainValue)
           .range(reverse ? [data.gridAxesSize.width, 0] : [0, data.gridAxesSize.width])

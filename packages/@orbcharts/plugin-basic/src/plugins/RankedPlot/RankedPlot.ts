@@ -62,7 +62,7 @@ export const RankedPlot = defineSVGPlugin<
     })
 
     const zoomedCategoryAxis$ = props.pluginParams$.pipe(
-      map(params => params.categoryAxis),
+      map(params => params.categoryScale),
       switchMap(categoryAxis => zoomedScaleDomain$.pipe(
         map(scaleDomain => scaleDomain
           ? { ...categoryAxis, scaleDomain }
@@ -138,7 +138,7 @@ export const RankedPlot = defineSVGPlugin<
 
     // const gridAxesTransform$ = gridAxesTransformObservable({
     //   layout$,
-    //   categoryAxisPosition$: props.pluginParams$.pipe(map(p => p.categoryAxis.position))
+    //   categoryAxisPosition$: props.pluginParams$.pipe(map(p => p.categoryScale.position))
     // }).pipe(shareReplay(1))
 
     // const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({ gridAxesTransform$ }).pipe(shareReplay(1))
@@ -152,7 +152,7 @@ export const RankedPlot = defineSVGPlugin<
       containerSize$,
       visibleComputedData$,
       fontSizePx$,
-      limit$: props.pluginParams$.pipe(map(p => p.rankedAxis.limit))
+      limit$: props.pluginParams$.pipe(map(p => p.rankedScale.limit))
     }).pipe(shareReplay(1))
 
     const rankedItemHeight$ = rankedItemHeightObservable({

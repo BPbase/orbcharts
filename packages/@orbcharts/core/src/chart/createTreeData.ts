@@ -1,6 +1,7 @@
 import type { RawData, RawDataColumn, Encoding, ModelDataTree, ModelDatumTree, Theme } from '../types'
 import { aggregate } from '../utils/aggregateUtils'
 import { getColorByFrom } from '../utils/colorUtils'
+import { resolveGroupKey } from '../utils/encodingUtils'
 
 export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Theme): ModelDataTree[] => {
   // 依據 dataset 欄位將資料分組
@@ -13,7 +14,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
     // 二維陣列：每個子陣列代表一個 dataset
     (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
       datasetArray.forEach((d) => {
-        const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+        const datasetKey = resolveGroupKey(d, encoding.dataset, `dataset-${datasetIndex}`)
         if (!datasetMap.has(datasetKey)) {
           datasetMap.set(datasetKey, [])
         }
@@ -23,7 +24,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
   } else {
     // 一維陣列：依據 dataset 欄位分組
     (rawData as RawDataColumn[]).forEach((d) => {
-      const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+      const datasetKey = resolveGroupKey(d, encoding.dataset, '')
       if (!datasetMap.has(datasetKey)) {
         datasetMap.set(datasetKey, [])
       }
@@ -41,7 +42,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
     if (is2DArray) {
       (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
         datasetArray.forEach((d) => {
-          const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+          const datasetKey = resolveGroupKey(d, encoding.dataset, `dataset-${datasetIndex}`)
           if (!datasetOrder.includes(datasetKey)) {
             datasetOrder.push(datasetKey)
           }
@@ -49,7 +50,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
       })
     } else {
       (rawData as RawDataColumn[]).forEach((d) => {
-        const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+        const datasetKey = resolveGroupKey(d, encoding.dataset, '')
         if (!datasetOrder.includes(datasetKey)) {
           datasetOrder.push(datasetKey)
         }
@@ -68,7 +69,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
     // 建立 dataset 內排序後的 series 名稱陣列（僅作為屬性與色彩來源，不做拆樹）
     const seriesMap = new Map<string, RawDataColumn[]>()
     data.forEach((d) => {
-      const seriesKey = (d as any)[encoding.series.from] || 'default'
+      const seriesKey = resolveGroupKey(d, encoding.series, '')
       if (!seriesMap.has(seriesKey)) {
         seriesMap.set(seriesKey, [])
       }
@@ -81,7 +82,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
     } else if (encoding.series.sort === 'original') {
       const seriesOrder: string[] = []
       data.forEach((d) => {
-        const seriesKey = (d as any)[encoding.series.from] || 'default'
+        const seriesKey = resolveGroupKey(d, encoding.series, '')
         if (!seriesOrder.includes(seriesKey)) {
           seriesOrder.push(seriesKey)
         }
@@ -94,7 +95,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
     // 建立 dataset 內排序後的 category 名稱陣列（僅作為屬性與色彩來源，不做拆樹）
     const categoryMap = new Map<string, RawDataColumn[]>()
     data.forEach((d) => {
-      const categoryKey = (d as any)[encoding.category.from] || 'default'
+      const categoryKey = resolveGroupKey(d, encoding.category, '')
       if (!categoryMap.has(categoryKey)) {
         categoryMap.set(categoryKey, [])
       }
@@ -107,7 +108,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
     } else if (encoding.category.sort === 'original') {
       const categoryOrder: string[] = []
       data.forEach((d) => {
-        const categoryKey = (d as any)[encoding.category.from] || 'default'
+        const categoryKey = resolveGroupKey(d, encoding.category, '')
         if (!categoryOrder.includes(categoryKey)) {
           categoryOrder.push(categoryKey)
         }
@@ -128,7 +129,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
     })
 
     let globalNodeIndex = 0
-    const defaultSeriesName = sortedSeriesNames[0] || 'default'
+    const defaultSeriesName = sortedSeriesNames[0] || ''
     const defaultSeriesIndex = sortedSeriesNames.indexOf(defaultSeriesName)
 
     // 為每個 id 建立 ModelDatumTree，並進行聚合
@@ -136,9 +137,9 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
     
     Array.from(nodeMap.entries()).forEach(([nodeId, nodeItems]) => {
       const firstItem = nodeItems[0]
-      const seriesName = (firstItem as any)[encoding.series.from] || 'default'
+      const seriesName = resolveGroupKey(firstItem, encoding.series, '')
       const seriesIndex = sortedSeriesNames.indexOf(seriesName)
-      const categoryName = (firstItem as any)[encoding.category.from] || 'default'
+      const categoryName = resolveGroupKey(firstItem, encoding.category, '')
       const categoryIndex = sortedCategoryNames.indexOf(categoryName)
         
       if (encoding.value.aggregate === 'none') {
@@ -151,7 +152,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
           name: firstItem.name || nodeId,
           data: firstItem.data,
           value: typeof value === 'number' ? value : null,
-          color: getColorByFrom(encoding.color.from, {
+          color: getColorByFrom(encoding.color.by, {
             index: globalNodeIndex - 1,
             seriesIndex,
             categoryIndex,
@@ -187,7 +188,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
           name: firstItem.name || nodeId,
           data: firstItem.data,
           value: aggregatedValue,
-          color: getColorByFrom(encoding.color.from, {
+          color: getColorByFrom(encoding.color.by, {
             index: globalNodeIndex - 1,
             seriesIndex,
             categoryIndex,
@@ -283,7 +284,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
         name: 'Empty Tree',
         data: {},
         value: null,
-        color: getColorByFrom(encoding.color.from, {
+        color: getColorByFrom(encoding.color.by, {
           index: globalNodeIndex - 1,
           seriesIndex: defaultSeriesIndex < 0 ? 0 : defaultSeriesIndex,
           categoryIndex: 0,
@@ -296,7 +297,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
         children: [],
         series: defaultSeriesName,
         seriesIndex: defaultSeriesIndex < 0 ? 0 : defaultSeriesIndex,
-        category: 'default',
+        category: '',
         categoryIndex: 0,
       })
     } else if (trees.length === 1) {
@@ -310,7 +311,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
         name: `Virtual Root (${datasetName})`,
         data: {},
         value: null,
-        color: getColorByFrom(encoding.color.from, {
+        color: getColorByFrom(encoding.color.by, {
           index: globalNodeIndex - 1,
           seriesIndex: defaultSeriesIndex < 0 ? 0 : defaultSeriesIndex,
           categoryIndex: 0,
@@ -333,7 +334,7 @@ export const createTreeData = (rawData: RawData, encoding: Encoding, theme: Them
         }),
         series: defaultSeriesName,
         seriesIndex: defaultSeriesIndex < 0 ? 0 : defaultSeriesIndex,
-        category: 'default',
+        category: '',
         categoryIndex: 0,
       }
       result.push(virtualRoot)

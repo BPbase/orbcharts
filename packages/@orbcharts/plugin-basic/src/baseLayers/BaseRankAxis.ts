@@ -80,8 +80,8 @@ function renderAxisLabel ({
   containerSize: ContainerSize
   theme: Theme
 }) {
-  const offsetX = fullParams.axisLabel.offset[0]
-  const offsetY = fullParams.axisLabel.offset[1]
+  const offsetX = fullParams.labelOffset[0]
+  const offsetY = fullParams.labelOffset[1]
 
   labelSelection
     .selectAll<SVGTextElement, string>('text.axis-label')
@@ -95,7 +95,7 @@ function renderAxisLabel ({
     .attr('dominant-baseline', 'auto')
     .attr('x', -offsetX)
     .attr('y', -offsetY)
-    .style('fill', getColor(fullParams.axisLabel.colorType, theme))
+    .style('fill', getColor(fullParams.labelColorType, theme))
     .text(d => d)
 }
 
@@ -119,7 +119,7 @@ function renderSeriesLabels ({
   theme: Theme
 }) {
   const labelData = rankedSeriesData.map(categoryArr => categoryArr[0]).filter(Boolean)
-  const padding = fullParams.seriesLabel.padding
+  const padding = fullParams.seriesLabelPadding
 
   labelsSelection
     .selectAll<SVGTextElement, ComputedDatumGrid>(`text.${seriesLabelClassName}`)
@@ -141,7 +141,7 @@ function renderSeriesLabels ({
     .attr('text-anchor', 'end')
     .attr('dominant-baseline', 'middle')
     .attr('x', -padding)
-    .style('fill', () => getColor(fullParams.seriesLabel.colorType, theme))
+    .style('fill', () => getColor(fullParams.seriesLabelColorType, theme))
     .text(d => d.series)
 }
 

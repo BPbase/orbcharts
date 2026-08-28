@@ -214,7 +214,7 @@ export function createBaseRacingValueLabel ({
               const tweenNumber = t === 1
                 ? d3.interpolateNumber(prevValue, currentValue)(t)
                 : d3.interpolateRound(prevValue, currentValue)(t)
-              return parseTickFormatValue(tweenNumber, data.fullParams.format as any)
+              return parseTickFormatValue(tweenNumber, data.fullParams.valueFormat as any)
             }
           })
       })

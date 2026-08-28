@@ -4,7 +4,6 @@ export const DEFAULT_VALUE_AXIS: ValueAxis = {
   // position: 'left',
   scaleDomain: ['auto', 'auto'],
   scaleRange: [0, 0.9],
-  label: '',
 }
 
 export const DEFAULT_CATEGORY_AXIS: ReversibleCategoryAxis = {
@@ -12,13 +11,11 @@ export const DEFAULT_CATEGORY_AXIS: ReversibleCategoryAxis = {
   reverse: false,
   scaleDomain: [0, 'max'],
   scalePadding: 0.5,
-  label: ''
 }
 
 export const DEFAULT_X_Y_AXIS: XYAxis = {
   scaleDomain: ['auto', 'auto'],
   scaleRange: [0, 0.9],
-  label: '',
   // valueIndex: 0
 }
 

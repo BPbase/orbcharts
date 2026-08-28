@@ -19,12 +19,12 @@ Encoding is passed through the `encoding` option when creating a chart, and can 
 
 ```ts
 interface Encoding {
-  dataset:  { from: string; sort: 'original' | 'alphabetical' | string[] }
-  series:   { from: string; sort: 'original' | 'alphabetical' | string[] }
-  category: { from: string; sort: 'original' | 'alphabetical' | string[] }
+  dataset:  { from: string; sort: 'original' | 'alphabetical' | string[]; ignore?: boolean }
+  series:   { from: string; sort: 'original' | 'alphabetical' | string[]; ignore?: boolean }
+  category: { from: string; sort: 'original' | 'alphabetical' | string[]; ignore?: boolean }
   value:    { from: string; sort: 'original' | 'asc' | 'desc'; aggregate: 'sum' | 'mean' | 'median' | 'min' | 'max' | 'count' | 'none' }
   multivariate: Array<{ from: string; name: string }>
-  color:    { from: 'index' | 'series' | 'category' | 'dataset' }
+  color:    { by: 'index' | 'series' | 'category' | 'dataset' }
 }
 ```
 
@@ -41,9 +41,10 @@ interface Encoding {
 
 - Each dimension's `from` defaults to the **same name** as the dimension (e.g. `series.from` defaults to `'series'`).
 - Each dimension's `sort` defaults to `'original'` (keep the original order).
+- `dataset`/`series`/`category`'s `ignore` defaults to `false` (not ignored, see [Ignoring a dimension](#ignoring-a-dimension) below).
 - `value.aggregate` defaults to `'none'` (no aggregation).
 - `multivariate` defaults to `[{ from: 'x', name: 'x' }, { from: 'y', name: 'y' }, { from: 'z', name: 'z' }]`.
-- `color.from` defaults to `'series'` (color by series).
+- `color.by` defaults to `'series'` (color by series).
 
 > **Tip**: Encoding is **deep-merged**. With `updateEncoding`, you only write the fields you want to change; every other dimension and setting keeps its default.
 
@@ -112,6 +113,27 @@ Available aggregations:
 | `'max'` | Maximum |
 | `'count'` | Count of records |
 | `'none'` | No aggregation (default) |
+
+## Ignoring a dimension
+
+`dataset`, `series`, and `category` can each be set to `ignore: true`, meaning the corresponding raw field is never read during processing — every row is treated as belonging to the same group on that dimension.
+
+> **Note**: Setting `ignore: true` on its own does **not** merge any data — it only makes rows that used to be in different groups fall into the same group; each row still produces its own ModelData entry. It's `value.aggregate` that actually merges rows within a group into one. In other words, `ignore` decides "what counts as the same group," and `aggregate` decides "whether — and how — to merge rows within that group." You need **both** set together to get the "ignore a dimension, merge the data" effect.
+
+A common scenario: the same series × category data should show every series × category combination separately in a bar chart, but sum across categories per series when switched to a pie chart:
+
+```ts
+// Bar chart: series × category shown independently (default behavior)
+chart.updateEncoding({ value: { aggregate: 'none' } })
+
+// Pie chart: ignore category, sum everything within each series into one row
+chart.updateEncoding({
+  category: { ignore: true },
+  value: { aggregate: 'sum' },
+})
+```
+
+For an ignored dimension, the corresponding field in the output ModelData (e.g. `category`/`categoryIndex`) will be an empty string / `0`, meaning "not applicable."
 
 ## Adjusting at runtime
 

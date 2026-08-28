@@ -77,9 +77,13 @@ export default function PartitionPlotPage() {
     const chart = new OrbCharts(domRef.current!, {
       data: pieData,
       encoding: {
-        // value: {
-        //   sort: 'asc'
-        // },
+        category: {
+          // ignore: true
+        },
+        value: {
+          // aggregate: 'sum',
+          // sort: 'asc'
+        },
         // color: {
         //   from: 'category'
         // }

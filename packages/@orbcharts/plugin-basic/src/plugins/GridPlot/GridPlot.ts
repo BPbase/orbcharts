@@ -74,7 +74,7 @@ export const GridPlot = defineSVGPlugin<
     })
 
     const zoomedCategoryAxis$ = props.pluginParams$.pipe(
-      map(params => params.categoryAxis),
+      map(params => params.categoryScale),
       switchMap(categoryAxis => zoomedScaleDomain$.pipe(
         map(scaleDomain => {
           if (!scaleDomain) {
@@ -90,7 +90,7 @@ export const GridPlot = defineSVGPlugin<
     )
 
     const valueAxis$ = props.pluginParams$.pipe(
-      map(params => params.valueAxis),
+      map(params => params.valueScale),
       shareReplay(1)
     )
 
@@ -383,10 +383,10 @@ export const GridPlot = defineSVGPlugin<
       // columnLabels: {
       //   toBeTypes: ['string[]']
       // },
-      valueAxis: {
+      valueScale: {
         toBeTypes: ['object']
       },
-      categoryAxis: {
+      categoryScale: {
         toBeTypes: ['object']
       },
       separateSeries: {
@@ -464,8 +464,8 @@ export const GridPlot = defineSVGPlugin<
         return containerResult
       }
     }
-    if (params.valueAxis) {
-      const valueAxisResult = validateObject(params.valueAxis, {
+    if (params.valueScale) {
+      const valueAxisResult = validateObject(params.valueScale, {
         // opposite: {
         //   toBeTypes: ['boolean']
         // },
@@ -476,17 +476,14 @@ export const GridPlot = defineSVGPlugin<
         scaleRange: {
           toBe: '[number, number]',
           test: (value: any) => Array.isArray(value) && value.length === 2 && typeof value[0] === 'number' && typeof value[1] === 'number'
-        },
-        label: {
-          toBeTypes: ['string']
         }
       })
       if (valueAxisResult.status === 'error') {
         return valueAxisResult
       }
     }
-    if (params.categoryAxis) {
-      const categoryAxisResult = validateObject(params.categoryAxis, {
+    if (params.categoryScale) {
+      const categoryAxisResult = validateObject(params.categoryScale, {
         reverse: {
           toBeTypes: ['boolean']
         },
@@ -496,9 +493,6 @@ export const GridPlot = defineSVGPlugin<
         },
         scalePadding: {
           toBeTypes: ['number']
-        },
-        label: {
-          toBeTypes: ['string']
         }
       })
       if (categoryAxisResult.status === 'error') {

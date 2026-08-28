@@ -44,15 +44,14 @@ export interface RankedPlotExtendContext {
 // ---- plugin params ----
 
 export interface RankedAxis {
-  label: string
   limit: number | 'auto'
 }
 
 export interface RankedPlotPluginParams {
   styles: GraphicStyles
   visibleFilter: VisibleFilter<'grid'>
-  categoryAxis: CategoryAxis
-  rankedAxis: RankedAxis
+  categoryScale: CategoryAxis
+  rankedScale: RankedAxis
   datasetIndex: number
 }
 
@@ -76,14 +75,11 @@ export interface RankedPlotRankedBubbleParams {
 }
 
 export interface RankedPlotRankAxisParams {
-  axisLabel: {
-    offset: [number, number]
-    colorType: ColorType
-  }
-  seriesLabel: {
-    padding: number
-    colorType: ColorType
-  }
+  label: string
+  labelOffset: [number, number]
+  labelColorType: ColorType
+  seriesLabelPadding: number
+  seriesLabelColorType: ColorType
 }
 
 export interface RankedPlotCategoryGuideParams {
@@ -98,6 +94,7 @@ export interface RankedPlotCategoryGuideParams {
 }
 
 export interface RankedPlotCategoryAxisParams {
+  label: string
   labelOffset: [number, number]
   labelColorType: ColorType
   axisLineVisible: boolean

@@ -10,7 +10,6 @@
     "subtitle": "資料驅動的 JavaScript 圖表函式庫",
     "description": "一種資料格式，畫所有的圖。資料與繪圖解耦，同一份資料隨時切換不同的視覺呈現。",
     "Hero": {
-      "badge": "v4 Beta 現已發佈",
       "subtitle": "資料驅動的 JavaScript 圖表函式庫",
       "description": "一種資料格式，畫所有的圖。資料與繪圖解耦，同一份資料隨時切換不同的視覺呈現——為儀表板而生。",
       "ctaStart": "開始使用",

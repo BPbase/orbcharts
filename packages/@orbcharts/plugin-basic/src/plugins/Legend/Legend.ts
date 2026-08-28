@@ -11,7 +11,8 @@ import { DEFAULT_LEGEND_PLUGIN_PARAMS } from './defaults'
 import {
   layoutObservable,
   fontSizePxObservable,
-  seriesDataMapObservable
+  seriesDataMapObservable,
+  categoryDataMapObservable
 } from '../../utils/observables'
 import {
   seriesComputedDataObservable,
@@ -75,10 +76,17 @@ export const Legend = defineSVGPlugin<
       shareReplay(1)
     )
 
+    const CategoryDataMap$ = categoryDataMapObservable({
+      datumList$
+    }).pipe(
+      shareReplay(1)
+    )
+
     const extendsContext: LegendExtendContext = {
       layout$,
       fontSizePx$,
       SeriesDataMap$,
+      CategoryDataMap$,
     }
 
     props.context = {

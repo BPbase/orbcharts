@@ -10,6 +10,7 @@ export interface LegendExtendContext {
   layout$: Observable<Layout>
   fontSizePx$: Observable<number>
   SeriesDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
+  CategoryDataMap$: Observable<Map<string, ComputedDatumSeries[]>>
 }
 
 // plugin params
@@ -35,8 +36,8 @@ export interface LegendLegendParams {
   // justify: 'start' | 'center' | 'end'
   placement: Placement
   padding: number
-  backgroundFill: ColorType
-  backgroundStroke: ColorType
+  backgroundColorType: ColorType
+  strokeColorType: ColorType
   gap: number
   listRectWidth: number
   listRectHeight: number

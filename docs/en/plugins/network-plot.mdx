@@ -129,7 +129,7 @@ Each Layer has its own parameters. The main parameters and defaults of each Laye
 | `force.velocityDecay` | `number` | `0.1` | Velocity decay factor |
 | `force.alphaDecay` | `number` | `0.05` | Simulation convergence decay factor |
 | `zoomable` | `boolean` | `true` | Whether zooming and panning are allowed |
-| `transform` | `{ x, y, k }` | `{ x: 0, y: 0, k: 1 }` | Initial offset and zoom level |
+| `transform` | `{ x, y, scale }` | `{ x: 0, y: 0, scale: 1 }` | Initial offset and zoom level |
 | `scaleExtent` | `{ min, max }` | `{ min: 0, max: Infinity }` | Zoom level range |
 
 > **Tip**: `point`, `pointLabel`, `arrow`, and `arrowLabel` each also have a `styleFn` function parameter that returns a CSS string to customize individual elements.
@@ -161,7 +161,7 @@ Each Layer has its own parameters. The main parameters and defaults of each Laye
 | `force.velocityDecay` | `number` | `0.1` | Velocity decay factor |
 | `force.alphaDecay` | `number` | `0.05` | Simulation convergence decay factor |
 | `zoomable` | `boolean` | `true` | Whether zooming and panning are allowed |
-| `transform` | `{ x, y, k }` | `{ x: 0, y: 0, k: 1 }` | Initial offset and zoom level |
+| `transform` | `{ x, y, scale }` | `{ x: 0, y: 0, scale: 1 }` | Initial offset and zoom level |
 | `scaleExtent` | `{ min, max }` | `{ min: 0, max: Infinity }` | Zoom level range |
 
 > **Tip**: `bubble`, `bubbleLabel`, `arrow`, and `arrowLabel` each also have a `styleFn` function parameter that returns a CSS string to customize individual elements.

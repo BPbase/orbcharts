@@ -96,7 +96,7 @@ function renderYAxisLabel ({ selection, yLabelClassName, layerParams, yAxis, the
         // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
         .attr('x', labelX)
         .attr('y', labelY)
-        .text(d => yAxis.label)
+        .text(d => layerParams.label)
     })
     // .attr('transform', d => `translate(0, ${layout.height})`)
 }

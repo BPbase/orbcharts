@@ -32,6 +32,9 @@ export const ValueAxis = defineSVGLayer<GridPlotExtendContext, GridPlotPluginPar
   initShow: true,
   validator: (params) => {
     const result = validateObject(params, {
+      label: {
+        toBeTypes: ['string']
+      },
       labelOffset: {
         toBe: '[number, number]',
         test: (value: any) => {
@@ -135,8 +138,8 @@ export const ValueAxis = defineSVGLayer<GridPlotExtendContext, GridPlotPluginPar
       computedData$: context.computedData$,
       filteredMinMaxValue$: context.filteredMinMaxValue$,
       baseValueAxisParams$: layerParams$,
-      categoryAxis$: pluginParams$.pipe(map(params => params.categoryAxis)),
-      valueAxis$: pluginParams$.pipe(map(params => params.valueAxis)),
+      categoryAxis$: pluginParams$.pipe(map(params => params.categoryScale)),
+      valueAxis$: pluginParams$.pipe(map(params => params.valueScale)),
       theme$: context.theme$,
       gridAxesTransform$: gridAxesTransform$,
       gridAxesReverseTransform$: gridAxesReverseTransform$,

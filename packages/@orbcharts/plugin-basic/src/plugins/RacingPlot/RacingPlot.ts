@@ -127,7 +127,7 @@ export const RacingPlot = defineSVGPlugin<
       containerSize$,
       visibleComputedData$,
       fontSizePx$,
-      limit$: props.pluginParams$.pipe(map(p => p.rankedAxis.limit))
+      limit$: props.pluginParams$.pipe(map(p => p.rankedScale.limit))
     }).pipe(shareReplay(1))
 
     const rankedItemHeight$ = rankedItemHeightObservable({

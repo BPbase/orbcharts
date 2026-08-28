@@ -1,6 +1,7 @@
 import type { RawData, RawDataColumn, Encoding, ModelDataGrid, ModelDatumGrid, Theme } from '../types'
 import { aggregate } from '../utils/aggregateUtils'
 import { getColorByFrom } from '../utils/colorUtils'
+import { resolveGroupKey } from '../utils/encodingUtils'
 
 export const createGridData = (rawData: RawData, encoding: Encoding, theme: Theme): ModelDataGrid[] => {
   // 依據 dataset 欄位將資料分組
@@ -13,7 +14,7 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
     // 二維陣列：每個子陣列代表一個 dataset
     (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
       datasetArray.forEach((d) => {
-        const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+        const datasetKey = resolveGroupKey(d, encoding.dataset, `dataset-${datasetIndex}`)
         if (!datasetMap.has(datasetKey)) {
           datasetMap.set(datasetKey, [])
         }
@@ -23,7 +24,7 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
   } else {
     // 一維陣列：依據 dataset 欄位分組
     (rawData as RawDataColumn[]).forEach((d) => {
-      const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+      const datasetKey = resolveGroupKey(d, encoding.dataset, '')
       if (!datasetMap.has(datasetKey)) {
         datasetMap.set(datasetKey, [])
       }
@@ -42,7 +43,7 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
     if (is2DArray) {
       (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
         datasetArray.forEach((d) => {
-          const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+          const datasetKey = resolveGroupKey(d, encoding.dataset, `dataset-${datasetIndex}`)
           if (!datasetOrder.includes(datasetKey)) {
             datasetOrder.push(datasetKey)
           }
@@ -50,7 +51,7 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
       })
     } else {
       (rawData as RawDataColumn[]).forEach((d) => {
-        const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+        const datasetKey = resolveGroupKey(d, encoding.dataset, '')
         if (!datasetOrder.includes(datasetKey)) {
           datasetOrder.push(datasetKey)
         }
@@ -70,7 +71,7 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
     // 依據 series 欄位將資料分組
     const seriesMap = new Map<string, RawDataColumn[]>()
     data.forEach((d) => {
-      const seriesKey = (d as any)[encoding.series.from] || 'default'
+      const seriesKey = resolveGroupKey(d, encoding.series, '')
       if (!seriesMap.has(seriesKey)) {
         seriesMap.set(seriesKey, [])
       }
@@ -86,7 +87,7 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
       // original 排序：依照原始資料中 series 名稱出現的順序
       const seriesOrder: string[] = []
       data.forEach((d) => {
-        const seriesKey = (d as any)[encoding.series.from] || 'default'
+        const seriesKey = resolveGroupKey(d, encoding.series, '')
         if (!seriesOrder.includes(seriesKey)) {
           seriesOrder.push(seriesKey)
         }
@@ -100,7 +101,7 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
     // 建立全局的 category 排序（跨該 dataset 下所有 series）
     const globalCategoryOrder: string[] = []
     data.forEach((d) => {
-      const categoryKey = (d as any)[encoding.category.from] || 'default'
+      const categoryKey = resolveGroupKey(d, encoding.category, '')
       if (!globalCategoryOrder.includes(categoryKey)) {
         globalCategoryOrder.push(categoryKey)
       }
@@ -126,7 +127,7 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
       // 依據 category 欄位將 series 內的資料分組
       const categoryMap = new Map<string, RawDataColumn[]>()
       seriesItems.forEach((d) => {
-        const categoryKey = (d as any)[encoding.category.from] || 'default'
+        const categoryKey = resolveGroupKey(d, encoding.category, '')
         if (!categoryMap.has(categoryKey)) {
           categoryMap.set(categoryKey, [])
         }
@@ -147,7 +148,7 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
             name: categoryName,
             data: undefined,
             value: null,
-            color: getColorByFrom(encoding.color.from, {
+            color: getColorByFrom(encoding.color.by, {
               index: categoryIndex,
               seriesIndex,
               categoryIndex,
@@ -169,7 +170,7 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
               name: d.name || '',
               data: d.data,
               value: typeof value === 'number' ? value : null,
-              color: getColorByFrom(encoding.color.from, { 
+              color: getColorByFrom(encoding.color.by, { 
                 index: categoryIndex, 
                 seriesIndex,
                 categoryIndex,
@@ -222,7 +223,7 @@ export const createGridData = (rawData: RawData, encoding: Encoding, theme: Them
             name: firstItem.name || categoryName,
             data: firstItem.data,
             value: aggregatedValue,
-            color: getColorByFrom(encoding.color.from, { 
+            color: getColorByFrom(encoding.color.by, { 
               index: categoryIndex, 
               seriesIndex,
               categoryIndex,

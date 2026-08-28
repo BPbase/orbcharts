@@ -78,7 +78,7 @@ export const ScatterPlot = defineSVGPlugin<
     })
 
     const zoomedXAxis$ = props.pluginParams$.pipe(
-      switchMap(({ xAxis }) => zoomedScaleDomain$.pipe(
+      switchMap(({ xScale: xAxis }) => zoomedScaleDomain$.pipe(
         map(scaleDomain => {
           if (!scaleDomain) {
             return xAxis
@@ -93,7 +93,7 @@ export const ScatterPlot = defineSVGPlugin<
     )
 
     // const zoomedYAxis$ = props.pluginParams$.pipe(
-    //   switchMap(({ yAxis }) => zoomedScaleDomain$.pipe(
+    //   switchMap(({ yScale: yAxis }) => zoomedScaleDomain$.pipe(
     //     map(scaleDomain => {
     //       if (!scaleDomain) {
     //         return yAxis
@@ -107,7 +107,7 @@ export const ScatterPlot = defineSVGPlugin<
     //   shareReplay(1)
     // )
     const yAxis$ = props.pluginParams$.pipe(
-      map(params => params.yAxis),
+      map(params => params.yScale),
       shareReplay(1)
     )
 
@@ -442,10 +442,10 @@ export const ScatterPlot = defineSVGPlugin<
       container: {
         toBeTypes: ['object']
       },
-      xAxis: {
+      xScale: {
         toBeTypes: ['object']
       },
-      yAxis: {
+      yScale: {
         toBeTypes: ['object']
       },
       separateSeries: {
@@ -523,8 +523,8 @@ export const ScatterPlot = defineSVGPlugin<
         return containerResult
       }
     }
-    if (params.yAxis) {
-    const valueAxisResult = validateObject(params.yAxis, {
+    if (params.yScale) {
+    const valueAxisResult = validateObject(params.yScale, {
       scaleDomain: {
         toBe: '[number | "min" | "auto", number | "max" | "auto"]',
         test: (value) => Array.isArray(value) && value.length === 2 && (typeof value[0] === 'number' || value[0] === 'min' || value[0] === 'auto') && (typeof value[1] === 'number' || value[1] === 'max' || value[1] === 'auto')
@@ -533,16 +533,13 @@ export const ScatterPlot = defineSVGPlugin<
         toBe: '[number, number]',
         test: (value) => Array.isArray(value) && value.length === 2 && typeof value[0] === 'number' && typeof value[1] === 'number'
       },
-      label: {
-        toBeTypes: ['string']
-      },
     })
     if (valueAxisResult.status === 'error') {
       return valueAxisResult
     }
     }
-    if (params.xAxis) {
-      const groupAxisResult = validateObject(params.xAxis, {
+    if (params.xScale) {
+      const groupAxisResult = validateObject(params.xScale, {
         scaleDomain: {
           toBe: '[number | "min" | "auto", number | "max" | "auto"]',
           test: (value) => Array.isArray(value) && value.length === 2 && (typeof value[0] === 'number' || value[0] === 'min' || value[0] === 'auto') && (typeof value[1] === 'number' || value[1] === 'max' || value[1] === 'auto')
@@ -550,9 +547,6 @@ export const ScatterPlot = defineSVGPlugin<
         scaleRange: {
           toBe: '[number, number]',
           test: (value) => Array.isArray(value) && value.length === 2 && typeof value[0] === 'number' && typeof value[1] === 'number'
-        },
-        label: {
-          toBeTypes: ['string']
         },
       })
       if (groupAxisResult.status === 'error') {

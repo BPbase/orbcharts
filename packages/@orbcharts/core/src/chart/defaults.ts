@@ -13,15 +13,18 @@ export const DEFAULT_SIZE_CONFIG: SizeConfig = {
 export const DEFAULT_DATA_ENCODING: Encoding = {
   dataset: {
     from: 'dataset',
-    sort: 'original'
+    sort: 'original',
+    ignore: false
   },
   series: {
     from: 'series',
-    sort: 'original'
+    sort: 'original',
+    ignore: false
   },
   category: {
     from: 'category',
-    sort: 'original'
+    sort: 'original',
+    ignore: false
   },
   value: {
     from: 'value',
@@ -34,7 +37,7 @@ export const DEFAULT_DATA_ENCODING: Encoding = {
     { from: 'z', name: 'z' },
   ],
   color: {
-    from: 'series',
+    by: 'series',
   }
 }
 

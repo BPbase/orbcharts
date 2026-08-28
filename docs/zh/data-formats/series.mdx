@@ -46,7 +46,7 @@ const data: RawData = [
 | `name` | `string` | 否 | 顯示名稱（例如 Tooltip 中顯示的文字） |
 | `data` | `any` | 否 | 自訂附加資料，會原樣保留 |
 
-> **提示**：預設的色彩來源是 `series`（`color: { from: 'series' }`）。也就是說，相同 `series` 的資料會用同一個顏色。你可以改成依 `category` 或 `index` 上色。
+> **提示**：預設的色彩來源是 `series`（`color: { by: 'series' }`）。也就是說，相同 `series` 的資料會用同一個顏色。你可以改成依 `category` 或 `index` 上色。
 
 ## 聚合行為
 
@@ -72,6 +72,8 @@ const chart = new OrbCharts(element, {
 ```
 
 可用的 `aggregate` 值：`'sum'`、`'mean'`、`'median'`、`'min'`、`'max'`、`'count'`、`'none'`。
+
+> **提示**：如果想忽略 `category`、只依 `series` 合併（例如同一份資料在長條圖依 series × category 分開顯示，切到圓餅圖時想依 series 加總），可以搭配 `category: { ignore: true }`。詳見 [Encoding：忽略某個維度](/docs/api/encoding#忽略某個維度)。
 
 ## 模型資料（ModelDatumSeries）
 

@@ -38,7 +38,7 @@ export const CategoryZoom = defineSVGLayer<CategoricalPlotExtendContext, Categor
     )
 
     const initCategoryAxis$ = pluginParams$.pipe(
-      map(d => d.categoryAxis)
+      map(d => d.categoryScale)
     )
 
     const initGroupScale$ = combineLatest({

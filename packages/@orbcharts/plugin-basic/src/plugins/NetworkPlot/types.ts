@@ -87,7 +87,7 @@ export interface ForceDirectedParams {
   transform: {
     x: number
     y: number
-    k: number
+    scale: number
   }
   scaleExtent: {
     min: number
@@ -136,7 +136,7 @@ export interface ForceDirectedBubbleParams {
   transform: {
     x: number
     y: number
-    k: number
+    scale: number
   }
   scaleExtent: {
     min: number

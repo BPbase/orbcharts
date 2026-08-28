@@ -96,8 +96,8 @@ These parameters affect the whole ScatterPlot's behavior, listed alongside Layer
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `xAxis` | `XYAxis` | see below | X axis settings |
-| `yAxis` | `XYAxis` | see below | Y axis settings |
+| `xScale` | `XYAxis` | see below | X axis settings |
+| `yScale` | `XYAxis` | see below | Y axis settings |
 | `separateSeries` | `boolean` | `false` | Whether to draw each series separately |
 | `datasetIndex` | `number` | `0` | Which dataset to use when data is multi-dataset |
 | `styles` | `GraphicStyles` | `padding` is `{ 20, 60, 80, 60 }` | Shared visual styles (see [Plugin API](/docs/api/plugin-api)) |
@@ -106,7 +106,7 @@ These parameters affect the whole ScatterPlot's behavior, listed alongside Layer
 
 > **Note**: `styles`, `container`, and `visibleFilter` are shared by all chart Plugins; their structure and usage are documented centrally in [Plugin API](/docs/api/plugin-api). Only ScatterPlot's default differences are noted here (`styles.padding` defaults to `{ top: 20, right: 60, bottom: 80, left: 60 }`, and `transitionDuration` is shorter, defaulting to `100`).
 
-### `xAxis` / `yAxis` (XYAxis)
+### `xScale` / `yScale` (XYAxis)
 
 The X axis and Y axis each use an `XYAxis` config with the same structure:
 
@@ -114,7 +114,6 @@ The X axis and Y axis each use an `XYAxis` config with the same structure:
 |---|---|---|---|
 | `scaleDomain` | `[number \| 'min' \| 'auto', number \| 'max' \| 'auto']` | `['auto', 'auto']` | Value range |
 | `scaleRange` | `[number, number]` | `[0, 0.9]` | Proportional range mapped to the plotting area |
-| `label` | `string` | `''` | Axis label |
 
 ## Layer parameters
 
@@ -148,6 +147,7 @@ Contains an `xAxis` and a `yAxis` config with the same structure:
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
+| `label` | `string` | `''` | Axis label |
 | `labelOffset` | `[number, number]` | `[0, 0]` | Axis label offset |
 | `labelColorType` | `ColorType` | `'primary'` | Axis label color |
 | `axisLineVisible` | `boolean` | `false` | Whether to show the axis line |
@@ -188,8 +188,8 @@ interface ScatterPlotPluginParams {
   styles: GraphicStyles
   visibleFilter: (datum: ModelDatumMultiValue) => boolean | null
   container: Container
-  xAxis: XYAxis
-  yAxis: XYAxis
+  xScale: XYAxis
+  yScale: XYAxis
   separateSeries: boolean
   datasetIndex: number
 }

@@ -8,20 +8,17 @@ export type AxisDirection = 'bottom-up' | 'top-down' | 'left-right' | 'right-lef
 export interface XYAxis {
   scaleDomain: [number | 'min' | 'auto', number | 'max' | 'auto'];
   scaleRange: [number, number];
-  label: string;
   // valueIndex: number;
 }
 export interface ValueAxis {
   // position: AxisPosition;
   scaleDomain: [number | 'min' | 'auto', number | 'max' | 'auto'];
   scaleRange: [number, number];
-  label: string;
 }
 export interface CategoryAxis {
   // position: AxisPosition;
   scaleDomain: [number, number | 'max'];
   scalePadding: number;
-  label: string;
 }
 
 export interface ReversibleCategoryAxis {
@@ -29,7 +26,6 @@ export interface ReversibleCategoryAxis {
   reverse: boolean
   scaleDomain: [number, number | 'max'];
   scalePadding: number;
-  label: string;
 }
 
 export type VisibleFilter<T extends ModelType> = (datum: ModelDatum<T>) => boolean | null;

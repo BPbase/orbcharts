@@ -1,6 +1,7 @@
 import type { RawData, RawDataColumn, Encoding, ModelDataGraph, ModelDatumGraphNode, ModelDatumGraphEdge, Theme } from '../types'
 import { aggregate } from '../utils/aggregateUtils'
 import { getColorByFrom } from '../utils/colorUtils'
+import { resolveGroupKey } from '../utils/encodingUtils'
 
 export const createGraphData = (rawData: RawData, encoding: Encoding, theme: Theme): ModelDataGraph[] => {
   // 判斷是一維陣列還是二維陣列
@@ -38,7 +39,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
     (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
       datasetArray.forEach((d) => {
         if (!d.source || !d.target) {
-          const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+          const datasetKey = resolveGroupKey(d, encoding.dataset, `dataset-${datasetIndex}`)
           if (!datasetMap.has(datasetKey)) {
             datasetMap.set(datasetKey, [])
           }
@@ -48,7 +49,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
     })
   } else {
     nodeData.forEach((d) => {
-      const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+      const datasetKey = resolveGroupKey(d, encoding.dataset, '')
       if (!datasetMap.has(datasetKey)) {
         datasetMap.set(datasetKey, [])
       }
@@ -67,7 +68,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
       (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
         datasetArray.forEach((d) => {
           if (!d.source || !d.target) {
-            const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+            const datasetKey = resolveGroupKey(d, encoding.dataset, `dataset-${datasetIndex}`)
             if (!datasetOrder.includes(datasetKey)) {
               datasetOrder.push(datasetKey)
             }
@@ -76,7 +77,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
       })
     } else {
       nodeData.forEach((d) => {
-        const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+        const datasetKey = resolveGroupKey(d, encoding.dataset, '')
         if (!datasetOrder.includes(datasetKey)) {
           datasetOrder.push(datasetKey)
         }
@@ -98,7 +99,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
     // 依據 series 欄位將資料分組
     const seriesMap = new Map<string, RawDataColumn[]>()
     data.forEach((d) => {
-      const seriesKey = (d as any)[encoding.series.from] || 'default'
+      const seriesKey = resolveGroupKey(d, encoding.series, '')
       if (!seriesMap.has(seriesKey)) {
         seriesMap.set(seriesKey, [])
       }
@@ -113,7 +114,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
     } else if (encoding.series.sort === 'original') {
       const seriesOrder: string[] = []
       data.forEach((d) => {
-        const seriesKey = (d as any)[encoding.series.from] || 'default'
+        const seriesKey = resolveGroupKey(d, encoding.series, '')
         if (!seriesOrder.includes(seriesKey)) {
           seriesOrder.push(seriesKey)
         }
@@ -130,7 +131,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
       // 依據 category 欄位將 series 內的資料分組
       const categoryMap = new Map<string, RawDataColumn[]>()
       seriesItems.forEach((d) => {
-        const categoryKey = (d as any)[encoding.category.from] || 'default'
+        const categoryKey = resolveGroupKey(d, encoding.category, '')
         if (!categoryMap.has(categoryKey)) {
           categoryMap.set(categoryKey, [])
         }
@@ -145,7 +146,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
       } else if (encoding.category.sort === 'original') {
         const categoryOrder: string[] = []
         seriesItems.forEach((d) => {
-          const categoryKey = (d as any)[encoding.category.from] || 'default'
+          const categoryKey = resolveGroupKey(d, encoding.category, '')
           if (!categoryOrder.includes(categoryKey)) {
             categoryOrder.push(categoryKey)
           }
@@ -170,7 +171,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
               name: d.name || '',
               data: d.data,
               value: typeof value === 'number' ? value : null,
-              color: getColorByFrom(encoding.color.from, { 
+              color: getColorByFrom(encoding.color.by, { 
                 index: categoryIndex, 
                 seriesIndex,
                 categoryIndex,
@@ -222,7 +223,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
             name: firstItem.name || categoryName,
             data: firstItem.data,
             value: aggregatedValue,
-            color: getColorByFrom(encoding.color.from, { 
+            color: getColorByFrom(encoding.color.by, { 
               index: categoryIndex, 
               seriesIndex,
               categoryIndex,
@@ -280,7 +281,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
 
     // 依據 dataset 分組處理 edges（這裡使用所有邊的資料，但只處理目前 dataset 的邊）
     const datasetEdges = edgeData.filter(d => {
-      const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+      const datasetKey = resolveGroupKey(d, encoding.dataset, '')
       return datasetKey === datasetName
     })
 
@@ -289,8 +290,8 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
     datasetEdges.forEach((d) => {
       const source = d.source!
       const target = d.target!
-      const series = (d as any)[encoding.series.from] || 'default'
-      const category = (d as any)[encoding.category.from] || 'default'
+      const series = resolveGroupKey(d, encoding.series, '')
+      const category = resolveGroupKey(d, encoding.category, '')
       const groupKey = `${source}-${target}-${series}-${category}`
       
       if (!edgeGroupMap.has(groupKey)) {
@@ -312,8 +313,8 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
           // 不聚合，保持原始資料結構
           groupEdges.forEach((d, index) => {
             const value = (d as any)[encoding.value.from]
-            const edgeSeries = (d as any)[encoding.series.from] || 'default'
-            const edgeCategory = (d as any)[encoding.category.from] || 'default'
+            const edgeSeries = resolveGroupKey(d, encoding.series, '')
+            const edgeCategory = resolveGroupKey(d, encoding.category, '')
             const edgeSeriesIndex = getEdgeSeriesIndex(edgeSeries)
             const edgeCategoryIndex = getEdgeCategoryIndex(edgeCategory)
             const edge: ModelDatumGraphEdge = {
@@ -323,7 +324,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
               name: d.name || '',
               data: d.data,
               value: typeof value === 'number' ? value : null,
-              color: getColorByFrom(encoding.color.from, { 
+              color: getColorByFrom(encoding.color.by, { 
                 index: edges.length,
                 seriesIndex: edgeSeriesIndex,
                 categoryIndex: edgeCategoryIndex,
@@ -352,8 +353,8 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
           
           const aggregatedValue = aggregate(values, encoding.value.aggregate)
 
-          const edgeSeries = (firstEdge as any)[encoding.series.from] || 'default'
-          const edgeCategory = (firstEdge as any)[encoding.category.from] || 'default'
+          const edgeSeries = resolveGroupKey(firstEdge, encoding.series, '')
+          const edgeCategory = resolveGroupKey(firstEdge, encoding.category, '')
           const edgeSeriesIndex = getEdgeSeriesIndex(edgeSeries)
           const edgeCategoryIndex = getEdgeCategoryIndex(edgeCategory)
 
@@ -364,7 +365,7 @@ export const createGraphData = (rawData: RawData, encoding: Encoding, theme: The
             name: firstEdge.name || '',
             data: firstEdge.data,
             value: aggregatedValue,
-            color: getColorByFrom(encoding.color.from, { 
+            color: getColorByFrom(encoding.color.by, { 
               index: edges.length,
               seriesIndex: edgeSeriesIndex,
               categoryIndex: edgeCategoryIndex,

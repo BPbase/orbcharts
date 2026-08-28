@@ -264,7 +264,7 @@ export const seriesDataMapObservable = <DatumType extends ComputedDatum<'series'
 //   )
 // }
 
-export const categoryDataMapObservable = <DatumType extends ComputedDatum<'multivariate' | 'graph' | 'tree'>> ({ datumList$ }: { datumList$: Observable<DatumType[]> }) => {
+export const categoryDataMapObservable = <DatumType extends ComputedDatum<'series' | 'multivariate' | 'graph' | 'tree'>> ({ datumList$ }: { datumList$: Observable<DatumType[]> }) => {
   return datumList$.pipe(
     map(data => {
       const GroupDataMap: Map<string, DatumType[]> = new Map()

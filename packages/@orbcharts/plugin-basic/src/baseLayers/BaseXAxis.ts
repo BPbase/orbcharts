@@ -112,7 +112,7 @@ function renderXAxisLabel ({ selection, position, xLabelClassName, layerParams, 
         // 偏移使用 x, y 而非 transform 才不會受到外層 scale 變形影響
         .attr('x', labelX)
         .attr('y', labelY)
-        .text(d => xAxis.label)
+        .text(d => layerParams.label)
     })
     .attr('transform', d => `translate(${containerSize.width}, ${y})`)
 }

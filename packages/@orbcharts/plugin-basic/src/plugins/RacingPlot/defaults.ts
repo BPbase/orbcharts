@@ -26,8 +26,7 @@ export const DEFAULT_RACING_PLOT_PLUGIN_PARAMS: RacingPlotPluginParams = {
   // valueAxis: {
   //   position: 'top'
   // },
-  rankedAxis: {
-    label: '',
+  rankedScale: {
     limit: 10
   },
   autorun: true,
@@ -45,20 +44,17 @@ export const DEFAULT_RACING_PLOT_RACING_BAR_PARAMS: RacingPlotRacingBarParams = 
 export const DEFAULT_RACING_PLOT_VALUE_LABEL_PARAMS: RacingPlotValueLabelParams = {
   padding: 8,
   colorType: 'primary',
-  format: text => text
+  valueFormat: text => text
 }
-;(DEFAULT_RACING_PLOT_VALUE_LABEL_PARAMS.format as Function).toString = () => 'text => text'
+;(DEFAULT_RACING_PLOT_VALUE_LABEL_PARAMS.valueFormat as Function).toString = () => 'text => text'
 
 export const DEFAULT_RACING_PLOT_SERIES_LABEL_PARAMS: RacingPlotSeriesLabelParams = {
-  axisLabel: {
-    offset: [0, 0],
-    colorType: 'primary'
-  },
-  seriesLabel: {
-    position: 'inside-right',
-    padding: 20,
-    colorType: 'dataContrast'
-  }
+  label: '',
+  labelOffset: [0, 0],
+  labelColorType: 'primary',
+  seriesLabelPosition: 'inside-right',
+  seriesLabelPadding: 20,
+  seriesLabelColorType: 'dataContrast'
 }
 
 export const DEFAULT_RACING_PLOT_COUNTER_TEXT_PARAMS: RacingPlotCounterTextParams = {

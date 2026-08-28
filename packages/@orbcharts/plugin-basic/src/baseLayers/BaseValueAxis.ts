@@ -28,6 +28,7 @@ import { getColor, getMinMaxValue, createClassName } from '../utils/orbchartsUti
 import { gridContainerSelectionsObservable } from '../utils/gridObservables'
 
 export interface BaseValueAxisParams {
+    label: string;
     labelOffset: [number, number];
     labelColorType: ColorType;
     axisLineVisible: boolean;
@@ -616,7 +617,7 @@ export const createBaseValueAxis: BaseLayerFn<BaseValueAxisContext> = ({
       gridAxesSize: data.gridAxesSize,
       categoryAxisPosition: data.categoryAxisPosition,
       valueAxisPosition: data.valueAxisPosition,
-      valueAxisLabel: data.valueAxis.label,
+      valueAxisLabel: data.baseValueAxisParams.label,
       theme: data.theme,
       textReverseTransform: data.textReverseTransform,
     })

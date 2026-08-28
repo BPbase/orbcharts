@@ -281,10 +281,10 @@ export const gridCategoryPositionFnObservable = ({ pluginParams$, gridAxesSize$,
       // const categoryScaleDomainMin = data.pluginParams.categoryAxis.scaleDomain[0] === 'auto'
       //   ? categoryMin - data.pluginParams.categoryAxis.scalePadding
       //   : data.pluginParams.categoryAxis.scaleDomain[0] as number - data.pluginParams.categoryAxis.scalePadding
-      const categoryScaleDomainMin = data.pluginParams.categoryAxis.scaleDomain[0] - data.pluginParams.categoryAxis.scalePadding
-      const categoryScaleDomainMax = data.pluginParams.categoryAxis.scaleDomain[1] === 'max'
-        ? categoryMax + data.pluginParams.categoryAxis.scalePadding
-        : data.pluginParams.categoryAxis.scaleDomain[1] as number + data.pluginParams.categoryAxis.scalePadding
+      const categoryScaleDomainMin = data.pluginParams.categoryScale.scaleDomain[0] - data.pluginParams.categoryScale.scalePadding
+      const categoryScaleDomainMax = data.pluginParams.categoryScale.scaleDomain[1] === 'max'
+        ? categoryMax + data.pluginParams.categoryScale.scalePadding
+        : data.pluginParams.categoryScale.scaleDomain[1] as number + data.pluginParams.categoryScale.scalePadding
 
       return [categoryScaleDomainMin, categoryScaleDomainMax]
     }),
@@ -353,13 +353,13 @@ export const gridCategoryPositionFnObservable = ({ pluginParams$, gridAxesSize$,
       switchMap(async (d) => d),
     ).subscribe(data => {
       
-      const reverse = data.pluginParams.categoryAxis.reverse ?? false
+      const reverse = data.pluginParams.categoryScale.reverse ?? false
 
       // 比例尺座標對應非連續資料索引
       const xIndexScale = createAxisToLabelIndexScale({
         axisLabels: data.scaleRangeCategoryLabels,
         axisWidth: data.axisSize.width,
-        padding: data.pluginParams.categoryAxis.scalePadding,
+        padding: data.pluginParams.categoryScale.scalePadding,
         reverse
       })
 

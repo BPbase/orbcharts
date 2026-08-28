@@ -1,5 +1,6 @@
 import type { RawData, RawDataColumn, Encoding, ModelDataMultivariate, ModelDatumMultivariate, Theme } from '../types'
 import { getColorByFrom } from '../utils/colorUtils'
+import { resolveGroupKey } from '../utils/encodingUtils'
 
 export const createMultivariateData = (rawData: RawData, encoding: Encoding, theme: Theme): ModelDataMultivariate[] => {
   // 依據 dataset 欄位將資料分組
@@ -12,7 +13,7 @@ export const createMultivariateData = (rawData: RawData, encoding: Encoding, the
     // 二維陣列：每個子陣列代表一個 dataset
     (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
       datasetArray.forEach((d) => {
-        const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+        const datasetKey = resolveGroupKey(d, encoding.dataset, `dataset-${datasetIndex}`)
         if (!datasetMap.has(datasetKey)) {
           datasetMap.set(datasetKey, [])
         }
@@ -22,7 +23,7 @@ export const createMultivariateData = (rawData: RawData, encoding: Encoding, the
   } else {
     // 一維陣列：依據 dataset 欄位分組
     (rawData as RawDataColumn[]).forEach((d) => {
-      const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+      const datasetKey = resolveGroupKey(d, encoding.dataset, '')
       if (!datasetMap.has(datasetKey)) {
         datasetMap.set(datasetKey, [])
       }
@@ -41,7 +42,7 @@ export const createMultivariateData = (rawData: RawData, encoding: Encoding, the
     if (is2DArray) {
       (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
         datasetArray.forEach((d) => {
-          const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+          const datasetKey = resolveGroupKey(d, encoding.dataset, `dataset-${datasetIndex}`)
           if (!datasetOrder.includes(datasetKey)) {
             datasetOrder.push(datasetKey)
           }
@@ -49,7 +50,7 @@ export const createMultivariateData = (rawData: RawData, encoding: Encoding, the
       })
     } else {
       (rawData as RawDataColumn[]).forEach((d) => {
-        const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+        const datasetKey = resolveGroupKey(d, encoding.dataset, '')
         if (!datasetOrder.includes(datasetKey)) {
           datasetOrder.push(datasetKey)
         }
@@ -69,7 +70,7 @@ export const createMultivariateData = (rawData: RawData, encoding: Encoding, the
     // 依據 series 欄位將資料分組
     const seriesMap = new Map<string, RawDataColumn[]>()
     data.forEach((d) => {
-      const seriesKey = (d as any)[encoding.series.from] || 'default'
+      const seriesKey = resolveGroupKey(d, encoding.series, '')
       if (!seriesMap.has(seriesKey)) {
         seriesMap.set(seriesKey, [])
       }
@@ -85,7 +86,7 @@ export const createMultivariateData = (rawData: RawData, encoding: Encoding, the
       // original 排序：依照原始資料中 series 名稱出現的順序
       const seriesOrder: string[] = []
       data.forEach((d) => {
-        const seriesKey = (d as any)[encoding.series.from] || 'default'
+        const seriesKey = resolveGroupKey(d, encoding.series, '')
         if (!seriesOrder.includes(seriesKey)) {
           seriesOrder.push(seriesKey)
         }
@@ -104,7 +105,7 @@ export const createMultivariateData = (rawData: RawData, encoding: Encoding, the
       // 依據 category 欄位將 series 內的資料分組
       const categoryMap = new Map<string, RawDataColumn[]>()
       seriesItems.forEach((d) => {
-        const categoryKey = (d as any)[encoding.category.from] || 'default'
+        const categoryKey = resolveGroupKey(d, encoding.category, '')
         if (!categoryMap.has(categoryKey)) {
           categoryMap.set(categoryKey, [])
         }
@@ -120,7 +121,7 @@ export const createMultivariateData = (rawData: RawData, encoding: Encoding, the
         // original 排序：依照原始資料中 category 名稱出現的順序
         const categoryOrder: string[] = []
         seriesItems.forEach((d) => {
-          const categoryKey = (d as any)[encoding.category.from] || 'default'
+          const categoryKey = resolveGroupKey(d, encoding.category, '')
           if (!categoryOrder.includes(categoryKey)) {
             categoryOrder.push(categoryKey)
           }
@@ -155,7 +156,7 @@ export const createMultivariateData = (rawData: RawData, encoding: Encoding, the
             name: d.name || '',
             data: d.data,
             value: null, // MultivariateData 的主要值在 values 陣列中，這裡設為 null
-            color: getColorByFrom(encoding.color.from, { 
+            color: getColorByFrom(encoding.color.by, { 
               index, 
               seriesIndex,
               categoryIndex,

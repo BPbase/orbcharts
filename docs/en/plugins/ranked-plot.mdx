@@ -71,19 +71,18 @@ These parameters affect the whole RankedPlot's behavior, listed alongside Layer 
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `rankedAxis` | `{ label: string, limit: number \| 'auto' }` | `{ label: '', limit: 10 }` | Rank axis settings; `limit` is the maximum number of ranks to show |
-| `categoryAxis` | `CategoryAxis` | see [CategoryAxis](#categoryaxis) | Category axis settings |
+| `rankedScale` | `{ limit: number \| 'auto' }` | `{ limit: 10 }` | Rank axis settings; `limit` is the maximum number of ranks to show |
+| `categoryScale` | `CategoryAxis` | see [CategoryAxis](#categoryaxis) | Category axis settings |
 | `datasetIndex` | `number` | `0` | Which dataset to use when data is multi-dataset |
 | `styles` | `GraphicStyles` | `padding` is `{ 60, 60, 60, 200 }`, `transitionDuration` is `100` | Shared visual styles (see [Plugin API](/docs/api/plugin-api)) |
 | `visibleFilter` | `(datum) => boolean \| null` | `() => true` | Filter which data to show (see [Plugin API](/docs/api/plugin-api)) |
 
 > **Note**: `styles` and `visibleFilter` are shared by all chart Plugins; their structure and usage are documented centrally in [Plugin API](/docs/api/plugin-api). Only RankedPlot's default differences are noted here (`styles.padding` defaults to `{ top: 60, right: 60, bottom: 60, left: 200 }`, and `transitionDuration` defaults to `100`).
 
-### `rankedAxis`
+### `rankedScale`
 
 | Property | Type | Default | Description |
 |---|---|---|---|
-| `label` | `string` | `''` | Rank axis label |
 | `limit` | `number \| 'auto'` | `10` | Maximum number of ranks to show; `'auto'` for automatic |
 
 ## Layer parameters
@@ -105,15 +104,17 @@ Each Layer has its own parameters. The main parameters and defaults of each Laye
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `axisLabel.offset` | `[number, number]` | `[0, 0]` | Axis label offset |
-| `axisLabel.colorType` | `ColorType` | `'primary'` | Axis label color |
-| `seriesLabel.padding` | `number` | `20` | Series label padding |
-| `seriesLabel.colorType` | `ColorType` | `'primary'` | Series label color |
+| `label` | `string` | `''` | Axis label |
+| `labelOffset` | `[number, number]` | `[0, 0]` | Axis label offset |
+| `labelColorType` | `ColorType` | `'primary'` | Axis label color |
+| `seriesLabelPadding` | `number` | `20` | Series label padding |
+| `seriesLabelColorType` | `ColorType` | `'primary'` | Series label color |
 
 ### CategoryAxis
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
+| `label` | `string` | `''` | Axis label |
 | `labelOffset` | `[number, number]` | `[0, 0]` | Axis label offset |
 | `labelColorType` | `ColorType` | `'primary'` | Axis label color |
 | `axisLineVisible` | `boolean` | `true` | Whether to show the axis line |
@@ -157,8 +158,8 @@ new RankedPlot({ RankedBubble: {}, CategoryZoom: {} })
 interface RankedPlotPluginParams {
   styles: GraphicStyles
   visibleFilter: (datum: ModelDatumGrid) => boolean | null
-  categoryAxis: CategoryAxis
-  rankedAxis: { label: string; limit: number | 'auto' }
+  categoryScale: CategoryAxis
+  rankedScale: { limit: number | 'auto' }
   datasetIndex: number
 }
 

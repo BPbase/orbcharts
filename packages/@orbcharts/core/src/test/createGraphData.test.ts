@@ -21,7 +21,7 @@ const testEncoding: Encoding = {
   category: { from: 'category', sort: 'original' },
   value: { from: 'value', sort: 'original', aggregate: 'none' },
   multivariate: [],
-  color: { from: 'category' }
+  color: { by: 'category' }
 }
 
 const testTheme: Theme = {

@@ -77,9 +77,9 @@ These parameters affect the whole CategoricalPlot's behavior, listed alongside L
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `position` | `'left' \| 'right'` | `'left'` | Which side the value axis is on |
-| `categoryAxis` | `CategoryAxis` | see below | Category axis settings |
-| `valueAxis` | `ValueAxis` | see below | Value axis settings |
+| `valueAxisPosition` | `'left' \| 'right'` | `'left'` | Which side the value axis is on |
+| `categoryScale` | `CategoryAxis` | see below | Category axis settings |
+| `valueScale` | `ValueAxis` | see below | Value axis settings |
 | `datasetIndex` | `number` | `0` | Which dataset to use when data is multi-dataset |
 | `styles` | `GraphicStyles` | `padding` is `{ 20, 60, 80, 60 }` | Shared visual styles (see [Plugin API](/docs/api/plugin-api)) |
 | `container` | `Container` | single chart | Multi-chart layout (see [Plugin API](/docs/api/plugin-api)) |
@@ -87,21 +87,19 @@ These parameters affect the whole CategoricalPlot's behavior, listed alongside L
 
 > **Note**: `styles`, `container`, and `visibleFilter` are shared by all chart Plugins; their structure and usage are documented centrally in [Plugin API](/docs/api/plugin-api). Only CategoricalPlot's default differences are noted here (`styles.padding` defaults to `{ top: 20, right: 60, bottom: 80, left: 60 }`, and `transitionDuration` defaults to `200`).
 
-### `categoryAxis` (CategoryAxis)
+### `categoryScale` (CategoryAxis)
 
 | Property | Type | Default | Description |
 |---|---|---|---|
 | `scaleDomain` | `[number, number \| 'max']` | `[0, 'max']` | Category index range |
 | `scalePadding` | `number` | `0.5` | Spacing between categories |
-| `label` | `string` | `''` | Axis label |
 
-### `valueAxis` (ValueAxis)
+### `valueScale` (ValueAxis)
 
 | Property | Type | Default | Description |
 |---|---|---|---|
 | `scaleDomain` | `[number \| 'min' \| 'auto', number \| 'max' \| 'auto']` | `['auto', 'auto']` | Value range |
 | `scaleRange` | `[number, number]` | `[0, 0.9]` | Proportional range mapped to the plotting area |
-| `label` | `string` | `''` | Axis label |
 
 ## Layer parameters
 
@@ -122,6 +120,7 @@ Each Layer has its own parameters. The main parameters and defaults of each Laye
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
+| `label` | `string` | `''` | Axis label |
 | `labelOffset` | `[number, number]` | `[0, 0]` | Axis label offset |
 | `labelColorType` | `ColorType` | `'primary'` | Axis label color |
 | `axisLineVisible` | `boolean` | `true` | Whether to show the axis line |
@@ -139,6 +138,7 @@ Each Layer has its own parameters. The main parameters and defaults of each Laye
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
+| `label` | `string` | `''` | Axis label |
 | `labelOffset` | `[number, number]` | `[0, 0]` | Axis label offset |
 | `labelColorType` | `ColorType` | `'primary'` | Axis label color |
 | `axisLineVisible` | `boolean` | `false` | Whether to show the axis line |
@@ -179,9 +179,9 @@ interface CategoricalPlotPluginParams {
   styles: GraphicStyles
   visibleFilter: VisibleFilter<'series'>
   container: Container
-  position: 'left' | 'right'
-  categoryAxis: CategoryAxis
-  valueAxis: ValueAxis
+  valueAxisPosition: 'left' | 'right'
+  categoryScale: CategoryAxis
+  valueScale: ValueAxis
   datasetIndex: number
 }
 

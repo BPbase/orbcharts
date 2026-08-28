@@ -38,6 +38,9 @@ export const XYAxes = defineSVGLayer<ScatterPlotExtendContext, ScatterPlotPlugin
     })
     if (params.xAxis) {
       const forceResult = validateObject(params.xAxis, {
+        label: {
+          toBeTypes: ['string']
+        },
         labelOffset: {
           toBe: '[number, number]',
           test: (value: any) => {
@@ -87,6 +90,9 @@ export const XYAxes = defineSVGLayer<ScatterPlotExtendContext, ScatterPlotPlugin
     }
     if (params.yAxis) {
       const forceResult = validateObject(params.yAxis, {
+        label: {
+          toBeTypes: ['string']
+        },
         labelOffset: {
           toBe: '[number, number]',
           test: (value: any) => {

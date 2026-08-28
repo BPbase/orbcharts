@@ -788,7 +788,7 @@ export const ForceDirectedBubble = defineSVGLayer<NetworkPlotExtendContext, Netw
         y: {
           toBeTypes: ['number']
         },
-        k: {
+        scale: {
           toBeTypes: ['number']
         },
       })
@@ -901,7 +901,7 @@ export const ForceDirectedBubble = defineSVGLayer<NetworkPlotExtendContext, Netw
       selection.call(
         data.d3Zoom.transform, d3.zoomIdentity
           .translate(data.transform.x, data.transform.y)
-          .scale(data.transform.k)
+          .scale(data.transform.scale)
       )
     })
 

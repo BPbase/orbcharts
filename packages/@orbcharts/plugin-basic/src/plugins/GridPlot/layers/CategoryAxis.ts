@@ -25,6 +25,9 @@ export const CategoryAxis = defineSVGLayer<GridPlotExtendContext, GridPlotPlugin
   initShow: true,
   validator: (params) => {
     const result = validateObject(params, {
+      label: {
+        toBeTypes: ['string']
+      },
       labelOffset: {
         toBe: '[number, number]',
         test: (value: any) => {
@@ -77,7 +80,7 @@ export const CategoryAxis = defineSVGLayer<GridPlotExtendContext, GridPlotPlugin
       isSeriesSeprate$: context.isSeriesSeprate$,
       fontSizePx$: context.fontSizePx$,
       categoryAxis$: context.zoomedCategoryAxis$,
-      valueAxis$: pluginParams$.pipe(map(params => params.valueAxis)),
+      valueAxis$: pluginParams$.pipe(map(params => params.valueScale)),
       styles$: pluginParams$.pipe(
         map(params => params.styles),
       ),

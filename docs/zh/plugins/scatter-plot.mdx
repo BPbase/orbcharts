@@ -96,8 +96,8 @@ new ScatterPlot({ Bubble: {}, XYAxes: {}, XYGuide: {}, XZoom: {} })
 
 | 參數 | 型別 | 預設值 | 說明 |
 |---|---|---|---|
-| `xAxis` | `XYAxis` | 見下表 | X 軸設定 |
-| `yAxis` | `XYAxis` | 見下表 | Y 軸設定 |
+| `xScale` | `XYAxis` | 見下表 | X 軸設定 |
+| `yScale` | `XYAxis` | 見下表 | Y 軸設定 |
 | `separateSeries` | `boolean` | `false` | 是否將各系列分開繪製 |
 | `datasetIndex` | `number` | `0` | 當資料為多資料集時，使用第幾個 |
 | `styles` | `GraphicStyles` | `padding` 為 `{ 20, 60, 80, 60 }` | 共用視覺樣式（見 [Plugin 通用 API](/docs/api/plugin-api)） |
@@ -106,7 +106,7 @@ new ScatterPlot({ Bubble: {}, XYAxes: {}, XYGuide: {}, XZoom: {} })
 
 > **提示**：`styles`、`container`、`visibleFilter` 為所有圖表 Plugin 共用，其結構與用法集中說明於 [Plugin 通用 API](/docs/api/plugin-api)。此處僅標示 ScatterPlot 的預設值差異（`styles.padding` 預設為 `{ top: 20, right: 60, bottom: 80, left: 60 }`，`transitionDuration` 預設較短，為 `100`）。
 
-### `xAxis` / `yAxis`（XYAxis）
+### `xScale` / `yScale`（XYAxis）
 
 X 軸與 Y 軸各使用一組 `XYAxis` 設定，結構相同：
 
@@ -114,7 +114,6 @@ X 軸與 Y 軸各使用一組 `XYAxis` 設定，結構相同：
 |---|---|---|---|
 | `scaleDomain` | `[number \| 'min' \| 'auto', number \| 'max' \| 'auto']` | `['auto', 'auto']` | 數值範圍 |
 | `scaleRange` | `[number, number]` | `[0, 0.9]` | 對應到繪圖區的比例範圍 |
-| `label` | `string` | `''` | 軸標籤 |
 
 ## Layer 參數
 
@@ -148,6 +147,7 @@ X 軸與 Y 軸各使用一組 `XYAxis` 設定，結構相同：
 
 | 參數 | 型別 | 預設值 | 說明 |
 |---|---|---|---|
+| `label` | `string` | `''` | 軸標籤 |
 | `labelOffset` | `[number, number]` | `[0, 0]` | 軸標籤位移 |
 | `labelColorType` | `ColorType` | `'primary'` | 軸標籤顏色 |
 | `axisLineVisible` | `boolean` | `false` | 是否顯示軸線 |
@@ -188,8 +188,8 @@ interface ScatterPlotPluginParams {
   styles: GraphicStyles
   visibleFilter: (datum: ModelDatumMultiValue) => boolean | null
   container: Container
-  xAxis: XYAxis
-  yAxis: XYAxis
+  xScale: XYAxis
+  yScale: XYAxis
   separateSeries: boolean
   datasetIndex: number
 }

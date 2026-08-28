@@ -19,12 +19,12 @@ Encoding 在建立圖表時透過 `encoding` 選項傳入,也可之後用 `chart
 
 ```ts
 interface Encoding {
-  dataset:  { from: string; sort: 'original' | 'alphabetical' | string[] }
-  series:   { from: string; sort: 'original' | 'alphabetical' | string[] }
-  category: { from: string; sort: 'original' | 'alphabetical' | string[] }
+  dataset:  { from: string; sort: 'original' | 'alphabetical' | string[]; ignore?: boolean }
+  series:   { from: string; sort: 'original' | 'alphabetical' | string[]; ignore?: boolean }
+  category: { from: string; sort: 'original' | 'alphabetical' | string[]; ignore?: boolean }
   value:    { from: string; sort: 'original' | 'asc' | 'desc'; aggregate: 'sum' | 'mean' | 'median' | 'min' | 'max' | 'count' | 'none' }
   multivariate: Array<{ from: string; name: string }>
-  color:    { from: 'index' | 'series' | 'category' | 'dataset' }
+  color:    { by: 'index' | 'series' | 'category' | 'dataset' }
 }
 ```
 
@@ -41,9 +41,10 @@ interface Encoding {
 
 - 各維度的 `from` 預設與維度**同名**(例如 `series.from` 預設為 `'series'`)。
 - 各維度的 `sort` 預設為 `'original'`(維持原始順序)。
+- `dataset`／`series`／`category` 的 `ignore` 預設為 `false`(不忽略,見下方[忽略某個維度](#忽略某個維度))。
 - `value.aggregate` 預設為 `'none'`(不聚合)。
 - `multivariate` 預設為 `[{ from: 'x', name: 'x' }, { from: 'y', name: 'y' }, { from: 'z', name: 'z' }]`。
-- `color.from` 預設為 `'series'`(依系列上色)。
+- `color.by` 預設為 `'series'`(依系列上色)。
 
 > **提示**:Encoding 採**深層合併**。用 `updateEncoding` 時只需寫出想改的欄位,其餘維度與設定都會沿用預設。
 
@@ -112,6 +113,27 @@ chart.updateEncoding({
 | `'max'` | 最大值 |
 | `'count'` | 筆數 |
 | `'none'` | 不聚合(預設) |
+
+## 忽略某個維度
+
+`dataset`／`series`／`category` 都可以設定 `ignore: true`,代表計算時完全不讀取該維度對應的原始欄位,所有資料在這個維度上會被視為同一組。
+
+> **注意**:單獨設定 `ignore: true` **不會**合併資料——它只是讓原本不同組的資料變成同一組,每一筆資料仍然各自輸出一筆 ModelData。真正把同一組資料合併成一筆的是 `value.aggregate`。也就是說,`ignore` 決定「什麼算同一組」,`aggregate` 決定「同一組要不要合併、怎麼合併」,**兩者要一起設定**才能達到「忽略某個維度、把資料合併」的效果。
+
+一個常見情境:同一份 series × category 的資料,想在長條圖裡讓每個 series × category 各自獨立顯示,但切換成圓餅圖時想依 series 把所有 category 加總成一筆:
+
+```ts
+// 長條圖：series × category 各自獨立（預設行為）
+chart.updateEncoding({ value: { aggregate: 'none' } })
+
+// 圓餅圖：忽略 category，同一 series 全部加總成一筆
+chart.updateEncoding({
+  category: { ignore: true },
+  value: { aggregate: 'sum' },
+})
+```
+
+被 `ignore` 的維度,輸出的 ModelData 中對應欄位(例如 `category`／`categoryIndex`)會是空字串／`0`,代表「此維度不適用」。
 
 ## 動態調整
 

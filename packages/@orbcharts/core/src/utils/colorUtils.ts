@@ -24,7 +24,7 @@ export function getColorByIndex(index: number, theme: Theme): string {
 }
 
 /**
- * 根據不同的 encoding.color.from 計算顏色
+ * 根據不同的 encoding.color.by 計算顏色
  * @param colorFrom 顏色來源類型
  * @param options 包含所有可能索引的選項物件
  * @param theme 主題設定

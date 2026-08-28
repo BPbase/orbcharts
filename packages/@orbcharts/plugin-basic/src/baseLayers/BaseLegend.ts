@@ -11,7 +11,7 @@ import {
   Subject } from 'rxjs'
 import type { BaseLayerFn } from '../types/BaseLayer'
 import type { Layout, GraphicStyles } from '../types/PluginParams'
-import { createClassName, getColor, getColorScheme } from '../utils/orbchartsUtils'
+import { createClassName, getColor } from '../utils/orbchartsUtils'
 import { measureTextWidth } from '../utils/commonUtils'
 import { ColorType, Theme } from '@orbcharts/core'
 import { Placement } from '../types'
@@ -19,8 +19,8 @@ import { Placement } from '../types'
 export interface BaseLegendParams {
     placement: Placement;
     padding: number;
-    backgroundFill: ColorType;
-    backgroundStroke: ColorType;
+    backgroundColorType: ColorType;
+    strokeColorType: ColorType;
     textColorType: ColorType;
     gap: number;
     labelList: Array<{
@@ -34,7 +34,7 @@ interface BaseLegendContext {
   selection: d3.Selection<any, unknown, any, unknown>
   pluginName: string
   layerName: string
-  legendLabels$: Observable<string[]>
+  legendItems$: Observable<{ label: string; color: string }[]>
   baseLegendParams$: Observable<BaseLegendParams>
   layout$: Observable<Layout>
   theme$: Observable<Theme>
@@ -96,19 +96,11 @@ const defaultListStyle: ListStyle = {
   listRectRadius: 0,
 }
 
-function getSeriesColor (seriesIndex: number, theme: Theme) {
-  const colorIndex = seriesIndex < theme.colors[getColorScheme(theme.colorScheme)].data.length
-    ? seriesIndex
-    : seriesIndex % theme.colors[getColorScheme(theme.colorScheme)].data.length
-  return theme.colors[getColorScheme(theme.colorScheme)].data[colorIndex]
-}
-
-
 export const createBaseLegend: BaseLayerFn<BaseLegendContext> = ({
   pluginName,
   layerName,
   selection,
-  legendLabels$,
+  legendItems$,
   baseLegendParams$,
   layout$,
   theme$,
@@ -122,30 +114,22 @@ export const createBaseLegend: BaseLayerFn<BaseLegendContext> = ({
 
   const destroy$ = new Subject()
 
-  // const legendLabels$: Observable<string[]> = SeriesDataMap$.pipe(
-  //   takeUntil(destroy$),
-  //   map(data => {
-  //     return Array.from(data.keys())
-  //   })
-  // )
-
-  const SeriesLabelColorMap$ = combineLatest({
-    legendLabels: legendLabels$,
-    theme: theme$
-  }).pipe(
+  // 每個項目已經帶有依 encoding.color.by 算好的顏色（跟圖表實際上色一致），這裡不再自己算色。
+  const legendLabels$: Observable<string[]> = legendItems$.pipe(
     takeUntil(destroy$),
-    debounceTime(0),
-    map(data => {
-      const SeriesLabelColorMap: Map<string, string> = new Map()
-      let accIndex = 0
-      data.legendLabels.forEach((label, i) => {
-        if (!SeriesLabelColorMap.has(label)) {
-          const color = getSeriesColor(accIndex, data.theme)
-          SeriesLabelColorMap.set(label, color)
-          accIndex ++
+    map(items => items.map(item => item.label))
+  )
+
+  const LabelColorMap$ = legendItems$.pipe(
+    takeUntil(destroy$),
+    map(items => {
+      const LabelColorMap: Map<string, string> = new Map()
+      items.forEach(item => {
+        if (!LabelColorMap.has(item.label)) {
+          LabelColorMap.set(item.label, item.color)
         }
       })
-      return SeriesLabelColorMap
+      return LabelColorMap
     })
   )
 
@@ -320,7 +304,7 @@ export const createBaseLegend: BaseLayerFn<BaseLegendContext> = ({
     lineDirection: lineDirection$,
     lineMaxSize: lineMaxSize$,
     defaultListStyle: defaultListStyle$,
-    SeriesLabelColorMap: SeriesLabelColorMap$,
+    LabelColorMap: LabelColorMap$,
     fontSizePx: fontSizePx$
   }).pipe(
     takeUntil(destroy$),
@@ -336,8 +320,7 @@ export const createBaseLegend: BaseLayerFn<BaseLegendContext> = ({
         
         const textWidth = measureTextWidth(currentText, data.fontSizePx)
         const itemWidth = (data.fontSizePx * 1.5) + textWidth
-        // const color = getSeriesColor(currentIndex, data.styles)
-        const color = data.SeriesLabelColorMap.get(_current)
+        const color = data.LabelColorMap.get(_current)
         const lastItem: LegendItem | null = prev[0] && prev[0][0]
           ? prev[prev.length - 1][prev[prev.length - 1].length - 1]
           : null
@@ -571,8 +554,8 @@ export const createBaseLegend: BaseLayerFn<BaseLegendContext> = ({
             .join('rect')
             .attr('width', d => d.width)
             .attr('height', d => d.height)
-            .attr('fill', getColor(data.baseLegendParams.backgroundFill, data.theme))
-            .attr('stroke', getColor(data.baseLegendParams.backgroundStroke, data.theme))
+            .attr('fill', getColor(data.baseLegendParams.backgroundColorType, data.theme))
+            .attr('stroke', getColor(data.baseLegendParams.strokeColorType, data.theme))
         })
     })
   )
@@ -668,7 +651,7 @@ export const createBaseLegend: BaseLayerFn<BaseLegendContext> = ({
             .attr('x', data.fontSizePx * 1.5)
             .attr('font-size', data.theme.fontSize)
             .attr('fill', d => data.baseLegendParams.textColorType === 'data'
-              ? getSeriesColor(d.seriesIndex, data.theme)
+              ? d.color
               : getColor(data.baseLegendParams.textColorType, data.theme))
             .text(d => d.text)
         })

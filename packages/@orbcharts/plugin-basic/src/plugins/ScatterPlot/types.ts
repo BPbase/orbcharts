@@ -57,8 +57,8 @@ export interface ScatterPlotPluginParams {
   styles: GraphicStyles
   visibleFilter: VisibleFilter<'grid'>
   container: Container
-  xAxis: XYAxis
-  yAxis: XYAxis
+  xScale: XYAxis
+  yScale: XYAxis
   separateSeries: boolean
   datasetIndex: number
 }
@@ -137,6 +137,7 @@ export interface ScatterPlotXYGuideParams {
 
 export interface ScatterPlotXYAxesParams {
   xAxis: {
+    label: string
     labelOffset: [number, number]
     labelColorType: ColorType
     axisLineVisible: boolean
@@ -154,6 +155,7 @@ export interface ScatterPlotXYAxesParams {
     tickTextColorType: ColorType
   }
   yAxis: {
+    label: string
     labelOffset: [number, number]
     labelColorType: ColorType
     axisLineVisible: boolean

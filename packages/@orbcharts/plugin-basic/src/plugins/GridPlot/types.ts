@@ -72,8 +72,8 @@ export interface GridPlotPluginParams {
   container: Container
   // direction: 'vertical' | 'horizontal'
   direction: 'bottom-up' | 'top-down' | 'left-right' | 'right-left'
-  valueAxis: ValueAxis
-  categoryAxis: ReversibleCategoryAxis
+  valueScale: ValueAxis
+  categoryScale: ReversibleCategoryAxis
   separateSeries: boolean
   datasetIndex: number
 }
@@ -156,7 +156,7 @@ export interface GridPlotTriangleBarParams {
 }
 
 export interface GridPlotCategoryAxisParams {
-  // xLabel: string
+  label: string
   // labelAnchor: 'start' | 'end'
   labelOffset: [number, number]
   labelColorType: ColorType
@@ -176,7 +176,7 @@ export interface GridPlotCategoryAxisParams {
 }
 
 export interface GridPlotValueAxisParams {
-  // xLabel: string
+  label: string
   // labelAnchor: 'start' | 'end'
   labelOffset: [number, number]
   labelColorType: ColorType

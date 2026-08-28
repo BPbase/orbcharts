@@ -7,7 +7,12 @@ import { PanelBottomOpen, Play, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { defaultExample, getExampleById } from '@/lib/examples/registry'
-import { generateExampleCode, type CodegenPatches } from '@/lib/examples/codegen'
+import {
+  generateExampleCode,
+  pluginVarNames,
+  serializeValue,
+  type CodegenPatches,
+} from '@/lib/examples/codegen'
 import { runExampleCode, type ConsoleEntry, type SandboxResult } from '@/lib/playground/sandbox'
 import {
   buildPatchAtPath,
@@ -77,6 +82,15 @@ export function PlaygroundShell() {
   const resultRef = useRef<SandboxResult | null>(null)
   // 結構化編輯（Encoding/Theme/Params）累積的 patch — 同步到程式碼用；還原/切換範例時清空
   const patchesRef = useRef<CodegenPatches>({})
+  // 目前程式碼內容（即時同步，供下方判斷是否已被手動編輯，不觸發 re-render）
+  const codeRef = useRef('')
+  // 最近一次「程式化產生」的程式碼 — 與 codeRef 不同代表使用者已手動編輯過 Source Code
+  const lastGeneratedCodeRef = useRef('')
+
+  const handleCodeChange = useCallback((newCode: string) => {
+    codeRef.current = newCode
+    setCode(newCode)
+  }, [])
 
   /** 執行程式碼：destroy 舊圖 → 沙盒執行 → 讀回實例狀態刷新面板 */
   const run = useCallback((codeToRun: string) => {
@@ -114,6 +128,8 @@ export function PlaygroundShell() {
   useEffect(() => {
     patchesRef.current = {}
     const initialCode = generateExampleCode(spec, { mode: 'playground' })
+    codeRef.current = initialCode
+    lastGeneratedCodeRef.current = initialCode
     setCode(initialCode)
     setConsoleEntries([])
     run(initialCode)
@@ -128,28 +144,50 @@ export function PlaygroundShell() {
     }
   }, [spec, run])
 
-  /** 資料表格編輯：即時 setData + 重新產生程式碼（單一資料來源） */
+  /**
+   * 資料表格編輯：即時 setData + 同步程式碼（單一資料來源）。
+   * 若 Source Code 分頁已被手動編輯過（與上次程式化產生的內容不同），
+   * 直接覆寫整份程式碼會蓋掉使用者輸入，因此改為在現有程式碼後方追加一行
+   * chart.setData(...)，保留手動編輯內容，同時確保 Run／Re-render 不會遺漏這次修改。
+   */
   const handleDataChange = useCallback(
     (newData: ExampleData) => {
       setData(newData)
       const chart = resultRef.current?.chart as { setData?: (d: ExampleData) => void } | null
       chart?.setData?.(newData)
-      setCode(
-        generateExampleCode(spec, { mode: 'playground', data: newData, patches: patchesRef.current })
-      )
+
+      if (codeRef.current !== lastGeneratedCodeRef.current) {
+        const newCode = `${codeRef.current.replace(/\n+$/, '')}\n\nchart.setData(${serializeValue(newData, 0)})\n`
+        codeRef.current = newCode
+        setCode(newCode)
+        return
+      }
+
+      const newCode = generateExampleCode(spec, {
+        mode: 'playground',
+        data: newData,
+        patches: patchesRef.current,
+      })
+      codeRef.current = newCode
+      lastGeneratedCodeRef.current = newCode
+      setCode(newCode)
     },
     [spec]
   )
 
   /**
    * 樹編輯器（Encoding/Theme/Params）：
-   * 即時套用到圖表 → 自實例讀回刷新面板 → patch 同步到程式碼
+   * 即時套用到圖表 → 自實例讀回刷新面板 → patch 同步到程式碼。
+   * 若 Source Code 已被手動編輯過，改為在現有程式碼後方追加對應的
+   * updateEncoding/updateTheme/updateParams 呼叫，避免整段覆寫蓋掉手動編輯內容，
+   * 同時確保之後按 Run／Re-render 不會遺漏這次修改。
    */
   const handleTreeEdit = useCallback(
     (section: TreeSection, pluginIndex: number, path: TreePath, value: unknown) => {
       const result = resultRef.current
       if (!result?.chart) return
       const patches = patchesRef.current
+      let appendStatement: string | null = null
 
       try {
         if (section === 'encoding') {
@@ -159,6 +197,7 @@ export function PlaygroundShell() {
           >
           result.chart.updateEncoding(patch as never)
           patches.encoding = deepMergePatch(patches.encoding ?? {}, patch)
+          appendStatement = `chart.updateEncoding(${serializeValue(patch, 0)})`
         } else if (section === 'theme') {
           const patch = buildPatchAtPath(result.chart.getTheme(), path, value) as Record<
             string,
@@ -166,6 +205,7 @@ export function PlaygroundShell() {
           >
           result.chart.updateTheme(patch as never)
           patches.theme = deepMergePatch(patches.theme ?? {}, patch)
+          appendStatement = `chart.updateTheme(${serializeValue(patch, 0)})`
         } else {
           const plugin = result.plugins[pluginIndex]
           if (!plugin) return
@@ -178,6 +218,8 @@ export function PlaygroundShell() {
             patches.params?.[pluginIndex] ?? {},
             patch
           ) }
+          const varName = pluginVarNames(spec.chart.plugins)[pluginIndex]
+          if (varName) appendStatement = `${varName}.updateParams(${serializeValue(patch, 0)})`
         }
       } catch (err) {
         // 套用失敗（如 validator 拒絕）不阻斷介面
@@ -186,8 +228,24 @@ export function PlaygroundShell() {
 
       // 自實例讀回，面板永遠反映真實狀態
       setReadback(buildReadback(result))
-      // patch 同步到程式碼
-      setCode(generateExampleCode(spec, { mode: 'playground', data, patches: patchesRef.current }))
+
+      if (codeRef.current !== lastGeneratedCodeRef.current) {
+        if (appendStatement) {
+          const newCode = `${codeRef.current.replace(/\n+$/, '')}\n\n${appendStatement}\n`
+          codeRef.current = newCode
+          setCode(newCode)
+        }
+        return
+      }
+
+      const newCode = generateExampleCode(spec, {
+        mode: 'playground',
+        data,
+        patches: patchesRef.current,
+      })
+      codeRef.current = newCode
+      lastGeneratedCodeRef.current = newCode
+      setCode(newCode)
     },
     [spec, data]
   )
@@ -196,6 +254,8 @@ export function PlaygroundShell() {
   const handleReset = useCallback(() => {
     patchesRef.current = {}
     const initialCode = generateExampleCode(spec, { mode: 'playground' })
+    codeRef.current = initialCode
+    lastGeneratedCodeRef.current = initialCode
     setCode(initialCode)
     setConsoleEntries([])
     run(initialCode)
@@ -243,7 +303,7 @@ export function PlaygroundShell() {
     readback,
     onTreeEdit: handleTreeEdit,
     code,
-    onCodeChange: setCode,
+    onCodeChange: handleCodeChange,
     onRun: handleRerun,
     consoleEntries,
     onClearConsole: () => setConsoleEntries([]),

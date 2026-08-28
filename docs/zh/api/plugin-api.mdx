@@ -31,7 +31,7 @@ new GridPlot({ Line: {}, CategoryAxis: {}, ValueAxis: {} })
 2. 若**完全不指定任何 Layer**（例如 `new GridPlot()`），則顯示該 Plugin 的**系統預設 Layer**（每個 Plugin 頁面會標明預設顯示哪些）。
 3. Plugin 層級的參數（如 `direction`、`styles`、`container`）**不算** Layer 名稱，不影響顯示哪些 Layer。
 
-> **提示**：Layer 名稱一律為大寫開頭（`Bar`、`ValueAxis`）；Plugin 層級參數為小寫開頭（`valueAxis`、`categoryAxis`）。兩者可同時出現在同一個參數物件中。
+> **提示**：Layer 名稱一律為大寫開頭（`Bar`、`ValueAxis`）；Plugin 層級參數為小寫開頭（`direction`、`separateSeries`）。兩者可同時出現在同一個參數物件中。
 
 ### 動態切換 Layer
 

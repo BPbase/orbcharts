@@ -23,13 +23,12 @@ export const DEFAULT_CATEGORICAL_PLOT_PLUGIN_PARAMS: CategoricalPlotPluginParams
     transitionEase: 'easeCubic'
   },
   visibleFilter: (datum) => true,
-  position: 'left',
-  categoryAxis: {
+  valueAxisPosition: 'left',
+  categoryScale: {
     scaleDomain: [0, 'max'],
     scalePadding: 0.5,
-    label: ''
   },
-  valueAxis: { ...DEFAULT_VALUE_AXIS },
+  valueScale: { ...DEFAULT_VALUE_AXIS },
   datasetIndex: 0
 }
 DEFAULT_CATEGORICAL_PLOT_PLUGIN_PARAMS.visibleFilter.toString = () => '(datum) => true'
@@ -42,6 +41,7 @@ export const DEFAULT_CATEGORICAL_PLOT_RAISED_BUBBLES_PARAMS: CategoricalPlotRais
 }
 
 export const DEFAULT_CATEGORICAL_PLOT_CATEGORY_AXIS_PARAMS: CategoricalPlotCategoryAxisParams = {
+  label: '',
   labelOffset: [0, 0],
   labelColorType: 'primary',
   axisLineVisible: true,
@@ -59,6 +59,7 @@ export const DEFAULT_CATEGORICAL_PLOT_CATEGORY_AXIS_PARAMS: CategoricalPlotCateg
 DEFAULT_CATEGORICAL_PLOT_CATEGORY_AXIS_PARAMS.tickFormat.toString = () => `text => text`
 
 export const DEFAULT_CATEGORICAL_PLOT_VALUE_AXIS_PARAMS: CategoricalPlotValueAxisParams = {
+  label: '',
   labelOffset: [0, 0],
   labelColorType: 'primary',
   axisLineVisible: false,

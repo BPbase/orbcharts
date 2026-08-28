@@ -81,8 +81,8 @@ function renderAxisLabel ({
   containerSize: ContainerSize
   theme: Theme
 }) {
-  const offsetX = fullParams.axisLabel.offset[0]
-  const offsetY = fullParams.axisLabel.offset[1]
+  const offsetX = fullParams.labelOffset[0]
+  const offsetY = fullParams.labelOffset[1]
 
   labelSelection
     .attr('transform', `translate(0, ${containerSize.height})`)
@@ -97,7 +97,7 @@ function renderAxisLabel ({
     .attr('dominant-baseline', 'auto')
     .attr('x', -offsetX)
     .attr('y', -offsetY)
-    .style('fill', getColor(fullParams.axisLabel.colorType, theme))
+    .style('fill', getColor(fullParams.labelColorType, theme))
     .text(d => d)
 }
 
@@ -127,8 +127,8 @@ function renderSeriesLabels ({
   const labelData = rankedSeriesData
     .map(seriesData => seriesData[currentFrameIndex])
     .filter(Boolean) as ComputedDatumGrid[]
-  const padding = fullParams.seriesLabel.padding
-  const position = fullParams.seriesLabel.position
+  const padding = fullParams.seriesLabelPadding
+  const position = fullParams.seriesLabelPosition
 
   const getX = (d: ComputedDatumGrid) => {
     if (position === 'outside') {
@@ -161,7 +161,7 @@ function renderSeriesLabels ({
     .attr('dominant-baseline', 'middle')
     .style('fill', d => getDatumColor({
       datum: d,
-      colorType: fullParams.seriesLabel.colorType,
+      colorType: fullParams.seriesLabelColorType,
       theme
     }))
     .text(d => d.series)

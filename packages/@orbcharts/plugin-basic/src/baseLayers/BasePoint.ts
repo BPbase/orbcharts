@@ -141,7 +141,7 @@ function renderPoint ({ graphicGSelection, circleGClassName, circleClassName, vi
             .attr('fill', (d, i) => getDatumColor({ datum: d, colorType: basePointParams.fillColorType, theme }))
             .attr('stroke', (d, i) => getDatumColor({ datum: d, colorType: basePointParams.strokeColorType, theme }))
             .attr('stroke-width', basePointParams.strokeWidth)
-            .attr('transform', `scale(${graphicReverseScale[seriesIndex][0] ?? 1}, ${graphicReverseScale[seriesIndex][1] ?? 1})`)
+            .attr('transform', `scale(${(graphicReverseScale[seriesIndex] ?? graphicReverseScale[0])?.[0] ?? 1}, ${(graphicReverseScale[seriesIndex] ?? graphicReverseScale[0])?.[1] ?? 1})`)
         })
     })
 

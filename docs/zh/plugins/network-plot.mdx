@@ -129,7 +129,7 @@ new NetworkPlot({ ForceDirectedBubble: {} })
 | `force.velocityDecay` | `number` | `0.1` | 速度衰減係數 |
 | `force.alphaDecay` | `number` | `0.05` | 模擬收斂衰減係數 |
 | `zoomable` | `boolean` | `true` | 是否可縮放與平移 |
-| `transform` | `{ x, y, k }` | `{ x: 0, y: 0, k: 1 }` | 初始位移與縮放倍率 |
+| `transform` | `{ x, y, scale }` | `{ x: 0, y: 0, scale: 1 }` | 初始位移與縮放倍率 |
 | `scaleExtent` | `{ min, max }` | `{ min: 0, max: Infinity }` | 縮放倍率範圍 |
 
 > **提示**：`point`、`pointLabel`、`arrow`、`arrowLabel` 各自另有 `styleFn` 函式參數，可回傳 CSS 字串自訂個別元素樣式。
@@ -161,7 +161,7 @@ new NetworkPlot({ ForceDirectedBubble: {} })
 | `force.velocityDecay` | `number` | `0.1` | 速度衰減係數 |
 | `force.alphaDecay` | `number` | `0.05` | 模擬收斂衰減係數 |
 | `zoomable` | `boolean` | `true` | 是否可縮放與平移 |
-| `transform` | `{ x, y, k }` | `{ x: 0, y: 0, k: 1 }` | 初始位移與縮放倍率 |
+| `transform` | `{ x, y, scale }` | `{ x: 0, y: 0, scale: 1 }` | 初始位移與縮放倍率 |
 | `scaleExtent` | `{ min, max }` | `{ min: 0, max: Infinity }` | 縮放倍率範圍 |
 
 > **提示**：`bubble`、`bubbleLabel`、`arrow`、`arrowLabel` 各自另有 `styleFn` 函式參數，可回傳 CSS 字串自訂個別元素樣式。

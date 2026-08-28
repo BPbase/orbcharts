@@ -1,12 +1,12 @@
 # OrbCharts
 
-<img src="https://bpbase.github.io/orbcharts/images/logo_light_xl_temp2.png" alt="logo - light mode" width="120" />
+![OrbCharts logo](https://bpbase.github.io/orbcharts/favicon/favicon-128.png)
 
 OrbCharts is a **data-driven JavaScript chart library**. One data format for every chart — data is decoupled from rendering, so you can switch how the same data is visualized at any time. Built for dashboards.
 
 [Official Website](https://bpbase.github.io/orbcharts) | [Documentation](https://bpbase.github.io/orbcharts/docs)
 
-> **Note:** `4.0.0-beta.1` is a major redesign of OrbCharts. The API differs significantly from v3.x — see the [migration guide](https://bpbase.github.io/orbcharts/docs/advanced/migration-from-v3) if you are upgrading.
+> **Note:** `v4` is a major redesign of OrbCharts. The API differs significantly from v3.x — see the [migration guide](https://bpbase.github.io/orbcharts/docs/advanced/migration-from-v3) if you are upgrading.
 
 ## Features
 
@@ -33,27 +33,27 @@ Here are several installation methods:
 1. npm installation
 
 ```sh
-npm i orbcharts@beta
+npm i orbcharts
 ```
 
 > The `orbcharts` package re-exports everything from `@orbcharts/core` (the chart engine) and `@orbcharts/plugin-basic` (the built-in plugins). If you prefer to manage them separately, you can also install the individual packages:
 >
 > ```sh
-> npm i @orbcharts/core@beta @orbcharts/plugin-basic@beta
+> npm i @orbcharts/core @orbcharts/plugin-basic
 > ```
 
 2. ESM format CDN download
 
 ```html
 <script type="module">
-import * as orbcharts from 'https://cdn.jsdelivr.net/npm/orbcharts@4.0.0-beta.1/+esm'
+import * as orbcharts from 'https://cdn.jsdelivr.net/npm/orbcharts@4.0.0/+esm'
 </script>
 ```
 
 3. UMD format CDN download
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/orbcharts@4.0.0-beta.1/dist/orbcharts.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/orbcharts@4.0.0/dist/orbcharts.umd.js"></script>
 ```
 
 ### Execution

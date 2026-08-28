@@ -77,9 +77,9 @@ CategoricalPlot 由多個 Layer 組成，**你在參數中列出哪些 Layer 名
 
 | 參數 | 型別 | 預設值 | 說明 |
 |---|---|---|---|
-| `position` | `'left' \| 'right'` | `'left'` | 數值軸所在位置 |
-| `categoryAxis` | `CategoryAxis` | 見下表 | 類別軸設定 |
-| `valueAxis` | `ValueAxis` | 見下表 | 數值軸設定 |
+| `valueAxisPosition` | `'left' \| 'right'` | `'left'` | 數值軸所在位置 |
+| `categoryScale` | `CategoryAxis` | 見下表 | 類別軸設定 |
+| `valueScale` | `ValueAxis` | 見下表 | 數值軸設定 |
 | `datasetIndex` | `number` | `0` | 當資料為多資料集時，使用第幾個 |
 | `styles` | `GraphicStyles` | `padding` 為 `{ 20, 60, 80, 60 }` | 共用視覺樣式（見 [Plugin 通用 API](/docs/api/plugin-api)） |
 | `container` | `Container` | 單一圖表 | 多圖表佈局（見 [Plugin 通用 API](/docs/api/plugin-api)） |
@@ -87,21 +87,19 @@ CategoricalPlot 由多個 Layer 組成，**你在參數中列出哪些 Layer 名
 
 > **提示**：`styles`、`container`、`visibleFilter` 為所有圖表 Plugin 共用，其結構與用法集中說明於 [Plugin 通用 API](/docs/api/plugin-api)。此處僅標示 CategoricalPlot 的預設值差異（`styles.padding` 預設為 `{ top: 20, right: 60, bottom: 80, left: 60 }`，`transitionDuration` 預設 `200`）。
 
-### `categoryAxis`（CategoryAxis）
+### `categoryScale`（CategoryAxis）
 
 | 屬性 | 型別 | 預設值 | 說明 |
 |---|---|---|---|
 | `scaleDomain` | `[number, number \| 'max']` | `[0, 'max']` | 類別索引範圍 |
 | `scalePadding` | `number` | `0.5` | 類別間距 |
-| `label` | `string` | `''` | 軸標籤 |
 
-### `valueAxis`（ValueAxis）
+### `valueScale`（ValueAxis）
 
 | 屬性 | 型別 | 預設值 | 說明 |
 |---|---|---|---|
 | `scaleDomain` | `[number \| 'min' \| 'auto', number \| 'max' \| 'auto']` | `['auto', 'auto']` | 數值範圍 |
 | `scaleRange` | `[number, number]` | `[0, 0.9]` | 對應到繪圖區的比例範圍 |
-| `label` | `string` | `''` | 軸標籤 |
 
 ## Layer 參數
 
@@ -122,6 +120,7 @@ CategoricalPlot 由多個 Layer 組成，**你在參數中列出哪些 Layer 名
 
 | 參數 | 型別 | 預設值 | 說明 |
 |---|---|---|---|
+| `label` | `string` | `''` | 軸標籤 |
 | `labelOffset` | `[number, number]` | `[0, 0]` | 軸標籤位移 |
 | `labelColorType` | `ColorType` | `'primary'` | 軸標籤顏色 |
 | `axisLineVisible` | `boolean` | `true` | 是否顯示軸線 |
@@ -139,6 +138,7 @@ CategoricalPlot 由多個 Layer 組成，**你在參數中列出哪些 Layer 名
 
 | 參數 | 型別 | 預設值 | 說明 |
 |---|---|---|---|
+| `label` | `string` | `''` | 軸標籤 |
 | `labelOffset` | `[number, number]` | `[0, 0]` | 軸標籤位移 |
 | `labelColorType` | `ColorType` | `'primary'` | 軸標籤顏色 |
 | `axisLineVisible` | `boolean` | `false` | 是否顯示軸線 |
@@ -179,9 +179,9 @@ interface CategoricalPlotPluginParams {
   styles: GraphicStyles
   visibleFilter: VisibleFilter<'series'>
   container: Container
-  position: 'left' | 'right'
-  categoryAxis: CategoryAxis
-  valueAxis: ValueAxis
+  valueAxisPosition: 'left' | 'right'
+  categoryScale: CategoryAxis
+  valueScale: ValueAxis
   datasetIndex: number
 }
 

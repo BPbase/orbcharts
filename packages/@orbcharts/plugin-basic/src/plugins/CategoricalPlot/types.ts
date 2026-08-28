@@ -47,7 +47,6 @@ export interface CategoricalPlotExtendContext {
 export interface CategoricalPlotCategoryAxis {
   scaleDomain: [number, number | 'max']
   scalePadding: number
-  label: string
 }
 
 // ---- plugin params ----
@@ -55,9 +54,9 @@ export interface CategoricalPlotCategoryAxis {
 export interface CategoricalPlotPluginParams {
   styles: GraphicStyles
   visibleFilter: VisibleFilter<'series'>
-  position: CategoricalPlotPosition
-  categoryAxis: CategoricalPlotCategoryAxis
-  valueAxis: ValueAxis
+  valueAxisPosition: CategoricalPlotPosition
+  categoryScale: CategoricalPlotCategoryAxis
+  valueScale: ValueAxis
   datasetIndex: number
 }
 
@@ -81,6 +80,7 @@ export interface CategoricalPlotRaisedBubblesParams {
 }
 
 export interface CategoricalPlotCategoryAxisParams {
+  label: string
   labelOffset: [number, number]
   labelColorType: ColorType
   axisLineVisible: boolean
@@ -97,6 +97,7 @@ export interface CategoricalPlotCategoryAxisParams {
 }
 
 export interface CategoricalPlotValueAxisParams {
+  label: string
   labelOffset: [number, number]
   labelColorType: ColorType
   axisLineVisible: boolean

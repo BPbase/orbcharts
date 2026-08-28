@@ -130,30 +130,28 @@ These parameters affect the whole GridPlot's behavior, listed alongside Layer na
 | `direction` | `'bottom-up' \| 'top-down' \| 'left-right' \| 'right-left'` | `'bottom-up'` | Chart direction (axis origin and growth direction) |
 | `separateSeries` | `boolean` | `false` | Whether to draw each series separately |
 | `datasetIndex` | `number` | `0` | Which dataset to use when data is multi-dataset |
-| `valueAxis` | `ValueAxis` | see below | Value axis settings |
-| `categoryAxis` | `ReversibleCategoryAxis` | see below | Category axis settings |
+| `valueScale` | `ValueAxis` | see below | Value axis settings |
+| `categoryScale` | `ReversibleCategoryAxis` | see below | Category axis settings |
 | `styles` | `GraphicStyles` | `padding` is `{ 20, 60, 80, 60 }` | Shared visual styles (see [Plugin API](/docs/api/plugin-api)) |
 | `container` | `Container` | single chart | Multi-chart layout (see [Plugin API](/docs/api/plugin-api)) |
 | `visibleFilter` | `(datum) => boolean \| null` | `() => true` | Filter which data to show (see [Plugin API](/docs/api/plugin-api)) |
 
 > **Note**: `styles`, `container`, and `visibleFilter` are shared by all chart Plugins; their structure and usage are documented centrally in [Plugin API](/docs/api/plugin-api). Only GridPlot's default difference is noted here (`styles.padding` defaults to `{ top: 20, right: 60, bottom: 80, left: 60 }`).
 
-### `valueAxis` (ValueAxis)
+### `valueScale` (ValueAxis)
 
 | Property | Type | Default | Description |
 |---|---|---|---|
 | `scaleDomain` | `[number \| 'min' \| 'auto', number \| 'max' \| 'auto']` | `['auto', 'auto']` | Value range |
 | `scaleRange` | `[number, number]` | `[0, 0.9]` | Proportional range mapped to the plotting area |
-| `label` | `string` | `''` | Axis label |
 
-### `categoryAxis` (ReversibleCategoryAxis)
+### `categoryScale` (ReversibleCategoryAxis)
 
 | Property | Type | Default | Description |
 |---|---|---|---|
 | `reverse` | `boolean` | `false` | Whether to reverse the category order |
 | `scaleDomain` | `[number, number \| 'max']` | `[0, 'max']` | Category index range |
 | `scalePadding` | `number` | `0.5` | Spacing between categories |
-| `label` | `string` | `''` | Axis label |
 
 ## Layer parameters
 
@@ -215,6 +213,7 @@ Each Layer has its own parameters. The main parameters and defaults of each Laye
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
+| `label` | `string` | `''` | Axis label |
 | `labelOffset` | `[number, number]` | `[0, 0]` | Axis label offset |
 | `labelColorType` | `ColorType` | `'primary'` | Axis label color |
 | `axisLineVisible` | `boolean` | `true` | Whether to show the axis line |
@@ -232,6 +231,7 @@ Each Layer has its own parameters. The main parameters and defaults of each Laye
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
+| `label` | `string` | `''` | Axis label |
 | `labelOffset` | `[number, number]` | `[0, 0]` | Axis label offset |
 | `labelColorType` | `ColorType` | `'primary'` | Axis label color |
 | `axisLineVisible` | `boolean` | `false` | Whether to show the axis line |
@@ -277,8 +277,8 @@ interface GridPlotPluginParams {
   visibleFilter: (datum: ModelDatumGrid) => boolean | null
   container: Container
   direction: 'bottom-up' | 'top-down' | 'left-right' | 'right-left'
-  valueAxis: ValueAxis
-  categoryAxis: ReversibleCategoryAxis
+  valueScale: ValueAxis
+  categoryScale: ReversibleCategoryAxis
   separateSeries: boolean
   datasetIndex: number
 }

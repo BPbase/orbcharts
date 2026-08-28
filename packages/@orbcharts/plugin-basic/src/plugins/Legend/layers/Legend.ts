@@ -42,10 +42,10 @@ export const Legend = defineSVGLayer<LegendExtendContext, LegendPluginParams, Le
       padding: {
         toBeTypes: ['number']
       },
-      backgroundFill: {
+      backgroundColorType: {
         toBeOption: 'ColorType',
       },
-      backgroundStroke: {
+      strokeColorType: {
         toBeOption: 'ColorType',
       },
       gap: {
@@ -70,10 +70,21 @@ export const Legend = defineSVGLayer<LegendExtendContext, LegendPluginParams, Le
 
     const destroy$ = new Subject()
 
-    const legendLabels$: Observable<string[]> = context.SeriesDataMap$.pipe(
+    // Legend 顯示的項目跟著 encoding.color.by 走：color.by 是 'category' 就依類別分組上色，
+    // 其他情況（'series'、'dataset'、'index'）沒有對應的離散分組可用，一律 fallback 依系列分組，
+    // 確保跟圖表實際的上色依據（datum.color）一致，而不是自己另外算一套顏色。
+    const legendItems$: Observable<{ label: string; color: string }[]> = combineLatest({
+      colorBy: context.encoding$.pipe(map(encoding => encoding.color.by), distinctUntilChanged()),
+      seriesDataMap: context.SeriesDataMap$,
+      categoryDataMap: context.CategoryDataMap$,
+    }).pipe(
       takeUntil(destroy$),
-      map(data => {
-        return Array.from(data.keys())
+      map(({ colorBy, seriesDataMap, categoryDataMap }) => {
+        const dataMap = colorBy === 'category' ? categoryDataMap : seriesDataMap
+        return Array.from(dataMap.entries()).map(([label, items]) => ({
+          label,
+          color: items[0]?.color ?? ''
+        }))
       })
     )
 
@@ -99,7 +110,7 @@ export const Legend = defineSVGLayer<LegendExtendContext, LegendPluginParams, Le
       pluginName,
       layerName,
       selection: d3.select(svgG),
-      legendLabels$,
+      legendItems$,
       baseLegendParams$,
       layout$: context.layout$,
       theme$: context.theme$,

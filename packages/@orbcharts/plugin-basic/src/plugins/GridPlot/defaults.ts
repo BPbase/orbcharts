@@ -18,8 +18,8 @@ export const DEFAULT_SERIES_PLOT_PARAMS: GridPlotPluginParams = {
   visibleFilter: (datum) => true,
   container: { ...DEFAULT_CONTAINER },
   direction: 'bottom-up',
-  valueAxis: { ...DEFAULT_VALUE_AXIS },
-  categoryAxis: { ...DEFAULT_CATEGORY_AXIS},
+  valueScale: { ...DEFAULT_VALUE_AXIS },
+  categoryScale: { ...DEFAULT_CATEGORY_AXIS},
   separateSeries: false,
   datasetIndex: 0
 }
@@ -83,6 +83,7 @@ export const DEFAULT_BARS_TRIANGLE_PARAMS: GridPlotTriangleBarParams = {
 }
 
 export const DEFAULT_CATEGORY_AXIS_PARAMS: GridPlotCategoryAxisParams = {
+  label: '',
   // labelAnchor: 'start',
   labelOffset: [0, 0],
   labelColorType: 'primary',
@@ -101,6 +102,7 @@ export const DEFAULT_CATEGORY_AXIS_PARAMS: GridPlotCategoryAxisParams = {
 DEFAULT_CATEGORY_AXIS_PARAMS.tickFormat.toString = () => `text => text`
 
 export const DEFAULT_VALUE_AXIS_PARAMS: GridPlotValueAxisParams = {
+  label: '',
   // labelAnchor: 'end',
   labelOffset: [0, 0],
   labelColorType: 'primary',

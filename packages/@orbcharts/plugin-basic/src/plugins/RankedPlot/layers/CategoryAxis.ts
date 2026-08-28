@@ -24,6 +24,7 @@ export const CategoryAxis = defineSVGLayer<RankedPlotExtendContext, RankedPlotPl
   initShow: true,
   validator: (params) => {
     const result = validateObject(params, {
+      label: { toBeTypes: ['string'] },
       labelOffset: {
         toBe: '[number, number]',
         test: (value: any) => Array.isArray(value) && value.length === 2
@@ -75,7 +76,7 @@ export const CategoryAxis = defineSVGLayer<RankedPlotExtendContext, RankedPlotPl
           reverse: false
         }
       })),
-      valueAxis$: pluginParams$.pipe(map(params => params.rankedAxis as any)),
+      valueAxis$: pluginParams$.pipe(map(params => params.rankedScale as any)),
       styles$: pluginParams$.pipe(map(params => params.styles)),
       theme$: context.theme$,
       categoryAxisPosition$: layerParams$.pipe(map(p => p.placement))

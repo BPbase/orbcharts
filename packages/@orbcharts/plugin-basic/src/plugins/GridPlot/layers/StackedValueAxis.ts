@@ -28,6 +28,9 @@ export const StackedValueAxis = defineSVGLayer<GridPlotExtendContext, GridPlotPl
   initShow: false,
   validator: (params) => {
     const result = validateObject(params, {
+      label: {
+        toBeTypes: ['string']
+      },
       labelOffset: {
         toBe: '[number, number]',
         test: (value: any) => {
@@ -128,8 +131,8 @@ export const StackedValueAxis = defineSVGLayer<GridPlotExtendContext, GridPlotPl
       computedData$: context.computedStackedData$, // 計算疊加value的資料
       filteredMinMaxValue$: context.filteredStackedMinMaxValue$,
       baseValueAxisParams$: layerParams$,
-      categoryAxis$: pluginParams$.pipe(map(params => params.categoryAxis)),
-      valueAxis$: pluginParams$.pipe(map(params => params.valueAxis)),
+      categoryAxis$: pluginParams$.pipe(map(params => params.categoryScale)),
+      valueAxis$: pluginParams$.pipe(map(params => params.valueScale)),
       theme$: context.theme$,
       gridAxesTransform$: gridAxesTransform$,
       gridAxesReverseTransform$: gridAxesReverseTransform$,

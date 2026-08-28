@@ -17,8 +17,8 @@ export const DEFAULT_SCATTER_PLOT_PARAMS: ScatterPlotPluginParams = {
   },
   visibleFilter: (datum) => true,
   container: { ...DEFAULT_CONTAINER },
-  xAxis: { ...DEFAULT_X_Y_AXIS },
-  yAxis: { ...DEFAULT_X_Y_AXIS },
+  xScale: { ...DEFAULT_X_Y_AXIS },
+  yScale: { ...DEFAULT_X_Y_AXIS },
   separateSeries: false,
   datasetIndex: 0
 }
@@ -144,6 +144,7 @@ DEFAULT_SCATTER_PLOT_X_Y_GUIDE_PARAMS.yAxis.labelTextFormat.toString = () => `nu
 
 export const DEFAULT_SCATTER_PLOT_X_Y_AXES_PARAMS: ScatterPlotXYAxesParams = {
   xAxis: {
+    label: '',
     labelOffset: [0, 0],
     labelColorType: 'primary',
     axisLineVisible: false,
@@ -167,6 +168,7 @@ export const DEFAULT_SCATTER_PLOT_X_Y_AXES_PARAMS: ScatterPlotXYAxesParams = {
     tickTextColorType: 'primary'
   },
   yAxis: {
+    label: '',
     labelOffset: [0, 0],
     labelColorType: 'primary',
     axisLineVisible: false,

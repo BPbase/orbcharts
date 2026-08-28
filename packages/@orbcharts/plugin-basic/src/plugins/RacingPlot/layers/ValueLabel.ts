@@ -28,7 +28,7 @@ export const ValueLabel = defineSVGLayer<RacingPlotExtendContext, RacingPlotPlug
       colorType: {
         toBeOption: 'ColorType',
       },
-      format: {
+      valueFormat: {
         toBeTypes: ['string', 'Function']
       }
     })

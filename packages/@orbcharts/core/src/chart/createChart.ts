@@ -203,6 +203,9 @@ function encodingOptionsValidator (encodingConfig: DeepPartial<Encoding>): Valid
       sort: {
         toBe: '"original" | "alphabetical" | string[]',
         test: (value: any) => value === 'original' || value === 'alphabetical' || (Array.isArray(value) && value.every((v) => typeof v === 'string'))
+      },
+      ignore: {
+        toBeTypes: ['boolean']
       }
     })
     if (datasetResult.status === 'error') {
@@ -217,6 +220,9 @@ function encodingOptionsValidator (encodingConfig: DeepPartial<Encoding>): Valid
       sort: {
         toBe: '"original" | "alphabetical" | string[]',
         test: (value: any) => value === 'original' || value === 'alphabetical' || (Array.isArray(value) && value.every((v) => typeof v === 'string'))
+      },
+      ignore: {
+        toBeTypes: ['boolean']
       }
     })
     if (seriesResult.status === 'error') {
@@ -231,6 +237,9 @@ function encodingOptionsValidator (encodingConfig: DeepPartial<Encoding>): Valid
       sort: {
         toBe: '"original" | "alphabetical" | string[]',
         test: (value: any) => value === 'original' || value === 'alphabetical' || (Array.isArray(value) && value.every((v) => typeof v === 'string'))
+      },
+      ignore: {
+        toBeTypes: ['boolean']
       }
     })
     if (categoryResult.status === 'error') {
@@ -269,7 +278,7 @@ function encodingOptionsValidator (encodingConfig: DeepPartial<Encoding>): Valid
   }
   if (encodingConfig.color) {
     const colorResult = validateObject(encodingConfig.color, {
-      from: {
+      by: {
         toBe: '"index" | "series" | "category" | "dataset"',
         test: (value: any) => ['index', 'series', 'category', 'dataset'].includes(value)
       }

@@ -43,8 +43,7 @@ export interface RacingPlotPluginParams {
   // valueAxis: {
   //   position: 'top' | 'bottom'
   // }
-  rankedAxis: {
-    label: string
+  rankedScale: {
     limit: number | 'auto'
   }
   autorun: boolean
@@ -73,19 +72,16 @@ export interface RacingPlotRacingBarParams {
 export interface RacingPlotValueLabelParams {
   padding: number
   colorType: ColorType
-  format: string | ((n: number | d3.NumberValue) => string | d3.NumberValue)
+  valueFormat: string | ((n: number | d3.NumberValue) => string | d3.NumberValue)
 }
 
 export interface RacingPlotSeriesLabelParams {
-  axisLabel: {
-    offset: [number, number]
-    colorType: ColorType
-  }
-  seriesLabel: {
-    position: 'inside-left' | 'inside-right' | 'outside'
-    padding: number
-    colorType: ColorType
-  }
+  label: string
+  labelOffset: [number, number]
+  labelColorType: ColorType
+  seriesLabelPosition: 'inside-left' | 'inside-right' | 'outside'
+  seriesLabelPadding: number
+  seriesLabelColorType: ColorType
 }
 
 export interface RacingPlotCounterTextParams {

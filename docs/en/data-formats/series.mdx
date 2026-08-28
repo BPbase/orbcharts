@@ -46,7 +46,7 @@ const data: RawData = [
 | `name` | `string` | No | Display name (e.g. the text shown in a Tooltip) |
 | `data` | `any` | No | Custom attached data, preserved as-is |
 
-> **Tip**: The default color source is `series` (`color: { from: 'series' }`). That is, records with the same `series` share the same color. You can switch to coloring by `category` or `index`.
+> **Tip**: The default color source is `series` (`color: { by: 'series' }`). That is, records with the same `series` share the same color. You can switch to coloring by `category` or `index`.
 
 ## Aggregation behavior
 
@@ -72,6 +72,8 @@ const chart = new OrbCharts(element, {
 ```
 
 Available `aggregate` values: `'sum'`, `'mean'`, `'median'`, `'min'`, `'max'`, `'count'`, `'none'`.
+
+> **Tip**: To ignore `category` and merge purely by `series` (e.g. the same data shows series × category separately in a bar chart, but should sum per series when switched to a pie chart), combine this with `category: { ignore: true }`. See [Encoding: Ignoring a dimension](/docs/api/encoding#ignoring-a-dimension).
 
 ## Model data (ModelDatumSeries)
 

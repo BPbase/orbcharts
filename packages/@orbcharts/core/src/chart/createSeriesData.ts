@@ -1,6 +1,7 @@
 import type { RawData, RawDataColumn, Encoding, ModelDataSeries, ModelDatumSeries, Theme } from '../types'
 import { aggregate } from '../utils/aggregateUtils'
 import { getColorByFrom } from '../utils/colorUtils'
+import { resolveGroupKey } from '../utils/encodingUtils'
 
 export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Theme): ModelDataSeries[] => {
   // 依據 dataset 欄位將資料分組
@@ -13,7 +14,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
     // 二維陣列：每個子陣列代表一個 dataset
     (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
       datasetArray.forEach((d) => {
-        const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+        const datasetKey = resolveGroupKey(d, encoding.dataset, `dataset-${datasetIndex}`)
         if (!datasetMap.has(datasetKey)) {
           datasetMap.set(datasetKey, [])
         }
@@ -23,7 +24,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
   } else {
     // 一維陣列：依據 dataset 欄位分組
     (rawData as RawDataColumn[]).forEach((d) => {
-      const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+      const datasetKey = resolveGroupKey(d, encoding.dataset, '')
       if (!datasetMap.has(datasetKey)) {
         datasetMap.set(datasetKey, [])
       }
@@ -42,7 +43,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
     if (is2DArray) {
       (rawData as RawDataColumn[][]).forEach((datasetArray, datasetIndex) => {
         datasetArray.forEach((d) => {
-          const datasetKey = (d as any)[encoding.dataset.from] || `dataset-${datasetIndex}`
+          const datasetKey = resolveGroupKey(d, encoding.dataset, `dataset-${datasetIndex}`)
           if (!datasetOrder.includes(datasetKey)) {
             datasetOrder.push(datasetKey)
           }
@@ -50,7 +51,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
       })
     } else {
       (rawData as RawDataColumn[]).forEach((d) => {
-        const datasetKey = (d as any)[encoding.dataset.from] || 'default'
+        const datasetKey = resolveGroupKey(d, encoding.dataset, '')
         if (!datasetOrder.includes(datasetKey)) {
           datasetOrder.push(datasetKey)
         }
@@ -70,7 +71,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
     // 依據 series 欄位將資料分組
     const seriesMap = new Map<string, RawDataColumn[]>()
     data.forEach((d) => {
-      const seriesKey = (d as any)[encoding.series.from] || 'default'
+      const seriesKey = resolveGroupKey(d, encoding.series, '')
       if (!seriesMap.has(seriesKey)) {
         seriesMap.set(seriesKey, [])
       }
@@ -86,7 +87,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
       // original 排序：依照原始資料中 series 名稱出現的順序
       const seriesOrder: string[] = []
       data.forEach((d) => {
-        const seriesKey = (d as any)[encoding.series.from] || 'default'
+        const seriesKey = resolveGroupKey(d, encoding.series, '')
         if (!seriesOrder.includes(seriesKey)) {
           seriesOrder.push(seriesKey)
         }
@@ -103,7 +104,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
     if (encoding.category.sort === 'original') {
       // original：依照原始資料中 category 名稱出現的全域順序，不進行排序
       data.forEach((d) => {
-        const categoryKey = (d as any)[encoding.category.from] || 'default'
+        const categoryKey = resolveGroupKey(d, encoding.category, '')
         if (!globalCategoryOrder.includes(categoryKey)) {
           globalCategoryOrder.push(categoryKey)
         }
@@ -112,14 +113,14 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
       // alphabetical：依照字母順序排序所有 category
       const allCategoryNames = new Set<string>()
       data.forEach((d) => {
-        allCategoryNames.add((d as any)[encoding.category.from] || 'default')
+        allCategoryNames.add(resolveGroupKey(d, encoding.category, ''))
       })
       globalCategoryOrder.push(...Array.from(allCategoryNames).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })))
     } else if (Array.isArray(encoding.category.sort)) {
       // 自訂順序：指定的 category 優先，其餘依原始順序補上
       const allCategoryNames: string[] = []
       data.forEach((d) => {
-        const categoryKey = (d as any)[encoding.category.from] || 'default'
+        const categoryKey = resolveGroupKey(d, encoding.category, '')
         if (!allCategoryNames.includes(categoryKey)) {
           allCategoryNames.push(categoryKey)
         }
@@ -145,7 +146,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
       // 依據 category 欄位將 series 內的資料分組
       const categoryMap = new Map<string, RawDataColumn[]>()
       seriesItems.forEach((d) => {
-        const categoryKey = (d as any)[encoding.category.from] || 'default'
+        const categoryKey = resolveGroupKey(d, encoding.category, '')
         if (!categoryMap.has(categoryKey)) {
           categoryMap.set(categoryKey, [])
         }
@@ -161,7 +162,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
       if (encoding.category.sort === 'original' && encoding.value.aggregate === 'none') {
         // sort=original + 不聚合：直接依照 seriesItems 的原始排列順序，不進行分組重排
         seriesItems.forEach((d, index) => {
-          const categoryName = (d as any)[encoding.category.from] || 'default'
+          const categoryName = resolveGroupKey(d, encoding.category, '')
           const categoryIndex = globalCategoryIndexMap.get(categoryName)!
           const value = (d as any)[encoding.value.from]
           seriesData.push({
@@ -171,7 +172,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
             name: d.name || '',
             data: d.data,
             value: typeof value === 'number' ? value : null,
-            color: getColorByFrom(encoding.color.from, {
+            color: getColorByFrom(encoding.color.by, {
               index: categoryIndex,
               seriesIndex,
               categoryIndex,
@@ -218,7 +219,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
                 name: d.name || '',
                 data: d.data,
                 value: typeof value === 'number' ? value : null,
-                color: getColorByFrom(encoding.color.from, { 
+                color: getColorByFrom(encoding.color.by, { 
                   index: categoryIndex, 
                   seriesIndex,
                   categoryIndex,
@@ -271,7 +272,7 @@ export const createSeriesData = (rawData: RawData, encoding: Encoding, theme: Th
               name: firstItem.name || categoryName,
               data: firstItem.data,
               value: aggregatedValue,
-              color: getColorByFrom(encoding.color.from, { 
+              color: getColorByFrom(encoding.color.by, { 
                 index: categoryIndex, 
                 seriesIndex,
                 categoryIndex,

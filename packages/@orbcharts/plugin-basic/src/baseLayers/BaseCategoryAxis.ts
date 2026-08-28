@@ -28,6 +28,7 @@ import { getColor, createClassName } from '../utils/orbchartsUtils'
 import { renderTspansOnAxis } from '../utils/d3Graphics'
 
 export interface BaseCategoryAxisParams {
+    label: string;
     labelOffset: [number, number];
     labelColorType: ColorType;
     axisLineVisible: boolean;
@@ -710,7 +711,7 @@ export const createBaseCategoryAxis: BaseLayerFn<BaseCategoryAxisContext> = (({
       gridAxesSize: data.gridAxesSize,
       categoryAxisPosition: data.categoryAxisPosition,
       valueAxisPosition: data.valueAxisPosition,
-      categoryAxisLabel: data.categoryAxis.label,
+      categoryAxisLabel: data.baseCategoryAxisParams.label,
       theme: data.theme,
       styles: data.styles,
       textReverseTransform: data.textReverseTransform,

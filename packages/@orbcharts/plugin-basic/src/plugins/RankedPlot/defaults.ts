@@ -23,12 +23,11 @@ export const DEFAULT_RANKED_PLOT_PLUGIN_PARAMS: RankedPlotPluginParams = {
     transitionEase: 'easeCubic'
   },
   visibleFilter: (datum) => true,
-  categoryAxis: {
+  categoryScale: {
     ...DEFAULT_CATEGORY_AXIS,
     // position: 'top',
   },
-  rankedAxis: {
-    label: '',
+  rankedScale: {
     limit: 10
   },
   datasetIndex: 0
@@ -43,14 +42,11 @@ export const DEFAULT_RANKED_PLOT_RANKED_BUBBLE_PARAMS: RankedPlotRankedBubblePar
 }
 
 export const DEFAULT_RANKED_PLOT_RANK_AXIS_PARAMS: RankedPlotRankAxisParams = {
-  axisLabel: {
-    offset: [0, 0],
-    colorType: 'primary'
-  },
-  seriesLabel: {
-    padding: 20,
-    colorType: 'primary'
-  }
+  label: '',
+  labelOffset: [0, 0],
+  labelColorType: 'primary',
+  seriesLabelPadding: 20,
+  seriesLabelColorType: 'primary'
 }
 
 export const DEFAULT_RANKED_PLOT_CATEGORY_GUIDE_PARAMS: RankedPlotCategoryGuideParams = {
@@ -66,6 +62,7 @@ export const DEFAULT_RANKED_PLOT_CATEGORY_GUIDE_PARAMS: RankedPlotCategoryGuideP
 DEFAULT_RANKED_PLOT_CATEGORY_GUIDE_PARAMS.labelTextFormat.toString = () => `text => text`
 
 export const DEFAULT_RANKED_PLOT_CATEGORY_AXIS_PARAMS: RankedPlotCategoryAxisParams = {
+  label: '',
   labelOffset: [0, 0],
   labelColorType: 'primary',
   axisLineVisible: true,

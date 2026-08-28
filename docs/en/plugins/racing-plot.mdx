@@ -78,7 +78,7 @@ These parameters affect the whole RacingPlot's behavior, listed alongside Layer 
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `rankedAxis` | `{ label: string, limit: number \| 'auto' }` | `{ label: '', limit: 10 }` | Ranking axis settings: `label` is the axis label, `limit` is the max number of ranks shown (`'auto'` for automatic) |
+| `rankedScale` | `{ limit: number \| 'auto' }` | `{ limit: 10 }` | Ranking axis settings: `limit` is the max number of ranks shown (`'auto'` for automatic) |
 | `autorun` | `boolean` | `true` | Whether playback starts automatically after loading |
 | `loop` | `boolean` | `false` | Whether to loop after reaching the last frame |
 | `frameInterval` | `number` | `1000` | Number of milliseconds each frame stays |
@@ -108,17 +108,18 @@ Each Layer has its own parameters. The main parameters and defaults of each Laye
 |---|---|---|---|
 | `padding` | `number` | `8` | Spacing between the label and the bar end |
 | `colorType` | `ColorType` | `'primary'` | Label text color |
-| `format` | `string \| ((text) => string)` | `text => text` | Value text formatter |
+| `valueFormat` | `string \| ((text) => string)` | `text => text` | Value text formatter |
 
 ### SeriesLabel
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
-| `axisLabel.offset` | `[number, number]` | `[0, 0]` | Axis label offset |
-| `axisLabel.colorType` | `ColorType` | `'primary'` | Axis label color |
-| `seriesLabel.position` | `'inside-left' \| 'inside-right' \| 'outside'` | `'inside-right'` | Series label position |
-| `seriesLabel.padding` | `number` | `20` | Series label padding |
-| `seriesLabel.colorType` | `ColorType` | `'dataContrast'` | Series label text color |
+| `label` | `string` | `''` | Axis label |
+| `labelOffset` | `[number, number]` | `[0, 0]` | Axis label offset |
+| `labelColorType` | `ColorType` | `'primary'` | Axis label color |
+| `seriesLabelPosition` | `'inside-left' \| 'inside-right' \| 'outside'` | `'inside-right'` | Series label position |
+| `seriesLabelPadding` | `number` | `20` | Series label padding |
+| `seriesLabelColorType` | `ColorType` | `'dataContrast'` | Series label text color |
 
 ### CounterText
 
@@ -156,8 +157,7 @@ interface RacingPlotPluginParams {
   styles: GraphicStyles
   visibleFilter: (datum: ModelDatumGrid) => boolean | null
   datasetIndex: number
-  rankedAxis: {
-    label: string
+  rankedScale: {
     limit: number | 'auto'
   }
   autorun: boolean

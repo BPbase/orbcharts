@@ -53,7 +53,7 @@ export const CategoricalPlot = defineSVGPlugin<
 
     // ---- chart position ----
     const position$ = props.pluginParams$.pipe(
-      map(p => p.position),
+      map(p => p.valueAxisPosition),
       shareReplay(1)
     )
 
@@ -71,9 +71,8 @@ export const CategoricalPlot = defineSVGPlugin<
       switchMap(({ params }) => zoomedScaleDomain$.pipe(
         map(scaleDomain => ({
           position: 'bottom' as const,   // category axis is always at the bottom
-          scaleDomain: scaleDomain ? scaleDomain : params.categoryAxis.scaleDomain,
-          scalePadding: params.categoryAxis.scalePadding,
-          label: params.categoryAxis.label
+          scaleDomain: scaleDomain ? scaleDomain : params.categoryScale.scaleDomain,
+          scalePadding: params.categoryScale.scalePadding
         }))
       )),
       shareReplay(1)
@@ -155,7 +154,7 @@ export const CategoricalPlot = defineSVGPlugin<
     const gridAxesReverseTransform$ = gridAxesReverseTransformObservable({ gridAxesTransform$ }).pipe(shareReplay(1))
 
     const valueAxis$ = props.pluginParams$.pipe(
-      map(p => p.valueAxis),
+      map(p => p.valueScale),
       shareReplay(1)
     )
 
@@ -203,8 +202,8 @@ export const CategoricalPlot = defineSVGPlugin<
     const result = validateObject(params, {
       styles: { toBeTypes: ['object'] },
       visibleFilter: { toBeTypes: ['Function'] },
-      categoryAxis: { toBeTypes: ['object'] },
-      valueAxis: { toBeTypes: ['object'] },
+      categoryScale: { toBeTypes: ['object'] },
+      valueScale: { toBeTypes: ['object'] },
       datasetIndex: { toBeTypes: ['number'] }
     })
     return result

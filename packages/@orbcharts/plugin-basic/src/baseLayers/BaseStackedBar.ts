@@ -158,8 +158,8 @@ function renderRectBars ({ graphicGSelection, rectClassName, barData, zeroY, sty
         .attr('y', d => zeroY)
         .attr('x', d =>0)
         .attr('width', barWidth!)
-        .attr('rx', transformedBarRadius[seriesIndex][0] ?? 1)
-        .attr('ry', transformedBarRadius[seriesIndex][1] ?? 1)
+        .attr('rx', (transformedBarRadius[seriesIndex] ?? transformedBarRadius[0])?.[0] ?? 1)
+        .attr('ry', (transformedBarRadius[seriesIndex] ?? transformedBarRadius[0])?.[1] ?? 1)
         .transition()
         .duration(transitionItem)
         .ease(getD3TransitionEase(styles.transitionEase))
@@ -500,10 +500,10 @@ export const createBaseStackedBar: BaseLayerFn<BaseStackedBarContext> = ({
       // const groupScaleDomainMin = data.dataFormatter.categoryAxis.scaleDomain[0] === 'auto'
       //   ? groupMin // - data.dataFormatter.categoryAxis.scalePadding
       //   : data.dataFormatter.categoryAxis.scaleDomain[0] as number // - data.dataFormatter.categoryAxis.scalePadding
-      const groupScaleDomainMin = data.pluginParams.categoryAxis.scaleDomain[0]
-      const groupScaleDomainMax = data.pluginParams.categoryAxis.scaleDomain[1] === 'max'
-        ? groupMax // + data.pluginParams.categoryAxis.scalePadding
-        : data.pluginParams.categoryAxis.scaleDomain[1] as number // + data.pluginParams.categoryAxis.scalePadding
+      const groupScaleDomainMin = data.pluginParams.categoryScale.scaleDomain[0]
+      const groupScaleDomainMax = data.pluginParams.categoryScale.scaleDomain[1] === 'max'
+        ? groupMax // + data.pluginParams.categoryScale.scalePadding
+        : data.pluginParams.categoryScale.scaleDomain[1] as number // + data.pluginParams.categoryScale.scalePadding
 
       return [groupScaleDomainMin, groupScaleDomainMax]
     })

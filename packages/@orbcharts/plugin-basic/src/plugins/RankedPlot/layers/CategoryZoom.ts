@@ -38,7 +38,7 @@ export const CategoryZoom = defineSVGLayer<RankedPlotExtendContext, RankedPlotPl
     )
 
     const initCategoryAxis$ = pluginParams$.pipe(
-      map(d => d.categoryAxis)
+      map(d => d.categoryScale)
     )
 
     const initGroupScale$ = combineLatest({
