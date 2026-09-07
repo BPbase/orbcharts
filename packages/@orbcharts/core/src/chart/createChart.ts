@@ -1014,6 +1014,14 @@ export const createChart: CreateChart = (element, options) => {
       // context.svgSelection.remove()
       // context.canvasSelection.remove()
       destroy$.next(undefined)
+      // 銷毀目前所有 plugin 實例——先前只有 setPlugins()/removePlugin() 換掉的
+      // 「被移除」plugin 會呼叫 destroy()（見上方 pluginsInstance$.subscribe 的
+      // removedPlugins 清理），destroy() 本身卻從未對「目前仍在使用中」的 plugin
+      // 做同樣的事，導致每個 plugin 內部（createPlugin.ts）綁定 context$/
+      // ShownLayerNameSet$ 的 render 訂閱在 chart 銷毀後依然存活，於下一個
+      // instance 建立時與其競態（StrictMode 的掛載→清除→再掛載會 100% 觸發，
+      // 一般情境下則是多圖表同時建立時偶發）。
+      pluginsInstance$.getValue().forEach(plugin => plugin.destroy())
       // 清空 element 底下所有元素（含 OrbCharts 自有的 container）
       removeElementChildren(element)
       orbContainer = null
