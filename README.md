@@ -46,14 +46,14 @@ npm i orbcharts
 
 ```html
 <script type="module">
-import * as orbcharts from 'https://cdn.jsdelivr.net/npm/orbcharts@4.0.2/+esm'
+import * as orbcharts from 'https://cdn.jsdelivr.net/npm/orbcharts@4.0.3/+esm'
 </script>
 ```
 
 3. UMD format CDN download
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/orbcharts@4.0.2/dist/orbcharts.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/orbcharts@4.0.3/dist/orbcharts.umd.js"></script>
 ```
 
 ### Execution

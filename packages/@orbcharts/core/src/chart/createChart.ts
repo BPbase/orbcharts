@@ -678,7 +678,7 @@ export const createChart: CreateChart = (element, options) => {
       shareReplay(1)
     )
     const plugins$ = new BehaviorSubject<PluginInfo[]>([])
-    pluginsInstance$.subscribe(plugins => {
+    pluginsInstance$.pipe(takeUntil(destroy$)).subscribe(plugins => {
       const pluginIdRecord: Record<string, string> = {}
       const pluginIds = plugins.map(plugin => {
         let id = plugin._getId()
@@ -768,7 +768,7 @@ export const createChart: CreateChart = (element, options) => {
 
   // inject context into plugins
   let previousPlugins: PluginEntity<any, unknown, unknown>[] = []
-  pluginsInstance$.subscribe(plugins => {
+  pluginsInstance$.pipe(takeUntil(destroy$)).subscribe(plugins => {
     // -- 清理被移除的 plugin --
     // setPlugins()/removePlugin() 換掉的舊 plugin，若沒有新 plugin 用相同
     // pluginId 重新呼叫 _updateLayerElements（例如從 GridPlot 換成
@@ -825,7 +825,8 @@ export const createChart: CreateChart = (element, options) => {
     svg: svgElement$,
   }).pipe(
     debounceTime(0),
-    filter(({ svg }) => !!svg)
+    filter(({ svg }) => !!svg),
+    takeUntil(destroy$)
   ).subscribe(({ size, svg }) => {
     if (svg) {
       svg.setAttribute('width', size.width.toString())
@@ -838,7 +839,8 @@ export const createChart: CreateChart = (element, options) => {
     canvas: canvasElement$
   }).pipe(
     debounceTime(0),
-    filter(({ canvas }) => !!canvas)
+    filter(({ canvas }) => !!canvas),
+    takeUntil(destroy$)
   ).subscribe(({ size, canvas }) => {
     if (canvas) {
       canvas.width = size.width
