@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
-import { demoViews, homeDemoData, type DemoViewKey } from '@/lib/home-demo-data'
+import { demoViews, entities, treeGroups, edges, type DemoViewKey } from '@/lib/home-demo-data'
 
 // 圖表僅在 client 渲染（orbcharts 操作 DOM），並隨本區塊進入視口才載入
 const QuickDemoChart = dynamic(() => import('./QuickDemoChart'), {
@@ -17,6 +17,16 @@ const QuickDemoChart = dynamic(() => import('./QuickDemoChart'), {
 const AUTOPLAY_INTERVAL = 3500
 /** 手動切換後暫停自動輪播的時間 */
 const INTERACTION_PAUSE = 8000
+
+/** 將資料物件格式化為 TS 物件字面值文字，用於程式碼面板顯示 */
+function toObjectLiteral(record: Record<string, unknown>): string {
+  const parts = Object.entries(record).map(([key, value]) => {
+    if (value === null) return `${key}: null`
+    if (typeof value === 'string') return `${key}: '${value}'`
+    return `${key}: ${value}`
+  })
+  return `{ ${parts.join(', ')} }`
+}
 
 export function QuickDemo() {
   const t = useTranslations('Home.QuickDemo')
@@ -58,11 +68,23 @@ export function QuickDemo() {
   }, [])
 
   const viewLabels: Record<DemoViewKey, string> = {
-    pie: t('viewPie'),
-    rose: t('viewRose'),
+    bar: t('viewBar'),
     bubble: t('viewBubble'),
+    xyBubble: t('viewXYBubble'),
+    categoricalBubble: t('viewCategoricalBubble'),
+    rankedBubble: t('viewRankedBubble'),
+    networkBubble: t('viewNetworkBubble'),
+    treeMap: t('viewTreeMap'),
   }
   const view = demoViews[viewIndex]
+
+  const baseDataText = `const data = [\n${entities.map((d) => `  ${toObjectLiteral(d)},`).join('\n')}\n]`
+  const extraData =
+    view.dataset === 'tree'
+      ? { comment: t('extraTree'), records: treeGroups }
+      : view.dataset === 'graph'
+        ? { comment: t('extraGraph'), records: edges }
+        : null
 
   return (
     <div ref={rootRef} className="grid items-start gap-6 lg:grid-cols-5">
@@ -103,17 +125,38 @@ export function QuickDemo() {
       {/* 資料 / 程式碼面板 */}
       <div className="flex flex-col gap-4 lg:col-span-2">
         <DemoPanel title={t('dataTitle')}>
-          <code>{`const data = [\n${homeDemoData
-            .map((d) => `  { series: '${d.series}', value: ${d.value} },`)
-            .join('\n')}\n]`}</code>
+          <code>
+            {baseDataText}
+            {extraData ? (
+              <>
+                {'\n\n'}
+                <span className="text-muted-foreground">{`// ${extraData.comment}`}</span>
+                {'\n'}
+                <span className="rounded bg-brand/10 px-1 py-0.5 font-semibold text-brand">
+                  {`data.push(\n${extraData.records
+                    .map((r) => `  ${toObjectLiteral(r)},`)
+                    .join('\n')}\n)`}
+                </span>
+              </>
+            ) : null}
+          </code>
         </DemoPanel>
         <DemoPanel title={t('codeTitle')}>
           <code>
-            {'const plot = new PartitionPlot()\n'}
-            {'const chart = new OrbCharts(el, {\n  data,\n  plugins: [plot],\n})\n\n'}
+            {'const chart = new OrbCharts(el, { data })\n\n'}
+            {'encodingCode' in view ? (
+              <>
+                <span className="rounded bg-brand/10 px-1 py-0.5 font-semibold text-brand">
+                  {view.encodingCode}
+                </span>
+                {'\n\n'}
+              </>
+            ) : null}
+            {'chart.setPlugins([\n  '}
             <span className="rounded bg-brand/10 px-1 py-0.5 font-semibold text-brand">
-              {`plot.showOnly([${view.layers.map((l) => `'${l}'`).join(', ')}])`}
+              {view.code}
             </span>
+            {',\n  new Tooltip(),\n  new Legend(),\n])'}
           </code>
         </DemoPanel>
       </div>
