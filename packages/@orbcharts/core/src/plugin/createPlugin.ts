@@ -8,7 +8,6 @@ import {
   of,
   shareReplay,
   debounceTime,
-  first,
   Observable,
   Subject,
 } from 'rxjs'
@@ -240,8 +239,14 @@ export const createPlugin = <
         context, // 初始化時 context 有可能被 in place 擴展
         pluginParams$
       }
-    }),
-    first() // 只做初始化
+    })
+    // 不能用 first()：同一個 plugin 物件可能被重新 _injectContext() 綁定到
+    // 「另一個」全新的 chart instance（例如呼叫端銷毀舊 chart 後、沿用同一組
+    // plugin 物件建立新 chart——React StrictMode 的掛載→清除→再掛載就是這種
+    // 情境）。first() 只接受第一次注入的 context、之後永久 complete，會讓後續
+    // 重新注入的 context 被靜靜地忽略，導致新 chart 的這個 plugin 永遠不會
+    // 觸發 _updateLayerElements/_enable，畫面呈現「plugin 已建立、layer 群組
+    // 存在，但沒有畫出任何圖形」（保留 pluginSetupProps$ 為 hot、可重複觸發）。
   )
 
   combineLatest({
@@ -251,7 +256,10 @@ export const createPlugin = <
   }).pipe(
     debounceTime(0)
   ).subscribe(({ pluginSetupProps, ShownLayerNameSet, shownLayerNamesSeq }) => {
-    
+    // 重新綁定到新 context 前，先清掉上一次 setup 留下的狀態——否則同一個
+    // plugin 物件被重新注入時會疊加執行兩次 config.setup()，造成重複綁定/洩漏
+    destroySetup()
+
     // 更新 layer elements
     const layerElements = pluginSetupProps.context._updateLayerElements(
       elementType,
@@ -470,11 +478,15 @@ export const createPlugin = <
     // }),
     destroy: () => {
       destroySetup()
-      // subscription.unsubscribe()
-      context$.complete()
-      // IsShowLayerNameSet$.complete()
-      ShownLayerNameSet$.complete()
-      
+      // 不能 complete() context$/ShownLayerNameSet$：這個 plugin 物件本身可能被
+      // 銷毀後的 chart 沿用、重新 _injectContext() 到「另一個」全新的 chart
+      // instance（React StrictMode 的掛載→清除→再掛載就是這種情境，見
+      // _injectContext 上方註解）。RxJS 的 Subject 一旦 complete()，之後任何
+      // .next() 都會被靜默忽略——把這裡 complete 掉會讓重新注入的 context 永遠
+      // 失效，畫面呈現「plugin 已建立、layer 群組存在，但沒有畫出任何圖形」甚至
+      // 連 layer 群組都不會建立。這兩個 Subject 的訂閱設計上就是要跟著 plugin
+      // 物件活一輩子、反應每次新的注入，不需要也不應該在 destroy 時終結它們。
+
       // layers 為本實例專屬，destroy 不影響其他 plugin 實例
       layers.forEach((layer) => {
         layer._destroy()

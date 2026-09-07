@@ -47,7 +47,7 @@ export const createLayer = <
     debounceTime(0)
   ).subscribe(({ layerParams, enabledProps }) => {
     destroySetup()
-    destroySetup = elementType === 'svg' ? 
+    destroySetup = elementType === 'svg' ?
       config.setup({
         svgG: (enabledProps as LayerEnableProps<'svg', ExtendContext, PluginParams, LayerParams>).svgG,
         // canvas: enabledProps.canvas,
@@ -130,9 +130,11 @@ export const createLayer = <
     //   enableProps$.next(true)
     // },
     _destroy: () => {
+      // 不能 complete() enableProps$/layerParams$：同一個 layer 物件（隨 plugin
+      // 物件）可能在 chart 銷毀後被沿用、重新 _enable() 到新的 chart instance
+      // （見 createPlugin.ts destroy() 的說明）。complete() 之後 .next() 會被
+      // 靜默忽略，之後的 _enable() 永遠無法讓這個 layer 重新畫出內容。
       enableProps$.next(null)
-      enableProps$.complete()
-      layerParams$.complete()
     }
   }
 }
